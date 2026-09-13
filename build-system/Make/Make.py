@@ -299,6 +299,9 @@ class BazelCommandLine:
         if self.disable_provisioning_profiles:
             combined_arguments += ['--//Telegram:disableProvisioningProfiles']
 
+        if self.additional_args is not None:
+            combined_arguments += self.additional_args
+
         combined_arguments += self.common_args
         combined_arguments += self.common_build_args
         combined_arguments += self.get_define_arguments()
@@ -670,6 +673,9 @@ def build(bazel, arguments):
         bazel_command_line.add_cache_dir(arguments.cacheDir)
     elif arguments.cacheHost is not None:
         bazel_command_line.add_remote_cache(arguments.cacheHost)
+
+    if arguments.bazelArguments is not None:
+        bazel_command_line.add_additional_args(shlex.split(arguments.bazelArguments))
 
     resolve_configuration(
         base_path=os.getcwd(),

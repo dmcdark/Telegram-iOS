@@ -35,6 +35,8 @@ def generate_xcodeproj(build_environment: BuildEnvironment, disable_extensions, 
     if target_name == 'Telegram':
         if disable_extensions:
             project_bazel_arguments += ['--//{}:disableExtensions'.format(app_target)]
+        if disable_provisioning_profiles:
+            project_bazel_arguments += ['--//{}:disableProvisioningProfiles'.format(app_target)]
         project_bazel_arguments += ['--//{}:disableStripping'.format(app_target)]
 
     project_bazel_arguments += ['--features=-swift.debug_prefix_map']
