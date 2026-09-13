@@ -7,6 +7,7 @@
 #   APP_STORE_CONNECT_KEY_FILE=/absolute/path/AuthKey_XXXX.p8
 #   APP_IDENTIFIER=com.qinsbro.telegram
 #   WHAT_TO_TEST=Optional release notes
+#   TESTFLIGHT_INTERNAL_GROUP=internal
 #
 # Signing uses the Xcode-managed distribution certificate in the login
 # keychain. Before the first run:
@@ -38,6 +39,7 @@ download_ipa="$HOME/Downloads/Telegram-TestFlight-${build_number}.ipa"
 api_key_json="$artifacts_dir/AppStoreConnectKey.json"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
 what_to_test="${WHAT_TO_TEST:-Local TestFlight build $build_number}"
+internal_group="${TESTFLIGHT_INTERNAL_GROUP:-internal}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
 
 if [[ -z "$build_number" || ! "$build_number" =~ '^[0-9]+$' ]]; then
@@ -130,7 +132,7 @@ fastlane pilot upload \
   --skip_waiting_for_build_processing true
 
 print "Waiting for build $marketing_version ($build_number) to finish processing..."
-for attempt in {1..120}; do
+for attempt in {1..60}; do
   distribution_log="$(mktemp -t telegram-testflight-distribute)"
   if fastlane pilot distribute \
     --api_key_path "$api_key_json" \
@@ -139,10 +141,12 @@ for attempt in {1..120}; do
     --app_version "$marketing_version" \
     --build_number "$build_number" \
     --changelog "$what_to_test" \
+    --groups "$internal_group" \
+    --submit_beta_review false \
     --distribute_external false >"$distribution_log" 2>&1; then
     cat "$distribution_log"
     rm -f "$distribution_log"
-    print "Build $marketing_version ($build_number) is available to internal TestFlight testers."
+    print "Build $marketing_version ($build_number) is available to internal TestFlight group $internal_group."
     exit 0
   fi
   # `grep` is available on a standard macOS installation; don't require ripgrep
@@ -153,7 +157,7 @@ for attempt in {1..120}; do
     exit 1
   fi
   rm -f "$distribution_log"
-  sleep 30
+  sleep 10
 done
 
 print "Timed out waiting for App Store Connect to process build $marketing_version ($build_number)." >&2
