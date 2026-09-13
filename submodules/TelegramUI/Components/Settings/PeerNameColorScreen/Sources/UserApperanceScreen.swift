@@ -37,6 +37,10 @@ import TelegramStringFormatting
 import GiftViewScreen
 import BalanceNeededScreen
 
+// Local development override for exercising the profile/name color editor.
+// The matching engine path stores the selection locally without a server update.
+private let locallyUnlockProfileColors = true
+
 private let giftListTag = GenericComponentViewTag()
 private let addIconsTag = GenericComponentViewTag()
 private let useGiftTag = GenericComponentViewTag()
@@ -413,7 +417,7 @@ final class UserAppearanceScreenComponent: Component {
                             giftListView.updateVisibleBounds(visibleRect)
                         }
                     }
-                    
+
                     let bottomContentOffset = max(0.0, self.scrollView.contentSize.height - self.scrollView.contentOffset.y - self.scrollView.frame.height)
                     if bottomContentOffset < 320.0 {
                         if !giftListView.loadMore() {
@@ -725,7 +729,7 @@ final class UserAppearanceScreenComponent: Component {
             if resolvedState.changes.isEmpty {
                 self.environment?.controller()?.dismiss()
                 return
-            } else if !component.context.isPremium {
+            } else if !component.context.isPremium && !locallyUnlockProfileColors {
                 HapticFeedback().impact(.light)
                 
                 let toastController = UndoOverlayController(
@@ -915,6 +919,12 @@ final class UserAppearanceScreenComponent: Component {
                     }
                     if let result {
                         self.cachedIconFiles[result.fileId.id] = result
+                        // The local profile-color override stores only the file id on
+                        // the peer. Persist the selected file as well, so the icon
+                        // continues to resolve after this editor is dismissed.
+                        let _ = component.context.account.postbox.transaction { transaction -> Void in
+                            transaction.storeMediaIfNotPresent(media: result)
+                        }.start()
                     }
            
                     if let result {
@@ -931,6 +941,11 @@ final class UserAppearanceScreenComponent: Component {
                     }
                     if let result {
                         self.cachedIconFiles[result.fileId.id] = result
+                        // Keep locally selected profile/reply icons available after
+                        // the selection controller and this screen are released.
+                        let _ = component.context.account.postbox.transaction { transaction -> Void in
+                            transaction.storeMediaIfNotPresent(media: result)
+                        }.start()
                     }
                     switch subject {
                     case .reply:
@@ -1091,6 +1106,35 @@ final class UserAppearanceScreenComponent: Component {
                     }
                     self.contentsData = contentsData
                     
+                    // File ids are persisted on the peer by the local override.
+                    // Rehydrate their media records when reopening this screen so
+                    // the saved icon can render instead of appearing unset.
+                    let iconFileIds = [
+                        contentsData.peer?.backgroundEmojiId,
+                        contentsData.peer?.profileBackgroundEmojiId
+                    ].compactMap { $0 }
+                    if !iconFileIds.isEmpty {
+                        let _ = (component.context.account.postbox.transaction { transaction -> [Int64: TelegramMediaFile] in
+                            var files: [Int64: TelegramMediaFile] = [:]
+                            for fileId in iconFileIds {
+                                let mediaId = EngineMedia.Id(namespace: Namespaces.Media.CloudFile, id: fileId)
+                                if let file = transaction.getMedia(mediaId) as? TelegramMediaFile {
+                                    files[fileId] = file
+                                }
+                            }
+                            return files
+                        }
+                        |> deliverOnMainQueue).start(next: { [weak self] files in
+                            guard let self else {
+                                return
+                            }
+                            self.cachedIconFiles.merge(files, uniquingKeysWith: { _, new in new })
+                            if !self.isUpdating {
+                                self.state?.updated(transition: .immediate)
+                            }
+                        })
+                    }
+
                     if !self.isUpdating {
                         self.state?.updated(transition: .immediate)
                     }

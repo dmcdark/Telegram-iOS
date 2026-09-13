@@ -4,6 +4,10 @@ import SwiftSignalKit
 import MtProtoKit
 import TelegramApi
 
+// Development-only avatar preview. The media is kept in Postbox and never sent
+// to Telegram, which lets local builds exercise video and animated avatar UI.
+private let locallyPreviewDynamicAvatars = true
+
 public enum UpdatePeerPhotoStatus {
     case progress(Float)
     case complete([TelegramMediaImageRepresentation])
@@ -19,6 +23,12 @@ public enum UploadPeerPhotoMarkup {
 }
 
 func _internal_updateAccountPhoto(account: Account, resource: MediaResource?, videoResource: MediaResource?, videoStartTimestamp: Double?, markup: UploadPeerPhotoMarkup?, fallback: Bool, mapResourceToAvatarSizes: @escaping (MediaResource, [TelegramMediaImageRepresentation]) -> Signal<[Int: Data], NoError>) -> Signal<UpdatePeerPhotoStatus, UploadPeerPhotoError> {
+    if locallyPreviewDynamicAvatars && !fallback && (videoResource != nil || markup != nil) {
+        let photo = resource.map { Signal<UploadedPeerPhotoData, NoError>.single(UploadedPeerPhotoData.withResource($0)) }
+        let video = videoResource.map { Signal<UploadedPeerPhotoData?, NoError>.single(UploadedPeerPhotoData.withResource($0)) }
+        return _internal_updatePeerPhoto(postbox: account.postbox, network: account.network, stateManager: account.stateManager, accountPeerId: account.peerId, peerId: account.peerId, photo: photo, video: video, videoStartTimestamp: videoStartTimestamp, markup: markup, fallback: fallback, mapResourceToAvatarSizes: mapResourceToAvatarSizes)
+    }
+
     let photo: Signal<UploadedPeerPhotoData, NoError>?
     if videoResource == nil && markup != nil, let resource = resource {
         photo = .single(UploadedPeerPhotoData.withResource(resource))
@@ -176,6 +186,37 @@ func _internal_updatePeerPhotoInternal(postbox: Postbox, network: Network, state
                                 var photoFile: Api.InputFile?
                                 if !photoResult.local {
                                     photoFile = file
+                                }
+
+                                if locallyPreviewDynamicAvatars, peer.id == accountPeerId, !fallback, customPeerPhotoMode == nil, videoResult != nil || markup != nil {
+                                    let dimensions = PixelDimensions(width: 640, height: 640)
+                                    let representations = [TelegramMediaImageRepresentation(dimensions: dimensions, resource: photoResult.resource as! TelegramMediaResource, progressiveSizes: [], immediateThumbnailData: nil, hasVideo: videoResult != nil || markup != nil, isPersonal: false)]
+                                    let videoRepresentations: [TelegramMediaImage.VideoRepresentation]
+                                    if let videoResult {
+                                        videoRepresentations = [TelegramMediaImage.VideoRepresentation(dimensions: dimensions, resource: videoResult.resource as! TelegramMediaResource, startTimestamp: videoStartTimestamp)]
+                                    } else {
+                                        videoRepresentations = []
+                                    }
+                                    let emojiMarkup: TelegramMediaImage.EmojiMarkup?
+                                    switch markup {
+                                    case let .emoji(fileId, backgroundColors):
+                                        emojiMarkup = TelegramMediaImage.EmojiMarkup(content: .emoji(fileId: fileId), backgroundColors: backgroundColors)
+                                    case let .sticker(packReference, fileId, backgroundColors):
+                                        emojiMarkup = TelegramMediaImage.EmojiMarkup(content: .sticker(packReference: packReference, fileId: fileId), backgroundColors: backgroundColors)
+                                    case nil:
+                                        emojiMarkup = nil
+                                    }
+                                    let image = TelegramMediaImage(imageId: MediaId(namespace: Namespaces.Media.LocalImage, id: Int64.random(in: Int64.min ... Int64.max)), representations: representations, videoRepresentations: videoRepresentations, immediateThumbnailData: nil, emojiMarkup: emojiMarkup, reference: nil, partialReference: nil, flags: [])
+                                    return postbox.transaction { transaction -> (UpdatePeerPhotoStatus, MediaResource?, MediaResource?) in
+                                        if let user = transaction.getPeer(peer.id) as? TelegramUser {
+                                            updatePeersCustom(transaction: transaction, peers: [user.withUpdatedPhoto(representations)], update: { _, updated in updated })
+                                            transaction.updatePeerCachedData(peerIds: Set([peer.id])) { _, cachedData in
+                                                (cachedData as? CachedUserData)?.withUpdatedPhoto(.known(image))
+                                            }
+                                        }
+                                        return (.complete(representations), photoResult.resource, videoResult?.resource)
+                                    }
+                                    |> castError(UploadPeerPhotoError.self)
                                 }
 
                                 if peer is TelegramUser {
@@ -391,7 +432,7 @@ func _internal_updatePeerPhotoInternal(postbox: Postbox, network: Network, state
                 }
             }
             |> mapToSignal { result, resource, videoResource -> Signal<UpdatePeerPhotoStatus, UploadPeerPhotoError> in
-                if case .complete = result {
+                if case .complete = result, !(locallyPreviewDynamicAvatars && peer.id == accountPeerId && !fallback && customPeerPhotoMode == nil && (videoResource != nil || markup != nil)) {
                     return _internal_fetchAndUpdateCachedPeerData(accountPeerId: accountPeerId, peerId: peer.id, network: network, postbox: postbox)
                     |> castError(UploadPeerPhotoError.self)
                     |> mapToSignal { _ -> Signal<UpdatePeerPhotoStatus, UploadPeerPhotoError> in

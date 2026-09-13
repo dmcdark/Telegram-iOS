@@ -4,6 +4,10 @@ import SwiftSignalKit
 import TelegramApi
 import MtProtoKit
 
+// Development-only profile color preview. The selected colors are written to
+// the local account cache but are never submitted to Telegram's servers.
+private let locallyPreviewProfileColors = true
+
 
 func _internal_updateAccountPeerName(account: Account, firstName: String, lastName: String) -> Signal<Void, NoError> {
     let accountPeerId = account.peerId
@@ -80,6 +84,10 @@ func _internal_updateNameColorAndEmoji(account: Account, nameColor: UpdateNameCo
     |> switchToLatest
     |> castError(UpdateNameColorAndEmojiError.self)
     |> mapToSignal { _ -> Signal<Void, UpdateNameColorAndEmojiError> in
+        if locallyPreviewProfileColors {
+            return .complete()
+        }
+
         let inputRepliesColor: Api.PeerColor
         switch nameColor {
         case let .preset(color, backgroundEmojiId):
