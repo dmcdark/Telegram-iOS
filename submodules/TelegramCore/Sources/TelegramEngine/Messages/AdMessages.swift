@@ -3,6 +3,11 @@ import Postbox
 import SwiftSignalKit
 import TelegramApi
 
+// Keep this local build free of Telegram sponsored messages. This is enforced at
+// the data source, so it also covers cached messages and every UI surface that
+// creates an ad context.
+private let sponsoredMessagesDisabled = true
+
 private class AdMessagesHistoryContextImpl {
     final class CachedMessage: Equatable, Codable {
         enum CodingKeys: String, CodingKey {
@@ -451,6 +456,11 @@ private class AdMessagesHistoryContextImpl {
 
         self.stateValue = State(interPostInterval: nil, messages: [])
 
+        if sponsoredMessagesDisabled {
+            self.state.set(.single(State(interPostInterval: nil, messages: [])))
+            return
+        }
+
         if messageId == nil {
             self.state.set(CachedState.getCached(postbox: account.postbox, peerId: peerId)
             |> mapToSignal { cachedState -> Signal<State, NoError> in
@@ -481,6 +491,11 @@ private class AdMessagesHistoryContextImpl {
             return
         }
         self.isActivated = true
+
+        if sponsoredMessagesDisabled {
+            self.stateValue = State(interPostInterval: nil, messages: [])
+            return
+        }
         
         let peerId = self.peerId
         let accountPeerId = self.account.peerId

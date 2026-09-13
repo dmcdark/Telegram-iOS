@@ -50,8 +50,10 @@ public enum AdMessagesEnableError {
     case generic
 }
 
-func _internal_updateAdMessagesEnabled(account: Account, enabled: Bool) -> Signal<Never, AdMessagesEnableError> {
-    return account.network.request(Api.functions.account.toggleSponsoredMessages(enabled: enabled ? .boolTrue : .boolFalse))
+func _internal_updateAdMessagesEnabled(account: Account, enabled _: Bool) -> Signal<Never, AdMessagesEnableError> {
+    // Temporary local test override: always disable sponsored messages for this account.
+    let appliedEnabled = false
+    return account.network.request(Api.functions.account.toggleSponsoredMessages(enabled: .boolFalse))
     |> `catch` { error -> Signal<Api.Bool, AdMessagesEnableError> in
         return .fail(.generic)
     }
@@ -63,7 +65,7 @@ func _internal_updateAdMessagesEnabled(account: Account, enabled: Bool) -> Signa
             transaction.updatePeerCachedData(peerIds: [account.peerId], update: { peerId, currentData in
                 if let currentData = currentData as? CachedUserData {
                     var flags = currentData.flags
-                    if enabled {
+                    if appliedEnabled {
                         flags.insert(.adsEnabled)
                     } else {
                         flags.remove(.adsEnabled)
