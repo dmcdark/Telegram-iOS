@@ -4,6 +4,7 @@
 
 #import <LegacyComponents/TGMediaAssetFetchResultChange.h>
 #import <LegacyComponents/TGMediaAssetMomentList.h>
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 @interface TGMediaAssetsModernLibrary () <PHPhotoLibraryChangeObserver>

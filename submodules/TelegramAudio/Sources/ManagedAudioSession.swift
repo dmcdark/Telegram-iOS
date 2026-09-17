@@ -325,13 +325,14 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
         super.init()
         
         let queue = self.queue
-        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { [weak self] _ in
+        let weakSelf = Weak(self)
+        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { _ in
             queue.async {
-                self?.updateCurrentAudioRouteInfo()
+                weakSelf.value?.updateCurrentAudioRouteInfo()
             }
         })
         
-        NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { notification in
             managedAudioSessionLog("Interruption received")
 
             guard let info = notification.userInfo,
@@ -343,7 +344,7 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
             managedAudioSessionLog("Interruption type: \(type)")
             
             queue.async {
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     if type == .began {
                         strongSelf.updateHolders(interruption: true)
                     }
@@ -351,10 +352,10 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
             }
         })
 
-        NotificationCenter.default.addObserver(forName: AVAudioSession.mediaServicesWereLostNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { [weak self] _ in
+        NotificationCenter.default.addObserver(forName: AVAudioSession.mediaServicesWereLostNotification, object: AVAudioSession.sharedInstance(), queue: nil, using: { _ in
             managedAudioSessionLog("Media Services were lost")
             queue.after(1.0, {
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     if let (type, outputMode) = strongSelf.currentTypeAndOutputMode {
                         strongSelf.setup(type: type, outputMode: outputMode, activateNow: true)
                     }
@@ -475,8 +476,9 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
     
     public func headsetConnected() -> Signal<Bool, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
-            if let strongSelf = self {
+        let weakSelf = Weak(self)
+        return Signal { subscriber in
+            if let strongSelf = weakSelf.value {
                 subscriber.putNext(strongSelf.isHeadsetPluggedInValue)
                 
                 let index = strongSelf.outputsToHeadphonesSubscribers.add({ value in
@@ -485,7 +487,7 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                 
                 return ActionDisposable {
                     queue.async {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             strongSelf.outputsToHeadphonesSubscribers.remove(index)
                         }
                     }
@@ -498,8 +500,9 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
     
     public func isActive() -> Signal<Bool, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
-            if let strongSelf = self {
+        let weakSelf = Weak(self)
+        return Signal { subscriber in
+            if let strongSelf = weakSelf.value {
                 subscriber.putNext(strongSelf.isActiveValue || strongSelf.callKitAudioSessionIsActive)
                 
                 let index = strongSelf.isActiveSubscribers.add({ value in
@@ -508,7 +511,7 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                 
                 return ActionDisposable {
                     queue.async {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             strongSelf.isActiveSubscribers.remove(index)
                         }
                     }
@@ -521,8 +524,9 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
     
     public func isPlaybackActive() -> Signal<Bool, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
-            if let strongSelf = self {
+        let weakSelf = Weak(self)
+        return Signal { subscriber in
+            if let strongSelf = weakSelf.value {
                 subscriber.putNext(strongSelf.currentTypeAndOutputMode?.0.isPlay ?? false)
                 
                 let index = strongSelf.isPlaybackActiveSubscribers.add({ value in
@@ -531,7 +535,7 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                 
                 return ActionDisposable {
                     queue.async {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             strongSelf.isPlaybackActiveSubscribers.remove(index)
                         }
                     }
@@ -558,10 +562,11 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
         
         let id = OSAtomicIncrement32(&self.nextId)
         let queue = self.queue
+        let weakSelf = Weak(self)
         queue.async {
-            self.holders.append(HolderRecord(id: id, audioSessionType: audioSessionType, control: ManagedAudioSessionControl(setupImpl: { [weak self] synchronous in
+            self.holders.append(HolderRecord(id: id, audioSessionType: audioSessionType, control: ManagedAudioSessionControl(setupImpl: { synchronous in
                 let f: () -> Void = {
-                    if let strongSelf = self {
+                    if let strongSelf = weakSelf.value {
                         for holder in strongSelf.holders {
                             if holder.id == id && holder.active {
                                 strongSelf.setup(type: audioSessionType, outputMode: holder.outputMode, activateNow: activateImmediately)
@@ -576,8 +581,8 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                 } else {
                     queue.async(f)
                 }
-            }, activateImpl: { [weak self] completion in
-                if let strongSelf = self {
+            }, activateImpl: { completion in
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         for holder in strongSelf.holders {
                             if holder.id == id && holder.active {
@@ -592,8 +597,8 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                         }
                     }
                 }
-            }, setOutputModeImpl: { [weak self] value in
-                if let strongSelf = self {
+            }, setOutputModeImpl: { value in
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         for holder in strongSelf.holders {
                             if holder.id == id {
@@ -608,10 +613,10 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                         }
                     }
                 }
-            }, setupAndActivateImpl: { [weak self] synchronous, completion in
+            }, setupAndActivateImpl: { synchronous, completion in
                 queue.async {
                     let f: () -> Void = {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             for holder in strongSelf.holders {
                                 if holder.id == id && holder.active {
                                     strongSelf.setup(type: audioSessionType, outputMode: holder.outputMode, activateNow: true)
@@ -628,9 +633,9 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                         queue.async(f)
                     }
                 }
-            }, setTypeImpl: { [weak self] audioSessionType, completion in
+            }, setTypeImpl: { audioSessionType, completion in
                 queue.async {
-                    if let strongSelf = self {
+                    if let strongSelf = weakSelf.value {
                         for holder in strongSelf.holders {
                             if holder.id == id {
                                 if holder.audioSessionType != audioSessionType {
@@ -646,10 +651,10 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                     
                     completion()
                 }
-            }), activate: { [weak self] state in
+            }), activate: { state in
                 manualActivate(state)
                 queue.async {
-                    if let strongSelf = self {
+                    if let strongSelf = weakSelf.value {
                         strongSelf.updateCurrentAudioRouteInfo()
                         availableOutputsChanged(strongSelf.availableOutputsValue, strongSelf.currentOutputValue)
                     }
@@ -657,8 +662,8 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
             }, deactivate: deactivate, headsetConnectionStatusChanged: headsetConnectionStatusChanged, availableOutputsChanged: availableOutputsChanged, once: once, outputMode: outputMode))
             self.updateHolders()
         }
-        return ActionDisposable { [weak self] in
-            if let strongSelf = self {
+        return ActionDisposable {
+            if let strongSelf = weakSelf.value {
                 strongSelf.queue.async {
                     strongSelf.removeDeactivatedHolder(id: id)
                 }
@@ -736,9 +741,10 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                     if deactivate {
                         self.holders[activeIndex].active = false
                         let id = self.holders[activeIndex].id
+                        let weakSelf = Weak(self)
                         self.holders[activeIndex].deactivatingDisposable = (self.holders[activeIndex].deactivate(temporary)
-                        |> deliverOn(self.queue)).start(completed: { [weak self] in
-                            guard let strongSelf = self else {
+                        |> deliverOn(self.queue)).start(completed: {
+                            guard let strongSelf = weakSelf.value else {
                                 return
                             }
                             var index = 0
@@ -786,11 +792,13 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
         if immediately {
             self.applyNone()
         } else {
-            let deactivateTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
-                if let strongSelf = self {
+            let queue = self.queue
+            let weakSelf = Weak(self)
+            let deactivateTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: {
+                if let strongSelf = weakSelf.value {
                     strongSelf.applyNone()
                 }
-            }, queue: self.queue)
+            }, queue: queue)
             self.deactivateTimer = deactivateTimer
             deactivateTimer.start()
         }
@@ -1132,9 +1140,10 @@ public final class ManagedAudioSessionImpl: NSObject, ManagedAudioSession {
                 
                 if AVAudioSession.sharedInstance().outputVolume <= 0.01 {
                     let queue = self.queue
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: { [weak self] in
+                    let weakSelf = Weak(self)
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: {
                         queue.async {
-                            guard let self else {
+                            guard let self = weakSelf.value else {
                                 return
                             }
                             if self.currentTypeAndOutputMode != nil {

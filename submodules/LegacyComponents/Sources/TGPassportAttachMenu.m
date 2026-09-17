@@ -1,5 +1,6 @@
 #import <LegacyComponents/LegacyComponents.h>
 #import <LegacyComponents/TGPassportAttachMenu.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "LegacyComponentsInternal.h"
 #import <LegacyComponents/TGImageUtils.h>
@@ -385,7 +386,7 @@
         [delegate cleanup];
     }];
     
-    UIDocumentPickerViewController *controller = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.image"] inMode:UIDocumentPickerModeOpen];
+    UIDocumentPickerViewController *controller = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[UTTypeImage]];
     controller.view.backgroundColor = [UIColor whiteColor];
     controller.delegate = delegate;
     

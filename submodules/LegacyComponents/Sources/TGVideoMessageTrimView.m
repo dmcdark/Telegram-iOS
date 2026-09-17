@@ -1,5 +1,7 @@
 #import "TGVideoMessageTrimView.h"
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import <LegacyComponents/UIControl+HitTestEdgeInsets.h>
 #import "LegacyComponentsInternal.h"
 

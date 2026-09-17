@@ -41,6 +41,12 @@ app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
 what_to_test="${WHAT_TO_TEST:-Local TestFlight build $build_number}"
 internal_group="${TESTFLIGHT_INTERNAL_GROUP:-internal}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
+bazel_path="$project_root/build-input/bazel-8.4.2-darwin-arm64"
+
+# Keep the persistent Bazel disk cache so release rebuilds can reuse artifacts.
+# The script reports its size after each build; clean it manually when needed.
+bazel_cache_dir="${TELEGRAM_BAZEL_CACHE_DIR:-$HOME/telegram-bazel-cache}"
+bazel_output_user_root="${TELEGRAM_BAZEL_OUTPUT_USER_ROOT:-/private/var/tmp/_bazel_qinsbro}"
 
 if [[ -z "$build_number" || ! "$build_number" =~ '^[0-9]+$' ]]; then
   print "Usage: $0 <build-number>"
@@ -89,6 +95,11 @@ if ! security find-identity -v -p codesigning 2>/dev/null | grep -Eq '(Apple|iOS
   exit 1
 fi
 
+if [[ ! -x "$bazel_path" ]]; then
+  print "Missing executable Bazel binary: $bazel_path"
+  exit 1
+fi
+
 cd "$project_root"
 
 # Make copies only in an ignored build directory: Make.py expects profiles/
@@ -96,16 +107,49 @@ cd "$project_root"
 mkdir -p "$signing_root/profiles"
 cp "$profile_source" "$profile_file"
 
-python3 build-system/Make/Make.py \
-  --cacheDir="$HOME/telegram-bazel-cache" \
-  --overrideXcodeVersion \
-  --bazelArguments="--//Telegram:disableExtensions=True --copt=-Wno-deprecated-declarations --@build_bazel_rules_swift//swift:copt=-no-warnings-as-errors" \
-  build \
-  --buildNumber="$build_number" \
-  --configurationPath="$configuration_file" \
-  --codesigningInformationPath="$signing_root" \
-  --configuration=release_arm64 \
+bazel_arguments=(
+  "--//Telegram:disableExtensions=True"
+  "--copt=-Wno-deprecated-declarations"
+  "--@build_bazel_rules_swift//swift:copt=-no-warnings-as-errors"
+)
+
+make_arguments=(
+  --bazel="$bazel_path"
+  --overrideXcodeVersion
+  --bazelArguments="${(j: :)bazel_arguments}"
+  build
+  --buildNumber="$build_number"
+  --configurationPath="$configuration_file"
+  --codesigningInformationPath="$signing_root"
+  --configuration=release_arm64
   --outputBuildArtifactsPath="$artifacts_dir"
+)
+
+if [[ -n "$bazel_cache_dir" ]]; then
+  make_arguments=(
+    --cacheDir="$bazel_cache_dir"
+    "${make_arguments[@]}"
+  )
+fi
+
+python3 build-system/Make/Make.py "${make_arguments[@]}"
+
+report_bazel_storage_size() {
+  print "\nBazel storage size:"
+  if [[ -d "$bazel_output_user_root" ]]; then
+    du -sh "$bazel_output_user_root"
+  else
+    print "0B\t$bazel_output_user_root"
+  fi
+
+  if [[ -d "$bazel_cache_dir" ]]; then
+    du -sh "$bazel_cache_dir"
+  else
+    print "0B\t$bazel_cache_dir"
+  fi
+}
+
+report_bazel_storage_size
 
 mv "$artifacts_dir/Telegram.ipa" "$download_ipa"
 print "\nTestFlight IPA moved to: $download_ipa"
@@ -147,6 +191,7 @@ for attempt in {1..60}; do
     cat "$distribution_log"
     rm -f "$distribution_log"
     print "Build $marketing_version ($build_number) is available to internal TestFlight group $internal_group."
+    report_bazel_storage_size
     exit 0
   fi
   # `grep` is available on a standard macOS installation; don't require ripgrep

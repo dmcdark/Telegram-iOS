@@ -420,13 +420,15 @@ public final class MediaBox {
                         if let status = statusContext.status {
                             subscriber.putNext(status)
                         }
+                        let weakStatusContext = Weak(statusContext)
                         
                         if let statusUpdateDisposable = statusUpdateDisposable {
                             let statusQueue = self.statusQueue
                             self.dataQueue.async {
                                 if let (fileContext, releaseContext) = self.fileContext(for: resourceId) {
-                                    let statusDisposable = fileContext.status(next: { [weak statusContext] value in
+                                    let statusDisposable = fileContext.status(next: { value in
                                         statusQueue.async {
+                                            let statusContext = weakStatusContext.value
                                             if let current = self.statusContexts[resourceId], current === statusContext, current.status != value {
                                                 current.status = value
                                                 for subscriber in current.subscribers.copyItems() {
@@ -434,8 +436,9 @@ public final class MediaBox {
                                                 }
                                             }
                                         }
-                                    }, completed: { [weak statusContext] in
+                                    }, completed: {
                                         statusQueue.async {
+                                            let statusContext = weakStatusContext.value
                                             if let current = self.statusContexts[resourceId], current ===  statusContext {
                                                 current.subscribers.remove(index)
                                                 if current.subscribers.isEmpty {
@@ -453,8 +456,9 @@ public final class MediaBox {
                             }
                         }
                         
-                        disposable.set(ActionDisposable { [weak statusContext] in
+                        disposable.set(ActionDisposable {
                             self.statusQueue.async {
+                                let statusContext = weakStatusContext.value
                                 if let current = self.statusContexts[resourceId], current ===  statusContext {
                                     current.subscribers.remove(index)
                                     if current.subscribers.isEmpty {

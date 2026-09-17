@@ -17,16 +17,17 @@ public final class ListViewTransactionQueue {
         self.transactions.append(transaction)
         
         if beginTransaction {
-            transaction({ [weak self] in
+            let weakSelf = Weak(self)
+            transaction({
                 precondition(Thread.isMainThread)
                 
                 if Thread.isMainThread {
-                    if let strongSelf = self {
+                    if let strongSelf = weakSelf.value {
                         strongSelf.endTransaction()
                     }
                 } else {
                     Queue.mainQueue().async {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             strongSelf.endTransaction()
                         }
                     }
@@ -46,16 +47,17 @@ public final class ListViewTransactionQueue {
             }
             
             if let nextTransaction = self.transactions.first {
-                nextTransaction({ [weak self] in
+                let weakSelf = Weak(self)
+                nextTransaction({
                     precondition(Thread.isMainThread)
                     
                     if Thread.isMainThread {
-                        if let strongSelf = self {
+                        if let strongSelf = weakSelf.value {
                             strongSelf.endTransaction()
                         }
                     } else {
                         Queue.mainQueue().async {
-                            if let strongSelf = self {
+                            if let strongSelf = weakSelf.value {
                                 strongSelf.endTransaction()
                             }
                         }

@@ -1,5 +1,7 @@
 #import "TGMediaPickerPhotoStripCell.h"
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import "LegacyComponentsInternal.h"
 #import <LegacyComponents/TGFont.h>
 

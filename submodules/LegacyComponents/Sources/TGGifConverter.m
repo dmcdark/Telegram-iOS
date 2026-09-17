@@ -6,6 +6,7 @@
 #import <UIKit/UIKit.h>
 #import <ImageIO/ImageIO.h>
 #import <AVFoundation/AVFoundation.h>
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 const int32_t TGGifConverterFPS = 600;

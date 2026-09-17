@@ -1878,11 +1878,14 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
             return
         }
         
-        self.transactionQueue.addTransaction({ [weak self] transactionCompletion in
-            if let strongSelf = self {
+        let transactionQueue = self.transactionQueue
+        let weakSelf = Weak(self)
+        transactionQueue.addTransaction({ transactionCompletion in
+            if let strongSelf = weakSelf.value {
                 strongSelf.transactionOffset = 0.0
-                strongSelf.deleteAndInsertItemsTransaction(deleteIndices: deleteIndices, insertIndicesAndItems: insertIndicesAndItems, updateIndicesAndItems: updateIndicesAndItems, options: options, scrollToItem: scrollToItem, additionalScrollDistance: additionalScrollDistance, updateSizeAndInsets: updateSizeAndInsets, stationaryItemRange: stationaryItemRange, updateOpaqueState: updateOpaqueState, customAnimationTransition: customAnimationTransition ?? updateSizeAndInsets?.customAnimationTransition, completion: { [weak strongSelf] in
-                    completion(strongSelf?.immediateDisplayedItemRange() ?? ListViewDisplayedItemRange(loadedRange: nil, visibleRange: nil))
+                let weakStrongSelf = Weak(strongSelf)
+                strongSelf.deleteAndInsertItemsTransaction(deleteIndices: deleteIndices, insertIndicesAndItems: insertIndicesAndItems, updateIndicesAndItems: updateIndicesAndItems, options: options, scrollToItem: scrollToItem, additionalScrollDistance: additionalScrollDistance, updateSizeAndInsets: updateSizeAndInsets, stationaryItemRange: stationaryItemRange, updateOpaqueState: updateOpaqueState, customAnimationTransition: customAnimationTransition ?? updateSizeAndInsets?.customAnimationTransition, completion: {
+                    completion(weakStrongSelf.value?.immediateDisplayedItemRange() ?? ListViewDisplayedItemRange(loadedRange: nil, visibleRange: nil))
                     
                     transactionCompletion()
                 })

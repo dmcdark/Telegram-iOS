@@ -1,5 +1,7 @@
 #import <LegacyComponents/TGMenuView.h>
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import "LegacyComponentsInternal.h"
 #import <LegacyComponents/TGFont.h>
 #import <LegacyComponents/TGImageUtils.h>

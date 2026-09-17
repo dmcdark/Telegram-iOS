@@ -1,5 +1,7 @@
 #import <LegacyComponents/TGMediaPickerToolbarView.h>
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import "LegacyComponentsInternal.h"
 #import <LegacyComponents/TGImageUtils.h>
 #import <LegacyComponents/TGFont.h>

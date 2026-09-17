@@ -293,8 +293,6 @@ static UIColor *shadowColorForButton(int type)
         
         _landscapeOffset = 0;
         
-        self.adjustsImageWhenDisabled = false;
-        self.adjustsImageWhenHighlighted = false;
         self.enabled = true;
         
         [self updateBackground];
@@ -338,8 +336,6 @@ static UIColor *shadowColorForButton(int type)
         
         _landscapeOffset = 0;
         
-        self.adjustsImageWhenDisabled = false;
-        self.adjustsImageWhenHighlighted = false;
         self.enabled = true;
         
         _customImageNormal = imageNormal;

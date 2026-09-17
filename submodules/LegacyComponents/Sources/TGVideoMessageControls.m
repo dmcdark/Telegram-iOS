@@ -1,5 +1,7 @@
 #import <LegacyComponents/TGVideoMessageControls.h>
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import <LegacyComponents/LegacyComponents.h>
 
 #import <LegacyComponents/TGModernButton.h>

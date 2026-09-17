@@ -1,5 +1,6 @@
 #import <LegacyComponents/TGFileUtils.h>
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 NSString *TGMimeTypeForFileExtension(NSString *fileExtension)

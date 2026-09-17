@@ -1,7 +1,7 @@
 import Foundation
 import SwiftSignalKit
 import AVFoundation
-import MobileCoreServices
+import UniformTypeIdentifiers
 import Display
 import TelegramCore
 import MediaPlayer

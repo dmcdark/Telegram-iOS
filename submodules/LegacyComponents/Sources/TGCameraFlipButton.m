@@ -11,7 +11,6 @@
     self = [super initWithFrame:frame];
     if (self != nil)
     {
-        self.adjustsImageWhenHighlighted = false;
         self.modernHighlight = false;
         self.exclusiveTouch = true;
         self.backgroundColor = [TGCameraInterfaceAssets buttonColor];
@@ -119,7 +118,6 @@
     self = [super initWithFrame:frame];
     if (self != nil)
     {
-        self.adjustsImageWhenHighlighted = false;
         self.modernHighlight = false;
         self.exclusiveTouch = true;
         self.backgroundColor = [TGCameraInterfaceAssets buttonColor];

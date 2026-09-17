@@ -5,7 +5,7 @@ import Display
 import AsyncDisplayKit
 import TelegramCore
 import SafariServices
-import MobileCoreServices
+import UniformTypeIdentifiers
 import Intents
 import LegacyComponents
 import TelegramPresentationData

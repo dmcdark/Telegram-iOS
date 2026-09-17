@@ -3,6 +3,7 @@
 #import <MtProtoKit/MtProtoKit.h>
 
 #import <UIKit/UIKit.h>
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AddressBook/AddressBook.h>
 #import <AVFoundation/AVFoundation.h>

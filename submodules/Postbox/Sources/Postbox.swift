@@ -2543,14 +2543,16 @@ final class PostboxImpl {
                 let timeout = nextTypingDraftExpirationTimestamp - CFAbsoluteTimeGetCurrent()
                 
                 self.nextTypingDraftExpirationTimer?.invalidate()
-                self.nextTypingDraftExpirationTimer = SwiftSignalKit.Timer(timeout: max(0.0, timeout - 0.1), repeat: false, completion: { [weak self] in
-                    guard let self else {
+                let queue = self.queue
+                let weakSelf = Weak(self)
+                self.nextTypingDraftExpirationTimer = SwiftSignalKit.Timer(timeout: max(0.0, timeout - 0.1), repeat: false, completion: {
+                    guard let self = weakSelf.value else {
                         return
                     }
                     let _ = self.transaction { _ in
                         self.processTypingDraftExpirations(expirationTimeout: expirationTimeout)
                     }.startStandalone()
-                }, queue: self.queue)
+                }, queue: queue)
                 self.nextTypingDraftExpirationTimer?.start()
             }
         } else {
@@ -3659,9 +3661,10 @@ final class PostboxImpl {
             }
         }
         
-        return MarkedActionDisposable { [weak self] in
+        let weakSelf = Weak(self)
+        return MarkedActionDisposable {
             disposable.dispose()
-            if let strongSelf = self {
+            if let strongSelf = weakSelf.value {
                 strongSelf.queue.justDispatch {
                     strongSelf.viewTracker.removeMessageHistoryView(index: index)
                 }
@@ -3752,9 +3755,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeChatListView(index)
                     }
@@ -3774,9 +3778,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeContactPeerIdsView(index)
                     }
@@ -3894,9 +3899,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removePeerView(index)
                     }
@@ -3916,9 +3922,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeMultiplePeersView(index)
                     }
@@ -3948,9 +3955,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeUnreadMessageCountsView(index)
                     }
@@ -3984,9 +3992,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removePostboxStateView(index)
                     }
@@ -4072,9 +4081,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeItemCollectionView(index)
                     }
@@ -4095,9 +4105,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removePeerMergedOperationLogView(index)
                     }
@@ -4117,9 +4128,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeTimestampBasedMessageAttributesView(index)
                     }
@@ -4168,9 +4180,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeMessageView(index)
                     }
@@ -4190,9 +4203,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removePreferencesView(index)
                     }
@@ -4216,9 +4230,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeCombinedView(index)
                     }
@@ -4314,9 +4329,10 @@ final class PostboxImpl {
             }
             return peerIndices
         }).start(next: { peerIndices in
-            disposable.set(ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            disposable.set(ActionDisposable {
                 queue.async {
-                    guard let `self` = self else {
+                    guard let `self` = weakSelf.value else {
                         return
                     }
                     let _ = (self.transaction { transaction -> Void in
@@ -4598,9 +4614,10 @@ final class PostboxImpl {
                 subscriber.putNext(next)
             })
             
-            return ActionDisposable { [weak self] in
+            let weakSelf = Weak(self)
+            return ActionDisposable {
                 disposable.dispose()
-                if let strongSelf = self {
+                if let strongSelf = weakSelf.value {
                     strongSelf.queue.async {
                         strongSelf.viewTracker.removeFailedMessageIdsView(index)
                     }

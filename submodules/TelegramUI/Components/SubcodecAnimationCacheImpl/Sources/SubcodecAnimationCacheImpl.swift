@@ -779,9 +779,10 @@ public final class SubcodecAnimationCacheImpl: AnimationCache {
         }
 
         let disposable = MetaDisposable()
+        let weakSelf = Weak(self)
         self.impl.with { impl in
-            disposable.set(impl.get(sourceId: sourceId, size: size, fetch: fetch, updateResult: { [weak self] result in
-                guard let strongSelf = self else {
+            disposable.set(impl.get(sourceId: sourceId, size: size, fetch: fetch, updateResult: { result in
+                guard let strongSelf = weakSelf.value else {
                     completion(nil)
                     return
                 }

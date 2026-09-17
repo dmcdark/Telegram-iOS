@@ -3,6 +3,7 @@
 
 #import "LegacyComponentsInternal.h"
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 @interface TGMediaAsset ()

@@ -1,6 +1,8 @@
 #import <LegacyComponents/TGMediaPickerSendActionSheetController.h>
 #import "LegacyComponentsInternal.h"
 
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 #import <LegacyComponents/TGFont.h>
 #import <LegacyComponents/TGImageUtils.h>
 #import <LegacyComponents/TGModernButton.h>

@@ -5,7 +5,7 @@ import AsyncDisplayKit
 import Display
 import UIKit
 import SwiftSignalKit
-import MobileCoreServices
+import UniformTypeIdentifiers
 import TelegramVoip
 import OverlayStatusController
 import AccountContext
