@@ -54,7 +54,7 @@ private final class ChatButtonKeyboardInputButtonNode: HighlightTrackingButtonNo
         self.textNode.isUserInteractionEnabled = false
         self.addSubnode(self.textNode)
                 
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted, !strongSelf.bounds.width.isZero {
                     strongSelf.backgroundContainerNode.layer.removeAnimation(forKey: "opacity")
@@ -432,7 +432,7 @@ public final class ChatButtonKeyboardInputNode: ChatInputNode, UIScrollViewDeleg
                     self.controllerInteraction.openPollCreation(nil, isQuiz)
                 case let .openUserProfile(peerId):
                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                         guard let self, let peer else {
                             return
                         }

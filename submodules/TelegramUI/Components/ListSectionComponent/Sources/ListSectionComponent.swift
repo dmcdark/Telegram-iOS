@@ -198,7 +198,7 @@ public final class ListSectionContentView: UIView {
                     
                     let itemId = readyItem.id
                     if let itemComponentView = itemComponentView as? ListSectionComponentChildView {
-                        itemComponentView.customUpdateIsHighlighted = { [weak self] isHighlighted in
+                        itemComponentView.customUpdateIsHighlighted = { [weak self = self] isHighlighted in
                             guard let self else {
                                 return
                             }

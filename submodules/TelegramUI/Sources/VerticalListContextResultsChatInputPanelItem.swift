@@ -150,7 +150,7 @@ final class VerticalListContextResultsChatInputPanelItemNode: ListViewItemNode {
         let iconImageLayout = self.iconImageNode.asyncLayout()
         let currentIconImageResource = self.currentIconImageResource
         
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let leftInset: CGFloat = 80.0 + params.leftInset
             let rightInset: CGFloat = 10.0 + params.rightInset
             
@@ -383,7 +383,7 @@ final class VerticalListContextResultsChatInputPanelItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

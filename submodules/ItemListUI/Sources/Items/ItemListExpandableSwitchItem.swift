@@ -277,7 +277,7 @@ public class ItemListExpandableSwitchItemNode: ListViewItemNode, ItemListItemNod
         self.addSubnode(self.activateArea)
         self.addSubnode(self.subItemContainer)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             guard let strongSelf = self, let item = strongSelf.item, item.enabled else {
                 return false
             }
@@ -381,7 +381,7 @@ public class ItemListExpandableSwitchItemNode: ListViewItemNode, ItemListItemNod
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] animation in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] animation in
                 if let strongSelf = self {
                     strongSelf.item = item
                     
@@ -674,7 +674,7 @@ public class ItemListExpandableSwitchItemNode: ListViewItemNode, ItemListItemNod
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -691,7 +691,7 @@ public class ItemListExpandableSwitchItemNode: ListViewItemNode, ItemListItemNod
     
     override public func animateInsertion(_ currentTimestamp: Double, duration: Double, options: ListViewItemAnimationOptions) {
         self.layer.allowsGroupOpacity = true
-        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.4, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.4, completion: { [weak self = self] _ in
             self?.layer.allowsGroupOpacity = false
         })
     }

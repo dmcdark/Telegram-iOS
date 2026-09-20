@@ -54,7 +54,7 @@ private final class BlobView: UIView {
         
         self.layer.addSublayer(self.blobsLayer)
         
-        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let self else {
                 return
             }
@@ -67,7 +67,7 @@ private final class BlobView: UIView {
             self.updateAudioLevel()
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -332,7 +332,7 @@ final class VideoChatParticipantAvatarComponent: Component {
                         return true
                     }
                 })
-                |> deliverOnMainQueue).startStrict(next: { [weak self] level in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] level in
                     guard let self, let component = self.component, let avatarNode = self.avatarNode else {
                         return
                     }
@@ -362,7 +362,7 @@ final class VideoChatParticipantAvatarComponent: Component {
                             
                             blobView.layer.animateScale(from: 0.5, to: 1.0 / blobScale, duration: 0.2)
                             
-                            blobView.scaleUpdated = { [weak self] additionalScale in
+                            blobView.scaleUpdated = { [weak self = self] additionalScale in
                                 guard let self, let avatarNode = self.avatarNode else {
                                     return
                                 }
@@ -390,7 +390,7 @@ final class VideoChatParticipantAvatarComponent: Component {
                     }
                     
                     if self.noAudioTimer == nil {
-                        self.noAudioTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true, block: { [weak self] _ in
+                        self.noAudioTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.4, repeats: true, block: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }

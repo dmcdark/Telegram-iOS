@@ -108,7 +108,7 @@ private final class GiftAuctionWearPreviewSheetContent: CombinedComponent {
                     }
                 ))
                 |> deliverOnMainQueue
-            ).startStrict(next: { [weak self] peers in
+            ).startStrict(next: { [weak self = self] peers in
                 if let strongSelf = self {
                     var peersMap: [EnginePeer.Id: EnginePeer] = [:]
                     for (peerId, maybePeer) in peers {
@@ -121,7 +121,7 @@ private final class GiftAuctionWearPreviewSheetContent: CombinedComponent {
                 }
             })
             
-            self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self] in
+            self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -130,7 +130,7 @@ private final class GiftAuctionWearPreviewSheetContent: CombinedComponent {
             self.previewTimer?.start()
             
             self.disposable = (auctionContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] auctionState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] auctionState in
                 guard let self else {
                     return
                 }
@@ -138,7 +138,7 @@ private final class GiftAuctionWearPreviewSheetContent: CombinedComponent {
                 self.updated()
             })
             
-            self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.updated()
             }, queue: Queue.mainQueue())
             self.giftAuctionTimer?.start()

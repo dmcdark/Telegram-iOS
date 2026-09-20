@@ -180,7 +180,7 @@ class MediaGroupsAlbumItemNode: ListViewItemNode {
         self.addSubnode(self.arrowNode)
         self.addSubnode(self.activateArea)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             self?.item?.action()
             return true
         }
@@ -215,7 +215,7 @@ class MediaGroupsAlbumItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     
@@ -297,7 +297,7 @@ class MediaGroupsAlbumItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

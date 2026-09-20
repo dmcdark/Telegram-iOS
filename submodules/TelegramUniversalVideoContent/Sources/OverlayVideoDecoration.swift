@@ -183,7 +183,7 @@ final class OverlayVideoDecoration: UniversalVideoDecoration {
             }
         }
         
-        self.statusDisposable.set((status |> deliverOnMainQueue).start(next: { [weak self] status in
+        self.statusDisposable.set((status |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let strongSelf = self else {
                 return
             }
@@ -245,7 +245,7 @@ final class OverlayVideoDecoration: UniversalVideoDecoration {
         UIView.animate(withDuration: 0.35, animations: {
             self.minimizedBlurView?.effect = effect
             self.minimizedArrowView?.alpha = edge != nil ? 1.0 : 0.0;
-        }, completion: { [weak self] finished in
+        }, completion: { [weak self = self] finished in
             if let strongSelf = self {
                 if finished && edge == nil {
                     strongSelf.minimizedBlurView?.isHidden = true

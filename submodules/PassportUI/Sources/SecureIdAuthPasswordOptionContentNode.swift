@@ -87,7 +87,7 @@ final class SecureIdAuthPasswordOptionContentNode: ASDisplayNode, SecureIdAuthCo
         
         self.addSubnode(self.inputContainer)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonBackground.layer.removeAnimation(forKey: "opacity")

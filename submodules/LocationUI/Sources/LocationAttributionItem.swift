@@ -83,11 +83,11 @@ private class LocationAttributionItemNode: ListViewItemNode {
     func asyncLayout() -> (_ item: LocationAttributionItem, _ params: ListViewItemLayoutParams) -> (ListViewItemNodeLayout, () -> (Signal<Void, NoError>?, (ListViewItemApply) -> Void)) {
         let currentItem = self.item
     
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let contentSize = CGSize(width: params.width, height: 55.0)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets())
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 var updatedTheme: PresentationTheme?
                 if currentItem?.presentationData.theme !== item.presentationData.theme {
                     updatedTheme = item.presentationData.theme

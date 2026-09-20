@@ -496,7 +496,7 @@ public class SearchBarPlaceholderNode: ASDisplayNode {
         super.didLoad()
         
         let gestureRecognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.backgroundTap(_:)))
-        /*gestureRecognizer.highlight = { [weak self] point in
+        /*gestureRecognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -515,14 +515,14 @@ public class SearchBarPlaceholderNode: ASDisplayNode {
         }
         self.containerView.addGestureRecognizer(gestureRecognizer)
         
-        /*self.pointerInteraction = PointerInteraction(node: self, style: .caret, willEnter: { [weak self] in
+        /*self.pointerInteraction = PointerInteraction(node: self, style: .caret, willEnter: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             if let backgroundNode = strongSelf.contentView.backgroundNode {
                 backgroundNode.backgroundColor = strongSelf.foregroundColor.withMultipliedBrightnessBy(0.95)
             }
-        }, willExit: { [weak self] in
+        }, willExit: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

@@ -106,7 +106,7 @@ final class ChannelParticipantFooterItemNode: ItemListControllerFooterItemNode {
                         component: AnyComponent(Text(text: self.item.title, font: Font.semibold(17.0), color: self.item.theme.list.itemCheckColors.foregroundColor))
                     ),
                     displaysProgress: self.item.displayProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.item.action()
                     }
                 )

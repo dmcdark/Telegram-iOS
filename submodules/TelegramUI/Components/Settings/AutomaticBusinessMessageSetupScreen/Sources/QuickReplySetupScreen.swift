@@ -320,20 +320,20 @@ final class QuickReplySetupScreenComponent: Component {
             
             super.init()
             
-            self.reorderBegan = { [weak self] in
+            self.reorderBegan = { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.tempOrder = nil
             }
-            self.reorderCompleted = { [weak self] _ in
+            self.reorderCompleted = { [weak self = self] _ in
                 guard let self, let tempOrder = self.tempOrder else {
                     return
                 }
                 self.resetTempOrderOnNextUpdate = true
                 self.context.engine.accountData.reorderMessageShortcuts(ids: tempOrder, completion: {})
             }
-            self.reorderItem = { [weak self] fromIndex, toIndex, transactionOpaqueState -> Signal<Bool, NoError> in
+            self.reorderItem = { [weak self = self] fromIndex, toIndex, transactionOpaqueState -> Signal<Bool, NoError> in
                 guard let self else {
                     return .single(false)
                 }
@@ -739,7 +739,7 @@ final class QuickReplySetupScreenComponent: Component {
                 if self.isEditing {
                     rightButtons.append(AnyComponentWithIdentity(id: "done", component: AnyComponent(NavigationButtonComponent(
                         content: .text(title: strings.Common_Done, isBold: true),
-                        pressed: { [weak self] _ in
+                        pressed: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -751,7 +751,7 @@ final class QuickReplySetupScreenComponent: Component {
                 } else {
                     rightButtons.append(AnyComponentWithIdentity(id: "edit", component: AnyComponent(NavigationButtonComponent(
                         content: .text(title: strings.Common_Edit, isBold: false),
-                        pressed: { [weak self] _ in
+                        pressed: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -776,7 +776,7 @@ final class QuickReplySetupScreenComponent: Component {
                 chatListTitle: nil,
                 leftButton: isModal ? AnyComponentWithIdentity(id: "close", component: AnyComponent(NavigationButtonComponent(
                     content: .icon(imageName: "Navigation/Close"),
-                    pressed: { [weak self] _ in
+                    pressed: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -786,7 +786,7 @@ final class QuickReplySetupScreenComponent: Component {
                     }
                 ))) : nil,
                 rightButtons: rightButtons,
-                backPressed: isModal ? nil :{ [weak self] in
+                backPressed: isModal ? nil :{ [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -818,7 +818,7 @@ final class QuickReplySetupScreenComponent: Component {
                     tabsNodeIsSearch: false,
                     accessoryPanelContainer: nil,
                     accessoryPanelContainerHeight: 0.0,
-                    activateSearch: { [weak self] _ in
+                    activateSearch: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -900,7 +900,7 @@ final class QuickReplySetupScreenComponent: Component {
                 self.shortcutMessageList = component.initialData.shortcutMessageList
                 
                 self.shortcutMessageListDisposable = (component.context.engine.accountData.shortcutMessageList(onlyRemote: false)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] shortcutMessageList in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] shortcutMessageList in
                     guard let self else {
                         return
                     }
@@ -950,7 +950,7 @@ final class QuickReplySetupScreenComponent: Component {
                         theme: environment.theme,
                         strings: environment.strings,
                         insets: UIEdgeInsets(top: environment.navigationHeight, left: environment.safeInsets.left, bottom: environment.safeInsets.bottom + environment.additionalInsets.bottom, right: environment.safeInsets.right),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1017,14 +1017,14 @@ final class QuickReplySetupScreenComponent: Component {
                     )
                     searchBarNode.placeholderString = NSAttributedString(string: environment.strings.Common_Search, font: Font.regular(17.0), textColor: searchBarTheme.placeholder)
                     self.searchBarNode = searchBarNode
-                    searchBarNode.cancel = { [weak self] in
+                    searchBarNode.cancel = { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.isSearchDisplayControllerActive = false
                         self.state?.updated(transition: .spring(duration: 0.4))
                     }
-                    searchBarNode.textUpdated = { [weak self] query, _ in
+                    searchBarNode.textUpdated = { [weak self = self] query, _ in
                         guard let self else {
                             return
                         }
@@ -1107,7 +1107,7 @@ final class QuickReplySetupScreenComponent: Component {
                             effectAlignment: .center,
                             minSize: CGSize(width: availableSize.width - environment.safeInsets.left - environment.safeInsets.right, height: 44.0),
                             contentInsets: UIEdgeInsets(),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1156,7 +1156,7 @@ final class QuickReplySetupScreenComponent: Component {
                 contentListNode = ContentListNode(parentView: self, context: component.context)
                 self.contentListNode = contentListNode
                 
-                contentListNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+                contentListNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
                     guard let self else {
                         return
                     }
@@ -1334,14 +1334,14 @@ public final class QuickReplySetupScreen: ViewControllerComponentContainer, Atta
             mode: mode
         ), navigationBarAppearance: .none, theme: .default, updatedPresentationData: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? QuickReplySetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? QuickReplySetupScreenComponent.View else {
                 return true
             }

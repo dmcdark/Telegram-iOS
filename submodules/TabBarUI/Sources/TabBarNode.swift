@@ -170,7 +170,7 @@ private final class TabBarItemNode: ASDisplayNode {
         self.containerNode.targetNodeForActivationProgress = self.extractedContainerNode.contentNode
         self.addSubnode(self.containerNode)
         
-        self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -273,7 +273,7 @@ private final class TabBarNodeContainer {
             updateSelectedImage(value)
         }
         
-        imageNode.containerNode.activated = { [weak self] gesture, _ in
+        imageNode.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -457,18 +457,18 @@ class TabBarNode: ASDisplayNode, ASGestureRecognizerDelegate {
         for i in 0 ..< self.tabBarItems.count {
             let item = self.tabBarItems[i]
             let node = TabBarItemNode()
-            let container = TabBarNodeContainer(item: item, imageNode: node, updateBadge: { [weak self] value in
+            let container = TabBarNodeContainer(item: item, imageNode: node, updateBadge: { [weak self = self] value in
                 self?.updateNodeBadge(i, value: value)
-            }, updateTitle: { [weak self] _, _ in
+            }, updateTitle: { [weak self = self] _, _ in
                 self?.updateNodeImage(i, layout: true)
-            }, updateImage: { [weak self] _ in
+            }, updateImage: { [weak self = self] _ in
                 self?.updateNodeImage(i, layout: true)
-            }, updateSelectedImage: { [weak self] _ in
+            }, updateSelectedImage: { [weak self = self] _ in
                 self?.updateNodeImage(i, layout: true)
-            }, contextAction: { [weak self] node, gesture in
+            }, contextAction: { [weak self = self] node, gesture in
                 self?.tapRecognizer?.cancel()
                 self?.contextAction(i, node, gesture)
-            }, swipeAction: { [weak self] direction in
+            }, swipeAction: { [weak self = self] direction in
                 self?.swipeAction(i, direction)
             })
             if item.item.ringSelection {

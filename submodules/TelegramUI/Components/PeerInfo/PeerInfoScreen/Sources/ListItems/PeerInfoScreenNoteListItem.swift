@@ -82,7 +82,7 @@ final class PeerInfoScreenNoteListItemNode: PeerInfoScreenItemNode {
         
         self.bottomSeparatorNode.backgroundColor = presentationData.theme.list.itemBlocksSeparatorColor
      
-        self.state._updated = { [weak self] transition, _ in
+        self.state._updated = { [weak self = self] transition, _ in
             guard let self else {
                 return
             }

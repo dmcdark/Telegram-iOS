@@ -398,7 +398,7 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
         |> then(pipe.signal()))
         |> `catch` { _ -> Signal<AccountRecordsView<Types>, NoError> in
         }
-        |> afterDisposed { [weak self] in
+        |> afterDisposed { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.recordsViews.remove(index)
@@ -417,7 +417,7 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
         |> then(pipe.signal()))
         |> `catch` { _ -> Signal<AccountSharedDataView<Types>, NoError> in
         }
-        |> afterDisposed { [weak self] in
+        |> afterDisposed { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.sharedDataViews.remove(index)
@@ -436,7 +436,7 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
         |> then(pipe.signal()))
         |> `catch` { _ -> Signal<NoticeEntryView<Types>, NoError> in
         }
-        |> afterDisposed { [weak self] in
+        |> afterDisposed { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.noticeEntryViews.remove(index)
@@ -455,7 +455,7 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
         |> then(pipe.signal()))
         |> `catch` { _ -> Signal<AccessChallengeDataView, NoError> in
         }
-        |> afterDisposed { [weak self] in
+        |> afterDisposed { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.accessChallengeDataViews.remove(index)

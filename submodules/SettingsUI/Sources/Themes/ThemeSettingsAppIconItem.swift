@@ -264,7 +264,7 @@ class ThemeSettingsAppIconItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     let previousItem = strongSelf.item
                     strongSelf.item = item

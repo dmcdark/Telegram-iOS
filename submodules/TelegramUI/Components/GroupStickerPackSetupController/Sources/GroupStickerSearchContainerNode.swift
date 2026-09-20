@@ -146,7 +146,7 @@ public final class GroupStickerSearchContainerNode: SearchDisplayControllerConte
         self.addSubnode(self.emptyResultsTitleNode)
         self.addSubnode(self.emptyResultsTextNode)
         
-        let interaction = GroupStickerSearchContainerInteraction(packSelected: { [weak self] pack in
+        let interaction = GroupStickerSearchContainerInteraction(packSelected: { [weak self = self] pack in
             packSelected(pack)
             self?.listNode.clearHighlightAnimated(true)
         })
@@ -176,7 +176,7 @@ public final class GroupStickerSearchContainerNode: SearchDisplayControllerConte
         
         let previousSearchItems = Atomic<[GroupStickerSearchEntry]?>(value: nil)
         self.searchDisposable.set((combineLatest(self.searchQuery.get(), foundItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] query, entries, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] query, entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousSearchItems.swap(entries)
                 updateActivity(false)
@@ -187,7 +187,7 @@ public final class GroupStickerSearchContainerNode: SearchDisplayControllerConte
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 var presentationData = presentationData
                 
@@ -206,7 +206,7 @@ public final class GroupStickerSearchContainerNode: SearchDisplayControllerConte
             }
         })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -251,7 +251,7 @@ public final class GroupStickerSearchContainerNode: SearchDisplayControllerConte
             }
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

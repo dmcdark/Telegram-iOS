@@ -50,7 +50,7 @@ final class VoiceChatCameraPreviewController: ViewController {
         self.blocksBackgroundWhenInOverlay = true
         
         self.presentationDataDisposable = (sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.controllerNode.updatePresentationData(presentationData)
             }
@@ -69,20 +69,20 @@ final class VoiceChatCameraPreviewController: ViewController {
     
     override public func loadDisplayNode() {
         self.displayNode = VoiceChatCameraPreviewControllerNode(controller: self, sharedContext: self.sharedContext, cameraNode: self.cameraNode)
-        self.controllerNode.shareCamera = { [weak self] unmuted in
+        self.controllerNode.shareCamera = { [weak self = self] unmuted in
             if let strongSelf = self {
                 strongSelf.shareCamera(strongSelf.cameraNode, unmuted)
                 strongSelf.dismiss()
             }
         }
-        self.controllerNode.switchCamera = { [weak self] in
+        self.controllerNode.switchCamera = { [weak self = self] in
             self?.switchCamera()
             self?.cameraNode.flip(withBackground: false)
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
     }
@@ -245,7 +245,7 @@ private class VoiceChatCameraPreviewControllerNode: ViewControllerTracingNode, A
         
         self.previewContainerNode.addSubnode(self.wheelNode)
 
-        self.wheelNode.selectedIndexChanged = { [weak self] index in
+        self.wheelNode.selectedIndexChanged = { [weak self = self] index in
             if let strongSelf = self {
                 if (index == 1 && strongSelf.selectedTabIndex == 2) || (index == 2 && strongSelf.selectedTabIndex == 1) {
                     strongSelf.switchCamera?()
@@ -267,14 +267,14 @@ private class VoiceChatCameraPreviewControllerNode: ViewControllerTracingNode, A
             }
         }
         
-        self.doneButton.pressed = { [weak self] in
+        self.doneButton.pressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.shareCamera?(true)
             }
         }
         self.cancelButton.addTarget(self, action: #selector(self.cancelPressed), forControlEvents: .touchUpInside)
         
-        self.readyDisposable.set(self.cameraNode.ready.start(next: { [weak self] ready in
+        self.readyDisposable.set(self.cameraNode.ready.start(next: { [weak self = self] ready in
             if let strongSelf = self, ready {
                 Queue.mainQueue().after(0.07) {
                     strongSelf.shimmerNode.alpha = 0.0
@@ -351,7 +351,7 @@ private class VoiceChatCameraPreviewControllerNode: ViewControllerTracingNode, A
         self.applicationStateDisposable = (self.sharedContext.applicationBindings.applicationIsActive
         |> filter { !$0 }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -363,7 +363,7 @@ private class VoiceChatCameraPreviewControllerNode: ViewControllerTracingNode, A
         var dimCompleted = false
         var offsetCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && offsetCompleted {
                 strongSelf.dismiss?()
             }

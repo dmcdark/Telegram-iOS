@@ -54,7 +54,7 @@ final class MediaSpoilerDustOverlay {
             self.containerNode.addSubnode(blurredImageNode)   // blur below dust
         }
         self.containerNode.addSubnode(self.dustNode)
-        self.dustNode.revealed = { [weak self] in
+        self.dustNode.revealed = { [weak self = self] in
             guard let self else { return }
             self.concealed = false
             self.containerNode.view.removeFromSuperview()
@@ -185,7 +185,7 @@ final class InstantPageV2MediaImageView: UIView, InstantPageItemView {
     init(item: InstantPageV2MediaImageItem, renderContext: InstantPageV2RenderContext, theme: InstantPageTheme) {
         self.item = item
 
-        // The tap closure can't capture `[weak self]` before `super.init`, so we route through
+        // The tap closure can't capture `[weak self = self]` before `super.init`, so we route through
         // a `WrapperRef` box that gets filled in after `super.init`. The box's weak storage
         // breaks the wrapper → wrappedNode → closure → wrapper retain cycle that would otherwise
         // form (the wrapper owns wrappedNode, which owns the closure, which holds the wrapper).

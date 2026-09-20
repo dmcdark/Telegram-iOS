@@ -405,7 +405,7 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
         
         let previousRecentItems = Atomic<[SettingsSearchRecentEntry]?>(value: nil)
         self.recentDisposable = (combineLatest(recentSearchItems, faqItems.get(), self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] recentSearchItems, faqItems, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] recentSearchItems, faqItems, presentationData in
             if let strongSelf = self {
                 let recentHeader = ChatListSearchItemHeader(type: .recentPeers, theme: presentationData.theme, strings: presentationData.strings, actionTitle: presentationData.strings.WebSearch_RecentSectionClear, action: { _ in
                     clearRecentSettingsSearchItems(engine: context.engine)
@@ -428,7 +428,7 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
         })
         
         let previousEntriesHolder = Atomic<([SettingsSearchEntry], PresentationTheme, PresentationStrings)?>(value: nil)
-        self.searchDisposable.set(combineLatest(queue: .mainQueue(), queryAndFoundItems, self.presentationDataPromise.get()).start(next: { [weak self] queryAndFoundItems, presentationData in
+        self.searchDisposable.set(combineLatest(queue: .mainQueue(), queryAndFoundItems, self.presentationDataPromise.get()).start(next: { [weak self = self] queryAndFoundItems, presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -455,7 +455,7 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -469,11 +469,11 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
                 }
             })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
         
-        self.recentListNode.beganInteractiveDragging = { [weak self] _ in
+        self.recentListNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -516,7 +516,7 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
             options.insert(.PreferSynchronousDrawing)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
             })
         }
@@ -543,7 +543,7 @@ public final class SettingsSearchContainerNode: SearchDisplayControllerContentNo
                 options.insert(.AnimateInsertion)
             }
             
-            self.recentListNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.recentListNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.recentListNode.backgroundColor = transition.isEmpty ? .clear : self?.presentationData.theme.chatList.backgroundColor
             })
         }
@@ -645,9 +645,9 @@ private final class SettingsSearchItemNode: ItemListControllerSearchNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: SettingsSearchContainerNode(context: self.context, openResult: { [weak self] result in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: SettingsSearchContainerNode(context: self.context, openResult: { [weak self = self] result in
             if let strongSelf = self {
-                result.present(strongSelf.context, strongSelf.getNavigationController?(), { [weak self] mode, controller in
+                result.present(strongSelf.context, strongSelf.getNavigationController?(), { [weak self = self] mode, controller in
                     if let strongSelf = self {
                         switch mode {
                             case .push:
@@ -656,7 +656,7 @@ private final class SettingsSearchItemNode: ItemListControllerSearchNode {
                                 }
                             case .modal:
                                 if let controller = controller {
-                                    strongSelf.presentController(controller, ViewControllerPresentationArguments(presentationAnimation: .modalSheet, completion: { [weak self] in
+                                    strongSelf.presentController(controller, ViewControllerPresentationArguments(presentationAnimation: .modalSheet, completion: { [weak self = self] in
                                         self?.cancel()
                                     }))
                                 }
@@ -670,7 +670,7 @@ private final class SettingsSearchItemNode: ItemListControllerSearchNode {
                     }
                 })
             }
-        }, openContextMenu: { _, _, _, _ in }, resolvedFaqUrl: self.resolvedFaqUrl, exceptionsList: self.exceptionsList, archivedStickerPacks: self.archivedStickerPacks, privacySettings: self.privacySettings, hasTwoStepAuth: self.hasTwoStepAuth, twoStepAuthData: self.twoStepAuthData, activeSessionsContext: self.activeSessionsContext, webSessionsContext: self.webSessionsContext), cancel: { [weak self] in
+        }, openContextMenu: { _, _, _, _ in }, resolvedFaqUrl: self.resolvedFaqUrl, exceptionsList: self.exceptionsList, archivedStickerPacks: self.archivedStickerPacks, privacySettings: self.privacySettings, hasTwoStepAuth: self.hasTwoStepAuth, twoStepAuthData: self.twoStepAuthData, activeSessionsContext: self.activeSessionsContext, webSessionsContext: self.webSessionsContext), cancel: { [weak self = self] in
             self?.cancel()
         }, fieldStyle: placeholderNode.fieldStyle)
         

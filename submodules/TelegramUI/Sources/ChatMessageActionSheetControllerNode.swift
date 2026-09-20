@@ -38,7 +38,7 @@ private final class MessageActionButtonNode: HighlightableButtonNode {
         self.insertSubnode(self.separatorNode, at: 0)
         self.insertSubnode(self.backgroundNode, at: 1)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     if let supernode = strongSelf.titleNode.supernode {

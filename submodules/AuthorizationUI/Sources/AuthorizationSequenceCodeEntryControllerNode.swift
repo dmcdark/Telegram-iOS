@@ -289,7 +289,7 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
         self.hintButtonNode.addSubnode(self.hintArrowNode)
         self.addSubnode(self.proceedNode)
         
-        self.codeInputView.updated = { [weak self] in
+        self.codeInputView.updated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -298,7 +298,7 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
         
         self.textField.textField.addTarget(self, action: #selector(self.textDidChange), for: .editingChanged)
         
-        self.codeInputView.longPressed = { [weak self] in
+        self.codeInputView.longPressed = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -309,13 +309,13 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
                     return
                 }
                 
-                let controller = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: strongSelf.strings.Common_Paste, accessibilityLabel: strongSelf.strings.Common_Paste), action: { [weak self] in
+                let controller = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: strongSelf.strings.Common_Paste, accessibilityLabel: strongSelf.strings.Common_Paste), action: { [weak self = self] in
                     self?.updateCode(code)
                 })])
                 
                 strongSelf.present(
                     controller,
-                    ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+                    ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
                         if let strongSelf = self {
                             return (strongSelf, strongSelf.codeInputView.frame.offsetBy(dx: 0.0, dy: -8.0), strongSelf, strongSelf.bounds)
                         } else {
@@ -327,7 +327,7 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
         }
         
         self.nextOptionButtonNode.addTarget(self, action: #selector(self.nextOptionNodePressed), forControlEvents: .touchUpInside)
-        self.proceedNode.pressed = { [weak self] in
+        self.proceedNode.pressed = { [weak self = self] in
             self?.proceedPressed()
         }
         self.signInWithAppleButton?.addTarget(self, action: #selector(self.signInWithApplePressed), for: .touchUpInside)
@@ -440,7 +440,7 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
             let timeout = min(timeout, 5)
             #endif
             self.currentTimeoutTime = timeout
-            let disposable = ((Signal<Int, NoError>.single(1) |> delay(1.0, queue: Queue.mainQueue())) |> restart).startStrict(next: { [weak self] _ in
+            let disposable = ((Signal<Int, NoError>.single(1) |> delay(1.0, queue: Queue.mainQueue())) |> restart).startStrict(next: { [weak self = self] _ in
                 if let strongSelf = self {
                     if let currentTimeoutTime = strongSelf.currentTimeoutTime, currentTimeoutTime > 0 {
                         strongSelf.currentTimeoutTime = currentTimeoutTime - 1
@@ -464,7 +464,7 @@ final class AuthorizationSequenceCodeEntryControllerNode: ASDisplayNode, UITextF
             })
             self.countdownDisposable.set(disposable)
         } else if case let .email(_, _, _, pendingDate, _, _) = codeType, let pendingDate {
-            let disposable = ((Signal<Int, NoError>.single(1) |> delay(1.0, queue: Queue.mainQueue())) |> restart).startStrict(next: { [weak self] _ in
+            let disposable = ((Signal<Int, NoError>.single(1) |> delay(1.0, queue: Queue.mainQueue())) |> restart).startStrict(next: { [weak self = self] _ in
                 if let strongSelf = self {
                     let currentTime = Int32(CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970)
                     let interval = pendingDate - currentTime

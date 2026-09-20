@@ -336,7 +336,7 @@ public final class LiquidLensView: UIView {
             if let lensView = self.lensView, let method = lensView.method(for: selector) {
                 typealias ObjCMethod = @convention(c) (AnyObject, Selector, Bool, Bool, @escaping () -> Void, (() -> Void)?) -> Void
                 let function = unsafeBitCast(method, to: ObjCMethod.self)
-                function(lensView, selector, params.isLifted, !transition.animation.isImmediate, { [weak self] in
+                function(lensView, selector, params.isLifted, !transition.animation.isImmediate, { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -344,7 +344,7 @@ public final class LiquidLensView: UIView {
                     lensView.bounds = CGRect(origin: CGPoint(), size: CGSize(width: params.baseFrame.width + liftedInset * 2.0, height: params.baseFrame.height + liftedInset * 2.0))
                     didProcessUpdate = true
                     if shouldScheduleUpdate {
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             guard let self, let pendingLensParams = self.pendingLensParams else {
                                 return
                             }
@@ -353,7 +353,7 @@ public final class LiquidLensView: UIView {
                             self.updateLens(params: pendingLensParams, transition: transition)
                         }
                     }
-                }, { [weak self] in
+                }, { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -391,7 +391,7 @@ public final class LiquidLensView: UIView {
             if !transition.animation.isImmediate {
                 self.isAnimating = true
             }
-            transition.setPosition(view: lensView, position: lensCenter, completion: { [weak self] flag in
+            transition.setPosition(view: lensView, position: lensCenter, completion: { [weak self = self] flag in
                 guard let self, flag else {
                     return
                 }
@@ -442,7 +442,7 @@ public final class LiquidLensView: UIView {
         
         if self.contentView.bounds.size != params.size {
             self.contentView.clipsToBounds = true
-            transition.setFrame(view: self.contentView, frame: CGRect(origin: CGPoint(), size: params.size), completion: { [weak self] completed in
+            transition.setFrame(view: self.contentView, frame: CGRect(origin: CGPoint(), size: params.size), completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }
@@ -451,7 +451,7 @@ public final class LiquidLensView: UIView {
             transition.setCornerRadius(layer: self.contentView.layer, cornerRadius: params.cornerRadius ?? (params.size.height * 0.5))
 
             self.liftedContainerView.clipsToBounds = true
-            transition.setFrame(view: self.liftedContainerView, frame: CGRect(origin: CGPoint(), size: params.size), completion: { [weak self] completed in
+            transition.setFrame(view: self.liftedContainerView, frame: CGRect(origin: CGPoint(), size: params.size), completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }
@@ -489,7 +489,7 @@ public final class LiquidLensView: UIView {
 
         if params.isLifted {
             if self.liftedDisplayLink == nil {
-                self.liftedDisplayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                self.liftedDisplayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                     guard let self else {
                         return
                     }

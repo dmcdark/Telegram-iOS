@@ -12,7 +12,7 @@ extension ChatControllerImpl {
             context: self.context,
             sourceNode: node,
             gesture: gesture,
-            completion: { [weak self] peer, sourceFrame in
+            completion: { [weak self = self] peer, sourceFrame in
                 guard let self else {
                     return
                 }
@@ -25,7 +25,7 @@ extension ChatControllerImpl {
                     context: self.context,
                     peer: peer,
                     sourceFrame: sourceFrame,
-                    action: { [weak self] action in
+                    action: { [weak self = self] action in
                         guard let self else {
                             return
                         }

@@ -135,25 +135,25 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
                 }
                 
                 panel.containerNode.headerNode.displayScrubber = component.data.item.playbackData?.type != .instantVideo
-                panel.getController = { [weak self] in
+                panel.getController = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return nil
                     }
                     return component.controller()
                 }
-                panel.presentInGlobalOverlay = { [weak self] c in
+                panel.presentInGlobalOverlay = { [weak self = self] c in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.controller()?.presentInGlobalOverlay(c)
                 }
-                panel.close = { [weak self] in
+                panel.close = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.context.sharedContext.mediaManager.setPlaylist(nil, type: component.data.kind, control: SharedMediaPlayerControlAction.playback(.pause))
                 }
-                panel.setRate = { [weak self] rate, changeType in
+                panel.setRate = { [weak self = self] rate, changeType in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -165,7 +165,7 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
                         })
                         return rate
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] baseRate in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] baseRate in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -232,32 +232,32 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
                         }
                     })
                 }
-                panel.togglePlayPause = { [weak self] in
-                    self?.performAction({ [weak self] in
+                panel.togglePlayPause = { [weak self = self] in
+                    self?.performAction({ [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.context.sharedContext.mediaManager.playlistControl(.playback(.togglePlayPause), type: component.data.kind)
                     })
                 }
-                panel.playPrevious = { [weak self] in
-                    self?.performAction({ [weak self] in
+                panel.playPrevious = { [weak self = self] in
+                    self?.performAction({ [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.context.sharedContext.mediaManager.playlistControl(.next, type: component.data.kind)
                     })
                 }
-                panel.playNext = { [weak self] in
-                    self?.performAction({ [weak self] in
+                panel.playNext = { [weak self = self] in
+                    self?.performAction({ [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.context.sharedContext.mediaManager.playlistControl(.previous, type: component.data.kind)
                     })
                 }
-                panel.tapAction = { [weak self] in
-                    self?.performAction({ [weak self] in
+                panel.tapAction = { [weak self = self] in
+                    self?.performAction({ [weak self = self] in
                         guard let self, let component = self.component, let controller = component.controller(), let navigationController = controller.navigationController as? NavigationController else {
                             return
                         }
@@ -281,7 +281,7 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
 
                                     var cancelImpl: (() -> Void)?
                                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
-                                    let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+                                    let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
                                         let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                                             cancelImpl?()
                                         }))
@@ -303,7 +303,7 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
                                             progressDisposable.dispose()
                                         }
                                     }
-                                    |> deliverOnMainQueue).start(next: { [weak self] index in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] index in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -326,7 +326,7 @@ public final class MediaPlaybackHeaderPanelComponent: Component {
                                         }
                                     }, completed: {
                                     })
-                                    cancelImpl = { [weak self] in
+                                    cancelImpl = { [weak self = self] in
                                         self?.playlistPreloadDisposable?.dispose()
                                     }
                                 default:

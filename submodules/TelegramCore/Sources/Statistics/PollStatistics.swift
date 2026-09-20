@@ -114,7 +114,7 @@ private final class PollStatsContextImpl {
         assert(Queue.mainQueue().isCurrent())
         
         self.disposable.set((requestPollStats(postbox: self.postbox, network: self.network, messageId: self.messageId)
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let strongSelf = self {
                 strongSelf._state = PollStatsContextState(stats: stats)
                 strongSelf._statePromise.set(.single(strongSelf._state))
@@ -133,7 +133,7 @@ private final class PollStatsContextImpl {
                 return
             }
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.messageId.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = PollStatsContextState(stats: strongSelf._state.stats?.withUpdatedVotesGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))

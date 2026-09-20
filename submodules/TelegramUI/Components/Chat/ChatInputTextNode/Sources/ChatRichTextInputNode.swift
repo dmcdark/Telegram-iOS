@@ -458,7 +458,7 @@ public extension ChatRichTextInputNode {
             self.applyInternalSpoilersRevealed(true, animated: animated, context: context, baseFontSize: baseFontSize, textColor: textColor, primaryTextColor: primaryTextColor, accentTextColor: accentTextColor, availableEmojis: availableEmojis, emojiViewProvider: emojiViewProvider)
         } else {
             // Keep the spoiler revealed briefly after the caret leaves it, mirroring the host's prior timing.
-            Queue.mainQueue().after(1.5, { [weak self] in
+            Queue.mainQueue().after(1.5, { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -558,7 +558,7 @@ final class ChatRichTextInputNodeImpl: ASDisplayNode, ChatRichTextInputNode {
 
         // Refresh overlays when the composed editor relayouts (e.g. content size changes
         // on scroll/typing), reusing the host's most recent rendering values.
-        self.textInputNodeImpl.textView.onUpdateLayout = { [weak self] in
+        self.textInputNodeImpl.textView.onUpdateLayout = { [weak self = self] in
             guard let self, let textColor = self.lastTextColor else {
                 return
             }
@@ -660,7 +660,7 @@ final class ChatRichTextInputNodeImpl: ASDisplayNode, ChatRichTextInputNode {
             if let current = self.customEmojiContainerView {
                 customEmojiContainerView = current
             } else {
-                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self] emoji in
+                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self = self] emoji in
                     guard let strongSelf = self, let emojiViewProvider = strongSelf.emojiViewProvider else {
                         return nil
                     }

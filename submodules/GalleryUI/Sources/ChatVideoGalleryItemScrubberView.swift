@@ -104,17 +104,17 @@ final class ChatVideoGalleryItemScrubberView: UIView {
         
         self.addSubview(self.backgroundContainer)
         
-        self.scrubberNode.seek = { [weak self] timestamp in
+        self.scrubberNode.seek = { [weak self = self] timestamp in
             self?.seek(timestamp)
         }
         
-        self.scrubberNode.update = { [weak self] timestamp, position in
+        self.scrubberNode.update = { [weak self = self] timestamp, position in
             self?.updateScrubbing(timestamp)
             self?.updateScrubbingVisual(timestamp)
             self?.updateScrubbingHandlePosition(position)
         }
         
-        self.scrubberNode.playerStatusUpdated = { [weak self] status in
+        self.scrubberNode.playerStatusUpdated = { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.playbackStatus = status
                 if strongSelf.hideWhenDurationIsUnknown {
@@ -212,7 +212,7 @@ final class ChatVideoGalleryItemScrubberView: UIView {
         
         if let mappedStatus = mappedStatus {
             self.loadingDisposable.set((mappedStatus
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let strongSelf = self {
                     if status.duration < 1.0 {
                         strongSelf.isLoading = true
@@ -225,7 +225,7 @@ final class ChatVideoGalleryItemScrubberView: UIView {
                         strongSelf.isLoading = false
                         strongSelf.updateTimestampsVisibility(animated: true)
                         if strongSelf.shimmerEffectNode.supernode != nil {
-                            strongSelf.shimmerEffectNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+                            strongSelf.shimmerEffectNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.shimmerEffectNode.removeFromSupernode()
                                 }
@@ -248,7 +248,7 @@ final class ChatVideoGalleryItemScrubberView: UIView {
             }))
             
             self.chapterDisposable.set((mappedStatus
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let strongSelf = self, status.duration > 1.0, strongSelf.chapters.count > 0 {
                     let previousChapter = strongSelf.currentChapter
                     var currentChapter: MediaPlayerScrubbingChapter?
@@ -308,7 +308,7 @@ final class ChatVideoGalleryItemScrubberView: UIView {
         if let fileSize = fileSize {
             if let fetchStatus = fetchStatus {
                 self.fetchStatusDisposable.set((fetchStatus
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     if let strongSelf = self, strongSelf.chapters.isEmpty {
                         var text: String
                         switch status {

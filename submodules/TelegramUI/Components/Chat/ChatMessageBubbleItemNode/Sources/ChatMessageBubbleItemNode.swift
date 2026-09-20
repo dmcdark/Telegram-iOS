@@ -849,7 +849,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         
         //self.addSubnode(self.debugNode)
         
-        self.mainContainerNode.shouldBeginWithCustomActivationProcess = { [weak self] location in
+        self.mainContainerNode.shouldBeginWithCustomActivationProcess = { [weak self = self] location in
             guard let strongSelf = self else {
                 return .none
             }
@@ -897,7 +897,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
             return .default
         }
         
-        self.mainContainerNode.activated = { [weak self] gesture, location in
+        self.mainContainerNode.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -931,7 +931,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         self.clippingNode.addSubnode(self.contentContainersWrapperNode)
         self.addSubnode(self.messageAccessibilityArea)
         
-        self.messageAccessibilityArea.activate = { [weak self] in
+        self.messageAccessibilityArea.activate = { [weak self = self] in
             guard let strongSelf = self, let accessibilityData = strongSelf.accessibilityData else {
                 return false
             }
@@ -950,11 +950,11 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
             return false
         }
         
-        self.messageAccessibilityArea.focused = { [weak self] in
+        self.messageAccessibilityArea.focused = { [weak self = self] in
             self?.accessibilityElementDidBecomeFocused()
         }
         
-        self.mainContextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtractedToContextPreview, _ in
+        self.mainContextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtractedToContextPreview, _ in
             guard let self, let _ = self.item else {
                 return
             }
@@ -962,7 +962,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 contentNode.willUpdateIsExtractedToContextPreview(isExtractedToContextPreview)
             }
         }
-        self.mainContextSourceNode.isExtractedToContextPreviewUpdated = { [weak self] isExtractedToContextPreview in
+        self.mainContextSourceNode.isExtractedToContextPreviewUpdated = { [weak self = self] isExtractedToContextPreview in
             guard let self else {
                 return
             }
@@ -983,19 +983,19 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
             }
         }
         
-        self.mainContextSourceNode.updateAbsoluteRect = { [weak self] rect, size in
+        self.mainContextSourceNode.updateAbsoluteRect = { [weak self = self] rect, size in
             guard let strongSelf = self, strongSelf.mainContextSourceNode.isExtractedToContextPreview else {
                 return
             }
             strongSelf.updateAbsoluteRectInternal(rect, within: size)
         }
-        self.mainContextSourceNode.applyAbsoluteOffset = { [weak self] value, animationCurve, duration in
+        self.mainContextSourceNode.applyAbsoluteOffset = { [weak self = self] value, animationCurve, duration in
             guard let strongSelf = self, strongSelf.mainContextSourceNode.isExtractedToContextPreview else {
                 return
             }
             strongSelf.applyAbsoluteOffsetInternal(value: value, animationCurve: animationCurve, duration: duration)
         }
-        self.mainContextSourceNode.applyAbsoluteOffsetSpring = { [weak self] value, duration, damping in
+        self.mainContextSourceNode.applyAbsoluteOffsetSpring = { [weak self = self] value, duration, damping in
             guard let strongSelf = self, strongSelf.mainContextSourceNode.isExtractedToContextPreview else {
                 return
             }
@@ -1099,7 +1099,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         super.animateRemoved(currentTimestamp, duration: duration)
         
         self.allowsGroupOpacity = true
-        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.allowsGroupOpacity = false
         })
         self.shadowNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false)
@@ -1155,7 +1155,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 self.clippingNode.clipsToBounds = true
             }
         }
-        transition.animateFrame(layer: self.clippingNode.layer, from: CGRect(origin: CGPoint(x: self.clippingNode.frame.minX, y: textInput.backgroundView.frame.minY), size: textInput.backgroundView.frame.size), completion: { [weak self] _ in
+        transition.animateFrame(layer: self.clippingNode.layer, from: CGRect(origin: CGPoint(x: self.clippingNode.frame.minX, y: textInput.backgroundView.frame.minY), size: textInput.backgroundView.frame.size), completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1270,7 +1270,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 if let item = strongSelf.item, let subject = item.associatedData.subject, case let .messageOptions(_, _, info) = subject {
                     if case let .link(link) = info {
@@ -1402,7 +1402,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
             
             return .waitForDoubleTap
         }
-        recognizer.longTap = { [weak self] point, recognizer in
+        recognizer.longTap = { [weak self = self] point, recognizer in
             guard let strongSelf = self else {
                 return
             }
@@ -1423,7 +1423,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 }
             }
         }
-        recognizer.secondaryTap = { [weak self] point, recognizer in
+        recognizer.secondaryTap = { [weak self = self] point, recognizer in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -1437,7 +1437,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 }
             }
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self, strongSelf.selectionNode == nil {
                 if let replyInfoNode = strongSelf.replyInfoNode {
                     var translatedPoint: CGPoint?
@@ -1475,7 +1475,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
             replyRecognizer.allowBothDirections = false//!item.context.sharedContext.immediateExperimentalUISettings.unidirectionalSwipeToReply
             self.view.disablesInteractiveTransitionGestureRecognizer = false//!item.context.sharedContext.immediateExperimentalUISettings.unidirectionalSwipeToReply
         }
-        replyRecognizer.shouldBegin = { [weak self] in
+        replyRecognizer.shouldBegin = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 if strongSelf.selectionNode != nil {
                     return false
@@ -5858,7 +5858,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 } else if let replyInfoNode = self.replyInfoNode, self.item?.controllerInteraction.tapMessage == nil, replyInfoNode.frame.contains(location) {
                     if let item = self.item {
                         if item.controllerInteraction.summarizedMessageIds.contains(item.message.id) {
-                            return .action(InternalBubbleTapAction.Action({ [weak self] in
+                            return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -5888,7 +5888,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                                     }, contextMenuOnLongPress: true))
                                 }
                                 
-                                return .action(InternalBubbleTapAction.Action({ [weak self] in
+                                return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -6025,7 +6025,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                             return .openContextMenu(InternalBubbleTapAction.OpenContextMenu(tapMessage: tapMessage, selectAll: false, subFrame: subFrame, disableDefaultPressAnimation: true))
                         } else {
-                            return .action(InternalBubbleTapAction.Action({ [weak self] in
+                            return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                 guard let self, let item = self.item else {
                                     return
                                 }
@@ -6046,7 +6046,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                             return .openContextMenu(InternalBubbleTapAction.OpenContextMenu(tapMessage: tapMessage, selectAll: false, subFrame: subFrame, disableDefaultPressAnimation: true))
                         } else {
-                            return .action(InternalBubbleTapAction.Action({ [weak self] in
+                            return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                 guard let self, let item = self.item else {
                                     return
                                 }
@@ -6054,7 +6054,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }, contextMenuOnLongPress: !tapAction.hasLongTapAction))
                         }
                     case let .phone(number):
-                        return .action(InternalBubbleTapAction.Action({ [weak self] in
+                        return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                             guard let self, let item = self.item, let contentNode = self.contextContentNodeForLink(number, rects: rects) else {
                                 return
                             }
@@ -6062,7 +6062,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             item.controllerInteraction.longTap(.phone(number), ChatControllerInteraction.LongTapParams(message: item.content.firstMessage, contentNode: contentNode, messageNode: self, progress: tapAction.activate?()))
                         }, contextMenuOnLongPress: !tapAction.hasLongTapAction))
                     case let .peerMention(peerId, _, openProfile):
-                        return .action(InternalBubbleTapAction.Action { [weak self] in
+                        return .action(InternalBubbleTapAction.Action { [weak self = self] in
                             if let item = self?.item {
                                 let _ = (item.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
                                 |> deliverOnMainQueue).startStandalone(next: { peer in
@@ -6132,7 +6132,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                         }
                     case let .bankCard(number):
                         if let item = self.item {
-                            return .action(InternalBubbleTapAction.Action { [weak self] in
+                            return .action(InternalBubbleTapAction.Action { [weak self = self] in
                                 guard let self, let contentNode = self.contextContentNodeForLink(number, rects: rects) else {
                                     return
                                 }
@@ -6165,7 +6165,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                         }
                     case let .date(date, _):
                         if let item = self.item {
-                            return .action(InternalBubbleTapAction.Action { [weak self] in
+                            return .action(InternalBubbleTapAction.Action { [weak self = self] in
                                 guard let self, let contentNode = self.contextContentNodeForLink(stringForFullDate(timestamp: date, strings: item.presentationData.strings, dateTimeFormat: item.presentationData.dateTimeFormat), rects: rects) else {
                                     return
                                 }
@@ -6182,7 +6182,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 }
                 if self.currentMessageEffect() != nil {
                     if self.backgroundNode.frame.contains(location) {
-                        return .action(InternalBubbleTapAction.Action({ [weak self] in
+                        return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -6198,7 +6198,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                     }
                     if let replyInfoNode = self.replyInfoNode, self.item?.controllerInteraction.tapMessage == nil, replyInfoNode.frame.contains(location) {
                         if self.selectionNode != nil, let attribute = item.message.attributes.first(where: { $0 is ReplyMessageAttribute }) as? ReplyMessageAttribute {
-                            return .action(InternalBubbleTapAction.Action({ [weak self] in
+                            return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -6251,7 +6251,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             break
                         case let .url(url):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     let cleanUrl = url.url.replacingOccurrences(of: "mailto:", with: "")
                                     guard let self, let contentNode = self.contextContentNodeForLink(cleanUrl, rects: rects) else {
                                         return
@@ -6263,7 +6263,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .externalInstantPage(url, webpageId, anchor):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let item = self.item else {
                                         return
                                     }
@@ -6290,7 +6290,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                                 }
                                 return .openContextMenu(InternalBubbleTapAction.OpenContextMenu(tapMessage: tapMessage, selectAll: false, subFrame: subFrame, disableDefaultPressAnimation: true))
                             } else {
-                                return .action(InternalBubbleTapAction.Action({ [weak self] in
+                                return .action(InternalBubbleTapAction.Action({ [weak self = self] in
                                     guard let self, let item = self.item else {
                                         return
                                     }
@@ -6299,7 +6299,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .phone(number):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(number, rects: rects) else {
                                         return
                                     }
@@ -6310,7 +6310,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .peerMention(peerId, mention, _):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(mention, rects: rects) else {
                                         return
                                     }
@@ -6321,7 +6321,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .textMention(name):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(name, rects: rects) else {
                                         return
                                     }
@@ -6332,7 +6332,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .botCommand(command):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(command, rects: rects) else {
                                         return
                                     }
@@ -6347,7 +6347,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                                 fullHashtag += "@\(peerName)"
                             }
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(fullHashtag, rects: rects) else {
                                         return
                                     }
@@ -6371,7 +6371,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                         case let .timecode(timecode, text):
                             if let mediaMessage {
                                 if tapAction.hasLongTapAction {
-                                    return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                    return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                         guard let self, let contentNode = self.contextContentNodeForLink(text, rects: rects) else {
                                             return
                                         }
@@ -6383,7 +6383,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             }
                         case let .bankCard(number):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     guard let self, let contentNode = self.contextContentNodeForLink(number, rects: rects) else {
                                         return
                                     }
@@ -6404,7 +6404,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                             break
                         case let .date(date, _):
                             if tapAction.hasLongTapAction {
-                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self] gesture in
+                                return .action(InternalBubbleTapAction.Action({}, actionWithLongTapRecognizer: { [weak self = self] gesture in
                                     let fullDate = stringForEntityFormattedDate(timestamp: date, format: .full(timeFormat: .short, dateFormat: .long, dayOfWeek: false), strings: item.presentationData.strings, dateTimeFormat: item.presentationData.dateTimeFormat)
                                     guard let self, let contentNode = self.contextContentNodeForLink(fullDate, rects: rects) else {
                                         return
@@ -6569,7 +6569,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         for contentNode in self.contentNodes {
             if let result = contentNode.transitionNode(messageId: id, media: media, adjustRect: adjustRect) {
                 if self.contentNodes.count == 1 && self.contentNodes.first is ChatMessageMediaBubbleContentNode && self.nameNode == nil && self.rankBadgeNode == nil && self.ephemeralBadgeTextNode == nil && self.forwardInfoNode == nil && self.replyInfoNode == nil {
-                    return (result.0, result.1, { [weak self] in
+                    return (result.0, result.1, { [weak self = self] in
                         guard let strongSelf = self, let resultView = result.2().0 else {
                             return (nil, nil)
                         }
@@ -6732,7 +6732,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                 selectionNode.updateLayout(size: selectionFrame.size, leftInset: self.safeInsets.left)
                 self.subnodeTransform = CATransform3DMakeTranslation(offset, 0.0, 0.0);
             } else {
-                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self] value in
+                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self = self] value in
                     if let strongSelf = self, let item = strongSelf.item {
                         switch item.content {
                         case let .message(message, _, _, _, _):
@@ -6866,7 +6866,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                         backgroundHighlightNode.updateLayout(size: backgroundHighlightNode.frame.size, transition: .immediate)
                         
                         if highlightedState?.quote != nil {
-                            Queue.mainQueue().after(0.3, { [weak self] in
+                            Queue.mainQueue().after(0.3, { [weak self = self] in
                                 guard let self, let item = self.item, let backgroundHighlightNode = self.backgroundHighlightNode else {
                                     return
                                 }
@@ -6909,7 +6909,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
                                 }
                             })
                         } else if let replySubject = highlightedState?.subject {
-                            Queue.mainQueue().after(0.3, { [weak self] in
+                            Queue.mainQueue().after(0.3, { [weak self = self] in
                                 guard let self, let _ = self.item, let backgroundHighlightNode = self.backgroundHighlightNode else {
                                     return
                                 }
@@ -7408,7 +7408,7 @@ public class ChatMessageBubbleItemNode: ChatMessageItemView, ChatMessagePreviewI
         
         let duration: Double = 0.5
         let minScale: CGFloat = -0.03
-        let scaleAnimation0 = self.layer.makeAnimation(from: 0.0 as NSNumber, to: minScale as NSNumber, keyPath: "transform.scale", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: duration / 2.0, removeOnCompletion: false, additive: true, completion: { [weak self] _ in
+        let scaleAnimation0 = self.layer.makeAnimation(from: 0.0 as NSNumber, to: minScale as NSNumber, keyPath: "transform.scale", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: duration / 2.0, removeOnCompletion: false, additive: true, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

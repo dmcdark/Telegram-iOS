@@ -24,7 +24,7 @@ open class ItemListControllerSearchNode: ASDisplayNode {
     }
     
     open func deactivate() {
-        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.removeFromSupernode()
         })
     }

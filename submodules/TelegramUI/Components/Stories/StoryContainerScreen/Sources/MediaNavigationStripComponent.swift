@@ -99,7 +99,7 @@ final class MediaNavigationStripComponent: Component {
                     bufferingLayer.masksToBounds = true
                     self.bufferingLayer = bufferingLayer
                     self.addSublayer(bufferingLayer)
-                    bufferingLayer.didEnterHierarchy = { [weak self] in
+                    bufferingLayer.didEnterHierarchy = { [weak self = self] in
                         guard let self, !self.bounds.isEmpty else {
                             return
                         }
@@ -240,7 +240,7 @@ final class MediaNavigationStripComponent: Component {
 
                     transition.setFrame(layer: itemLayer, frame: itemFrame)
                     transition.setCornerRadius(layer: itemLayer, cornerRadius: itemFrame.height * 0.5)
-                    transition.setCornerRadius(layer: itemLayer.foregroundLayer, cornerRadius: itemFrame.height * 0.5, completion: transition.animation.isImmediate || didSetCompletion ? nil : { [weak self] _ in
+                    transition.setCornerRadius(layer: itemLayer.foregroundLayer, cornerRadius: itemFrame.height * 0.5, completion: transition.animation.isImmediate || didSetCompletion ? nil : { [weak self = self] _ in
                         if let self {
                             self.isTransitioning = false
                         }

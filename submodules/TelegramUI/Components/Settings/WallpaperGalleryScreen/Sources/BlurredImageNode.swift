@@ -95,7 +95,7 @@ public class BlurView: UIView {
     }
     
     private func draw(_ image: UIImage, blurRadius: CGFloat) {
-        self.queue.async { [weak self] in
+        self.queue.async { [weak self = self] in
             if let strongSelf = self, let blurredImage = blurredImage(image, radius: blurRadius) {
                 Queue.mainQueue().sync {
                     strongSelf.blurLayer.draw(blurredImage)

@@ -93,7 +93,7 @@ final class BusinessLinkListItemComponent: Component {
             self.extractedContainerView.contentView.addSubview(self.swipeOptionContainer)
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.containerButton.internalHighligthedChanged = { [weak self] isHighlighted in
+            self.containerButton.internalHighligthedChanged = { [weak self = self] isHighlighted in
                 guard let self else {
                     return
                 }
@@ -102,13 +102,13 @@ final class BusinessLinkListItemComponent: Component {
                 }
             }
             
-            self.swipeOptionContainer.updateRevealOffset = { [weak self] offset, transition in
+            self.swipeOptionContainer.updateRevealOffset = { [weak self = self] offset, transition in
                 guard let self else {
                     return
                 }
                 transition.setBounds(view: self.containerButton, bounds: CGRect(origin: CGPoint(x: -offset, y: 0.0), size: self.containerButton.bounds.size))
             }
-            self.swipeOptionContainer.revealOptionSelected = { [weak self] option, _ in
+            self.swipeOptionContainer.revealOptionSelected = { [weak self = self] option, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -122,7 +122,7 @@ final class BusinessLinkListItemComponent: Component {
             
             self.swipeOptionContainer.addSubview(self.containerButton)
             
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
+            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self = self] value in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -130,7 +130,7 @@ final class BusinessLinkListItemComponent: Component {
                 self.containerButton.backgroundColor = value ? component.theme.list.itemBlocksBackgroundColor : nil
                 self.containerButton.layer.cornerRadius = value ? 10.0 : 0.0
             }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, transition in
                 guard let self else {
                     return
                 }
@@ -145,7 +145,7 @@ final class BusinessLinkListItemComponent: Component {
                 self.componentState?.updated(transition: mappedTransition)
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return

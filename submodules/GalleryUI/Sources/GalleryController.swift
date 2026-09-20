@@ -937,7 +937,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             messageView,
             self.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Configuration.ApplicationSpecificPreference(key: PreferencesKeys.appConfiguration)) |> take(1),
             translateToLanguage |> take(1)
-        ).start(next: { [weak self] view, preferencesView, translateToLanguage in
+        ).start(next: { [weak self = self] view, preferencesView, translateToLanguage in
             let f: () -> Void = {
                 if let strongSelf = self {
                     if let view = view {
@@ -1083,15 +1083,15 @@ public class GalleryController: ViewController, StandalonePresentableController,
         
         syncResultApply?()
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self] title in
+        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self = self] title in
             self?.navigationItem.title = title
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitleContent.get().start(next: { [weak self] titleContent in
+        self.centralItemAttributesDisposable.add(self.centralItemTitleContent.get().start(next: { [weak self = self] titleContent in
             self?.titleView.setContent(content: titleContent)
         }))
         
-        self.centralItemAttributesDisposable.add(combineLatest(self.centralItemRightBarButtonItem.get(), self.centralItemRightBarButtonItems.get()).start(next: { [weak self] rightBarButtonItem, rightBarButtonItems in
+        self.centralItemAttributesDisposable.add(combineLatest(self.centralItemRightBarButtonItem.get(), self.centralItemRightBarButtonItems.get()).start(next: { [weak self = self] rightBarButtonItem, rightBarButtonItems in
             if let rightBarButtonItem = rightBarButtonItem {
                 self?.navigationItem.rightBarButtonItem = rightBarButtonItem
             } else if let rightBarButtonItems = rightBarButtonItems {
@@ -1102,13 +1102,13 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self] footerContentNode, overlayContentNode in
+        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self = self] footerContentNode, overlayContentNode in
             self?.galleryNode.updatePresentationState({
                 $0.withUpdatedFooterContentNode(footerContentNode).withUpdatedOverlayContentNode(overlayContentNode)
             }, transition: .animated(duration: 0.4, curve: .spring))
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemNavigationStyle.get().start(next: { [weak self] style in
+        self.centralItemAttributesDisposable.add(self.centralItemNavigationStyle.get().start(next: { [weak self = self] style in
             if let strongSelf = self {
                 switch style {
                     case .dark:
@@ -1135,7 +1135,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
         })
         
-        performActionImpl = { [weak self] action in
+        performActionImpl = { [weak self = self] action in
             if let strongSelf = self {
                 if case let .url(_, _, _, dismiss) = action, !dismiss {
                 } else if case .timecode = action {
@@ -1166,7 +1166,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
         }
         
-        openActionOptionsImpl = { [weak self] action, message in
+        openActionOptionsImpl = { [weak self = self] action, message in
             if let strongSelf = self {
                 var presentationData = strongSelf.presentationData
                 if !presentationData.theme.overallDarkAppearance {
@@ -1431,7 +1431,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
         case let .peerMessagesAtId(id, _, _, _):
             if id.peerId.namespace == Namespaces.Peer.SecretChat {
                 self.screenCaptureEventsDisposable = (screenCaptureEvents()
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     if let strongSelf = self, strongSelf.traceVisibility() {
                         let _ = strongSelf.context.engine.messages.addSecretChatMessageScreenshot(peerId: id.peerId).start()
                     }
@@ -1479,7 +1479,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             self._hiddenMedia.set(.single(nil))
         }
         
-        let completion = { [weak self] in
+        let completion = { [weak self = self] in
             if animatedOutNode && animatedOutInterface {
                 self?.actionInteraction?.updateCanReadHistory(true)
                 self?._hiddenMedia.set(.single(nil))
@@ -1510,20 +1510,20 @@ public class GalleryController: ViewController, StandalonePresentableController,
     }
     
     override public func loadDisplayNode() {
-        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self] controller, arguments in
+        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self = self] controller, arguments in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root), with: arguments, blockInteraction: true)
             }
-        }, pushController: { [weak self] c in
+        }, pushController: { [weak self = self] c in
             self?.baseNavigationController?.pushViewController(c)
             self?.dismiss(forceAway: true)
-        }, dismissController: { [weak self] in
+        }, dismissController: { [weak self = self] in
             self?.dismiss(forceAway: true)
-        }, replaceRootController: { [weak self] controller, ready in
+        }, replaceRootController: { [weak self = self] controller, ready in
             if let strongSelf = self {
                 strongSelf.replaceRootController(controller, ready)
             }
-        }, editMedia: { [weak self] messageId in
+        }, editMedia: { [weak self = self] messageId in
             if let strongSelf = self {
                 var snapshots: [UIView] = []
                 if let navigationBar = strongSelf.navigationBar, let snapshotView = navigationBar.view.snapshotContentTree() {
@@ -1535,13 +1535,13 @@ public class GalleryController: ViewController, StandalonePresentableController,
                     snapshots.append(snapshotView)
                 }
                 
-                strongSelf.actionInteraction?.editMedia(messageId, snapshots, { [weak self] in
+                strongSelf.actionInteraction?.editMedia(messageId, snapshots, { [weak self = self] in
                     self?.dismiss(forceAway: true)
                 })
             }
-        }, controller: { [weak self] in
+        }, controller: { [weak self = self] in
             return self
-        }, currentItemNode: { [weak self] in
+        }, currentItemNode: { [weak self = self] in
             return self?.galleryNode.pager.centralItemNode()
         })
         
@@ -1552,7 +1552,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
         self.galleryNode.statusBar = self.statusBar
         self.galleryNode.navigationBar = self.navigationBar
         
-        self.galleryNode.transitionDataForCentralItem = { [weak self] in
+        self.galleryNode.transitionDataForCentralItem = { [weak self = self] in
             if let strongSelf = self {
                 if let centralItemNode = strongSelf.galleryNode.pager.centralItemNode(), let presentationArguments = strongSelf.presentationArguments as? GalleryControllerPresentationArguments {
                     let entry = strongSelf.entries[centralItemNode.index]
@@ -1564,13 +1564,13 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
             return nil
         }
-        self.galleryNode.dismiss = { [weak self] in
+        self.galleryNode.dismiss = { [weak self = self] in
             self?.actionInteraction?.updateCanReadHistory(true)
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
-        self.galleryNode.beginCustomDismiss = { [weak self] animationType in
+        self.galleryNode.beginCustomDismiss = { [weak self = self] animationType in
             if let strongSelf = self {
                 strongSelf.actionInteraction?.updateCanReadHistory(true)
                 strongSelf._hiddenMedia.set(.single(nil))
@@ -1596,7 +1596,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
         }
         
-        self.galleryNode.completeCustomDismiss = { [weak self] isPictureInPicture in
+        self.galleryNode.completeCustomDismiss = { [weak self = self] isPictureInPicture in
             guard let self else {
                 return
             }
@@ -1617,7 +1617,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             self.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
-        self.galleryNode.controlsVisibilityChanged = { [weak self] visible in
+        self.galleryNode.controlsVisibilityChanged = { [weak self = self] visible in
             guard let self else {
                 return
             }
@@ -1628,7 +1628,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
             }
         }
         
-        self.galleryNode.updateOrientation = { [weak self] orientation in
+        self.galleryNode.updateOrientation = { [weak self = self] orientation in
             if let strongSelf = self {
                 if strongSelf.initialOrientation == nil {
                     strongSelf.initialOrientation = orientation == .portrait ? .landscapeRight : .portrait
@@ -1643,7 +1643,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
         self.galleryNode.baseNavigationController = { [weak baseNavigationController] in
             return baseNavigationController
         }
-        self.galleryNode.galleryController = { [weak self] in
+        self.galleryNode.galleryController = { [weak self = self] in
             return self
         }
         
@@ -1667,7 +1667,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 fromPlayingVideo: isCentral && self.fromPlayingVideo,
                 landscape: isCentral && self.landscape,
                 timecode: isCentral ? self.timecode : nil,
-                playbackRate: { [weak self] in return self?.playbackRate
+                playbackRate: { [weak self = self] in return self?.playbackRate
                 },
                 displayInfoOnTop: displayInfoOnTop,
                 configuration: self.configuration,
@@ -1677,7 +1677,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 storeMediaPlaybackState: self.actionInteraction?.storeMediaPlaybackState ?? { _, _, _ in },
                 generateStoreAfterDownload: self.generateStoreAfterDownload,
                 sendSticker: self.actionInteraction?.sendSticker,
-                present: { [weak self] c, a in
+                present: { [weak self = self] c, a in
                 if let strongSelf = self {
                     strongSelf.presentInGlobalOverlay(c, with: a)
                 }
@@ -1691,7 +1691,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
         
         self.galleryNode.pager.replaceItems(items, centralItemIndex: centralItemIndex)
         
-        self.galleryNode.pager.centralItemIndexUpdated = { [weak self] index in
+        self.galleryNode.pager.centralItemIndexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 var hiddenItem: (MessageId, Media)?
                 if let index = index {
@@ -1763,7 +1763,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                                             if entry.stableId == strongSelf.centralEntryStableId {
                                                 isCentral = true
                                             }
-                                            if let item = galleryItemForEntry(context: strongSelf.context, presentationData: strongSelf.presentationData, entry: entry, isCentral: isCentral, streamVideos: false, fromPlayingVideo: isCentral && strongSelf.fromPlayingVideo, landscape: isCentral && strongSelf.landscape, timecode: isCentral ? strongSelf.timecode : nil, playbackRate: { return self?.playbackRate }, displayInfoOnTop: displayInfoOnTop, configuration: strongSelf.configuration, peerIsCopyProtected: view.peerIsCopyProtected, performAction: strongSelf.performAction, openActionOptions: strongSelf.openActionOptions, storeMediaPlaybackState: strongSelf.actionInteraction?.storeMediaPlaybackState ?? { _, _, _ in }, generateStoreAfterDownload: strongSelf.generateStoreAfterDownload, sendSticker: strongSelf.actionInteraction?.sendSticker, present: { [weak self] c, a in
+                                            if let item = galleryItemForEntry(context: strongSelf.context, presentationData: strongSelf.presentationData, entry: entry, isCentral: isCentral, streamVideos: false, fromPlayingVideo: isCentral && strongSelf.fromPlayingVideo, landscape: isCentral && strongSelf.landscape, timecode: isCentral ? strongSelf.timecode : nil, playbackRate: { return self?.playbackRate }, displayInfoOnTop: displayInfoOnTop, configuration: strongSelf.configuration, peerIsCopyProtected: view.peerIsCopyProtected, performAction: strongSelf.performAction, openActionOptions: strongSelf.openActionOptions, storeMediaPlaybackState: strongSelf.actionInteraction?.storeMediaPlaybackState ?? { _, _, _ in }, generateStoreAfterDownload: strongSelf.generateStoreAfterDownload, sendSticker: strongSelf.actionInteraction?.sendSticker, present: { [weak self = self] c, a in
                                                 if let strongSelf = self {
                                                     strongSelf.presentInGlobalOverlay(c, with: a)
                                                 }
@@ -1816,7 +1816,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                                                 if entry.stableId == strongSelf.centralEntryStableId {
                                                     isCentral = true
                                                 }
-                                                if let item = galleryItemForEntry(context: strongSelf.context, presentationData: strongSelf.presentationData, entry: entry, isCentral: isCentral, streamVideos: false, fromPlayingVideo: isCentral && strongSelf.fromPlayingVideo, landscape: isCentral && strongSelf.landscape, timecode: isCentral ? strongSelf.timecode : nil, playbackRate: { return self?.playbackRate }, displayInfoOnTop: displayInfoOnTop, configuration: strongSelf.configuration, performAction: strongSelf.performAction, openActionOptions: strongSelf.openActionOptions, storeMediaPlaybackState: strongSelf.actionInteraction?.storeMediaPlaybackState ?? { _, _, _ in }, generateStoreAfterDownload: strongSelf.generateStoreAfterDownload, sendSticker: strongSelf.actionInteraction?.sendSticker, present: { [weak self] c, a in
+                                                if let item = galleryItemForEntry(context: strongSelf.context, presentationData: strongSelf.presentationData, entry: entry, isCentral: isCentral, streamVideos: false, fromPlayingVideo: isCentral && strongSelf.fromPlayingVideo, landscape: isCentral && strongSelf.landscape, timecode: isCentral ? strongSelf.timecode : nil, playbackRate: { return self?.playbackRate }, displayInfoOnTop: displayInfoOnTop, configuration: strongSelf.configuration, performAction: strongSelf.performAction, openActionOptions: strongSelf.openActionOptions, storeMediaPlaybackState: strongSelf.actionInteraction?.storeMediaPlaybackState ?? { _, _, _ in }, generateStoreAfterDownload: strongSelf.generateStoreAfterDownload, sendSticker: strongSelf.actionInteraction?.sendSticker, present: { [weak self = self] c, a in
                                                     if let strongSelf = self {
                                                         strongSelf.presentInGlobalOverlay(c, with: a)
                                                     }
@@ -1854,7 +1854,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 self.didSetReady = true
                 self._ready.set(.single(true))
             } else {
-                let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self] _ in
+                let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self = self] _ in
                     self?.didSetReady = true
                 }
                 self._ready.set(ready |> map { true })
@@ -2005,7 +2005,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 title: "",
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismiss(forceAway: false)
                 }
             )
@@ -2015,7 +2015,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 title: "",
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismiss(forceAway: false)
                 }
             )
@@ -2025,7 +2025,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                 title: self.galleryNode.areControlsHidden ? self.presentationData.strings.KeyCommand_ExitFullscreen : self.presentationData.strings.KeyCommand_EnterFullscreen,
                 input: "F",
                 modifiers: [.control, .command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.galleryNode.setControlsHidden(!strongSelf.galleryNode.areControlsHidden, animated: true)
                     }
@@ -2038,7 +2038,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                     KeyShortcut(
                         input: UIKeyCommand.inputLeftArrow,
                         modifiers: [],
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.galleryNode.pager.goToPreviousItem()
                         }
                     )
@@ -2049,7 +2049,7 @@ public class GalleryController: ViewController, StandalonePresentableController,
                     KeyShortcut(
                         input: UIKeyCommand.inputRightArrow,
                         modifiers: [],
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.galleryNode.pager.goToNextItem()
                         }
                     )

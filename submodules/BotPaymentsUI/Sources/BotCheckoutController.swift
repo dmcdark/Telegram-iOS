@@ -160,21 +160,21 @@ public final class BotCheckoutController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        let displayNode = BotCheckoutControllerNode(controller: self, navigationBar: self.navigationBar!, context: self.context, invoice: self.invoice, source: self.source, inputData: self.inputData, present: { [weak self] c, a in
+        let displayNode = BotCheckoutControllerNode(controller: self, navigationBar: self.navigationBar!, context: self.context, invoice: self.invoice, source: self.source, inputData: self.inputData, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, dismissAnimated: { [weak self] in
+        }, dismissAnimated: { [weak self = self] in
             self?.dismiss()
-        }, completed: { [weak self] currencyValue, receiptMessageId in
+        }, completed: { [weak self = self] currencyValue, receiptMessageId in
             self?.complete(currencyValue: currencyValue, receiptMessageId: receiptMessageId)
         })
         
-        displayNode.dismiss = { [weak self] in
+        displayNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        displayNode.pending = { [weak self] in
+        displayNode.pending = { [weak self = self] in
             self?.setPending()
         }
-        displayNode.failed = { [weak self] in
+        displayNode.failed = { [weak self = self] in
             self?.fail()
         }
         

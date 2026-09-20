@@ -126,7 +126,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                         }
                     case let .custom(fileId):
                         self.fileDisposable = (context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                        |> deliverOnMainQueue).start(next: { [weak self] files in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] files in
                             guard let strongSelf = self, let file = files[fileId] else {
                                 return
                             }
@@ -307,7 +307,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
             
             for itemNode in self.itemNodes {
                 self.scrollNode.addSubnode(itemNode)
-                itemNode.action = { [weak self] reaction in
+                itemNode.action = { [weak self = self] reaction in
                     guard let strongSelf = self else {
                         return
                     }
@@ -438,7 +438,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                 self.view.addSubview(self.readIconView)
                 
                 self.addTarget(self, action: #selector(self.pressed), forControlEvents: .touchUpInside)
-                self.highligthedChanged = { [weak self] highlighted in
+                self.highligthedChanged = { [weak self = self] highlighted in
                     guard let self else {
                         return
                     }
@@ -480,7 +480,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                     self.skipNextTapAction = true
                     self.longTapAction?()
                 case .cancelled, .ended, .failed:
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self = self] in
                         self?.skipNextTapAction = false
                     }
                 default:
@@ -581,7 +581,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                             }
                         case let .custom(fileId):
                             self.fileDisposable = (self.context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                            |> deliverOnMainQueue).start(next: { [weak self] files in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] files in
                                 guard let strongSelf = self, let file = files[fileId] else {
                                     return
                                 }
@@ -912,7 +912,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
             self.clipsToBounds = true
             
             self.stateDisposable = (self.listContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1319,7 +1319,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                 self.addSubnode(separatorNode)
             }
             
-            self.tabListNode?.action = { [weak self] reaction in
+            self.tabListNode?.action = { [weak self = self] reaction in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1335,7 +1335,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                 strongSelf.requestUpdate(.animated(duration: 0.45, curve: .spring))
             }
             
-            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
                 guard let strongSelf = self else {
                     return []
                 }
@@ -1457,7 +1457,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                         message: self.message,
                         reaction: self.reactions[index].0,
                         readStats: self.reactions[index].0 == nil ? self.readStats : nil,
-                        requestUpdate: { [weak self] tab, transition in
+                        requestUpdate: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1469,7 +1469,7 @@ public final class ReactionListContextMenuContent: ContextControllerItemsContent
                                 strongSelf.requestUpdate(transition)
                             }
                         },
-                        requestUpdateApparentHeight: { [weak self] tab, transition in
+                        requestUpdateApparentHeight: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }

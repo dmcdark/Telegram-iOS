@@ -227,7 +227,7 @@ private final class GiftAttributeListContextItemNode: ASDisplayNode, ContextMenu
         self.addSubnode(self.scrollNode)
         
         self.searchDisposable = (item.searchQuery
-        |> deliverOnMainQueue).start(next: { [weak self] searchQuery in
+        |> deliverOnMainQueue).start(next: { [weak self = self] searchQuery in
             guard let self, self.searchQuery != searchQuery else {
                 return
             }

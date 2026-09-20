@@ -143,7 +143,7 @@ public final class PeerOnlineMarkerNode: ASDisplayNode {
     }
     
     public func asyncLayout() -> (Bool, Bool) -> (CGSize, (Bool) -> Void) {
-        return { [weak self] online, isVoiceChat in
+        return { [weak self = self] online, isVoiceChat in
             let size: CGFloat = isVoiceChat ? 22.0 : 14.0
             return (CGSize(width: size, height: size), { animated in
                 if let strongSelf = self {
@@ -165,7 +165,7 @@ public final class PeerOnlineMarkerNode: ASDisplayNode {
                         let targetScale: CGFloat = online ? 1.0 : 0.0
                         if initialScale != targetScale {
                             strongSelf.iconNode.isHidden = false
-                            strongSelf.iconNode.layer.animateScale(from: initialScale, to: targetScale, duration: 0.2, removeOnCompletion: false, completion: { [weak self] finished in
+                            strongSelf.iconNode.layer.animateScale(from: initialScale, to: targetScale, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] finished in
                                 if let strongSelf = self, finished {
                                     strongSelf.iconNode.isHidden = !online
                                     

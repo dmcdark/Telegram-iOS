@@ -306,7 +306,7 @@ private final class ThemeSettingsAccentColorIconItemNode : ListViewItemNode {
         self.containerNode.addSubnode(self.dotsNode)
         self.containerNode.addSubnode(self.centerNode)
 
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture.cancel()
                 return
@@ -341,7 +341,7 @@ private final class ThemeSettingsAccentColorIconItemNode : ListViewItemNode {
     func asyncLayout() -> (ThemeSettingsAccentColorIconItem, ListViewItemLayoutParams) -> (ListViewItemNodeLayout, (Bool) -> Void) {
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             var updatedAccentColor = false
             var updatedSelected = false
             
@@ -549,7 +549,7 @@ private final class ThemeSettingsAccentColorPickerItemNode : ListViewItemNode {
     }
     
     func asyncLayout() -> (ThemeSettingsAccentColorPickerItem, ListViewItemLayoutParams) -> (ListViewItemNodeLayout, (Bool) -> Void) {
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let itemLayout = ListViewItemNodeLayout(contentSize: CGSize(width: 60.0, height: 60.0), insets: UIEdgeInsets())
             return (itemLayout, { animated in
                 if let strongSelf = self {
@@ -793,7 +793,7 @@ class ThemeSettingsAccentColorItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -899,7 +899,7 @@ class ThemeSettingsAccentColorItemNode: ListViewItemNode, ItemListItemNode {
                         index += 1
                     }
                     
-                    let action: (ThemeSettingsColorOption?, Bool) -> Void = { [weak self] color, selected in
+                    let action: (ThemeSettingsColorOption?, Bool) -> Void = { [weak self = self] color, selected in
                         if let strongSelf = self, let item = strongSelf.item {
                             if selected {
                                 var create = true
@@ -929,7 +929,7 @@ class ThemeSettingsAccentColorItemNode: ListViewItemNode, ItemListItemNode {
                             item.contextAction?(selected, item.generalThemeReference, color, node, gesture)
                         }
                     }
-                    let openColorPicker: (Bool) -> Void = { [weak self] create in
+                    let openColorPicker: (Bool) -> Void = { [weak self = self] create in
                         if let strongSelf = self, let item = strongSelf.item {
                             item.openColorPicker(true)
                         }
@@ -964,7 +964,7 @@ class ThemeSettingsAccentColorItemNode: ListViewItemNode, ItemListItemNode {
     }
     
     func animateCrossfadeTransition() {
-        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.snapshotView?.removeFromSuperview()
         })
     }

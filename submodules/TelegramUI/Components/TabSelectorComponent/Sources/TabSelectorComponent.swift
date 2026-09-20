@@ -237,14 +237,14 @@ public final class TabSelectorComponent: Component {
             self.containerButton.addGestureRecognizer(tapGesture)
             tapGesture.isEnabled = false
             
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self else {
                     return
                 }
                 self.contextAction(self.extractedContainerNode, gesture)
             }
             
-            self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+            self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                 guard let self, let theme = self.theme, let size = self.size else {
                     return
                 }
@@ -400,7 +400,7 @@ public final class TabSelectorComponent: Component {
             self.addSubview(self.selectionView)
             
             let reorderRecognizer = ReorderGestureRecognizer(
-                shouldBegin: { [weak self] point in
+                shouldBegin: { [weak self = self] point in
                     guard let self, let component = self.component, component.reorderItem != nil else {
                         return (allowed: false, requiresLongPress: false, item: nil)
                     }
@@ -421,19 +421,19 @@ public final class TabSelectorComponent: Component {
                 },
                 willBegin: { point in
                 },
-                began: { [weak self] item in
+                began: { [weak self = self] item in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: item)
                 },
-                ended: { [weak self] in
+                ended: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: nil)
                 },
-                moved: { [weak self] distance in
+                moved: { [weak self = self] distance in
                     guard let self else {
                         return
                     }
@@ -594,7 +594,7 @@ public final class TabSelectorComponent: Component {
                     itemView = current
                 } else {
                     let itemId = item.id
-                    itemView = VisibleItem(action: { [weak self] in
+                    itemView = VisibleItem(action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -602,7 +602,7 @@ public final class TabSelectorComponent: Component {
                             return
                         }
                         component.setSelectedId(item.id)
-                    }, contextAction: { [weak self] sourceNode, gesture in
+                    }, contextAction: { [weak self = self] sourceNode, gesture in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -995,7 +995,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false, block: { [weak self] _ in
+        let longTapTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false, block: { [weak self = self] _ in
             self?.longTapTimerFired()
         })
         self.longTapTimer = longTapTimer
@@ -1009,7 +1009,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.6, repeats: false, block: { [weak self] _ in
+        let longPressTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.6, repeats: false, block: { [weak self = self] _ in
             self?.longPressTimerFired()
         })
         self.longPressTimer = longPressTimer

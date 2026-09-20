@@ -95,7 +95,7 @@ private final class BirthdayPickerSheetContentComponent: Component {
                     settings: component.settings,
                     value: self.birthday,
                     canHideYear: component.canHideYear,
-                    updateValue: { [weak self] value in
+                    updateValue: { [weak self = self] value in
                         if let self {
                             self.birthday = value
                         }
@@ -130,7 +130,7 @@ private final class BirthdayPickerSheetContentComponent: Component {
                                 tintColor: environment.theme.chat.inputPanel.panelControlColor
                             )
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             if let self, let component = self.component {
                                 component.dismiss()
                             }
@@ -173,7 +173,7 @@ private final class BirthdayPickerSheetContentComponent: Component {
                     )),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -276,7 +276,7 @@ private final class BirthdayPickerScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     guard let self, let environment = self.environment else {
                         return
                     }
@@ -295,13 +295,13 @@ private final class BirthdayPickerScreenComponent: Component {
                         mode: component.mode,
                         settings: component.settings,
                         canHideYear: self.canHideYear,
-                        openSettings: { [weak self] in
+                        openSettings: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.openSettings?()
                         },
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -311,11 +311,11 @@ private final class BirthdayPickerScreenComponent: Component {
                                 }
                             })
                         },
-                        action: { [weak self] value in
+                        action: { [weak self = self] value in
                             guard let self else {
                                 return
                             }
-                            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+                            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                                 if let controller = environment.controller() {
                                     controller.dismiss(completion: nil)
                                 }
@@ -325,7 +325,7 @@ private final class BirthdayPickerScreenComponent: Component {
                                 self.component?.completion?(value)
                             })
                         },
-                        requestHideYear: { [weak self] transition in
+                        requestHideYear: { [weak self = self] transition in
                             guard let self, let controller = self.environment?.controller() as? BirthdayPickerScreen else {
                                 return
                             }

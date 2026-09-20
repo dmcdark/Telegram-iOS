@@ -558,7 +558,7 @@ final class ChatReportPeerTitlePanelNode: ChatTitleAccessoryPanelNode {
                     }
                     return .complete()
                 }
-                self.emojiStatusPackDisposable.set(emojiFileAndPack.startStrict(next: { [weak self] fileAndPackTitle in
+                self.emojiStatusPackDisposable.set(emojiFileAndPack.startStrict(next: { [weak self = self] fileAndPackTitle in
                     guard let self else {
                         return
                     }
@@ -585,7 +585,7 @@ final class ChatReportPeerTitlePanelNode: ChatTitleAccessoryPanelNode {
                         return nil
                     }
                 }
-                emojiStatusTextNode.tapAttributeAction = { [weak self] attributes, _ in
+                emojiStatusTextNode.tapAttributeAction = { [weak self = self] attributes, _ in
                     if let _ = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] as? String {
                         self?.openPremiumEmojiStatusDemo()
                     }
@@ -654,7 +654,7 @@ final class ChatReportPeerTitlePanelNode: ChatTitleAccessoryPanelNode {
                 inviteInfoNode = current
             } else {
                 inviteInfoTransition = .immediate
-                inviteInfoNode = ChatInfoTitlePanelInviteInfoNode(openInvitePeer: { [weak self] in
+                inviteInfoNode = ChatInfoTitlePanelInviteInfoNode(openInvitePeer: { [weak self = self] in
                     self?.interfaceInteraction?.navigateToProfile(invitedBy.id)
                 })
                 self.addSubnode(inviteInfoNode)

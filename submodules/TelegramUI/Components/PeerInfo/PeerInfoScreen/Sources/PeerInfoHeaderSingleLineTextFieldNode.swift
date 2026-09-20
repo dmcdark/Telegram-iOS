@@ -54,7 +54,7 @@ final class PeerInfoHeaderSingleLineTextFieldNode: ASDisplayNode, PeerInfoHeader
         self.textNode.textField.delegate = self
         
         self.clearButtonNode.addTarget(self, action: #selector(self.clearButtonPressed), forControlEvents: .touchUpInside)
-        self.clearButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.clearButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.clearIconNode.layer.removeAnimation(forKey: "opacity")

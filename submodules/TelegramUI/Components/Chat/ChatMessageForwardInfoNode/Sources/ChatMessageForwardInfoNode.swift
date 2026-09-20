@@ -200,7 +200,7 @@ public class ChatMessageForwardInfoNode: ASDisplayNode {
     }
     
     public func makeActivate() -> (() -> Promise<Bool>?)? {
-        return { [weak self] in
+        return { [weak self = self] in
             guard let self else {
                 return nil
             }
@@ -213,7 +213,7 @@ public class ChatMessageForwardInfoNode: ASDisplayNode {
                 self.updateLinkProgressState()
             }
             
-            self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+            self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }

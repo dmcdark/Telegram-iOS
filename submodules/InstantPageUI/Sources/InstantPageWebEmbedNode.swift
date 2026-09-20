@@ -46,7 +46,7 @@ final class InstantPageWebEmbedNode: ASDisplayNode, InstantPageNode {
         let userScript = WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: false)
         userController.addUserScript(userScript)
         
-        userController.add(WeakInstantPageWebEmbedNodeMessageHandler { [weak self] message in
+        userController.add(WeakInstantPageWebEmbedNodeMessageHandler { [weak self = self] message in
             if let strongSelf = self {
                 strongSelf.handleScriptMessage(message)
             }

@@ -574,7 +574,7 @@ public final class AdsReportScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .flatModal
         
-        completeImpl = { [weak self] result in
+        completeImpl = { [weak self = self] result in
             guard let self else {
                 return
             }

@@ -250,7 +250,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -280,7 +280,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         self.addSubnode(self.activateArea)
         
         self.expandButonNode.addTarget(self, action: #selector(self.expandPressed), forControlEvents: .touchUpInside)
-        self.expandButonNode.highligthedChanged = { [weak self] highlighted in
+        self.expandButonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.expandNode.layer.removeAnimation(forKey: "opacity")
@@ -293,7 +293,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         }
         
         self.iconButtonNode.addTarget(self, action: #selector(self.iconPressed), forControlEvents: .touchUpInside)
-        self.iconButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.iconButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.iconNode.layer.removeAnimation(forKey: "opacity")
@@ -305,7 +305,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
             }
         }
         
-        self.containerNode.shouldBegin = { [weak self] point in
+        self.containerNode.shouldBegin = { [weak self = self] point in
             guard let self else {
                 return false
             }
@@ -317,7 +317,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
             return true
         }
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -325,7 +325,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
             contextAction(strongSelf.contextSourceNode, gesture, nil)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let theme = strongSelf.theme else {
                 return
             }
@@ -364,7 +364,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return .keepWithSingleTap
             }
@@ -385,7 +385,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
             }
             return .fail
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -409,7 +409,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
                             let progressValue = Promise<Bool>(false)
                             self.linkItemProgressDisposable = (progressValue.get()
                             |> distinctUntilChanged
-                            |> deliverOnMainQueue).start(next: { [weak self] value in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -438,7 +438,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
                             let progressValue = Promise<Bool>(false)
                             self.linkItemProgressDisposable = (progressValue.get()
                             |> distinctUntilChanged
-                            |> deliverOnMainQueue).start(next: { [weak self] value in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -479,7 +479,7 @@ private final class PeerInfoScreenLabeledValueItemNode: PeerInfoScreenItemNode {
         self.theme = presentationData.theme
         
         if let action = item.action {
-            self.selectionNode.pressed = { [weak self] in
+            self.selectionNode.pressed = { [weak self = self] in
                 if let strongSelf = self {
                     action(strongSelf.contextSourceNode, nil)
                 }

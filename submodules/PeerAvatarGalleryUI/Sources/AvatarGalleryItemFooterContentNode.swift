@@ -139,7 +139,7 @@ final class AvatarGalleryItemFooterContentNode: GalleryFooterContentNode {
             leftControlItems.append(GlassControlGroupComponent.Item(
                 id: AnyHashable("forward"),
                 content: .icon("Chat/Input/Accessory Panels/MessageSelectionForward"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -152,7 +152,7 @@ final class AvatarGalleryItemFooterContentNode: GalleryFooterContentNode {
             rightControlItems.append(GlassControlGroupComponent.Item(
                 id: AnyHashable("delete"),
                 content: .icon("Chat/Input/Accessory Panels/MessageSelectionTrash"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }

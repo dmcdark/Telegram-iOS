@@ -312,7 +312,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
         didSet {
             if let scrubberView = self.scrubberView {
                 self.view.addSubview(scrubberView)
-                scrubberView.onRequestLayout = { [weak self] transition in
+                scrubberView.onRequestLayout = { [weak self = self] transition in
                     guard let self else {
                         return
                     }
@@ -324,7 +324,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                         }
                     }
                 }
-                scrubberView.updateScrubbingVisual = { [weak self] value in
+                scrubberView.updateScrubbingVisual = { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -341,7 +341,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                         strongSelf.scrubbingVisualTimestamp = nil
                     }
                 }
-                scrubberView.updateScrubbingHandlePosition = { [weak self] value in
+                scrubberView.updateScrubbingHandlePosition = { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -449,12 +449,12 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
             }
             return nil
         }
-        self.textNode.tapAttributeAction = { [weak self] attributes, index in
+        self.textNode.tapAttributeAction = { [weak self = self] attributes, index in
             if let strongSelf = self, let action = strongSelf.actionForAttributes(attributes, index) {
                 strongSelf.performAction?(action)
             }
         }
-        self.textNode.longTapAttributeAction = { [weak self] attributes, index in
+        self.textNode.longTapAttributeAction = { [weak self = self] attributes, index in
             if let strongSelf = self, let action = strongSelf.actionForAttributes(attributes, index), let message = strongSelf.currentMessage {
                 strongSelf.openActionOptions?(action, message)
             } else {
@@ -471,19 +471,19 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
         )
         self.textNode.visibility = true
         
-        let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: defaultDarkPresentationTheme.list.itemAccentColor.withMultipliedAlpha(0.5), knob: defaultDarkPresentationTheme.list.itemAccentColor, isDark: true), strings: presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self] value in
+        let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: defaultDarkPresentationTheme.list.itemAccentColor.withMultipliedAlpha(0.5), knob: defaultDarkPresentationTheme.list.itemAccentColor, isDark: true), strings: presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self = self] value in
             guard let self else {
                 return
             }
             let _ = self
         }, present: { c, a in
             present(c, a)
-        }, rootView: { [weak self] in
+        }, rootView: { [weak self = self] in
             guard let self else {
                 return nil
             }
             return self.controllerInteraction?.controller()?.displayNode.view
-        }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self] text, action in
+        }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self = self] text, action in
             guard let self else {
                 return
             }
@@ -525,7 +525,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
             case .translate:
                 let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.translationSettings])
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
                     guard let self else {
                         return
                     }
@@ -548,7 +548,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                     
                     let _ = ApplicationSpecificNotice.incrementTranslationSuggestion(accountManager: self.context.sharedContext.accountManager, timestamp: Int32(Date().timeIntervalSince1970)).start()
 
-                    Task { @MainActor [weak self] in
+                    Task { @MainActor [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -557,7 +557,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                             theme: defaultDarkPresentationTheme,
                             mode: .translate(fromLanguage: language, applyResult: nil),
                             inputText: .plain(text: text.string, entities: []),
-                            copyResult: { [weak self] text in
+                            copyResult: { [weak self = self] text in
                                 guard let self else {
                                     return
                                 }
@@ -590,7 +590,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
         })
         
         textSelectionNode.enableLookup = true
-        textSelectionNode.canBeginSelection = { [weak self] location in
+        textSelectionNode.canBeginSelection = { [weak self = self] location in
             guard let self else {
                 return false
             }
@@ -661,7 +661,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
         self.forwardButton.addTarget(self, action: #selector(self.forwardButtonPressed), forControlEvents: .touchUpInside)
         self.playbackControlButton.addTarget(self, action: #selector(self.playbackControlPressed), forControlEvents: .touchUpInside)
         
-        self.statusButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.statusButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.statusNode.layer.removeAnimation(forKey: "opacity")
@@ -707,7 +707,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 }
                 
                 var time: Double = 0.0
-                let seekTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: true, completion: { [weak self] in
+                let seekTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self {
                         var delta: Double = 0.8
                         if time >= 4.0 {
@@ -748,7 +748,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 
                 self.seekRate = 4.0
                 self.setPlayRate?(self.seekRate)
-                let seekTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self] in
+                let seekTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self {
                         if strongSelf.seekRate == 4.0 {
                             strongSelf.seekRate = 8.0
@@ -1074,7 +1074,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
             if let adAttribute = message.adAttribute {
                 if self.buttonNode == nil {
                     let buttonNode = SolidRoundedButtonNode(title: adAttribute.buttonText, theme: SolidRoundedButtonTheme(backgroundColor: UIColor(rgb: 0xffffff, alpha: 0.15), foregroundColor: UIColor(rgb: 0xffffff)), height: 50.0, cornerRadius: 11.0)
-                    buttonNode.pressed = { [weak self] in
+                    buttonNode.pressed = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1339,7 +1339,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 leftControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("forward"),
                     content: .icon("Chat/Input/Accessory Panels/MessageSelectionForward"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1351,7 +1351,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 centerControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("pip"),
                     content: .icon("Media Gallery/PictureInPictureButton"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1367,7 +1367,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                         quality: settingsButtonState.quality,
                         isOpen: false
                     )), insets: .zero),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let buttonPanelView = self.buttonPanel.view as? GlassControlPanelComponent.View else {
                             return
                         }
@@ -1383,7 +1383,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 centerControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("edit"),
                     content: .icon("Media Gallery/Draw"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1395,7 +1395,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 centerControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("textRecognition"),
                     content: .icon("Media Gallery/LiveTextIcon"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1407,7 +1407,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 centerControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("stickers"),
                     content: .icon("Media Gallery/Stickers"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1419,7 +1419,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 centerControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("fullscreen"),
                     content: .icon(isLandscape ? "Chat/Context Menu/Collapse" : "Chat/Context Menu/Expand"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1431,7 +1431,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                 rightControlItems.append(GlassControlGroupComponent.Item(
                     id: AnyHashable("delete"),
                     content: .icon("Chat/Input/Accessory Panels/MessageSelectionTrash"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1588,7 +1588,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
     @objc func deleteButtonPressed() {
         if let currentMessage = self.currentMessage {
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Messages.MessageGroup(id: currentMessage.id))
-            |> deliverOnMainQueue).start(next: { [weak self] messages in
+            |> deliverOnMainQueue).start(next: { [weak self = self] messages in
                 if let strongSelf = self, !messages.isEmpty {
                     if messages.count == 1 {
                         strongSelf.commitDeleteMessages(messages, ask: true)
@@ -1634,7 +1634,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                         }
                     
                         let actionSheet = ActionSheetController(presentationData: presentationData)
-                        actionSheet.dismissed = { [weak self] _ in
+                        actionSheet.dismissed = { [weak self = self] _ in
                             self?.interacting?(false)
                         }
                         let items: [ActionSheetItem] = [
@@ -1664,7 +1664,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
     }
 
     private func commitDeleteMessages(_ messages: [EngineMessage], ask: Bool) {
-        self.messageContextDisposable.set((self.context.sharedContext.chatAvailableMessageActions(engine: self.context.engine, accountPeerId: self.context.account.peerId, messageIds: Set(messages.map { $0.id }), keepUpdated: false) |> deliverOnMainQueue).start(next: { [weak self] actions in
+        self.messageContextDisposable.set((self.context.sharedContext.chatAvailableMessageActions(engine: self.context.engine, accountPeerId: self.context.account.peerId, messageIds: Set(messages.map { $0.id }), keepUpdated: false) |> deliverOnMainQueue).start(next: { [weak self = self] actions in
             if let strongSelf = self, let controllerInteration = strongSelf.controllerInteraction, !actions.options.isEmpty {
                 var presentationData = strongSelf.presentationData
                 if !presentationData.theme.overallDarkAppearance {
@@ -1718,7 +1718,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                     strongSelf.controllerInteraction?.dismissController()
                 } else if !items.isEmpty {
                     strongSelf.interacting?(true)
-                    actionSheet.dismissed = { [weak self] _ in
+                    actionSheet.dismissed = { [weak self = self] _ in
                         self?.interacting?(false)
                     }
                     actionSheet.setItemGroups([ActionSheetItemGroup(items: items), ActionSheetItemGroup(items: [
@@ -1737,7 +1737,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
         
         if let currentMessage = self.currentMessage {
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Messages.MessageGroup(id: currentMessage.id))
-            |> deliverOnMainQueue).start(next: { [weak self] messages in
+            |> deliverOnMainQueue).start(next: { [weak self = self] messages in
                 if let strongSelf = self, !messages.isEmpty {
                     var presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     var forceTheme: PresentationTheme?
@@ -1827,9 +1827,9 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                                 if content.embedType == "iframe" {
                                     let item = OpenInItem.url(url: content.url)
                                     if availableOpenInOptions(context: strongSelf.context, item: item).count > 1 {
-                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Conversation_FileOpenIn, action: { [weak self] in
+                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Conversation_FileOpenIn, action: { [weak self = self] in
                                             if let strongSelf = self {
-                                                let openInController = OpenInOptionsScreen(context: strongSelf.context, forceTheme: defaultDarkColorPresentationTheme, item: item, additionalAction: nil, openUrl: { [weak self] url in
+                                                let openInController = OpenInOptionsScreen(context: strongSelf.context, forceTheme: defaultDarkColorPresentationTheme, item: item, additionalAction: nil, openUrl: { [weak self = self] url in
                                                     if let strongSelf = self {
                                                         strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: true, presentationData: presentationData, navigationController: nil, dismissInput: {})
                                                     }
@@ -1838,7 +1838,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                                             }
                                         }))
                                     } else {
-                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Web_OpenExternal, action: { [weak self] in
+                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Web_OpenExternal, action: { [weak self = self] in
                                             if let strongSelf = self {
                                                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: content.url, forceExternal: false, presentationData: presentationData, navigationController: nil, dismissInput: {})
                                             }
@@ -1860,7 +1860,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                                     if messages[0].id.peerId.namespace == Namespaces.Peer.SecretChat {
                                         preferredAction = .default
                                     } else {
-                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Preview_SaveGif, action: { [weak self] in
+                                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Preview_SaveGif, action: { [weak self = self] in
                                             if let strongSelf = self {
                                                 let message = messages[0]
                                                 
@@ -1914,21 +1914,21 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                             }
                         }
                         
-                        let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: subject, preferredAction: preferredAction, externalShare: hasExternalShare, forceTheme: forceTheme, actionCompleted: { [weak self] in
+                        let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: subject, preferredAction: preferredAction, externalShare: hasExternalShare, forceTheme: forceTheme, actionCompleted: { [weak self = self] in
                             if let strongSelf = self, let actionCompletionText = actionCompletionText {
                                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                                 strongSelf.controllerInteraction?.presentController(UndoOverlayController(presentationData: presentationData, content: .mediaSaved(text: actionCompletionText), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return true }), nil)
                             }
-                        }, dismissed: { [weak self] _ in
+                        }, dismissed: { [weak self = self] _ in
                             self?.interacting?(false)
-                        }, completed: { [weak self] peerIds in
+                        }, completed: { [weak self = self] peerIds in
                             if let strongSelf = self {
                                 let _ = (strongSelf.context.engine.data.get(
                                     EngineDataList(
                                         peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                                     )
                                 )
-                                |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                                     if let strongSelf = self {
                                         let peers = peerList.compactMap { $0 }
                                         let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -1962,7 +1962,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                                     }
                                 })
                             }
-                        }, onMediaTimestampLinkCopied: { [weak self] timestamp in
+                        }, onMediaTimestampLinkCopied: { [weak self = self] timestamp in
                             guard let self else {
                                 return
                             }
@@ -2004,21 +2004,21 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                         
                         let shareAction: ([EngineRawMessage]) -> Void = { messages in
                             if let strongSelf = self {
-                                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .messages(messages), preferredAction: preferredAction, forceTheme: forceTheme, actionCompleted: { [weak self] in
+                                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .messages(messages), preferredAction: preferredAction, forceTheme: forceTheme, actionCompleted: { [weak self = self] in
                                     if let strongSelf = self {
                                         let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                                         strongSelf.controllerInteraction?.presentController(UndoOverlayController(presentationData: presentationData, content: .mediaSaved(text: presentationData.strings.Gallery_ImageSaved), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return true }), nil)
                                     }
-                                }, dismissed: { [weak self] _ in
+                                }, dismissed: { [weak self = self] _ in
                                     self?.interacting?(false)
-                                }, completed: { [weak self] peerIds in
+                                }, completed: { [weak self = self] peerIds in
                                     if let strongSelf = self {
                                         let _ = (strongSelf.context.engine.data.get(
                                             EngineDataList(
                                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                                             )
                                         )
-                                        |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                                        |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                                             if let strongSelf = self {
                                                 let peers = peerList.compactMap { $0 }
                                                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -2093,7 +2093,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
             
             if let file = media as? TelegramMediaFile {
                 if file.isAnimated {
-                    preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Preview_SaveGif, action: { [weak self] in
+                    preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Preview_SaveGif, action: { [weak self = self] in
                         if let strongSelf = self {
                             let context = strongSelf.context
                             let presentationData = context.sharedContext.currentPresentationData.with { $0 }
@@ -2132,9 +2132,9 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                     
                     let item = OpenInItem.url(url: content.url)
                     if availableOpenInOptions(context: self.context, item: item).count > 1 {
-                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Conversation_FileOpenIn, action: { [weak self] in
+                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Conversation_FileOpenIn, action: { [weak self = self] in
                             if let strongSelf = self {
-                                let openInController = OpenInOptionsScreen(context: strongSelf.context, forceTheme: forceTheme, item: item, additionalAction: nil, openUrl: { [weak self] url in
+                                let openInController = OpenInOptionsScreen(context: strongSelf.context, forceTheme: forceTheme, item: item, additionalAction: nil, openUrl: { [weak self = self] url in
                                     if let strongSelf = self {
                                         strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: true, presentationData: presentationData, navigationController: nil, dismissInput: {})
                                     }
@@ -2143,7 +2143,7 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                             }
                         }))
                     } else {
-                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Web_OpenExternal, action: { [weak self] in
+                        preferredAction = .custom(action: ShareControllerAction(title: presentationData.strings.Web_OpenExternal, action: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: content.url, forceExternal: false, presentationData: presentationData, navigationController: nil, dismissInput: {})
                             }
@@ -2159,16 +2159,16 @@ final class ChatItemGalleryFooterContentNode: GalleryFooterContentNode, ASScroll
                     }
                 }
             }
-            let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: subject, preferredAction: preferredAction, forceTheme: forceTheme, dismissed: { [weak self] _ in
+            let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: subject, preferredAction: preferredAction, forceTheme: forceTheme, dismissed: { [weak self = self] _ in
                 self?.interacting?(false)
-            }, completed: { [weak self] peerIds in
+            }, completed: { [weak self = self] peerIds in
                 if let strongSelf = self {
                     let _ = (strongSelf.context.engine.data.get(
                         EngineDataList(
                             peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                         )
                     )
-                    |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                         if let strongSelf = self {
                             let peers = peerList.compactMap { $0 }
                             let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -2402,7 +2402,7 @@ private final class PlaybackButtonNode: HighlightTrackingButtonNode {
         self.addSubnode(self.backgroundIconNode)
         self.addSubnode(self.textNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.backgroundIconNode.layer.removeAnimation(forKey: "opacity")
@@ -2536,14 +2536,14 @@ final class SettingsNavigationIconComponent: Component {
             
             let rotationTransition: ContainedViewLayoutTransition = .animated(duration: 0.35, curve: .spring)
             rotationTransition.updateTransform(layer: self.gearsLayer, transform: CGAffineTransformMakeRotation(isMenuOpen ? (CGFloat.pi * 2.0 / 6.0) : 0.0))
-            self.gearsLayer.animateScale(from: 1.0, to: 1.07, duration: 0.1, removeOnCompletion: false, completion: { [weak self] finished in
+            self.gearsLayer.animateScale(from: 1.0, to: 1.07, duration: 0.1, removeOnCompletion: false, completion: { [weak self = self] finished in
                 guard let self, finished else {
                     return
                 }
                 self.gearsLayer.animateScale(from: 1.07, to: 1.0, duration: 0.1, removeOnCompletion: true)
             })
             
-            self.dotLayer.animateScale(from: 1.0, to: 0.8, duration: 0.1, removeOnCompletion: false, completion: { [weak self] finished in
+            self.dotLayer.animateScale(from: 1.0, to: 0.8, duration: 0.1, removeOnCompletion: false, completion: { [weak self = self] finished in
                 guard let self, finished else {
                     return
                 }

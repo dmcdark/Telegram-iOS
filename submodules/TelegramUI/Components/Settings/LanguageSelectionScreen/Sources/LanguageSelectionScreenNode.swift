@@ -149,7 +149,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
         }
         
         let previousEntriesHolder = Atomic<([LanguageListEntry], PresentationTheme, PresentationStrings)?>(value: nil)
-        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get()).start(next: { [weak self] items, presentationData in
+        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get()).start(next: { [weak self = self] items, presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -165,7 +165,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -179,7 +179,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
                 }
             })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -225,7 +225,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
             options.insert(.PreferSynchronousDrawing)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
                 self?.dimNode.isHidden = isSearching
             })
@@ -355,7 +355,7 @@ final class LanguageSelectionScreenNode: ViewControllerTracingNode {
             context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId)),
             context.sharedContext.accountManager.sharedData(keys: [SharedDataKeys.localizationSettings, ApplicationSpecificSharedDataKeys.translationSettings]),
             self.presentationDataValue.get()
-        ).start(next: { [weak self] localizationListState, peer, sharedData, presentationData in
+        ).start(next: { [weak self = self] localizationListState, peer, sharedData, presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -397,7 +397,7 @@ final class LanguageSelectionScreenNode: ViewControllerTracingNode {
                 from: previousEntriesAndPresentationData?.0 ?? [],
                 to: entries,
                 openSearch: openSearch,
-                selectLocalization: { [weak self] info in
+                selectLocalization: { [weak self = self] info in
                     self?.selectLocalization(info)
                 },
                 firstTime: previousEntriesAndPresentationData == nil,
@@ -410,7 +410,7 @@ final class LanguageSelectionScreenNode: ViewControllerTracingNode {
         })
         self.updatedDisposable = context.engine.localization.synchronizedLocalizationListState().start()
         
-        self.listNode.itemNodeHitTest = { [weak self] point in
+        self.listNode.itemNodeHitTest = { [weak self = self] point in
             if let strongSelf = self {
                 return point.x > strongSelf.leftOverlayNode.frame.maxX && point.x < strongSelf.rightOverlayNode.frame.minX
             } else {
@@ -511,7 +511,7 @@ final class LanguageSelectionScreenNode: ViewControllerTracingNode {
             } else if transition.animated {
                 options.insert(.AnimateInsertion)
             }
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if !strongSelf.didSetReady {
                         strongSelf.didSetReady = true
@@ -533,11 +533,11 @@ final class LanguageSelectionScreenNode: ViewControllerTracingNode {
                 context: self.context,
                 listState: self.currentListState ?? LocalizationListState.defaultSettings,
                 excludedIds: self.excludeIds,
-                selectLocalization: { [weak self] info in
+                selectLocalization: { [weak self = self] info in
                     self?.selectLocalization(info)
                 }),
             inline: true,
-            cancel: { [weak self] in
+            cancel: { [weak self = self] in
                 self?.requestDeactivateSearch()
             },
             fieldStyle: placeholderNode.fieldStyle

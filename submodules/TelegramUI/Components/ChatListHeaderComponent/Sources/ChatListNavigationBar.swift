@@ -345,7 +345,7 @@ public final class ChatListNavigationBar: Component {
                         theme: component.theme,
                         placeholder: placeholder,
                         compactPlaceholder: compactPlaceholder,
-                        activate: { [weak self] in
+                        activate: { [weak self = self] in
                             guard let self, let component = self.component, let searchContentNode = self.searchContentNode else {
                                 return
                             }
@@ -458,13 +458,13 @@ public final class ChatListNavigationBar: Component {
                 context: component.context,
                 theme: component.theme,
                 strings: component.strings,
-                openStatusSetup: { [weak self] sourceView in
+                openStatusSetup: { [weak self = self] sourceView in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.openStatusSetup(sourceView)
                 },
-                toggleIsLocked: { [weak self] in
+                toggleIsLocked: { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }

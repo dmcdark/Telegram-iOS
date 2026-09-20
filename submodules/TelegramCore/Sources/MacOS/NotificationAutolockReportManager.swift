@@ -22,7 +22,7 @@ private final class NotificationAutolockReportManagerImpl {
         
         self.deadlineDisposable = (deadline
         |> distinctUntilChanged
-        |> deliverOn(self.queue)).start(next: { [weak self] value in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] value in
             self?.updateDeadline(value)
         })
     }
@@ -46,7 +46,7 @@ private final class NotificationAutolockReportManagerImpl {
         |> `catch` { _ -> Signal<Api.Bool, NoError> in
             return .single(.boolFalse)
         }
-        |> deliverOn(self.queue)).start(completed: { [weak self] in
+        |> deliverOn(self.queue)).start(completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

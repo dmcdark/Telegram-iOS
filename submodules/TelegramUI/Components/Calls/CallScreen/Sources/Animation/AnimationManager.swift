@@ -14,7 +14,7 @@ public final class ManagedAnimations {
     
     public func add(property: AnyAnimatedProperty) {
         self.properties.append(property)
-        property.didStartAnimation = { [weak self] in
+        property.didStartAnimation = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -24,7 +24,7 @@ public final class ManagedAnimations {
     
     private func updateNeedAnimations() {
         if self.displayLinkSubscription == nil {
-            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 guard let self else {
                     return
                 }

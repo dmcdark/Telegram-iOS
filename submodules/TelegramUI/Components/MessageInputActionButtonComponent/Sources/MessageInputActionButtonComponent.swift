@@ -294,13 +294,13 @@ public final class MessageInputActionButtonComponent: Component {
             self.referenceNode.view.addSubview(self.sendIconView)
             self.button.addSubnode(self.containerNode)
 
-            self.containerNode.shouldBegin = { [weak self] location in
+            self.containerNode.shouldBegin = { [weak self = self] location in
                 guard let self, let component = self.component, let _ = component.longPressAction else {
                     return false
                 }
                 return true
             }
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component, let longPressAction = component.longPressAction else {
                     return
                 }
@@ -308,7 +308,7 @@ public final class MessageInputActionButtonComponent: Component {
                 longPressAction(self, gesture)
             }
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -380,7 +380,7 @@ public final class MessageInputActionButtonComponent: Component {
                     
                     micButton.disablesInteractiveKeyboardGestureRecognizer = true
                     
-                    micButton.beginRecording = { [weak self] in
+                    micButton.beginRecording = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -391,13 +391,13 @@ public final class MessageInputActionButtonComponent: Component {
                             break
                         }
                     }
-                    micButton.stopRecording = { [weak self] in
+                    micButton.stopRecording = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.stopAndPreviewMediaRecording()
                     }
-                    micButton.endRecording = { [weak self] sendMedia in
+                    micButton.endRecording = { [weak self = self] sendMedia in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -408,13 +408,13 @@ public final class MessageInputActionButtonComponent: Component {
                             break
                         }
                     }
-                    micButton.updateLocked = { [weak self] _ in
+                    micButton.updateLocked = { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.lockMediaRecording()
                     }
-                    micButton.switchMode = { [weak self] in
+                    micButton.switchMode = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -424,7 +424,7 @@ public final class MessageInputActionButtonComponent: Component {
                             component.switchMediaInputMode()
                         }
                     }
-                    micButton.updateCancelTranslation = { [weak self] in
+                    micButton.updateCancelTranslation = { [weak self = self] in
                         guard let self, let micButton = self.micButton, let component = self.component else {
                             return
                         }
@@ -442,14 +442,14 @@ public final class MessageInputActionButtonComponent: Component {
                 
                 moreButton.isUserInteractionEnabled = true
                 moreButton.setContent(.more(MoreHeaderButton.optionsCircleImage(color: .white)))
-                moreButton.onPressed = { [weak self] in
+                moreButton.onPressed = { [weak self = self] in
                     guard let self, let component = self.component, let moreButton = self.moreButton else {
                         return
                     }
                     moreButton.play()
                     component.moreAction(moreButton.view, nil)
                 }
-                moreButton.contextAction = { [weak self] sourceNode, gesture in
+                moreButton.contextAction = { [weak self = self] sourceNode, gesture in
                     guard let self, let component = self.component, let moreButton = self.moreButton else {
                         return
                     }

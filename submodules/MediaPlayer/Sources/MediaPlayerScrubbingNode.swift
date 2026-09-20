@@ -545,14 +545,14 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
         self.setupContentNodes()
         
         self.statusDisposable = (self.statusValuePromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.statusValue = status
             }
         })
         
         self.bufferingStatusDisposable = (self.bufferingStatusValuePromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 switch strongSelf.contentNodes {
                     case let .standard(node):
@@ -592,7 +592,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                 
                 if let handleNodeContainer = node.handleNodeContainer {
                     self.addSubnode(handleNodeContainer)
-                    handleNodeContainer.highlighted = { [weak self] highlighted in
+                    handleNodeContainer.highlighted = { [weak self = self] highlighted in
                         if let strongSelf = self, let highlightedHandleNode, let statusValue = strongSelf.statusValue, Double(0.0).isLess(than: statusValue.duration) {
                             if highlighted {
                                 strongSelf.displayLink?.isPaused = true
@@ -617,7 +617,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                             }
                         }
                     }
-                    handleNodeContainer.beginScrubbing = { [weak self] in
+                    handleNodeContainer.beginScrubbing = { [weak self = self] in
                         if let strongSelf = self {
                             if let statusValue = strongSelf.statusValue, Double(0.0).isLess(than: statusValue.duration) {
                                 strongSelf.scrubbingBeginTimestamp = statusValue.timestamp
@@ -629,7 +629,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                             }
                         }
                     }
-                    handleNodeContainer.updateScrubbing = { [weak self] addedFraction, multiplier in
+                    handleNodeContainer.updateScrubbing = { [weak self = self] addedFraction, multiplier in
                         if let strongSelf = self {
                             if let statusValue = strongSelf.statusValue, let scrubbingBeginTimestamp = strongSelf.scrubbingBeginTimestamp, Double(0.0).isLess(than: statusValue.duration) {
                                 let delta: Double = (statusValue.duration * Double(addedFraction)) * multiplier
@@ -642,14 +642,14 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                             }
                         }
                     }
-                    handleNodeContainer.updateMultiplier = { [weak self] multiplier in
+                    handleNodeContainer.updateMultiplier = { [weak self = self] multiplier in
                            if let strongSelf = self {
                                if let statusValue = strongSelf.statusValue, let _ = strongSelf.scrubbingBeginTimestamp, Double(0.0).isLess(than: statusValue.duration) {
                                    strongSelf.scrubbingBeginTimestamp = strongSelf.scrubbingTimestampValue
                                }
                            }
                        }
-                    handleNodeContainer.endScrubbing = { [weak self] apply in
+                    handleNodeContainer.endScrubbing = { [weak self = self] apply in
                         if let strongSelf = self {
                             strongSelf.scrubbingBeginTimestamp = nil
                             let scrubbingTimestampValue = strongSelf.scrubbingTimestampValue
@@ -675,11 +675,11 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                     }
                 }
                 
-                node.foregroundNode.onEnterHierarchy = { [weak self] in
+                node.foregroundNode.onEnterHierarchy = { [weak self = self] in
                     self?.isInHierarchyValue = true
                     self?.updateProgressAnimations()
                 }
-                node.foregroundNode.onExitHierarchy = { [weak self] in
+                node.foregroundNode.onExitHierarchy = { [weak self = self] in
                     self?.isInHierarchyValue = false
                     self?.updateProgressAnimations()
                 }
@@ -690,7 +690,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                 
                 if let handleNodeContainer = node.handleNodeContainer {
                     self.addSubnode(handleNodeContainer)
-                    handleNodeContainer.beginScrubbing = { [weak self] in
+                    handleNodeContainer.beginScrubbing = { [weak self = self] in
                         if let strongSelf = self {
                             if let statusValue = strongSelf.statusValue, Double(0.0).isLess(than: statusValue.duration) {
                                 strongSelf.scrubbingBeginTimestamp = statusValue.timestamp
@@ -701,7 +701,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                             }
                         }
                     }
-                    handleNodeContainer.updateScrubbing = { [weak self] addedFraction, multiplier in
+                    handleNodeContainer.updateScrubbing = { [weak self = self] addedFraction, multiplier in
                         if let strongSelf = self {
                             if let statusValue = strongSelf.statusValue, let scrubbingBeginTimestamp = strongSelf.scrubbingBeginTimestamp, Double(0.0).isLess(than: statusValue.duration) {
                                 strongSelf.scrubbingTimestampValue = scrubbingBeginTimestamp + (statusValue.duration * Double(addedFraction)) * multiplier
@@ -711,14 +711,14 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                             }
                         }
                     }
-                    handleNodeContainer.updateMultiplier = { [weak self] multiplier in
+                    handleNodeContainer.updateMultiplier = { [weak self = self] multiplier in
                         if let strongSelf = self {
                             if let statusValue = strongSelf.statusValue, let _ = strongSelf.scrubbingBeginTimestamp, Double(0.0).isLess(than: statusValue.duration) {
                                 strongSelf.scrubbingBeginTimestamp = strongSelf.scrubbingTimestampValue
                             }
                         }
                     }
-                    handleNodeContainer.endScrubbing = { [weak self] apply in
+                    handleNodeContainer.endScrubbing = { [weak self = self] apply in
                         if let strongSelf = self {
                             strongSelf.scrubbingBeginTimestamp = nil
                             let scrubbingTimestampValue = strongSelf.scrubbingTimestampValue
@@ -735,11 +735,11 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
                     }
                 }
                 
-                node.foregroundNode.onEnterHierarchy = { [weak self] in
+                node.foregroundNode.onEnterHierarchy = { [weak self = self] in
                     self?.isInHierarchyValue = true
                     self?.updateProgressAnimations()
                 }
-                node.foregroundNode.onExitHierarchy = { [weak self] in
+                node.foregroundNode.onExitHierarchy = { [weak self = self] in
                     self?.isInHierarchyValue = false
                     self?.updateProgressAnimations()
                 }
@@ -842,7 +842,7 @@ public final class MediaPlayerScrubbingNode: ASDisplayNode {
         
         if needsAnimation {
             if self.displayLink == nil {
-                let displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                let displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                     self?.updateProgress()
                 }
                 self.displayLink = displayLink

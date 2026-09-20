@@ -155,7 +155,7 @@ final class ChangePhoneNumberControllerNode: ASDisplayNode {
         
         self.countryButton.addTarget(self, action: #selector(self.countryPressed), forControlEvents: .touchUpInside)
         
-        let processNumberChange: (String) -> Bool = { [weak self] number in
+        let processNumberChange: (String) -> Bool = { [weak self = self] number in
             guard let strongSelf = self else {
                 return false
             }
@@ -178,13 +178,13 @@ final class ChangePhoneNumberControllerNode: ASDisplayNode {
             }
         }
         
-        self.phoneInputNode.numberTextUpdated = { [weak self] number in
+        self.phoneInputNode.numberTextUpdated = { [weak self = self] number in
             if let strongSelf = self {
                 let _ = processNumberChange(strongSelf.phoneInputNode.number)
             }
         }
         
-        self.phoneInputNode.countryCodeUpdated = { [weak self] code, name in
+        self.phoneInputNode.countryCodeUpdated = { [weak self = self] code, name in
             if let strongSelf = self {
                 if let name = name {
                     strongSelf.preferredCountryIdForCode[code] = name

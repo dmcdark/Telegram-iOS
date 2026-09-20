@@ -286,7 +286,7 @@ class ItemListStickerPackItemNode: ItemListRevealOptionsItemNode {
         self.addSubnode(self.activateArea)
         
         self.installationActionNode.addTarget(self, action: #selector(self.installationActionPressed), forControlEvents: .touchUpInside)
-        self.installationActionNode.highligthedChanged = { [weak self] highlighted in
+        self.installationActionNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.installationActionBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -299,7 +299,7 @@ class ItemListStickerPackItemNode: ItemListRevealOptionsItemNode {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -548,7 +548,7 @@ class ItemListStickerPackItemNode: ItemListRevealOptionsItemNode {
                 updatedFetchSignal = .complete()
             }
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors)
                     
@@ -720,7 +720,7 @@ class ItemListStickerPackItemNode: ItemListRevealOptionsItemNode {
                         if let previousControl = currentItem?.control, case .installation = previousControl {
                             strongSelf.installationActionBackgroundNode.alpha = 0.0
                             strongSelf.installationActionBackgroundNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2)
-                            strongSelf.installationActionBackgroundNode.layer.animateScale(from: 1.0, to: 0.01, duration: 0.2, completion: { [weak self] _ in
+                            strongSelf.installationActionBackgroundNode.layer.animateScale(from: 1.0, to: 0.01, duration: 0.2, completion: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.installationActionBackgroundNode.isHidden = true
                                     strongSelf.installationActionBackgroundNode.alpha = 1.0
@@ -824,7 +824,7 @@ class ItemListStickerPackItemNode: ItemListRevealOptionsItemNode {
                                     animationNode = current
                                 } else {
                                     animationNode = DefaultAnimatedStickerNodeImpl()
-                                    animationNode.started = { [weak self] in
+                                    animationNode.started = { [weak self = self] in
                                         self?.removePlaceholder(animated: false)
                                     }
                                     strongSelf.animationNode = animationNode

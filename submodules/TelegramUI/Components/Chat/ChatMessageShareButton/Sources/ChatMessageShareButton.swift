@@ -63,7 +63,7 @@ public class ChatMessageShareButton: ASDisplayNode {
         self.addSubnode(self.topButton)
         
         self.topButton.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.topButton.highligthedChanged = { [weak self] highlighted in
+        self.topButton.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }
@@ -80,13 +80,13 @@ public class ChatMessageShareButton: ASDisplayNode {
             }
         }
         
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.longPressAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -213,7 +213,7 @@ public class ChatMessageShareButton: ASDisplayNode {
                     bottomIconNode.displaysAsynchronously = false
                     self.bottomIconNode = bottomIconNode
                     
-                    bottomButton.highligthedChanged = { [weak self] highlighted in
+                    bottomButton.highligthedChanged = { [weak self = self] highlighted in
                         guard let self, let bottomIconNode = self.bottomIconNode else {
                             return
                         }
@@ -378,7 +378,7 @@ private final class StarsView: UIView {
         self.clipsToBounds = true
         self.layer.addSublayer(self.hierarchyTrackingLayer)
         
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }

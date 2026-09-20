@@ -1609,7 +1609,7 @@ final class ColorSwatchComponent: Component {
                 
                 self.holdActionTimer?.invalidate()
                 if #available(iOS 10.0, *) {
-                    let holdActionTimer = Timer(timeInterval: 0.4, repeats: false, block: { [weak self] _ in
+                    let holdActionTimer = Timer(timeInterval: 0.4, repeats: false, block: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }

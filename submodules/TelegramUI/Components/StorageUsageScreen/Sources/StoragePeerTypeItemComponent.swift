@@ -97,7 +97,7 @@ final class StoragePeerTypeItemComponent: Component {
             self.addSubview(self.iconView)
             self.addSubview(self.arrowIconView)
             
-            self.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }

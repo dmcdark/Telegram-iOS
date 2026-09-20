@@ -144,7 +144,7 @@ private final class RecognizedTextSelectionGestureRecognizer: UIGestureRecognize
                         self.f()
                     }
                 }
-                let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self] in
+                let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self = self] in
                     self?.longTapEvent()
                 }), selector: #selector(TimerTarget.event), userInfo: nil, repeats: false)
                 self.longTapTimer = longTapTimer
@@ -286,15 +286,15 @@ public final class RecognizedTextSelectionNode: ASDisplayNode {
     override public func didLoad() {
         super.didLoad()
         
-        (self.view as? RecognizedTextSelectionNodeView)?.hitTestImpl = { [weak self] point, event in
+        (self.view as? RecognizedTextSelectionNodeView)?.hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
        
         let recognizer = RecognizedTextSelectionGestureRecognizer(target: nil, action: nil)
-        recognizer.knobAtPoint = { [weak self] point in
+        recognizer.knobAtPoint = { [weak self = self] point in
             return self?.knobAtPoint(point)
         }
-        recognizer.moveKnob = { [weak self] knob, point in
+        recognizer.moveKnob = { [weak self = self] knob, point in
             guard let strongSelf = self, let _ = strongSelf.selectedIndices, let currentTopLeft = strongSelf.currentTopLeft, let currentBottomRight = strongSelf.currentBottomRight else {
                 return
             }
@@ -328,13 +328,13 @@ public final class RecognizedTextSelectionNode: ASDisplayNode {
             strongSelf.selectedIndices = selectedIndices
             strongSelf.updateSelection(range: selectedIndices, animateIn: false)
         }
-        recognizer.finishedMovingKnob = { [weak self] in
+        recognizer.finishedMovingKnob = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.displayMenu()
         }
-        recognizer.beginSelection = { [weak self] point in
+        recognizer.beginSelection = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -363,7 +363,7 @@ public final class RecognizedTextSelectionNode: ASDisplayNode {
             strongSelf.displayMenu()
             strongSelf.updateIsActive(true)
         }
-        recognizer.clearSelection = { [weak self] in
+        recognizer.clearSelection = { [weak self = self] in
             let _ = self?.dismissSelection()
             self?.updateIsActive(false)
         }
@@ -505,32 +505,32 @@ public final class RecognizedTextSelectionNode: ASDisplayNode {
         }
         
         var actions: [ContextMenuAction] = []
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
             self?.performAction(selectedText, .copy)
             let _ = self?.dismissSelection()
         }))
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self = self] in
             self?.performAction(selectedText, .lookup)
             let _ = self?.dismissSelection()
         }))
         if #available(iOS 15.0, *) {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuTranslate, accessibilityLabel: self.strings.Conversation_ContextMenuTranslate), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuTranslate, accessibilityLabel: self.strings.Conversation_ContextMenuTranslate), action: { [weak self = self] in
                 self?.performAction(selectedText, .translate)
                 let _ = self?.dismissSelection()
             }))
         }
 //        if isSpeakSelectionEnabled() {
-//            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuSpeak, accessibilityLabel: self.strings.Conversation_ContextMenuSpeak), action: { [weak self] in
+//            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuSpeak, accessibilityLabel: self.strings.Conversation_ContextMenuSpeak), action: { [weak self = self] in
 //                self?.performAction(selectedText, .speak)
 //                let _ = self?.dismissSelection()
 //            }))
 //        }
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self = self] in
             self?.performAction(selectedText, .share)
             let _ = self?.dismissSelection()
         }))
         
-        self.present(makeContextMenuController(actions: actions, catchTapsOutside: false, hasHapticFeedback: false), ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+        self.present(makeContextMenuController(actions: actions, catchTapsOutside: false, hasHapticFeedback: false), ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
             guard let strongSelf = self, let rootNode = strongSelf.rootNode else {
                 return nil
             }

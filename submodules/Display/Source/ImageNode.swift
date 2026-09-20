@@ -171,7 +171,7 @@ public class ImageNode: ASDisplayNode {
     public func setSignal(_ signal: Signal<UIImage?, NoError>) {
         var reportedHasImage = false
         var wasSynchronous = true
-        self.disposable.set((signal |> deliverOnMainQueue).start(next: {[weak self] next in
+        self.disposable.set((signal |> deliverOnMainQueue).start(next: {[weak self = self] next in
             dispatcher.dispatch {
                 if let strongSelf = self {
                     var animate = strongSelf.enableAnimatedTransition

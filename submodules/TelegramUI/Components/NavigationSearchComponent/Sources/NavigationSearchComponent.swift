@@ -201,7 +201,7 @@ public final class NavigationSearchComponent: Component {
                     transition: buttonTransition,
                     component: AnyComponent(Button(
                         content: AnyComponent(Text(text: component.cancel, font: Font.regular(17.0), color: component.colors.button)),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

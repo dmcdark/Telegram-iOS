@@ -68,7 +68,7 @@ public final class SecureIdPlaintextFormController: FormController<SecureIdPlain
     override public func displayNodeDidLoad() {
         super.displayNodeDidLoad()
         
-        self.controllerNode.actionInputStateUpdated = { [weak self] state in
+        self.controllerNode.actionInputStateUpdated = { [weak self = self] state in
             if let strongSelf = self {
                 switch state {
                     case .inProgress:
@@ -95,14 +95,14 @@ public final class SecureIdPlaintextFormController: FormController<SecureIdPlain
             }
         }
         
-        self.controllerNode.completedWithValue = { [weak self] valueWithContext in
+        self.controllerNode.completedWithValue = { [weak self = self] valueWithContext in
             if let strongSelf = self {
                 strongSelf.updatedValue(valueWithContext)
                 strongSelf.dismiss()
             }
         }
         
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.dismiss()
         }
         

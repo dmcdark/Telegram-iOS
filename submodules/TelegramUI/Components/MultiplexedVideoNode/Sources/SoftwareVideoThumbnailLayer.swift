@@ -56,7 +56,7 @@ public final class SoftwareVideoThumbnailNode: ASDisplayNode {
         
         if let dimensions = fileReference.media.dimensions {
             self.disposable.set((mediaGridMessageVideo(postbox: account.postbox, userLocation: .other, videoReference: fileReference, synchronousLoad: synchronousLoad, nilForEmptyResult: true)
-                |> deliverOnMainQueue).start(next: { [weak self] transform in
+                |> deliverOnMainQueue).start(next: { [weak self = self] transform in
                 var boundingSize = dimensions.cgSize.aspectFilled(CGSize(width: 93.0, height: 93.0))
                 let imageSize = boundingSize
                 boundingSize.width = min(200.0, boundingSize.width)

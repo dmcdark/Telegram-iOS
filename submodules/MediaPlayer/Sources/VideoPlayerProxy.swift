@@ -12,7 +12,7 @@ private final class VideoPlayerProxyContext {
             self.node?.takeFrameAndQueue = self.takeFrameAndQueue
             self.node?.state = state
             self.updateVideoInHierarchy?(node?.videoInHierarchy ?? false)
-            self.node?.updateVideoInHierarchy = { [weak self] value in
+            self.node?.updateVideoInHierarchy = { [weak self = self] value in
                 self?.updateVideoInHierarchy?(value)
             }
         }
@@ -70,7 +70,7 @@ final class VideoPlayerProxy {
         
         self.contextQueue.async {
             let context = VideoPlayerProxyContext(queue: self.contextQueue)
-            context.updateVideoInHierarchy = { [weak self] value in
+            context.updateVideoInHierarchy = { [weak self = self] value in
                 queue.async {
                     if let strongSelf = self {
                         if strongSelf.visibility != value {

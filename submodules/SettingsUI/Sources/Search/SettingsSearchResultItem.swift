@@ -148,7 +148,7 @@ class SettingsSearchResultItemNode: ListViewItemNode {
         self.offsetContainerNode.addSubnode(self.titleNode)
         self.offsetContainerNode.addSubnode(self.subtitleNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -158,7 +158,7 @@ class SettingsSearchResultItemNode: ListViewItemNode {
             item.interaction.openItemContextMenu(item.item, strongSelf.contextSourceNode, strongSelf.contextSourceNode.bounds, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -221,7 +221,7 @@ class SettingsSearchResultItemNode: ListViewItemNode {
             
             let contentSize = CGSize(width: params.width, height: height)
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = (params, neighbors)
@@ -330,7 +330,7 @@ class SettingsSearchResultItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

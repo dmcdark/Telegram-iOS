@@ -545,7 +545,7 @@ extension InAppPurchaseManager: SKPaymentTransactionObserver {
                         case let .unauthorized(engine):
                             return engine.payments.sendAppStoreReceipt(receipt: receiptData, purpose: purpose)
                         }
-                    }).start(error: { [weak self] _ in
+                    }).start(error: { [weak self = self] _ in
                         Logger.shared.log("InAppPurchaseManager", "Account \(accountPeerId), transactions [\(transactionIds)] failed to assign")
                         for transaction in transactions {
                             self?.stateQueue.async {

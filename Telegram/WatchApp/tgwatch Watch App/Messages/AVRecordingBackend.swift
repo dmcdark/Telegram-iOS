@@ -38,7 +38,7 @@ final class OpusOggRecordingSink {
     func append(_ buffer: AVAudioPCMBuffer) -> Float {
         guard let mono = resample(buffer) else { return 0 }
         let level = visualLevel(mono)
-        queue.async { [weak self] in self?.encodeFrames(mono) }
+        queue.async { [weak self = self] in self?.encodeFrames(mono) }
         return level
     }
 

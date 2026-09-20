@@ -201,7 +201,7 @@ public final class GlobalControlPanelsContext {
                         return .single(nil)
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] playlistStateAndType in
+                |> deliverOnMainQueue).start(next: { [weak self = self] playlistStateAndType in
                     guard let strongSelf = self else {
                         return
                     }
@@ -275,7 +275,7 @@ public final class GlobalControlPanelsContext {
                 }
                 
                 self.liveLocationDisposable = (signal
-                |> deliverOnMainQueue).start(next: { [weak self] peers, messages in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peers, messages in
                     guard let self else {
                         return
                     }
@@ -480,7 +480,7 @@ public final class GlobalControlPanelsContext {
                 |> distinctUntilChanged
                 
                 self.suggestedChatListNoticeDisposable = (suggestedChatListNoticeSignal
-                |> deliverOn(self.queue)).startStrict(next: { [weak self] chatListNotice in
+                |> deliverOn(self.queue)).startStrict(next: { [weak self = self] chatListNotice in
                     guard let self else {
                         return
                     }
@@ -565,7 +565,7 @@ public final class GlobalControlPanelsContext {
                 }
                 
                 let previousCurrentGroupCall = Atomic<PresentationGroupCall?>(value: nil)
-                self.currentGroupCallDisposable = combineLatest(queue: .mainQueue(), availableGroupCall, currentGroupCall).start(next: { [weak self] availableState, currentGroupCall in
+                self.currentGroupCallDisposable = combineLatest(queue: .mainQueue(), availableGroupCall, currentGroupCall).start(next: { [weak self = self] availableState, currentGroupCall in
                     guard let self else {
                         return
                     }

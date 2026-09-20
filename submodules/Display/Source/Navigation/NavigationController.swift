@@ -180,14 +180,14 @@ open class NavigationController: UINavigationController, ContainableController, 
     open var minimizedContainer: MinimizedContainer? {
         didSet {
             self.minimizedContainer?.navigationController = self
-            self.minimizedContainer?.willMaximize = { [weak self] _ in
+            self.minimizedContainer?.willMaximize = { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.isMaximizing = true
                 self.updateContainersNonReentrant(transition: .animated(duration: 0.4, curve: .spring))
             }
-            self.minimizedContainer?.willDismiss = { [weak self] _ in
+            self.minimizedContainer?.willDismiss = { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -197,7 +197,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             self.minimizedContainer?.didDismiss = { minimizedContainer in
                 minimizedContainer.removeFromSupernode()
             }
-            self.minimizedContainer?.statusBarStyleUpdated = { [weak self] in
+            self.minimizedContainer?.statusBarStyleUpdated = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -340,7 +340,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             return windowScrollToTopProxyViews
         }
 
-        let windowScrollToTopProxyViews = WindowScrollToTopProxyViews(scrollToTop: { [weak self] subject in
+        let windowScrollToTopProxyViews = WindowScrollToTopProxyViews(scrollToTop: { [weak self = self] subject in
             self?.scrollToTop(subject)
         })
         self.windowScrollToTopProxyViews = windowScrollToTopProxyViews
@@ -627,10 +627,10 @@ open class NavigationController: UINavigationController, ContainableController, 
             if let existingModalContainer = existingModalContainer {
                 modalContainer = existingModalContainer
             } else {
-                modalContainer = NavigationModalContainer(theme: self.theme, isFlat: navigationLayout.modal[i].isFlat, controllerRemoved: { [weak self] controller in
+                modalContainer = NavigationModalContainer(theme: self.theme, isFlat: navigationLayout.modal[i].isFlat, controllerRemoved: { [weak self = self] controller in
                     self?.controllerRemoved(controller)
                 })
-                modalContainer.container.statusBarStyleUpdated = { [weak self] transition in
+                modalContainer.container.statusBarStyleUpdated = { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -736,7 +736,7 @@ open class NavigationController: UINavigationController, ContainableController, 
                 if wasNotAdded {
                     overlayContainer.transitionIn()
                     notifyGlobalOverlayControllersUpdated = true
-                    overlayContainer.controller.internalOverlayWantsToBeBelowKeyboardUpdated = { [weak self] transition in
+                    overlayContainer.controller.internalOverlayWantsToBeBelowKeyboardUpdated = { [weak self = self] transition in
                         guard let strongSelf = self else {
                             return
                         }
@@ -865,7 +865,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             }
             
             if navigationLayout.modal[i].isFlat, let lastController = navigationLayout.modal[i].controllers.last {
-                lastController.modalStyleOverlayTransitionFactorUpdated = { [weak self] transition in
+                lastController.modalStyleOverlayTransitionFactorUpdated = { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1001,13 +1001,13 @@ open class NavigationController: UINavigationController, ContainableController, 
                     flatContainer.update(layout: updatedLayout, canBeClosed: false, controllers: controllers, transition: transition)
                     flatContainer.minimizedContainer = self.minimizedContainer
                 case let .split(splitContainer):
-                    let flatContainer = NavigationContainer(isFlat: self.isFlat, controllerRemoved: { [weak self] controller in
+                    let flatContainer = NavigationContainer(isFlat: self.isFlat, controllerRemoved: { [weak self = self] controller in
                         self?.controllerRemoved(controller)
                     })
-                    flatContainer.requestFilterController = { [weak self] controller in
+                    flatContainer.requestFilterController = { [weak self = self] controller in
                         self?.filterController(controller, animated: true)
                     }
-                    flatContainer.statusBarStyleUpdated = { [weak self] transition in
+                    flatContainer.statusBarStyleUpdated = { [weak self = self] transition in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1031,13 +1031,13 @@ open class NavigationController: UINavigationController, ContainableController, 
                     splitContainer.removeFromSupernode()
                 }
             } else {
-                let flatContainer = NavigationContainer(isFlat: self.isFlat, controllerRemoved: { [weak self] controller in
+                let flatContainer = NavigationContainer(isFlat: self.isFlat, controllerRemoved: { [weak self = self] controller in
                     self?.controllerRemoved(controller)
                 })
-                flatContainer.requestFilterController = { [weak self] controller in
+                flatContainer.requestFilterController = { [weak self = self] controller in
                     self?.filterController(controller, animated: true)
                 }
-                flatContainer.statusBarStyleUpdated = { [weak self] transition in
+                flatContainer.statusBarStyleUpdated = { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1065,7 +1065,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             if let rootContainer = self.rootContainer {
                 switch rootContainer {
                 case let .flat(flatContainer):
-                    let splitContainer = NavigationSplitContainer(theme: self.theme, controllerRemoved: { [weak self] controller in
+                    let splitContainer = NavigationSplitContainer(theme: self.theme, controllerRemoved: { [weak self = self] controller in
                         self?.controllerRemoved(controller)
                     })
                     if let detailsPlaceholderNode = self.detailsPlaceholderNode {
@@ -1098,7 +1098,7 @@ open class NavigationController: UINavigationController, ContainableController, 
                     splitContainer.update(layout: layout, masterControllers: masterControllers, detailControllers: detailControllers, detailsPlaceholderNode: self.detailsPlaceholderNode, transition: transition)
                 }
             } else {
-                let splitContainer = NavigationSplitContainer(theme: self.theme, controllerRemoved: { [weak self] controller in
+                let splitContainer = NavigationSplitContainer(theme: self.theme, controllerRemoved: { [weak self = self] controller in
                     self?.controllerRemoved(controller)
                 })
                 if let detailsPlaceholderNode = self.detailsPlaceholderNode {
@@ -1506,7 +1506,7 @@ open class NavigationController: UINavigationController, ContainableController, 
         }
         self.navigationBar.removeFromSuperview()
         
-        let globalScrollToTopNode = ScrollToTopNode(action: { [weak self] in
+        let globalScrollToTopNode = ScrollToTopNode(action: { [weak self = self] in
             self?.scrollToTop(.master)
         })
         self.displayNode.addSubnode(globalScrollToTopNode)
@@ -1577,7 +1577,7 @@ open class NavigationController: UINavigationController, ContainableController, 
     
     public func replaceControllersAndPush(controllers: [UIViewController], controller: ViewController, animated: Bool, options: NavigationAnimationOptions = [], ready: ValuePromise<Bool>? = nil, completion: @escaping () -> Void = {}) {
         ready?.set(true)
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1701,7 +1701,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             return controller
         }
         if let layout = self.validLayout {
-            self.updateContainers(layout: layout, transition: animated ? .animated(duration: 0.5, curve: .spring) : .immediate, completion: { [weak self] in
+            self.updateContainers(layout: layout, transition: animated ? .animated(duration: 0.5, curve: .spring) : .immediate, completion: { [weak self = self] in
                 self?.notifyAccessibilityScreenChanged()
                 completion()
             })
@@ -1735,7 +1735,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             self.isMaximizing = true
             self.updateContainersNonReentrant(transition: .animated(duration: 0.4, curve: .spring))
         }
-        minimizedContainer.maximizeController(viewController, animated: animated, completion: { [weak self] dismissed in
+        minimizedContainer.maximizeController(viewController, animated: animated, completion: { [weak self = self] dismissed in
             guard let self else {
                 return
             }
@@ -1768,7 +1768,7 @@ open class NavigationController: UINavigationController, ContainableController, 
     
     public var _keepModalDismissProgress = false
     public func presentOverlay(controller: ViewController, inGlobal: Bool = false, blockInteraction: Bool = false) {
-        let container = NavigationOverlayContainer(controller: controller, blocksInteractionUntilReady: blockInteraction, controllerRemoved: { [weak self] controller in
+        let container = NavigationOverlayContainer(controller: controller, blocksInteractionUntilReady: blockInteraction, controllerRemoved: { [weak self = self] controller in
             guard let strongSelf = self else {
                 return
             }
@@ -1796,12 +1796,12 @@ open class NavigationController: UINavigationController, ContainableController, 
             }
 
             strongSelf.updateContainersNonReentrant(transition: .immediate)
-        }, statusBarUpdated: { [weak self] transition in
+        }, statusBarUpdated: { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.updateContainersNonReentrant(transition: transition)
-        }, modalStyleOverlayTransitionFactorUpdated: { [weak self] transition in
+        }, modalStyleOverlayTransitionFactorUpdated: { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
@@ -1908,7 +1908,7 @@ open class NavigationController: UINavigationController, ContainableController, 
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.displayNode as? NavigationControllerNode)?.schedule(layout: { [weak self] in
+        (self.displayNode as? NavigationControllerNode)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -1933,7 +1933,7 @@ open class NavigationController: UINavigationController, ContainableController, 
             } else {
                 inCallStatusBar = StatusBar()
                 inCallStatusBar.clipsToBounds = false
-                inCallStatusBar.inCallNavigate = { [weak self] in
+                inCallStatusBar.inCallNavigate = { [weak self = self] in
                     self?.scrollToTop(.master)
                 }
                 self.inCallStatusBar = inCallStatusBar

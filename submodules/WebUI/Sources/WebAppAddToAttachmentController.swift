@@ -105,7 +105,7 @@ private final class AlertWebAppAttachmentHeaderComponent: Component {
                 if let peerIcon {
                     let _ = freeMediaFileInteractiveFetched(account: component.context.account, userLocation: .other, fileReference: .standalone(media: peerIcon)).start()
                     self.appIconDisposable = (svgIconImageFile(account: component.context.account, fileReference: .standalone(media: peerIcon))
-                    |> deliverOnMainQueue).start(next: { [weak self] transform in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] transform in
                         if let self {
                             let availableSize = CGSize(width: 48.0, height: 48.0)
                             let arguments = TransformImageArguments(corners: ImageCorners(), imageSize: availableSize, boundingSize: availableSize, intrinsicInsets: UIEdgeInsets())

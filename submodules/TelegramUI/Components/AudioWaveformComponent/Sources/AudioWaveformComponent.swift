@@ -232,10 +232,10 @@ public final class AudioWaveformComponent: Component {
             self.backgroundColor = nil
             self.isOpaque = false
             
-            (self.layer as! LayerImpl).didEnterHierarchy = { [weak self] in
+            (self.layer as! LayerImpl).didEnterHierarchy = { [weak self = self] in
                 self?.updatePlaybackAnimation()
             }
-            (self.layer as! LayerImpl).didExitHierarchy = { [weak self] in
+            (self.layer as! LayerImpl).didExitHierarchy = { [weak self = self] in
                 self?.updatePlaybackAnimation()
             }
             
@@ -319,7 +319,7 @@ public final class AudioWaveformComponent: Component {
             let scrubbingTimestampValue = self.scrubbingTimestampValue
             
             self.isAwaitingScrubbingApplication = true
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self = self] in
                 guard let strongSelf = self, strongSelf.isAwaitingScrubbingApplication else {
                     return
                 }
@@ -347,13 +347,13 @@ public final class AudioWaveformComponent: Component {
                 self.setNeedsDisplay()
                 
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.08, execute: {
-                    self.animator = DisplayLinkAnimator(duration: 0.8, from: 0.0, to: 1.0, update: { [weak self] progress in
+                    self.animator = DisplayLinkAnimator(duration: 0.8, from: 0.0, to: 1.0, update: { [weak self = self] progress in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.revealProgress = progress
                         strongSelf.setNeedsDisplay()
-                    }, completion: { [weak self] in
+                    }, completion: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -383,7 +383,7 @@ public final class AudioWaveformComponent: Component {
             
             if self.statusDisposable == nil {
                 self.statusDisposable = (component.status
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -432,7 +432,7 @@ public final class AudioWaveformComponent: Component {
             
             if needsAnimation != (self.playbackStatusAnimator != nil) {
                 if needsAnimation {
-                    self.playbackStatusAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                    self.playbackStatusAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                         if let self, let component = self.component, let sparksView = self.sparksView {
                             sparksView.update(position: CGPoint(x: 10.0 + (sparksView.bounds.width - 20.0) * self.progress, y: sparksView.bounds.height / 2.0 + 8.0), sampleHeight: self.lastHeight, color: component.foregroundColor)
                         }

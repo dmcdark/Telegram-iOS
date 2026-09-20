@@ -129,7 +129,7 @@ final class PeerInfoListPaneNode: ASDisplayNode, PeerInfoPaneNode {
                     return .single(nil)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] playlistStateAndType in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] playlistStateAndType in
                 guard let strongSelf = self else {
                     return
                 }
@@ -256,18 +256,18 @@ final class PeerInfoListPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 
                 let mediaAccessoryPanel = MediaNavigationAccessoryPanel(context: self.context, presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, displayBackground: true)
                 mediaAccessoryPanel.containerNode.headerNode.displayScrubber = item.playbackData?.type != .instantVideo
-                mediaAccessoryPanel.getController = { [weak self] in
+                mediaAccessoryPanel.getController = { [weak self = self] in
                     return self?.parentController
                 }
-                mediaAccessoryPanel.presentInGlobalOverlay = { [weak self] c in
+                mediaAccessoryPanel.presentInGlobalOverlay = { [weak self = self] c in
                     self?.parentController?.presentInGlobalOverlay(c)
                 }
-                mediaAccessoryPanel.close = { [weak self] in
+                mediaAccessoryPanel.close = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.setPlaylist(nil, type: type, control: SharedMediaPlayerControlAction.playback(.pause))
                     }
                 }
-                mediaAccessoryPanel.setRate = { [weak self] rate, changeType in
+                mediaAccessoryPanel.setRate = { [weak self = self] rate, changeType in
                     guard let strongSelf = self else {
                         return
                     }
@@ -349,22 +349,22 @@ final class PeerInfoListPaneNode: ASDisplayNode, PeerInfoPaneNode {
                         }
                     })
                 }
-                mediaAccessoryPanel.togglePlayPause = { [weak self] in
+                mediaAccessoryPanel.togglePlayPause = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.playback(.togglePlayPause), type: type)
                     }
                 }
-                mediaAccessoryPanel.playPrevious = { [weak self] in
+                mediaAccessoryPanel.playPrevious = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.next, type: type)
                     }
                 }
-                mediaAccessoryPanel.playNext = { [weak self] in
+                mediaAccessoryPanel.playNext = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.previous, type: type)
                     }
                 }
-                mediaAccessoryPanel.tapAction = { [weak self] in
+                mediaAccessoryPanel.tapAction = { [weak self = self] in
                     guard let strongSelf = self, let _ = strongSelf.chatControllerInteraction.navigationController(), let (state, _, _, order, type, account) = strongSelf.playlistStateAndType else {
                         return
                     }

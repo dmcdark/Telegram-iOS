@@ -101,7 +101,7 @@ final class IncreaseLimitFooterItemNode: ItemListControllerFooterItemNode {
         self.buttonNode.title = self.item.title
         self.buttonNode.icon = icon
         
-        self.buttonNode.pressed = { [weak self] in
+        self.buttonNode.pressed = { [weak self = self] in
             self?.item.action()
         }
     }

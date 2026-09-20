@@ -105,7 +105,7 @@ extension PeerInfoScreenNode {
             if let pane, case let .collection(id) = pane.currentCollection, let addressName = data.peer?.addressName, !addressName.isEmpty {
                 let shareAction: ContextMenuItem = .action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_ShareCollection, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     self?.openShareLink(url: "https://t.me/\(addressName)/c/\(id)")
                 }))
@@ -229,7 +229,7 @@ extension PeerInfoScreenNode {
         }
         
         let contextController = makeContextController(presentationData: self.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceView: sourceView)), items: items, gesture: gesture)
-        contextController.passthroughTouchEvent = { [weak self] sourceView, point in
+        contextController.passthroughTouchEvent = { [weak self = self] sourceView, point in
             guard let strongSelf = self else {
                 return .ignore
             }

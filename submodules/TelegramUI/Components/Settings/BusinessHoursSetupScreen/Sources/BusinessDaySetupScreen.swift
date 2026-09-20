@@ -191,7 +191,7 @@ final class BusinessDaySetupScreenComponent: Component {
                         strings.Wallpaper_Set
                     }
                 ),
-                completion: { [weak self] value in
+                completion: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -338,7 +338,7 @@ final class BusinessDaySetupScreenComponent: Component {
                                     maximumNumberOfLines: 1
                                 ))),
                             ], alignment: .left, spacing: 2.0)),
-                            accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOpen, action: { [weak self] _ in
+                            accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOpen, action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -405,7 +405,7 @@ final class BusinessDaySetupScreenComponent: Component {
                             effectAlignment: .center,
                             minSize: nil,
                             contentInsets: UIEdgeInsets(top: 7.0, left: 8.0, bottom: 7.0, right: 8.0),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -415,7 +415,7 @@ final class BusinessDaySetupScreenComponent: Component {
                             animateScale: false
                         ))), insets: .custom(UIEdgeInsets(top: 4.0, left: 0.0, bottom: 4.0, right: 0.0)), allowUserInteraction: true),
                         accessory: nil,
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -437,7 +437,7 @@ final class BusinessDaySetupScreenComponent: Component {
                         ))),
                     ], alignment: .left, spacing: 2.0)),
                     accessory: nil,
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -543,7 +543,7 @@ final class BusinessDaySetupScreenComponent: Component {
                                 tintColor: environment.theme.list.itemAccentColor
                             ))), false),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -649,14 +649,14 @@ final class BusinessDaySetupScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessDaySetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessDaySetupScreenComponent.View else {
                 return true
             }

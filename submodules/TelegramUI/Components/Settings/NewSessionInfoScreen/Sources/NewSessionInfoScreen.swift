@@ -53,7 +53,7 @@ private final class NewSessionInfoSheetContentComponent: Component {
         
         func update(component: NewSessionInfoSheetContentComponent, availableSize: CGSize, state: EmptyComponentState, environment: Environment<EnvironmentType>, transition: ComponentTransition) -> CGSize {
             if self.timer == nil {
-                self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] _ in
+                self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -128,7 +128,7 @@ private final class NewSessionInfoSheetContentComponent: Component {
                     isEnabled: self.remainingTimer == 0,
                     tintWhenDisabled: false,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -213,7 +213,7 @@ private final class NewSessionInfoScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     guard let self, let environment = self.environment else {
                         return
                     }
@@ -229,11 +229,11 @@ private final class NewSessionInfoScreenComponent: Component {
                 component: AnyComponent(SheetComponent(
                     content: AnyComponent(NewSessionInfoSheetContentComponent(
                         newSessionReview: component.newSessionReview,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             guard let self else {
                                 return
                             }
-                            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+                            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                                 if let controller = environment.controller() {
                                     controller.dismiss(completion: nil)
                                 }

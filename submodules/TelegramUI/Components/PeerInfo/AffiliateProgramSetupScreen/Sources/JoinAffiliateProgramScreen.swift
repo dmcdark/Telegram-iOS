@@ -406,7 +406,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                     }
                     return context?.generateImage()
                 }
-                items.append(.action(ContextMenuActionItem(text: peer.displayTitle(strings: environment.strings, displayOrder: presentationData.nameDisplayOrder), textLayout: .secondLineWithValue(peerLabel), icon: { _ in nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: peer.displayTitle(strings: environment.strings, displayOrder: presentationData.nameDisplayOrder), textLayout: .secondLineWithValue(peerLabel), icon: { _ in nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), action: { [weak self = self] c, _ in
                     c?.dismiss(completion: {})
                     
                     guard let self, let currentMode = self.currentMode, let component = self.component else {
@@ -425,7 +425,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                         self.isChangingTargetPeer = true
                         self.changeTargetPeerDisposable?.dispose()
                         self.changeTargetPeerDisposable = (component.context.engine.peers.connectStarRefBot(id: peer.id, botId: component.sourcePeer.id)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -437,7 +437,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                                 copyLink: active.copyLink
                             ))
                             self.state?.updated(transition: .immediate)
-                        }, error: { [weak self] _ in
+                        }, error: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -484,7 +484,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                 
                 if loadPossibleTargetPeers {
                     self.possibleTargetPeersDisposable = (component.context.engine.peers.getPossibleStarRefBotTargets()
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -521,7 +521,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                 transition: transition,
                 component: AnyComponent(Button(
                     content: AnyComponent(Image(image: closeImage, size: closeImage.size)),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let controller = self.environment?.controller() else {
                             return
                         }
@@ -865,7 +865,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                     effectAlignment: .center,
                     minSize: CGSize(width: 1.0, height: 30.0 + 2.0),
                     contentInsets: UIEdgeInsets(top: 0.0, left: openBotLeftInset, bottom: 0.0, right: 12.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -1090,7 +1090,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                             theme: environment.theme,
                             strings: environment.strings,
                             peer: currentTargetPeer,
-                            action: isTargetPeerSelectable ? { [weak self] sourceView in
+                            action: isTargetPeerSelectable ? { [weak self = self] sourceView in
                                 guard let self else {
                                     return
                                 }
@@ -1136,7 +1136,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                         effectAlignment: .center,
                         minSize: CGSize(width: availableSize.width - sideInset * 2.0, height: 52.0),
                         contentInsets: UIEdgeInsets(top: 0.0, left: 10.0, bottom: 0.0, right: 10.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, case let .active(active) = self.currentMode else {
                                 return
                             }
@@ -1192,7 +1192,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let currentMode = self.currentMode else {
                             return
                         }
@@ -1236,7 +1236,7 @@ private final class JoinAffiliateProgramScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] attributes, _ in
+                    tapAction: { [weak self = self] attributes, _ in
                         guard let environment = self?.environment, let controller = environment.controller(), let navigationController = controller.navigationController as? NavigationController else {
                             return
                         }
@@ -1423,7 +1423,7 @@ public class JoinAffiliateProgramScreen: ViewControllerComponentContainer {
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? JoinAffiliateProgramScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

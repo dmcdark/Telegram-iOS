@@ -149,7 +149,7 @@ extension ChatControllerImpl {
                     )),
                     items: .single(ContextController.Items(content: .list([]))),
                     closeActionTitle: isIncoming ? self.presentationData.strings.Chat_PlayOnceMesasgeCloseAndDelete : self.presentationData.strings.Chat_PlayOnceMesasgeClose,
-                    closeAction: { [weak self] in
+                    closeAction: { [weak self = self] in
                         if let self {
                             self.context.sharedContext.mediaManager.setPlaylist(nil, type: .voice, control: .playback(.pause))
                         }
@@ -159,7 +159,7 @@ extension ChatControllerImpl {
         )
         
         let contextController = makeContextController(presentationData: self.presentationData, configuration: configuration)
-        contextController.getOverlayViews = { [weak self] in
+        contextController.getOverlayViews = { [weak self = self] in
             guard let self else {
                 return []
             }

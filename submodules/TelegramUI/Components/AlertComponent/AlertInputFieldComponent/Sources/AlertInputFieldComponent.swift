@@ -210,10 +210,10 @@ public final class AlertInputFieldComponent: Component {
             var resetText: String?
             if self.component == nil {
                 resetText = component.initialValue
-                component.externalState.animateError = { [weak self] in
+                component.externalState.animateError = { [weak self = self] in
                     self?.animateError()
                 }
-                component.externalState.activateInput = { [weak self] in
+                component.externalState.activateInput = { [weak self = self] in
                     self?.activateInput()
                 }
             }
@@ -309,7 +309,7 @@ public final class AlertInputFieldComponent: Component {
                         )),
                         effectAlignment: .center,
                         minSize: CGSize(width: 44.0, height: 44.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }

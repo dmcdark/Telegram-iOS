@@ -165,7 +165,7 @@ open class AnimatedSwitch: AnimatedControl {
       fromProgress: startProgress,
       toProgress: endProgress,
       loopMode: LottieLoopMode.playOnce,
-      completion: { [weak self] finished in
+      completion: { [weak self = self] finished in
         guard let self = self else { return }
 
         // For the Main Thread rendering engine, we freeze the animation at the expected final progress

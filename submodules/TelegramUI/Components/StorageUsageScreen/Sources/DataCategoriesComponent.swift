@@ -137,7 +137,7 @@ final class DataCategoriesComponent: Component {
                         category: category,
                         isExpanded: category.isExpanded,
                         hasNext: i != component.categories.count - 1,
-                        action: component.toggleCategoryExpanded == nil ? nil : { [weak self] key in
+                        action: component.toggleCategoryExpanded == nil ? nil : { [weak self = self] key in
                             guard let self, let component = self.component else {
                                 return
                             }

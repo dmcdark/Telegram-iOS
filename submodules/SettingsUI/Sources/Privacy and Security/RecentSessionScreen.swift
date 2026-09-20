@@ -128,7 +128,7 @@ private final class RecentSessionSheetContent: CombinedComponent {
                         EngineDataMap(additionalPeerIds.map(TelegramEngine.EngineData.Item.Peer.IsContact.init(id:)))
                     )
                     |> deliverOnMainQueue
-                ).start(next: { [weak self] peer, peers, isContacts in
+                ).start(next: { [weak self = self] peer, peers, isContacts in
                     guard let self else {
                         return
                     }
@@ -258,7 +258,7 @@ private final class RecentSessionSheetContent: CombinedComponent {
                     excludeByDefault: connectedBotRecipients.excludeByDefault
                 ),
                 isExclude: isExclude,
-                update: { [weak self] updatedState in
+                update: { [weak self = self] updatedState in
                     guard let self else {
                         return
                     }
@@ -1228,12 +1228,12 @@ public class RecentSessionScreen: ViewControllerComponentContainer {
     fileprivate func terminate() {
         switch self.subject {
         case .session, .website:
-            self.remove({ [weak self] in
+            self.remove({ [weak self = self] in
                 self?.dismissAnimated()
             })
         case .connectedBot:
             let _ = (self.context.engine.accountData.setAccountConnectedBot(bot: nil)
-            |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+            |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                 self?.dismissAnimated()
             })
         }

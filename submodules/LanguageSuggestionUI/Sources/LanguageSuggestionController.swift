@@ -160,7 +160,7 @@ private final class LanguageSuggestionItemNode: HighlightableButtonNode {
         }
         self.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: inset, bottom: titleVerticalOffset, right: 0.0)
         
-        self.highligthedChanged = { [weak self] value in
+        self.highligthedChanged = { [weak self = self] value in
             if let strongSelf = self {
                 if value {
                     if strongSelf.backgroundNode.supernode == nil {
@@ -261,7 +261,7 @@ private final class LanguageSuggestionAlertContentNode: AlertContentNode {
             self.addSubnode(node)
         }
         
-        self.disposable.set(selectedLocalization.get().start(next: { [weak self] selectedCode in
+        self.disposable.set(selectedLocalization.get().start(next: { [weak self = self] selectedCode in
             if let strongSelf = self {
                 for node in strongSelf.nodes {
                     if case let .localization(code) = node.item.type {
@@ -271,13 +271,13 @@ private final class LanguageSuggestionAlertContentNode: AlertContentNode {
             }
         }))
         
-        applyImpl = { [weak self] in
+        applyImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.isUserInteractionEnabled = false
                 
                 _ = (selectedLocalization.get()
                 |> take(1)).start(next: { selectedCode in
-                    applyLocalization(selectedCode, { [weak self] in
+                    applyLocalization(selectedCode, { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.activityIndicator.isHidden = false
                             if let lastNode = strongSelf.nodes.last {

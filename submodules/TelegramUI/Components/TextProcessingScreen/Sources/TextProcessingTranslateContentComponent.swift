@@ -282,7 +282,7 @@ final class TextProcessingTranslateContentComponent: Component {
                     self.processDisposable = (component.context.engine.messages.composeAIMessage(
                         text: component.inputText,
                         mode: mappedMode
-                    ) |> deliverOnMainQueue).startStrict(next: { [weak self] processedText in
+                    ) |> deliverOnMainQueue).startStrict(next: { [weak self = self] processedText in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -291,7 +291,7 @@ final class TextProcessingTranslateContentComponent: Component {
                         if !self.isUpdating {
                             self.state?.updated(transition: .spring(duration: 0.4))
                         }
-                    }, error: { [weak self] error in
+                    }, error: { [weak self = self] error in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -514,7 +514,7 @@ final class TextProcessingTranslateContentComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -548,7 +548,7 @@ final class TextProcessingTranslateContentComponent: Component {
                                 text: .plain(NSAttributedString(string: component.strings.TextProcessing_StylePreview_ExampleHeaderRefresh, font: Font.regular(13.0), textColor: component.theme.list.itemAccentColor))
                             )))
                         ], spacing: 2.0)),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -588,7 +588,7 @@ final class TextProcessingTranslateContentComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] attributes, _ in
+                    tapAction: { [weak self = self] attributes, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -608,7 +608,7 @@ final class TextProcessingTranslateContentComponent: Component {
                         strings: component.strings,
                         styles: component.styles,
                         selectedStyle: component.externalState.style.id,
-                        updateStyle: { [weak self] style in
+                        updateStyle: { [weak self = self] style in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -624,13 +624,13 @@ final class TextProcessingTranslateContentComponent: Component {
                                 }
                             }
                         },
-                        createStyle: { [weak self] in
+                        createStyle: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.createStyle()
                         },
-                        openStyleContextMenu: { [weak self] styleId, gesture, sourceView in
+                        openStyleContextMenu: { [weak self = self] styleId, gesture, sourceView in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -671,7 +671,7 @@ final class TextProcessingTranslateContentComponent: Component {
                         titleAction: nil,
                         isExpanded: isPreview ? nil : (
                             component.externalState.isSourceTextExpanded,
-                            { [weak self] in
+                            { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -727,11 +727,11 @@ final class TextProcessingTranslateContentComponent: Component {
                     strings: component.strings,
                     titleFormat: toFormat,
                     title: toTitle,
-                    titleAction: isTranslate ? { [weak self] sourceView in
+                    titleAction: isTranslate ? { [weak self = self] sourceView in
                         guard let self, let component = self.component, let result = component.externalState.result else {
                             return
                         }
-                        component.displayLanguageSelectionMenu(sourceView, result.language, component.externalState.style.id, true, { [weak self] language, style in
+                        component.displayLanguageSelectionMenu(sourceView, result.language, component.externalState.style.id, true, { [weak self = self] language, style in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -748,7 +748,7 @@ final class TextProcessingTranslateContentComponent: Component {
                         })
                     } : nil,
                     isExpanded: nil,
-                    copyAction: component.copyAction != nil ? { [weak self] in
+                    copyAction: component.copyAction != nil ? { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -756,7 +756,7 @@ final class TextProcessingTranslateContentComponent: Component {
                     } : nil,
                     emojify: displayEmojify ? (
                         component.externalState.emojify,
-                        { [weak self] in
+                        { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -859,7 +859,7 @@ final class TextProcessingTranslateContentComponent: Component {
                     if promptFieldView.superview == nil {
                         promptFieldView.alpha = 0.0
                         self.addSubview(promptFieldView)
-                        self.promptFieldState.updated = { [weak self] in
+                        self.promptFieldState.updated = { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -934,7 +934,7 @@ final class TextProcessingTranslateContentComponent: Component {
                     tooltipTransition = tooltipTransition.withAnimation(.none)
                     tooltip = ComponentView()
                     let dimViewValue = TransparentHitView()
-                    dimViewValue.onTap = { [weak self] in
+                    dimViewValue.onTap = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

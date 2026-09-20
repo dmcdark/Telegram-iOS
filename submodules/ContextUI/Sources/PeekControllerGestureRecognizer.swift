@@ -66,7 +66,7 @@ public final class PeekControllerGestureRecognizer: UIPanGestureRecognizer {
             return
         }
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.4, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.4, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -75,7 +75,7 @@ public final class PeekControllerGestureRecognizer: UIPanGestureRecognizer {
     
     private func startPressTimer() {
         self.pressTimer?.invalidate()
-        let pressTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+        let pressTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
             self?.pressTimerFired()
         }, queue: Queue.mainQueue())
         self.pressTimer = pressTimer
@@ -250,7 +250,7 @@ public final class PeekControllerGestureRecognizer: UIPanGestureRecognizer {
         //print("check begin")
         if let contentSignal = self.contentAtPoint(touchLocation) {
             self.candidateContentDisposable.set((contentSignal
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 if let strongSelf = self {
                     let processResult: Bool
                     if forceActivate {

@@ -234,7 +234,7 @@ public final class NotificationViewControllerImpl {
                         return (account, imageReference)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] accountAndImage in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] accountAndImage in
                 guard let strongSelf = self else {
                     return
                 }

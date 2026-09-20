@@ -40,7 +40,7 @@ final class ItemNode: ASDisplayNode {
         self.addSubnode(self.buttonNode)
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.iconNode.layer.removeAnimation(forKey: "opacity")

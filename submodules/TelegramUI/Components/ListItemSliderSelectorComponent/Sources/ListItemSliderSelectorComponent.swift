@@ -347,7 +347,7 @@ public final class ListItemSliderSelectorComponent: Component {
                             value: discrete.selectedIndex,
                             minValue: discrete.minSelectedIndex,
                             markPositions: discrete.markPositions,
-                            valueUpdated: { [weak self] value in
+                            valueUpdated: { [weak self = self] value in
                                 guard let self, let component = self.component, case let .discrete(discrete) = component.content else {
                                     return
                                 }
@@ -369,7 +369,7 @@ public final class ListItemSliderSelectorComponent: Component {
                         content: .continuous(SliderComponent.Continuous(
                             value: continuous.value,
                             minValue: continuous.minValue,
-                            valueUpdated: { [weak self] value in
+                            valueUpdated: { [weak self = self] value in
                                 guard let self, let component = self.component, case let .continuous(continuous) = component.content else {
                                     return
                                 }

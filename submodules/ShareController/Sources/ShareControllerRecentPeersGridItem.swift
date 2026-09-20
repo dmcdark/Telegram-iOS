@@ -72,11 +72,11 @@ final class ShareControllerRecentPeersGridItemNode: GridItemNode {
                     theme: theme,
                     mode: .actionSheet,
                     strings: strings,
-                    peerSelected: { [weak self] peer in
+                    peerSelected: { [weak self = self] peer in
                         self?.controllerInteraction?.togglePeer(EngineRenderedPeer(peer: peer), true)
                     },
                     peerContextAction: { _, _, gesture, _ in gesture?.cancel() },
-                    isPeerSelected: { [weak self] peerId in
+                    isPeerSelected: { [weak self = self] peerId in
                         return self?.controllerInteraction?.selectedPeerIds.contains(peerId) ?? false
                     },
                     share: true

@@ -194,16 +194,16 @@ final class InstantPageSubContentNode : ASDisplayNode, InstantPageExternalMediaD
                 if itemNode == nil {
                     let itemIndex = itemIndex
                     let detailsIndex = detailsIndex
-                    if let newNode = item.node(context: self.context, strings: self.strings, nameDisplayOrder: self.nameDisplayOrder, theme: theme, sourceLocation: self.sourceLocation, openMedia: { [weak self] media in
+                    if let newNode = item.node(context: self.context, strings: self.strings, nameDisplayOrder: self.nameDisplayOrder, theme: theme, sourceLocation: self.sourceLocation, openMedia: { [weak self = self] media in
                         self?.openMedia(media)
-                        }, longPressMedia: { [weak self] media in
+                        }, longPressMedia: { [weak self = self] media in
                             self?.longPressMedia(media)
-                        }, activatePinchPreview: nil, pinchPreviewFinished: nil, openPeer: { [weak self] peerId in
+                        }, activatePinchPreview: nil, pinchPreviewFinished: nil, openPeer: { [weak self = self] peerId in
                             self?.openPeer(peerId)
-                        }, openUrl: { [weak self] url in
+                        }, openUrl: { [weak self = self] url in
                             self?.openUrl(url)
                         }, updateWebEmbedHeight: { _ in
-                        }, updateDetailsExpanded: { [weak self] expanded in
+                        }, updateDetailsExpanded: { [weak self = self] expanded in
                             self?.updateDetailsExpanded(detailsIndex, expanded)
                         }, currentExpandedDetails: self.currentExpandedDetails, getPreloadedResource: { _ in return nil }) {
                         newNode.frame = itemFrame
@@ -219,7 +219,7 @@ final class InstantPageSubContentNode : ASDisplayNode, InstantPageExternalMediaD
                         self.applyExternalMediaDimensionsUpdater(to: newNode)
                         
                         if let itemNode = itemNode as? InstantPageDetailsNode {
-                            itemNode.requestLayoutUpdate = { [weak self] animated in
+                            itemNode.requestLayoutUpdate = { [weak self = self] animated in
                                 self?.requestLayoutUpdate?(animated)
                             }
                         }
@@ -316,7 +316,7 @@ final class InstantPageSubContentNode : ASDisplayNode, InstantPageExternalMediaD
         //            self.currentWebEmbedHeights[index] = height
         //
         //            let signal: Signal<Void, NoError> = (.complete() |> delay(0.08, queue: Queue.mainQueue()))
-        //            self.updateLayoutDisposable.set(signal.start(completed: { [weak self] in
+        //            self.updateLayoutDisposable.set(signal.start(completed: { [weak self = self] in
         //                if let strongSelf = self {
         //                    strongSelf.updateLayout()
         //                    strongSelf.updateVisibleItems()

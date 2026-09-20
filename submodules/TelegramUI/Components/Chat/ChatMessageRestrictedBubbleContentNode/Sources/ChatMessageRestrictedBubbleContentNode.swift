@@ -171,7 +171,7 @@ public class ChatMessageRestrictedBubbleContentNode: ChatMessageBubbleContentNod
                     boundingSize.width += layoutConstants.text.bubbleInsets.left + layoutConstants.text.bubbleInsets.right
                     boundingSize.height += layoutConstants.text.bubbleInsets.top + layoutConstants.text.bubbleInsets.bottom
                     
-                    return (boundingSize, { [weak self] animation, _, _ in
+                    return (boundingSize, { [weak self = self] animation, _, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             

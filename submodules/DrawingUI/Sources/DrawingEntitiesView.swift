@@ -421,7 +421,7 @@ public final class DrawingEntitiesView: UIView, TGPhotoDrawingEntitiesView {
         }
         view.containerView = self
         
-        let processSnap: (Bool, UIView) -> Void = { [weak self] snapped, snapView in
+        let processSnap: (Bool, UIView) -> Void = { [weak self = self] snapped, snapView in
             guard let self else {
                 return
             }
@@ -476,12 +476,12 @@ public final class DrawingEntitiesView: UIView, TGPhotoDrawingEntitiesView {
                 }
             }
         }
-        view.onPositionUpdated = { [weak self] position in
+        view.onPositionUpdated = { [weak self = self] position in
             if let self {
                 self.angleLayer.position = position
             }
         }
-        view.onInteractionUpdated = { [weak self] interacting in
+        view.onInteractionUpdated = { [weak self = self] interacting in
             if let self {
                 self.onInteractionUpdated(interacting)
             }

@@ -71,7 +71,7 @@ public final class PeekControllerImpl: ViewController, PeekController, ContextCo
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = PeekControllerNode(presentationData: self.presentationData, controller: self, content: self.content, requestDismiss: { [weak self] in
+        self.displayNode = PeekControllerNode(presentationData: self.presentationData, controller: self, content: self.content, requestDismiss: { [weak self = self] in
             self?.dismiss()
         })
         self.displayNodeDidLoad()
@@ -109,7 +109,7 @@ public final class PeekControllerImpl: ViewController, PeekController, ContextCo
     
     override public func dismiss(completion: (() -> Void)? = nil) {
         self.visibilityUpdated?(false)
-        self.controllerNode.animateOut(to: self.getSourceRect(), completion: { [weak self] in
+        self.controllerNode.animateOut(to: self.getSourceRect(), completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         })
     }

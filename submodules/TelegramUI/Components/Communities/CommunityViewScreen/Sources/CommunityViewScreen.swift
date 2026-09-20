@@ -1101,7 +1101,7 @@ private final class CommunityViewContentComponent: Component {
                 peer: peer,
                 canMute: component.joinedPeerIds.contains(peer.id),
                 canRemove: communityChatCanRemovePeer(community: component.community, peer: peer),
-                removePeer: { [weak self] in
+                removePeer: { [weak self = self] in
                     self?.presentRemovePeerConfirmation(peerId: peer.id)
                 }
             ) |> map { ContextController.Items(content: .list($0)) }, gesture: gesture)
@@ -1134,7 +1134,7 @@ private final class CommunityViewContentComponent: Component {
                 animationCache: component.context.animationCache,
                 animationRenderer: component.context.animationRenderer,
                 activateSearch: {},
-                peerSelected: { [weak self] peer, _, _, _, _ in
+                peerSelected: { [weak self = self] peer, _, _, _, _ in
                     self?.component?.openPeer(peer)
                 },
                 disabledPeerSelected: { _, _, _ in },
@@ -1144,7 +1144,7 @@ private final class CommunityViewContentComponent: Component {
                 messageSelected: { _, _, _, _ in },
                 groupSelected: { _ in },
                 addContact: { _ in },
-                setPeerIdWithRevealedOptions: { [weak self] peerId, fromPeerId in
+                setPeerIdWithRevealedOptions: { [weak self = self] peerId, fromPeerId in
                     guard let self else {
                         return
                     }
@@ -1154,12 +1154,12 @@ private final class CommunityViewContentComponent: Component {
                     }
                 },
                 setItemPinned: { _, _ in },
-                setPeerMuted: { [weak self] peerId, _ in
+                setPeerMuted: { [weak self = self] peerId, _ in
                     guard let self, let component = self.component else {
                         return
                     }
                     let _ = (component.context.engine.peers.togglePeerMuted(peerId: peerId, threadId: nil)
-                    |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                    |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1168,7 +1168,7 @@ private final class CommunityViewContentComponent: Component {
                     })
                 },
                 setPeerThreadMuted: { _, _, _ in },
-                deletePeer: { [weak self] peerId, _ in
+                deletePeer: { [weak self = self] peerId, _ in
                     self?.presentRemovePeerConfirmation(peerId: peerId)
                 },
                 deletePeerThread: { _, _ in },
@@ -1180,7 +1180,7 @@ private final class CommunityViewContentComponent: Component {
                 toggleArchivedFolderHiddenByDefault: {},
                 toggleThreadsSelection: { _, _ in },
                 hidePsa: { _ in },
-                activateChatPreview: { [weak self] item, _, node, gesture, _ in
+                activateChatPreview: { [weak self = self] item, _, node, gesture, _ in
                     self?.activateChatPreview(item: item, sourceNode: node, gesture: gesture)
                 },
                 present: { _ in },
@@ -1468,7 +1468,7 @@ private final class CommunityViewContentComponent: Component {
                         ),
                         separatorInset: communityChatSeparatorInset,
                         separatorAlpha: communityChatSeparatorAlpha,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, self.revealedPeerId == nil else {
                                 return
                             }
@@ -1501,7 +1501,7 @@ private final class CommunityViewContentComponent: Component {
                             background: component.mode.usesPlainStyle ? theme.chatList.itemBackgroundColor : theme.list.itemBlocksBackgroundColor
                         ),
                         insets: UIEdgeInsets(top: 2.0, left: 0.0, bottom: 2.0, right: 0.0),
-                        action: { [weak self] peer, _, _ in
+                        action: { [weak self = self] peer, _, _ in
                             switch section {
                             case .requestable:
                                 component.openPeer(peer)
@@ -1573,7 +1573,7 @@ private final class CommunityViewContentComponent: Component {
                     declineDisplaysProgress: isInFlight && component.pendingRequestInFlightApprove == false,
                     addDisplaysProgress: isInFlight && component.pendingRequestInFlightApprove == true,
                     hasNext: false,
-                    open: { [weak self] _ in
+                    open: { [weak self = self] _ in
                         self?.openRequest(row: row)
                     },
                     add: { _ in
@@ -1696,7 +1696,7 @@ private final class CommunityViewContentComponent: Component {
                                     isOn: component.community?.collapsedInDialogs == true,
                                     isInteractive: true,
                                     isEnabled: true,
-                                    action: { [weak self] value in
+                                    action: { [weak self = self] value in
                                         self?.component?.toggleCollapsed(value)
                                     }
                                 )),
@@ -1928,7 +1928,7 @@ private final class CommunityViewScreenComponent: Component {
             self.scrollView.contentInsetAdjustmentBehavior = .never
             self.scrollView.alwaysBounceVertical = true
 
-            self.sheetBoundsUpdated.connect { [weak self] update in
+            self.sheetBoundsUpdated.connect { [weak self = self] update in
                 guard let self else {
                     return
                 }
@@ -2094,7 +2094,7 @@ private final class CommunityViewScreenComponent: Component {
             self.linkedPeersDisposable.set((component.context.engine.data.subscribe(
                 EngineDataMap(ids.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peersById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peersById in
                 guard let self else {
                     return
                 }
@@ -2115,7 +2115,7 @@ private final class CommunityViewScreenComponent: Component {
             self.linkedPeerDataDisposable.set((component.context.engine.data.subscribe(
                 EngineDataMap(ids.map(TelegramEngine.EngineData.Item.Peer.CachedData.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] cachedDataById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] cachedDataById in
                 guard let self else {
                     return
                 }
@@ -2130,7 +2130,7 @@ private final class CommunityViewScreenComponent: Component {
             }))
 
             self.previewsDisposable.set((communityChatPreviewsSignal(context: component.context, peerIds: ids)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] previews in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] previews in
                 guard let self else {
                     return
                 }
@@ -2167,7 +2167,7 @@ private final class CommunityViewScreenComponent: Component {
             self.pendingRequestCachedDataDisposable.set((component.context.engine.data.subscribe(
                 EngineDataMap(ids.map(TelegramEngine.EngineData.Item.Peer.CachedData.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] cachedDataById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] cachedDataById in
                 guard let self else {
                     return
                 }
@@ -2209,7 +2209,7 @@ private final class CommunityViewScreenComponent: Component {
             }
 
             self.pendingRequestsDisposable.set((requestsContext.state
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -2241,7 +2241,7 @@ private final class CommunityViewScreenComponent: Component {
                 communityId: component.communityId,
                 participantId: component.context.account.peerId
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -2256,7 +2256,7 @@ private final class CommunityViewScreenComponent: Component {
                     TelegramEngine.EngineData.Item.Peer.Peer(id: component.communityId),
                     TelegramEngine.EngineData.Item.Peer.CachedData(id: component.communityId)
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peer, cachedData in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer, cachedData in
                     guard let self else {
                         return
                     }
@@ -2354,7 +2354,7 @@ private final class CommunityViewScreenComponent: Component {
             }
             let navigationController = self.environment?.controller()?.navigationController as? NavigationController
             self.openSearchResultDisposable.set((component.context.engine.peers.ensurePeerIsLocallyAvailable(peer: peer)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] actualPeer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] actualPeer in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -2387,7 +2387,7 @@ private final class CommunityViewScreenComponent: Component {
                         context: component.context,
                         chatLocation: .peer(actualPeer),
                         keepStack: .always,
-                        purposefulAction: { [weak self] in
+                        purposefulAction: { [weak self = self] in
                             self?.deactivateSearch(animated: false)
                         },
                         forceOpenChat: true
@@ -2405,7 +2405,7 @@ private final class CommunityViewScreenComponent: Component {
                 return
             }
             self.openSearchResultDisposable.set((component.context.engine.peers.ensurePeerIsLocallyAvailable(peer: peer)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] actualPeer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] actualPeer in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -2420,7 +2420,7 @@ private final class CommunityViewScreenComponent: Component {
                         chatLocation: .peer(actualPeer),
                         subject: .message(id: .id(messageId), highlight: ChatControllerSubject.MessageHighlight(quote: nil), timecode: nil, setupReply: false),
                         keepStack: .always,
-                        purposefulAction: { [weak self] in
+                        purposefulAction: { [weak self = self] in
                             if deactivateOnAction {
                                 self?.deactivateSearch(animated: false)
                             }
@@ -2451,7 +2451,7 @@ private final class CommunityViewScreenComponent: Component {
                 displaySearchFilters: false,
                 hasDownloads: false,
                 initialFilter: .chats,
-                openPeer: { [weak self] peer, _, threadId, dismissSearch in
+                openPeer: { [weak self = self] peer, _, threadId, dismissSearch in
                     self?.openPeerFromSearch(peer: peer, threadId: threadId, dismissSearch: dismissSearch)
                 },
                 openDisabledPeer: { peer, _, reason in
@@ -2459,26 +2459,26 @@ private final class CommunityViewScreenComponent: Component {
                 },
                 openRecentPeerOptions: { _ in
                 },
-                openMessage: { [weak self] peer, threadId, messageId, deactivateOnAction in
+                openMessage: { [weak self = self] peer, threadId, messageId, deactivateOnAction in
                     self?.openMessageFromSearch(peer: peer, threadId: threadId, messageId: messageId, deactivateOnAction: deactivateOnAction)
                 },
                 addContact: nil,
                 peerContextAction: nil,
-                present: { [weak self] controller, arguments in
+                present: { [weak self = self] controller, arguments in
                     self?.environment?.controller()?.present(controller, in: .window(.root), with: arguments)
                 },
-                presentInGlobalOverlay: { [weak self] controller, arguments in
+                presentInGlobalOverlay: { [weak self = self] controller, arguments in
                     self?.environment?.controller()?.presentInGlobalOverlay(controller, with: arguments)
                 },
                 navigationController: environment.controller()?.navigationController as? NavigationController,
-                parentController: { [weak self] in
+                parentController: { [weak self = self] in
                     return self?.environment?.controller()
                 }
             )
-            contentNode.dismissSearch = { [weak self] in
+            contentNode.dismissSearch = { [weak self = self] in
                 self?.deactivateSearch(animated: true)
             }
-            contentNode.dismissSearchImmediately = { [weak self] in
+            contentNode.dismissSearchImmediately = { [weak self = self] in
                 self?.deactivateSearch(animated: false)
             }
 
@@ -2486,7 +2486,7 @@ private final class CommunityViewScreenComponent: Component {
                 presentationData: presentationData,
                 mode: .list,
                 contentNode: contentNode,
-                cancel: { [weak self] in
+                cancel: { [weak self = self] in
                     self?.deactivateSearch(animated: true)
                 },
                 fieldStyle: .glass,
@@ -2498,7 +2498,7 @@ private final class CommunityViewScreenComponent: Component {
             self.state?.updated(transition: .spring(duration: 0.4))
 
             searchDisplayController.containerLayoutUpdated(layout, navigationBarHeight: navigationHeight, transition: .immediate)
-            searchDisplayController.activate(insertSubnode: { [weak self] subnode, isSearchBar in
+            searchDisplayController.activate(insertSubnode: { [weak self = self] subnode, isSearchBar in
                 guard let self else {
                     return
                 }
@@ -2552,13 +2552,13 @@ private final class CommunityViewScreenComponent: Component {
                 peerId: peerId,
                 action: .unlink
             )
-            |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.removingPeerId = nil
                 self.state?.updated(transition: .spring(duration: 0.35))
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -2672,7 +2672,7 @@ private final class CommunityViewScreenComponent: Component {
                     duration: 3.0
                 ),
                 animateInAsReplacement: animateInAsReplacement,
-                action: { [weak self] action in
+                action: { [weak self = self] action in
                     guard let self else {
                         return false
                     }
@@ -2705,7 +2705,7 @@ private final class CommunityViewScreenComponent: Component {
                 communityId: component.communityId,
                 collapsed: collapsed
             )
-            |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+            |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -2735,7 +2735,7 @@ private final class CommunityViewScreenComponent: Component {
             let excludedPeerIds = Set((self.cachedData?.linkedPeers ?? []).map(\.peerId))
             self.addChatDisposable.set((component.context.engine.peers.adminedPublicChannels(scope: .forCommunity)
             |> take(1)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] channels in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] channels in
                 guard let self else {
                     return
                 }
@@ -2754,7 +2754,7 @@ private final class CommunityViewScreenComponent: Component {
                     context: component.context,
                     initialData: PeerSelectionScreen.communityInitialData(channels: channels),
                     updatedPresentationData: nil,
-                    completion: { [weak self] channel in
+                    completion: { [weak self = self] channel in
                         guard let self, let component = self.component, let channel else {
                             return
                         }
@@ -2763,7 +2763,7 @@ private final class CommunityViewScreenComponent: Component {
                             communityId: component.communityId,
                             peerId: channel.peer.id,
                             requiresConfirmation: !self.isAdmin,
-                            completed: { [weak self] immediate in
+                            completed: { [weak self = self] immediate in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -2830,7 +2830,7 @@ private final class CommunityViewScreenComponent: Component {
                 case .sheet:
                     leftButton = AnyComponentWithIdentity(id: "close", component: AnyComponent(NavigationButtonComponent(
                         content: .icon(imageName: "Navigation/Close"),
-                        pressed: { [weak self] _ in
+                        pressed: { [weak self = self] _ in
                             self?.dismiss(animated: true)
                         }
                     )))
@@ -2838,7 +2838,7 @@ private final class CommunityViewScreenComponent: Component {
                     navigationBackTitle = nil
                 case .fullscreen:
                     leftButton = nil
-                    backPressed = { [weak self] in
+                    backPressed = { [weak self = self] in
                         self?.dismiss(animated: true)
                     }
                     navigationBackTitle = environment.strings.Common_Back
@@ -2864,7 +2864,7 @@ private final class CommunityViewScreenComponent: Component {
             if component.mode.usesSheetPresentation && !component.mode.isPreview && component.selectionOptions == nil {
                 rightButtons.append(AnyComponentWithIdentity(id: "search", component: AnyComponent(NavigationButtonComponent(
                     content: .icon(imageName: "Navigation/Search"),
-                    pressed: { [weak self] _ in
+                    pressed: { [weak self = self] _ in
                         self?.activateSearch(searchContentNode: nil)
                     }
                 ))))
@@ -2872,7 +2872,7 @@ private final class CommunityViewScreenComponent: Component {
             if self.isAdmin && !component.mode.isPreview && component.selectionOptions == nil {
                 rightButtons.append(AnyComponentWithIdentity(id: "settings", component: AnyComponent(NavigationButtonComponent(
                     content: .icon(imageName: "Media Editor/Adjustments"),
-                    pressed: { [weak self] _ in
+                    pressed: { [weak self = self] _ in
                         self?.openEdit()
                     }
                 ))))
@@ -2919,7 +2919,7 @@ private final class CommunityViewScreenComponent: Component {
                     accessoryPanelContainer: nil,
                     accessoryPanelContainerHeight: 0.0,
                     hasEdgeEffect: component.mode.usesPlainStyle,
-                    activateSearch: { [weak self] searchContentNode in
+                    activateSearch: { [weak self = self] searchContentNode in
                         if !component.mode.isPreview && component.selectionOptions == nil {
                             self?.activateSearch(searchContentNode: searchContentNode)
                         }
@@ -3082,19 +3082,19 @@ private final class CommunityViewScreenComponent: Component {
                 pendingRequestInFlightApprove: nil,
                 joinedPeerIds: self.joinedPeerIds,
                 selectionOptions: component.selectionOptions,
-                toggleCollapsed: { [weak self] value in
+                toggleCollapsed: { [weak self = self] value in
                     self?.toggleCollapsed(value)
                 },
-                setRequestApproval: { [weak self] request, peer, approve in
+                setRequestApproval: { [weak self = self] request, peer, approve in
                     self?.setPendingRequestApproval(request: request, peer: peer, approve: approve)
                 },
-                openPeer: { [weak self] peer in
+                openPeer: { [weak self = self] peer in
                     self?.openPeer(peer)
                 },
-                openPendingRequests: { [weak self] in
+                openPendingRequests: { [weak self = self] in
                     self?.openPendingRequests()
                 },
-                removePeer: { [weak self] peerId in
+                removePeer: { [weak self = self] peerId in
                     self?.removePeer(peerId)
                 }
             )
@@ -3108,7 +3108,7 @@ private final class CommunityViewScreenComponent: Component {
                 safeInsets: safeInsets,
                 isEnabled: !self.isAddActionInProgress,
                 displaysProgress: self.isAddActionInProgress,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -3210,7 +3210,7 @@ private final class CommunityViewScreenComponent: Component {
                             isCentered: environment.metrics.widthClass == .regular,
                             screenSize: availableSize,
                             regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                            dismiss: { [weak self] animated in
+                            dismiss: { [weak self = self] animated in
                                 self?.dismiss(animated: animated)
                             },
                             boundsUpdated: self.sheetBoundsUpdated

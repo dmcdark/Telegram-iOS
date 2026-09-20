@@ -76,7 +76,7 @@ private final class PeerInfoScreenActionItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -139,7 +139,7 @@ private final class PeerInfoScreenActionItemNode: PeerInfoScreenItemNode {
             transition.updateFrame(node: self.iconNode, frame: iconFrame)
         } else if let iconSignal = item.iconSignal {
             self.iconDisposable.set((iconSignal
-            |> deliverOnMainQueue).startStrict(next: { [weak self] image in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] image in
                 if let strongSelf = self, let image {
                     strongSelf.iconNode.image = image
                     let iconFrame = CGRect(origin: CGPoint(x: iconInset, y: floorToScreenPixels((height - image.size.height) / 2.0)), size: image.size)

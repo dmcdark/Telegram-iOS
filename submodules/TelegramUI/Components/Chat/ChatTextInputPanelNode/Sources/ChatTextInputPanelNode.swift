@@ -409,7 +409,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             if let statuses = self.interfaceInteraction?.statuses {
                 self.statusDisposable.set((statuses.inlineSearch
                 |> distinctUntilChanged
-                |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                     self?.updateIsProcessingInlineRequest(value)
                 }).strict())
             }
@@ -814,13 +814,13 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         
         self.view.addSubview(self.glassBackgroundContainer)
         
-        self.slowModeButton.requestUpdate = { [weak self] in
+        self.slowModeButton.requestUpdate = { [weak self = self] in
             self?.requestLayout(transition: .animated(duration: 0.2, curve: .easeInOut))
         }
         self.slowModeButton.addTarget(self, action: #selector(self.slowModeButtonPressed), forControlEvents: .touchUpInside)
         
         self.viewForOverlayContent = ChatTextViewForOverlayContent(
-            ignoreHit: { [weak self] view, point in
+            ignoreHit: { [weak self = self] view, point in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -832,7 +832,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 }
                 return false
             },
-            dismissSuggestions: { [weak self] in
+            dismissSuggestions: { [weak self = self] in
                 guard let strongSelf = self, let currentEmojiSuggestion = strongSelf.currentEmojiSuggestion, let richTextInputNode = strongSelf.richTextInputNode else {
                     return
                 }
@@ -866,7 +866,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             self.alwaysUseNativeInput = true
         }
         
-        self.sendAsAvatarContainerNode.activated = { [weak self] gesture, _ in
+        self.sendAsAvatarContainerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -874,7 +874,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         }
         
         self.sendAsAvatarButtonNode.addTarget(self, action: #selector(self.sendAsAvatarButtonPressed), forControlEvents: .touchUpInside)
-        self.sendAsAvatarButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.sendAsAvatarButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     let transition: ContainedViewLayoutTransition = .animated(duration: 0.3, curve: .spring)
@@ -887,7 +887,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         }
         
         self.menuButton.addTarget(self, action: #selector(self.menuButtonPressed), forControlEvents: .touchUpInside)
-        self.menuButton.highligthedChanged = { [weak self] highlighted in
+        self.menuButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     let transition: ContainedViewLayoutTransition = .animated(duration: 0.3, curve: .spring)
@@ -899,7 +899,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
         }
         
-        self.startButton.pressed = { [weak self] in
+        self.startButton.pressed = { [weak self = self] in
             guard let self, let presentationInterfaceState = self.presentationInterfaceState else {
                 return
             }
@@ -916,7 +916,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         }
         
         self.attachmentButton.addTarget(self, action: #selector(self.attachmentButtonPressed), for: .touchUpInside)
-        self.attachmentButton.highligthedChanged = { [weak self] highlighted in
+        self.attachmentButton.highligthedChanged = { [weak self = self] highlighted in
             if let self {
                 if highlighted {
                     self.attachmentButtonIcon.layer.removeAnimation(forKey: "opacity")
@@ -929,11 +929,11 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         }
         self.attachmentButtonDisabledNode.addTarget(self, action: #selector(self.attachmentButtonPressed), forControlEvents: .touchUpInside)
   
-        self.sendActionButtons.sendButtonLongPressed = { [weak self] node, gesture in
+        self.sendActionButtons.sendButtonLongPressed = { [weak self = self] node, gesture in
             self?.interfaceInteraction?.displaySendMessageOptions(node, gesture)
         }
         
-        self.mediaActionButtons.micButton.recordingDisabled = { [weak self] in
+        self.mediaActionButtons.micButton.recordingDisabled = { [weak self = self] in
             if let strongSelf = self {
                 if strongSelf.presentationInterfaceState?.voiceMessagesAvailable == false {
                     self?.interfaceInteraction?.displayRestrictedInfo(.premiumVoiceMessages, .tooltip)
@@ -943,7 +943,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
         }
         
-        self.mediaActionButtons.micButton.beginRecording = { [weak self] in
+        self.mediaActionButtons.micButton.beginRecording = { [weak self = self] in
             if let strongSelf = self, let presentationInterfaceState = strongSelf.presentationInterfaceState, let interfaceInteraction = strongSelf.interfaceInteraction {
                 let isVideo: Bool
                 switch presentationInterfaceState.interfaceState.mediaRecordingMode {
@@ -955,7 +955,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 interfaceInteraction.beginMediaRecording(isVideo)
             }
         }
-        self.mediaActionButtons.micButton.endRecording = { [weak self] sendMedia in
+        self.mediaActionButtons.micButton.endRecording = { [weak self = self] sendMedia in
             if let strongSelf = self, let interfaceState = strongSelf.presentationInterfaceState, let interfaceInteraction = strongSelf.interfaceInteraction {
                 if let _ = interfaceState.inputTextPanelState.mediaRecordingState {
                     if sendMedia {
@@ -971,33 +971,33 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 strongSelf.tooltipController?.dismiss()
             }
         }
-        self.mediaActionButtons.micButton.offsetRecordingControls = { [weak self] in
+        self.mediaActionButtons.micButton.offsetRecordingControls = { [weak self = self] in
             if let strongSelf = self, let presentationInterfaceState = strongSelf.presentationInterfaceState {
                 if let (width, leftInset, rightInset, bottomInset, additionalSideInsets, maxHeight, maxOverlayHeight, metrics, isSecondary, isMediaInputExpanded, deviceMetrics) = strongSelf.validLayout {
                     let _ = strongSelf.updateLayout(width: width, leftInset: leftInset, rightInset: rightInset, bottomInset: bottomInset, additionalSideInsets: additionalSideInsets, maxHeight: maxHeight, maxOverlayHeight: maxOverlayHeight, isSecondary: isSecondary, transition: .immediate, interfaceState: presentationInterfaceState, metrics: metrics, deviceMetrics: deviceMetrics, isMediaInputExpanded: isMediaInputExpanded)
                 }
             }
         }
-        self.mediaActionButtons.micButton.updateCancelTranslation = { [weak self] in
+        self.mediaActionButtons.micButton.updateCancelTranslation = { [weak self = self] in
             if let strongSelf = self, let presentationInterfaceState = strongSelf.presentationInterfaceState {
                 if let (width, leftInset, rightInset, bottomInset, additionalSideInsets, maxHeight, maxOverlayHeight, metrics, isSecondary, isMediaInputExpanded, deviceMetrics) = strongSelf.validLayout {
                     let _ = strongSelf.updateLayout(width: width, leftInset: leftInset, rightInset: rightInset, bottomInset: bottomInset, additionalSideInsets: additionalSideInsets, maxHeight: maxHeight, maxOverlayHeight: maxOverlayHeight, isSecondary: isSecondary, transition: .immediate, interfaceState: presentationInterfaceState, metrics: metrics, deviceMetrics: deviceMetrics, isMediaInputExpanded: isMediaInputExpanded)
                 }
             }
         }
-        self.mediaActionButtons.micButton.stopRecording = { [weak self] in
+        self.mediaActionButtons.micButton.stopRecording = { [weak self = self] in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 interfaceInteraction.stopMediaRecording()
                 
                 strongSelf.tooltipController?.dismiss()
             }
         }
-        self.mediaActionButtons.micButton.updateLocked = { [weak self] _ in
+        self.mediaActionButtons.micButton.updateLocked = { [weak self = self] _ in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 interfaceInteraction.lockMediaRecording()
             }
         }
-        self.mediaActionButtons.micButton.switchMode = { [weak self] in
+        self.mediaActionButtons.micButton.switchMode = { [weak self = self] in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 interfaceInteraction.switchMediaRecordingMode()
             }
@@ -1011,7 +1011,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         self.mediaActionButtons.expandMediaInputButton.addTarget(self, action: #selector(self.expandButtonPressed), for: .touchUpInside)
         self.mediaActionButtons.expandMediaInputButtonBackgroundView.alpha = 0.0
         
-        self.searchLayoutClearButton.highligthedChanged = { [weak self] highlighted in
+        self.searchLayoutClearButton.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }
@@ -1064,7 +1064,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         
         self.textInputBackgroundNode.clipsToBounds = true
         let recognizer = TouchDownGestureRecognizer(target: self, action: #selector(self.textInputBackgroundViewTap(_:)))
-        recognizer.touchDown = { [weak self] in
+        recognizer.touchDown = { [weak self = self] in
             if let strongSelf = self {
                 if strongSelf.sendingTextDisabled {
                     guard let controller = (strongSelf.interfaceInteraction?.chatController() as? ChatController) else {
@@ -1082,7 +1082,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 }
             }
         }
-        recognizer.waitForTouchUp = { [weak self] in
+        recognizer.waitForTouchUp = { [weak self = self] in
             guard let strongSelf = self, let richTextInputNode = strongSelf.richTextInputNode else {
                 return true
             }
@@ -1220,20 +1220,20 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         richTextInputNode.inputClipsToBounds = false
         richTextInputNode.inputDelegate = self
         if #available(iOS 16.0, *) {
-            richTextInputNode.contextMenuItemsProvider = { [weak self] defaultElements in
+            richTextInputNode.contextMenuItemsProvider = { [weak self = self] defaultElements in
                 return self?.buildRichTextContextMenuElements(defaultElements: defaultElements) ?? defaultElements
             }
         }
-        richTextInputNode.canPasteMedia = { [weak self] in self?.handlePastedMedia(perform: false) ?? false }
-        richTextInputNode.onPasteMedia = { [weak self] in self?.handlePastedMedia(perform: true) ?? false }
-        richTextInputNode.onRequestTableStructuralMenu = { [weak self] request in
+        richTextInputNode.canPasteMedia = { [weak self = self] in self?.handlePastedMedia(perform: false) ?? false }
+        richTextInputNode.onPasteMedia = { [weak self = self] in self?.handlePastedMedia(perform: true) ?? false }
+        richTextInputNode.onRequestTableStructuralMenu = { [weak self = self] request in
             guard let self, let context = self.context else { return }
             let presentationData = context.sharedContext.currentPresentationData.with { $0 }
-            presentTableStructuralMenu(request, presentationData: presentationData) { [weak self] controller in
+            presentTableStructuralMenu(request, presentationData: presentationData) { [weak self = self] controller in
                 self?.interfaceInteraction?.presentGlobalOverlayController(controller, nil)
             }
         }
-        richTextInputNode.onRequestMediaControl = { [weak self] context in
+        richTextInputNode.onRequestMediaControl = { [weak self = self] context in
             guard let self, let anchor = context.sourceView else { return }
             let presentationData = self.context?.sharedContext.currentPresentationData.with { $0 }
             guard let presentationData else { return }
@@ -1254,7 +1254,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                     ))
                 ]
                 presentMediaControlMenu(anchorView: anchor, items: items,
-                                        presentationData: presentationData) { [weak self] controller in
+                                        presentationData: presentationData) { [weak self = self] controller in
                     self?.interfaceInteraction?.presentGlobalOverlayController(controller, nil)
                 }
             case .add:
@@ -1268,7 +1268,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         // Report "typing…" chat activity on a genuine text edit. The legacy backend gets this from
         // `chatInputTextNode(shouldChangeTextIn:)`; the native editor never calls that delegate, so it fires
         // this hook instead (and gates out caret moves / programmatic content sets — see the node).
-        richTextInputNode.onTypingActivity = { [weak self] in self?.updateActivity() }
+        richTextInputNode.onTypingActivity = { [weak self = self] in self?.updateActivity() }
         richTextInputNode.inputHitTestSlop = UIEdgeInsets(top: -5.0, left: -12.0, bottom: -5.0, right: -5.0)
         richTextInputNode.keyboardAppearance = keyboardAppearance
         richTextInputNode.inputTintColor = tintColor
@@ -1277,7 +1277,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         richTextInputNode.inputView.disablesInteractiveTransitionGestureRecognizer = true
         richTextInputNode.inputIsUserInteractionEnabled = !self.sendingTextDisabled
         self.richTextInputNode = richTextInputNode
-        richTextInputNode.emojiViewProvider = { [weak self] emoji in
+        richTextInputNode.emojiViewProvider = { [weak self = self] emoji in
             return self?.emojiViewProvider?(emoji)
         }
         richTextInputNode.mediaItemViewFactory = self.mediaItemViewFactory
@@ -1318,7 +1318,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         
         self.textInputBackgroundNode.isUserInteractionEnabled = !richTextInputNode.inputIsUserInteractionEnabled
         
-        richTextInputNode.toggleQuoteCollapse = { [weak self] range in
+        richTextInputNode.toggleQuoteCollapse = { [weak self = self] range in
             guard let self else {
                 return
             }
@@ -1372,7 +1372,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
         }
         
         let recognizer = TouchDownGestureRecognizer(target: self, action: #selector(self.textInputBackgroundViewTap(_:)))
-        recognizer.touchDown = { [weak self] in
+        recognizer.touchDown = { [weak self = self] in
             if let strongSelf = self {
                 if strongSelf.richTextInputNode?.isInputFirstResponder == true {
                     Queue.mainQueue().after(0.05) {
@@ -2743,7 +2743,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             } else {
                 animateCancelSlideIn = transition.isAnimated
                 
-                audioRecordingCancelIndicator = ChatTextInputAudioRecordingCancelIndicator(theme: interfaceState.theme, strings: interfaceState.strings, cancel: { [weak self] in
+                audioRecordingCancelIndicator = ChatTextInputAudioRecordingCancelIndicator(theme: interfaceState.theme, strings: interfaceState.strings, cancel: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -2763,7 +2763,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             case let .audio(recorder, isLocked):
                 let hadAudioRecorder = self.mediaActionButtons.micButton.audioRecorder != nil
                 if !hadAudioRecorder, isLocked {
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self = self] in
                         self?.mediaActionButtons.micButton.lock()
                     }
                 }
@@ -3506,7 +3506,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 mediaRecordingAccessibilityArea.accessibilityLabel = text
                 mediaRecordingAccessibilityArea.accessibilityTraits = [.button, .startsMediaSession]
                 self.mediaRecordingAccessibilityArea = mediaRecordingAccessibilityArea
-                mediaRecordingAccessibilityArea.activate = { [weak self] in
+                mediaRecordingAccessibilityArea.activate = { [weak self = self] in
                     if let self {
                         self.interfaceInteraction?.finishMediaRecording(.send(viewOnce: self.viewOnce))
                     }
@@ -3577,7 +3577,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             } else {
                 aiButton = (HighlightTrackingButton(), UIImageView())
                 self.attachmentAIButton = aiButton
-                aiButton.button.highligthedChanged = { [weak self] highlighted in
+                aiButton.button.highligthedChanged = { [weak self = self] highlighted in
                     guard let self, let aiButton = self.attachmentAIButton else {
                         return
                     }
@@ -3842,7 +3842,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             } else {
                 expandButton = (HighlightTrackingButton(), GlassBackgroundView.ContentImageView())
                 self.expandButton = expandButton
-                expandButton.button.highligthedChanged = { [weak self] highlighted in
+                expandButton.button.highligthedChanged = { [weak self = self] highlighted in
                     guard let self, let expandButton = self.expandButton else {
                         return
                     }
@@ -4183,7 +4183,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                     animationCache: presentationContext.animationCache,
                     animationRenderer: presentationContext.animationRenderer,
                     files: value,
-                    action: { [weak self] file in
+                    action: { [weak self = self] file in
                         guard let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction, let currentEmojiSuggestion = strongSelf.currentEmojiSuggestion else {
                             return
                         }
@@ -4297,12 +4297,12 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
     }
     
     private func installEmojiSuggestionPreviewGesture(hostView: UIView) {
-        let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point in
+        let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point in
             guard let self else {
                 return nil
             }
             return self.emojiSuggestionPeekContentAtPoint(point: point)
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             guard let strongSelf = self, let context = strongSelf.context else {
                 return nil
             }
@@ -4314,7 +4314,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             //strongSelf.peekController = controller
             strongSelf.interfaceInteraction?.presentGlobalOverlayController(controller, nil)
             return controller
-        }, updateContent: { [weak self] content in
+        }, updateContent: { [weak self = self] content in
             guard let strongSelf = self else {
                 return
             }
@@ -4527,7 +4527,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 return nil
             }
             
-            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self] in
+            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -4635,7 +4635,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
                 self.sendActionButtons.updateAccessibility()
                 
                 self.sendActionButtons.animatingSendButton = true
-                alphaTransition.updateAlpha(node: self.sendActionButtons.sendContainerNode, alpha: 0.0, completion: { [weak self] _ in
+                alphaTransition.updateAlpha(node: self.sendActionButtons.sendContainerNode, alpha: 0.0, completion: { [weak self = self] _ in
                     if let strongSelf = self {
                         strongSelf.sendActionButtons.animatingSendButton = false
                         strongSelf.applyUpdateSendButtonIcon()
@@ -4682,7 +4682,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             } else {
                 if !self.sendActionButtons.sendContainerNode.alpha.isZero {
                     self.sendActionButtons.animatingSendButton = true
-                    alphaTransition.updateAlpha(node: self.sendActionButtons.sendContainerNode, alpha: 0.0, completion: { [weak self] _ in
+                    alphaTransition.updateAlpha(node: self.sendActionButtons.sendContainerNode, alpha: 0.0, completion: { [weak self = self] _ in
                         if let strongSelf = self {
                             strongSelf.sendActionButtons.animatingSendButton = false
                             strongSelf.applyUpdateSendButtonIcon()
@@ -5084,7 +5084,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
             
             if hasSpoilers {
-                children.append(UIAction(title: self.strings?.TextFormat_Quote ?? "Quote", image: nil) { [weak self] (action) in
+                children.append(UIAction(title: self.strings?.TextFormat_Quote ?? "Quote", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesQuote(strongSelf)
                     }
@@ -5092,7 +5092,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
             
             if hasSpoilers {
-                children.append(UIAction(title: self.strings?.TextFormat_Spoiler ?? "Spoiler", image: nil) { [weak self] (action) in
+                children.append(UIAction(title: self.strings?.TextFormat_Spoiler ?? "Spoiler", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesSpoiler(strongSelf)
                     }
@@ -5100,22 +5100,22 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
             
             children.append(contentsOf: [
-                UIAction(title: self.strings?.TextFormat_Bold ?? "Bold", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Bold ?? "Bold", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesBold(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Italic ?? "Italic", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Italic ?? "Italic", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesItalic(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Monospace ?? "Monospace", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Monospace ?? "Monospace", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesMonospace(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesLink(strongSelf)
                     }
@@ -5123,7 +5123,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             ])
             
             if hasSpoilers {
-                children.append(UIAction(title: self.strings?.TextFormat_Date ?? "Date", image: nil) { [weak self] (action) in
+                children.append(UIAction(title: self.strings?.TextFormat_Date ?? "Date", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesDate(strongSelf)
                     }
@@ -5131,19 +5131,19 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             }
             
             children.append(contentsOf: [
-                UIAction(title: self.strings?.TextFormat_Strikethrough ?? "Strikethrough", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Strikethrough ?? "Strikethrough", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesStrikethrough(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Underline ?? "Underline", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Underline ?? "Underline", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesUnderline(strongSelf)
                     }
                 }
             ] as [UIAction])
             
-            children.append(UIAction(title: self.strings?.TextFormat_Code ?? "Code", image: nil) { [weak self] (action) in
+            children.append(UIAction(title: self.strings?.TextFormat_Code ?? "Code", image: nil) { [weak self = self] (action) in
                 if let strongSelf = self {
                     strongSelf.formatAttributesCodeBlock(strongSelf)
                 }
@@ -5194,7 +5194,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             UIAction(title: self.strings?.TextFormat_Monospace ?? "Monospace", image: nil) { [weak richTextInputNode] _ in
                 richTextInputNode?.performFormatAction(.monospace)
             },
-            UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self] _ in
+            UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self = self] _ in
                 self?.interfaceInteraction?.openLinkEditing()
             }
         ])
@@ -5261,7 +5261,7 @@ public class ChatTextInputPanelNode: ChatInputPanelNode, ASEditableTextNodeDeleg
             text = current.inputText.attributedSubstring(from: NSMakeRange(current.selectionRange.lowerBound, current.selectionRange.count))
             return (current, inputMode)
         }
-        self.interfaceInteraction?.presentInputTextTranslation(text, { [weak self] attributedString in
+        self.interfaceInteraction?.presentInputTextTranslation(text, { [weak self = self] attributedString in
             guard let self else {
                 return
             }

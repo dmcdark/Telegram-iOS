@@ -37,20 +37,20 @@ extension ChatControllerImpl {
 
         if case let .file(file) = media, file.isSticker || file.isCustomEmoji {
             let _ = (self.context.engine.stickers.isStickerSaved(id: file.fileId)
-            |> deliverOnMainQueue).start(next: { [weak self] isStarred in
+            |> deliverOnMainQueue).start(next: { [weak self = self] isStarred in
                 guard let self else {
                     return
                 }
                 
                 var items: [ContextMenuItem] = []
-                items.append(.action(ContextMenuActionItem(text: isStarred ? self.presentationData.strings.Stickers_RemoveFromFavorites : self.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                items.append(.action(ContextMenuActionItem(text: isStarred ? self.presentationData.strings.Stickers_RemoveFromFavorites : self.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                     f(.default)
                     
                     guard let self else {
                         return
                     }
                     let _ = (self.context.engine.stickers.toggleStickerSaved(file: file, saved: !isStarred)
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         if let self {
                             self.present(UndoOverlayController(presentationData: self.presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: !isStarred ? self.presentationData.strings.Conversation_StickerAddedToFavorites : self.presentationData.strings.Conversation_StickerRemovedFromFavorites, undoText: nil, customAction: nil), elevatedLayout: false, action: { _ in return false }), in: .current)
                         }
@@ -68,14 +68,14 @@ extension ChatControllerImpl {
                     }
                 }
                 if let packReference {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                         f(.default)
                         
                         guard let self, let controllerInteraction = self.controllerInteraction else {
                             return
                         }
                         
-                        let controller = StickerPackScreen(context: self.context, mainStickerPack: packReference, stickerPacks: [packReference], parentNavigationController: controllerInteraction.navigationController(), sendSticker: { [weak self] file, sourceNode, sourceRect in
+                        let controller = StickerPackScreen(context: self.context, mainStickerPack: packReference, stickerPacks: [packReference], parentNavigationController: controllerInteraction.navigationController(), sendSticker: { [weak self = self] file, sourceNode, sourceRect in
                             if let self, let controllerInteraction = self.controllerInteraction {
                                 return controllerInteraction.sendSticker(file, false, false, nil, true, sourceNode, sourceRect, nil, [])
                             } else {
@@ -121,10 +121,10 @@ extension ChatControllerImpl {
                 skipUrlAuth: true,
                 skipConcealedAlert: false,
                 forceDark: false,
-                present: { [weak self] c in
+                present: { [weak self = self] c in
                     self?.present(c, in: .window(.root))
                 },
-                openResolved: { [weak self] result in
+                openResolved: { [weak self = self] result in
                     guard let self, let navigationController = self.effectiveNavigationController else {
                         return
                     }
@@ -132,7 +132,7 @@ extension ChatControllerImpl {
                     context.sharedContext.openResolvedUrl(result, context: context, urlContext: .generic, navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { peer, navigation in
 
                     }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: { _, _, _ in
-                    }, present: { [weak self] c, a in
+                    }, present: { [weak self = self] c, a in
                         self?.present(c, in: .window(.root), with: a)
                     }, dismissInput: {
                         context.sharedContext.mainWindow?.viewController?.view.endEditing(false)
@@ -154,13 +154,13 @@ extension ChatControllerImpl {
                 standalone: true,
                 reverseMessageGalleryOrder: false,
                 navigationController: self.controllerInteraction?.navigationController(),
-                dismissInput: { [weak self] in
+                dismissInput: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.controllerInteraction?.dismissTextInput()
                 },
-                present: { [weak self] controller, arguments, presentationContextType in
+                present: { [weak self = self] controller, arguments, presentationContextType in
                     guard let self else {
                         return
                     }
@@ -171,7 +171,7 @@ extension ChatControllerImpl {
                         self.controllerInteraction?.presentController(controller, arguments)
                     }
                 },
-                transitionNode: { [weak self] messageId, media, adjustRect in
+                transitionNode: { [weak self = self] messageId, media, adjustRect in
                     var selectedNode: (ASDisplayNode, CGRect, () -> (UIView?, UIView?))?
                     if let self {
                         self.chatDisplayNode.historyNode.forEachItemNode { itemNode in
@@ -184,31 +184,31 @@ extension ChatControllerImpl {
                     }
                     return selectedNode
                 },
-                addToTransitionSurface: { [weak self] view in
+                addToTransitionSurface: { [weak self = self] view in
                     guard let self else {
                         return
                     }
                     self.chatDisplayNode.historyNode.view.superview?.insertSubview(view, aboveSubview: self.chatDisplayNode.historyNode.view)
                 },
-                openUrl: { [weak self] url in
+                openUrl: { [weak self = self] url in
                     guard let self else {
                         return
                     }
                     self.controllerInteraction?.openUrl(.init(url: url, concealed: false, progress: Promise()))
                 },
-                openPeer: { [weak self] peer, navigation in
+                openPeer: { [weak self = self] peer, navigation in
                     guard let self else {
                         return
                     }
                     self.controllerInteraction?.openPeer(EnginePeer(peer), navigation, nil, .default)
                 },
-                callPeer: { [weak self] peerId, isVideo in
+                callPeer: { [weak self = self] peerId, isVideo in
                     guard let self else {
                         return
                     }
                     self.controllerInteraction?.callPeer(peerId, isVideo)
                 },
-                openConferenceCall: { [weak self] message in
+                openConferenceCall: { [weak self = self] message in
                     guard let self else {
                         return
                     }
@@ -216,13 +216,13 @@ extension ChatControllerImpl {
                 },
                 enqueueMessage: { _ in
                 },
-                sendSticker: { [weak self] fileReference, sourceNode, sourceRect in
+                sendSticker: { [weak self = self] fileReference, sourceNode, sourceRect in
                     guard let self else {
                         return false
                     }
                     return self.controllerInteraction?.sendSticker(fileReference, false, false, nil, false, sourceNode, sourceRect, nil, []) ?? false
                 },
-                sendEmoji: { [weak self] text, attribute in
+                sendEmoji: { [weak self = self] text, attribute in
                     guard let self else {
                         return
                     }

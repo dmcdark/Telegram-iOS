@@ -117,13 +117,13 @@ private final class OverlayStatusControllerNode: ViewControllerTracingNode {
     }
     
     func begin() {
-        self.contentController.show(success: { [weak self] in
+        self.contentController.show(success: { [weak self = self] in
             self?.dismissed()
         })
     }
     
     func dismiss(increasedDelay: Bool = false) {
-        self.contentController.dismiss(completion: { [weak self] in
+        self.contentController.dismiss(completion: { [weak self = self] in
             self?.dismissed()
         })
     }
@@ -159,7 +159,7 @@ private final class OverlayStatusControllerImpl: ViewController, StandalonePrese
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = OverlayStatusControllerNode(style: self.style, type: self.type, dismissed: { [weak self] in
+        self.displayNode = OverlayStatusControllerNode(style: self.style, type: self.type, dismissed: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         })
         

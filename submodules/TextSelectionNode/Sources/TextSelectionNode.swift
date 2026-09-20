@@ -130,7 +130,7 @@ public final class TextSelectionGestureRecognizer: UIGestureRecognizer, UIGestur
                             self.f()
                         }
                     }
-                    let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self] in
+                    let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self = self] in
                         self?.longTapEvent()
                     }), selector: #selector(TimerTarget.event), userInfo: nil, repeats: false)
                     self.longTapTimer = longTapTimer
@@ -162,7 +162,7 @@ public final class TextSelectionGestureRecognizer: UIGestureRecognizer, UIGestur
             
             if self.isSelecting {
                 self.didRecognizeTap = true
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     self?.didRecognizeTap = false
                 }
             }
@@ -334,15 +334,15 @@ public final class TextSelectionNode: ASDisplayNode {
     override public func didLoad() {
         super.didLoad()
         
-        (self.view as? TextSelectionNodeView)?.hitTestImpl = { [weak self] point, event in
+        (self.view as? TextSelectionNodeView)?.hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
        
         let recognizer = TextSelectionGestureRecognizer(target: nil, action: nil)
-        recognizer.knobAtPoint = { [weak self] point in
+        recognizer.knobAtPoint = { [weak self = self] point in
             return self?.knobAtPoint(point)
         }
-        recognizer.moveKnob = { [weak self] knob, point in
+        recognizer.moveKnob = { [weak self = self] knob, point in
             guard let strongSelf = self, let currentRange = strongSelf.currentRange else {
                 return
             }
@@ -369,13 +369,13 @@ public final class TextSelectionNode: ASDisplayNode {
                 }
             }
         }
-        recognizer.finishedMovingKnob = { [weak self] in
+        recognizer.finishedMovingKnob = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.displayMenu()
         }
-        recognizer.beginSelection = { [weak self] point in
+        recognizer.beginSelection = { [weak self = self] point in
             guard let strongSelf = self, let attributedString = strongSelf.textNodeOrView.currentText else {
                 return
             }
@@ -414,11 +414,11 @@ public final class TextSelectionNode: ASDisplayNode {
             strongSelf.recognizer?.isSelecting = true
             strongSelf.updateIsActive(true)
         }
-        recognizer.clearSelection = { [weak self] in
+        recognizer.clearSelection = { [weak self = self] in
             self?.dismissSelection()
             self?.updateIsActive(false)
         }
-        recognizer.canBeginSelection = { [weak self] point in
+        recognizer.canBeginSelection = { [weak self = self] point in
             guard let self else {
                 return false
             }
@@ -478,7 +478,7 @@ public final class TextSelectionNode: ASDisplayNode {
         }
         let startPoint = self.rightKnob.frame.center
         let endPoint = endRangeRect.center
-        let displayLinkAnimator = DisplayLinkAnimator(duration: 0.3, from: 0.0, to: 1.0, update: { [weak self] progress in
+        let displayLinkAnimator = DisplayLinkAnimator(duration: 0.3, from: 0.0, to: 1.0, update: { [weak self = self] progress in
             guard let strongSelf = self else {
                 return
             }
@@ -769,26 +769,26 @@ public final class TextSelectionNode: ASDisplayNode {
         
         var actions: [ContextMenuAction] = []
         if self.enableCopy {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                 self?.performAction(string, .copy)
                 self?.cancelSelection()
             }))
         }
         if self.enableQuote {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuQuote, accessibilityLabel: self.strings.Conversation_ContextMenuQuote), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuQuote, accessibilityLabel: self.strings.Conversation_ContextMenuQuote), action: { [weak self = self] in
                 self?.performAction(string, .quote(range: adjustedRange.lowerBound ..< adjustedRange.upperBound))
                 self?.cancelSelection()
             }))
         }
         if self.enableLookup {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self = self] in
                 self?.performAction(string, .lookup)
                 self?.cancelSelection()
             }))
         }
         if #available(iOS 15.0, *) {
             if self.enableTranslate {
-                actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuTranslate, accessibilityLabel: self.strings.Conversation_ContextMenuTranslate), action: { [weak self] in
+                actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuTranslate, accessibilityLabel: self.strings.Conversation_ContextMenuTranslate), action: { [weak self = self] in
                     self?.performAction(string, .translate)
                     self?.cancelSelection()
                 }))
@@ -797,7 +797,7 @@ public final class TextSelectionNode: ASDisplayNode {
         
         let realFullRange = NSRange(location: 0, length: attributedString.length)
         if range != realFullRange {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.TextSelection_SelectAll, accessibilityLabel: self.strings.TextSelection_SelectAll), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.TextSelection_SelectAll, accessibilityLabel: self.strings.TextSelection_SelectAll), action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -805,7 +805,7 @@ public final class TextSelectionNode: ASDisplayNode {
                 self.setSelection(range: realFullRange, displayMenu: true)
             }))
         } else if self.enableShare {
-            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self = self] in
                 self?.performAction(string, .share)
                 self?.cancelSelection()
             }))
@@ -814,7 +814,7 @@ public final class TextSelectionNode: ASDisplayNode {
         self.contextMenu?.dismiss()
         
         let contextMenu = makeContextMenuController(actions: actions, catchTapsOutside: false, hasHapticFeedback: false, isDark: self.theme.isDark, skipCoordnateConversion: self.menuSkipCoordnateConversion)
-        contextMenu.dismissOnTap = { [weak self] view, point in
+        contextMenu.dismissOnTap = { [weak self = self] view, point in
             guard let self else {
                 return true
             }
@@ -825,7 +825,7 @@ public final class TextSelectionNode: ASDisplayNode {
             return true
         }
         self.contextMenu = contextMenu
-        self.present(contextMenu, ContextMenuControllerPresentationArguments(sourceViewAndRect: { [weak self] in
+        self.present(contextMenu, ContextMenuControllerPresentationArguments(sourceViewAndRect: { [weak self = self] in
             guard let strongSelf = self, let rootView = strongSelf.rootView() else {
                 return nil
             }

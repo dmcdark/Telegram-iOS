@@ -163,13 +163,13 @@ final class TextStyleEditContentComponent: Component {
             }
             self.environment?.controller()?.present(component.context.sharedContext.makeEmojiStatusSelectionController(
                 context: component.context,
-                mode: .backgroundSelection(completion: { [weak self] file in
+                mode: .backgroundSelection(completion: { [weak self = self] file in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.externalState.emojiFile = file
                     self.state?.updated(transition: .immediate)
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -192,7 +192,7 @@ final class TextStyleEditContentComponent: Component {
                 ) |> map { $0 },
                 currentSelection: nil,
                 color: nil,
-                destinationItemView: { [weak self] in
+                destinationItemView: { [weak self = self] in
                     guard let self else {
                         return nil
                     }
@@ -244,7 +244,7 @@ final class TextStyleEditContentComponent: Component {
                         cornerRadius: .minEdge,
                         smoothCorners: false
                     )),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -445,7 +445,7 @@ final class TextStyleEditContentComponent: Component {
                                 ))),
                             ], alignment: .center, spacing: 2.0, fillWidth: true)),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self, let component = self.component, let environment = self.environment else {
                                     return
                                 }
@@ -455,7 +455,7 @@ final class TextStyleEditContentComponent: Component {
                                     text: environment.strings.TextProcessing_AlertCreatorDeleteStyle_Text,
                                     actions: [
                                         TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self] in
+                                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self = self] in
                                             guard let self, let component = self.component else {
                                                 return
                                             }
@@ -505,7 +505,7 @@ final class TextStyleEditContentComponent: Component {
                         )))
                     ], spacing: 10.0)),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -557,7 +557,7 @@ final class TextStyleEditContentComponent: Component {
                 
                 if let targetView {
                     if (environment.inputHeight == 0.0) != (previousEnvironment.inputHeight == 0.0) {
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -624,7 +624,7 @@ private final class TextStyleEditSheetComponent: Component {
         override init(frame: CGRect) {
             super.init(frame: frame)
             
-            self.contentState.titleInputState.updated = { [weak self] in
+            self.contentState.titleInputState.updated = { [weak self = self] in
                 DispatchQueue.main.async {
                     guard let self else {
                         return
@@ -674,7 +674,7 @@ private final class TextStyleEditSheetComponent: Component {
                     title: self.contentState.titleInputState.text.string,
                     prompt: self.contentState.textInputState.text.string
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                     guard let self, let component = self.component, let environment = self.environment else {
                         return
                     }
@@ -687,7 +687,7 @@ private final class TextStyleEditSheetComponent: Component {
                     })
                     
                     component.completion(result)
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -713,7 +713,7 @@ private final class TextStyleEditSheetComponent: Component {
                     title: self.contentState.titleInputState.text.string,
                     prompt: self.contentState.textInputState.text.string
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                     guard let self, let component = self.component, let environment = self.environment else {
                         return
                     }
@@ -726,7 +726,7 @@ private final class TextStyleEditSheetComponent: Component {
                     })
                     
                     component.completion(result)
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -752,7 +752,7 @@ private final class TextStyleEditSheetComponent: Component {
             let controller = environmentValue.controller
             let theme = environmentValue.theme
 
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 if animated {
                     self?.animateOut.invoke(Action { _ in
                         if let controller = controller() {
@@ -766,7 +766,7 @@ private final class TextStyleEditSheetComponent: Component {
                 }
             }
 
-            let performMainAction: () -> Void = { [weak self] in
+            let performMainAction: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1076,7 +1076,7 @@ private final class ActionButtonsComponent: Component {
                     ),
                     isEnabled: component.action != nil,
                     displaysProgress: component.displayProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

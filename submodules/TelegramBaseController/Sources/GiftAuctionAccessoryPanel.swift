@@ -57,7 +57,7 @@ final class GiftAuctionAccessoryPanel: ASDisplayNode {
         
         self.contentNode.addSubnode(self.separatorNode)
         
-        self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+        self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
             if let self, let (size, leftInset, rightInset, isHidden) = self.validLayout {
                 self.updateLayout(size: size, leftInset: leftInset, rightInset: rightInset, isHidden: isHidden, transition: .immediate)
             }
@@ -221,7 +221,7 @@ final class GiftAuctionAccessoryPanel: ASDisplayNode {
                         ], spacing: 3.0))
                     ),
                     fitToContentWidth: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

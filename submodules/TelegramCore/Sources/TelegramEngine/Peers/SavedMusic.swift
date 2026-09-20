@@ -340,7 +340,7 @@ public final class ProfileSavedMusicContext {
         if self.files.isEmpty, !reload {
             self.cacheDisposable.set((postbox.transaction { transaction -> CachedProfileSavedMusic? in
                 return transaction.retrieveItemCacheEntry(id: entryId(peerId: peerId))?.get(CachedProfileSavedMusic.self)
-            } |> deliverOn(self.queue)).start(next: { [weak self] cachedSavedMusic in
+            } |> deliverOn(self.queue)).start(next: { [weak self = self] cachedSavedMusic in
                 guard let self, let cachedSavedMusic else {
                     return
                 }
@@ -375,7 +375,7 @@ public final class ProfileSavedMusicContext {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] files, count in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] files, count in
             guard let self else {
                 return
             }

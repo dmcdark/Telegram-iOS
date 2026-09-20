@@ -257,7 +257,7 @@ class CallListCallItemNode: ItemListRevealOptionsItemNode {
         
         self.infoButtonNode.addTarget(self, action: #selector(self.infoPressed), forControlEvents: .touchUpInside)
         
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             guard let item = self?.layoutParams?.0 else {
                 return false
             }
@@ -293,7 +293,7 @@ class CallListCallItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -315,7 +315,7 @@ class CallListCallItemNode: ItemListRevealOptionsItemNode {
         let editableControlLayout = ItemListEditableControlNode.asyncLayout(self.editableControlNode)
         let currentItem = self.layoutParams?.0
         
-        return { [weak self] item, params, first, last, firstWithHeader, neighbors in
+        return { [weak self = self] item, params, first, last, firstWithHeader, neighbors in
             var updatedTheme: PresentationTheme?
             var updatedInfoIcon = false
             
@@ -572,7 +572,7 @@ class CallListCallItemNode: ItemListRevealOptionsItemNode {
             
             let contentSize = nodeLayout.contentSize
             
-            return (nodeLayout, { [weak self] synchronousLoads in
+            return (nodeLayout, { [weak self = self] synchronousLoads in
                 if let strongSelf = self {
                     if let peer = item.topMessage.peers[item.topMessage.id.peerId] {
                         var overrideImage: AvatarNodeImageOverride?

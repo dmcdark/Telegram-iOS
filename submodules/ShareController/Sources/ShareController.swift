@@ -437,7 +437,7 @@ public final class ShareController: ViewController {
         
         switch subject {
             case let .url(text):
-                self.defaultAction = ShareControllerAction(title: forcedActionTitle ?? self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self] in
+                self.defaultAction = ShareControllerAction(title: forcedActionTitle ?? self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self = self] in
                     if let strongSelf = self, let segmentedValues = segmentedValues {
                         let selectedValue = segmentedValues[strongSelf.controllerNode.selectedSegmentedIndex]
                         if case let .url(text) = selectedValue.subject {
@@ -453,7 +453,7 @@ public final class ShareController: ViewController {
             case .text:
                 break
             case let .mapMedia(media):
-                self.defaultAction = ShareControllerAction(title: self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self] in
+                self.defaultAction = ShareControllerAction(title: self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self = self] in
                     let latLong = "\(media.latitude),\(media.longitude)"
                     let url = "https://maps.apple.com/maps?ll=\(latLong)&q=\(latLong)&t=m"
                     UIPasteboard.general.string = url
@@ -467,7 +467,7 @@ public final class ShareController: ViewController {
             case let .image(representations):
                 if case .saveToCameraRoll = preferredAction {
                     self.actionIsMediaSaving = true
-                    self.defaultAction = ShareControllerAction(title: self.presentationData.strings.Gallery_SaveImage, action: { [weak self] in
+                    self.defaultAction = ShareControllerAction(title: self.presentationData.strings.Gallery_SaveImage, action: { [weak self = self] in
                         self?.saveToCameraRoll(representations: representations)
                         self?.actionCompleted?()
                     })
@@ -483,12 +483,12 @@ public final class ShareController: ViewController {
                 }
                 if let currentContext = currentContext as? ShareControllerAppAccountContext, case .saveToCameraRoll = preferredAction, canSave {
                     self.actionIsMediaSaving = true
-                    self.defaultAction = ShareControllerAction(title: isVideo ? self.presentationData.strings.Gallery_SaveVideo : self.presentationData.strings.Gallery_SaveImage, action: { [weak self] in
+                    self.defaultAction = ShareControllerAction(title: isVideo ? self.presentationData.strings.Gallery_SaveVideo : self.presentationData.strings.Gallery_SaveImage, action: { [weak self = self] in
                         if let strongSelf = self {
                             if case let .message(message, media) = mediaReference, let messageId = message.id, let file = media as? TelegramMediaFile {
                                 let _ = (messageMediaFileStatus(context: currentContext.context, messageId: messageId, file: file)
                                 |> take(1)
-                                |> deliverOnMainQueue).start(next: { [weak self] fetchStatus in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] fetchStatus in
                                     if let strongSelf = self {
                                         if case .Local = fetchStatus {
                                             strongSelf.saveToCameraRoll(mediaReference: mediaReference, completion: nil)
@@ -509,7 +509,7 @@ public final class ShareController: ViewController {
             case let .messages(messages):
                 if case .saveToCameraRoll = preferredAction {
                     self.actionIsMediaSaving = true
-                    self.defaultAction = ShareControllerAction(title: self.presentationData.strings.Preview_SaveToCameraRoll, action: { [weak self] in
+                    self.defaultAction = ShareControllerAction(title: self.presentationData.strings.Preview_SaveToCameraRoll, action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -538,14 +538,14 @@ public final class ShareController: ViewController {
                         }
                     }
                     if let showInChat = showInChat, messages.count == 1 {
-                        self.defaultAction = ShareControllerAction(title: self.presentationData.strings.SharedMedia_ViewInChat, action: { [weak self] in
+                        self.defaultAction = ShareControllerAction(title: self.presentationData.strings.SharedMedia_ViewInChat, action: { [weak self = self] in
                             self?.controllerNode.cancel?()
                             showInChat(message)
                             self?.actionCompleted?()
                         })
                     } else if let chatPeer = message.peers[message.id.peerId] as? TelegramChannel, messages.count == 1 || sameGroupingKey {
                         if message.id.namespace == Namespaces.Message.Cloud {
-                            self.defaultAction = ShareControllerAction(title: self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self] in
+                            self.defaultAction = ShareControllerAction(title: self.presentationData.strings.ShareMenu_CopyShareLink, action: { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -569,7 +569,7 @@ public final class ShareController: ViewController {
         }
         
         if case let .custom(action) = preferredAction {
-            self.defaultAction = ShareControllerAction(title: action.title, action: { [weak self] in
+            self.defaultAction = ShareControllerAction(title: action.title, action: { [weak self = self] in
                 self?.controllerNode.cancel?()
                 action.action()
                 self?.actionCompleted?()
@@ -577,7 +577,7 @@ public final class ShareController: ViewController {
         }
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? self.environment.updatedPresentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 strongSelf.controllerNode.updatePresentationData(presentationData)
             }
@@ -637,12 +637,12 @@ public final class ShareController: ViewController {
             presetText: self.presetText,
             defaultAction: self.defaultAction,
             mediaParameters: mediaParameters,
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 self?.requestLayout(
                     transition: transition
                 )
             },
-            presentError: { [weak self] title, text in
+            presentError: { [weak self = self] title, text in
                 guard let strongSelf = self else {
                     return
                 }
@@ -672,14 +672,14 @@ public final class ShareController: ViewController {
         self.controllerNode.canSendInHighQuality = self.canSendInHighQuality
         self.controllerNode.completed = self.completed
         self.controllerNode.enqueued = self.enqueued
-        self.controllerNode.present = { [weak self] c in
+        self.controllerNode.present = { [weak self = self] c in
             self?.presentInGlobalOverlay(c)
         }
-        self.controllerNode.dismiss = { [weak self] shared in
+        self.controllerNode.dismiss = { [weak self = self] shared in
             self?.dismissed?(shared)
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.controllerNode.view.endEditing(true)
             self?.controllerNode.animateOut(shared: false, completion: {
                 self?.dismissed?(false)
@@ -687,7 +687,7 @@ public final class ShareController: ViewController {
             })
         }
         
-        self.controllerNode.tryShare = { [weak self] text, peers in
+        self.controllerNode.tryShare = { [weak self = self] text, peers in
             guard let strongSelf = self else {
                 return false
             }
@@ -935,7 +935,7 @@ public final class ShareController: ViewController {
             return true
         }
         
-        self.controllerNode.share = { [weak self] text, peerIds, topicIds, showNames, silently in
+        self.controllerNode.share = { [weak self = self] text, peerIds, topicIds, showNames, silently in
             guard let self else {
                 return .complete()
             }
@@ -956,7 +956,7 @@ public final class ShareController: ViewController {
                 return self.shareModern(text: text, peerIds: peerIds, topicIds: topicIds, showNames: showNames, silently: silently)
             }
         }
-        self.controllerNode.shareExternal = { [weak self] _ in
+        self.controllerNode.shareExternal = { [weak self = self] _ in
             if let strongSelf = self, let currentContext = strongSelf.currentContext as? ShareControllerAppAccountContext {
                 var collectableItems: [CollectableExternalShareItem] = []
                 var subject = strongSelf.subject
@@ -1069,7 +1069,7 @@ public final class ShareController: ViewController {
                                 let _ = (strongSelf.didAppearPromise.get()
                                 |> filter { $0 }
                                 |> take(1)
-                                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                                     let activityController = UIActivityViewController(activityItems: activityItems, applicationActivities: activities)
                                     if let strongSelf = self, let window = strongSelf.view.window, let rootViewController = window.rootViewController {
                                         activityController.popoverPresentationController?.sourceView = window
@@ -1125,7 +1125,7 @@ public final class ShareController: ViewController {
                 return .single(.done)
             }
         }
-        self.controllerNode.switchToAnotherAccount = { [weak self] in
+        self.controllerNode.switchToAnotherAccount = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1133,7 +1133,7 @@ public final class ShareController: ViewController {
             
             let presentationData = strongSelf.environment.presentationData
             let controller = ActionSheetController(presentationData: presentationData)
-            controller.dismissed = { [weak self] cancelled in
+            controller.dismissed = { [weak self = self] cancelled in
                 if cancelled {
                     self?.controllerNode.animateIn()
                 }
@@ -1152,7 +1152,7 @@ public final class ShareController: ViewController {
                     isSelected: info.account.accountId == strongSelf.currentContext.accountId,
                     strings: presentationData.strings,
                     theme: presentationData.theme,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         dismissAction()
                         self?.switchToAccount(account: info.account, animateIn: true)
                     }
@@ -1164,7 +1164,7 @@ public final class ShareController: ViewController {
             strongSelf.view.endEditing(true)
             strongSelf.present(controller, in: .window(.root), with: ViewControllerPresentationArguments(presentationAnimation: .modalSheet))
         }
-        self.controllerNode.disabledPeerSelected = { [weak self] peer in
+        self.controllerNode.disabledPeerSelected = { [weak self = self] peer in
             guard let self else {
                 return
             }
@@ -1185,7 +1185,7 @@ public final class ShareController: ViewController {
             }
             
             self.present(UndoOverlayController(presentationData: presentationData, content: .premiumPaywall(title: nil, text: presentationData.strings.Chat_ToastMessagingRestrictedToPremium_Text(peer.compactDisplayTitle).string, customUndoText: hasAction ? presentationData.strings.Chat_ToastMessagingRestrictedToPremium_Action : nil, timeout: nil, linkAction: { _ in
-            }), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self] action in
+            }), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self = self] action in
                 guard let self, let parentNavigationController = self.parentNavigationController, let context = self.currentContext as? ShareControllerAppAccountContext else {
                     return false
                 }
@@ -1198,19 +1198,19 @@ public final class ShareController: ViewController {
                 return false
             }), in: .current)
         }
-        self.controllerNode.onMediaTimestampLinkCopied = { [weak self] timestamp in
+        self.controllerNode.onMediaTimestampLinkCopied = { [weak self = self] timestamp in
             guard let self else {
                 return
             }
             self.onMediaTimestampLinkCopied?(timestamp)
         }
-        self.controllerNode.debugAction = { [weak self] in
+        self.controllerNode.debugAction = { [weak self = self] in
             self?.debugAction?()
         }
         self.displayNodeDidLoad()
         
         self.peersDisposable.set((self.peers.get()
-        |> deliverOnMainQueue).start(next: { [weak self] next in
+        |> deliverOnMainQueue).start(next: { [weak self = self] next in
             if let strongSelf = self {
                 strongSelf.controllerNode.updatePeers(context: strongSelf.currentContext, switchableAccounts: strongSelf.switchableAccounts, peers: next.0, accountPeer: next.1, defaultAction: strongSelf.defaultAction)
             }
@@ -1250,7 +1250,7 @@ public final class ShareController: ViewController {
         }
         |> deliverOnMainQueue
         |> castError(ShareControllerError.self)
-        |> mapToSignal { [weak self] peers, requiresStars -> Signal<ShareState, ShareControllerError> in
+        |> mapToSignal { [weak self = self] peers, requiresStars -> Signal<ShareState, ShareControllerError> in
             guard let strongSelf = self else {
                 return .complete()
             }
@@ -1904,7 +1904,7 @@ public final class ShareController: ViewController {
         }
         |> deliverOnMainQueue
         |> castError(ShareControllerError.self)
-        |> mapToSignal { [weak self] peers, requiresStars -> Signal<ShareState, ShareControllerError> in
+        |> mapToSignal { [weak self = self] peers, requiresStars -> Signal<ShareState, ShareControllerError> in
             guard let strongSelf = self, let currentContext = strongSelf.currentContext as? ShareControllerAppAccountContext else {
                 return .complete()
             }
@@ -2381,7 +2381,7 @@ public final class ShareController: ViewController {
     
     override public func dismiss(completion: (() -> Void)? = nil) {
         self.controllerNode.view.endEditing(true)
-        self.controllerNode.animateOut(shared: false, completion: { [weak self] in
+        self.controllerNode.animateOut(shared: false, completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
             completion?()
         })
@@ -2549,7 +2549,7 @@ public final class ShareController: ViewController {
         })
         var animatedIn = false
         self.peersDisposable.set((self.peers.get()
-        |> deliverOnMainQueue).start(next: { [weak self] next in
+        |> deliverOnMainQueue).start(next: { [weak self = self] next in
             if let strongSelf = self {
                 strongSelf.controllerNode.updatePeers(context: strongSelf.currentContext, switchableAccounts: strongSelf.switchableAccounts, peers: next.0, accountPeer: next.1, defaultAction: strongSelf.defaultAction)
                 
@@ -2558,7 +2558,7 @@ public final class ShareController: ViewController {
                     strongSelf.readyDisposable.set((strongSelf.controllerNode.ready.get()
                     |> filter({ $0 })
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }

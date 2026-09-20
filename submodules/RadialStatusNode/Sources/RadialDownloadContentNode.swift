@@ -174,7 +174,7 @@ final class RadialDownloadContentNode: RadialStatusContentNode {
             self.layer.animateScale(from: 1.0, to: 0.2, duration: duration, removeOnCompletion: false)
         } else {
             self.isAnimatingTransition = true
-            self.arrowBody.animateStrokeStart(from: 0.65, to: 0.0, duration: 0.5, removeOnCompletion: false, completion: { [weak self] _ in
+            self.arrowBody.animateStrokeStart(from: 0.65, to: 0.0, duration: 0.5, removeOnCompletion: false, completion: { [weak self = self] _ in
                 completion()
                 if let strongSelf = self, strongSelf.isAnimatingTransition, let f = strongSelf.enqueuedReadyForTransition {
                     strongSelf.isAnimatingTransition = false

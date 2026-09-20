@@ -293,18 +293,18 @@ private final class StickerPackContainer: ASDisplayNode {
         
         self.addSubnode(self.bottomContainerNode)
     
-        self.gridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.gridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             self?.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
         }
         
-        self.gridNode.scrollingInitiated = { [weak self] in
+        self.gridNode.scrollingInitiated = { [weak self = self] in
             guard let self else {
                 return
             }
             self.hideMainPreviewIcon()
         }
         
-        self.gridNode.interactiveScrollingEnded = { [weak self] in
+        self.gridNode.interactiveScrollingEnded = { [weak self = self] in
             guard let strongSelf = self, !strongSelf.isDismissed else {
                 return
             }
@@ -321,7 +321,7 @@ private final class StickerPackContainer: ASDisplayNode {
             }
         }
                 
-        self.gridNode.interactiveScrollingWillBeEnded = { [weak self] contentOffset, velocity, targetOffset -> CGPoint in
+        self.gridNode.interactiveScrollingWillBeEnded = { [weak self = self] contentOffset, velocity, targetOffset -> CGPoint in
             guard let strongSelf = self, !strongSelf.isDismissed else {
                 return targetOffset
             }
@@ -410,7 +410,7 @@ private final class StickerPackContainer: ASDisplayNode {
             return context.engine.stickers.loadedStickerPack(reference: packReference, forceActualized: true, ignoreCache: ignoreCache)
         })
         
-        self.itemsDisposable = combineLatest(queue: Queue.mainQueue(), fetchedStickerPacks, context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))).start(next: { [weak self] contents, peer in
+        self.itemsDisposable = combineLatest(queue: Queue.mainQueue(), fetchedStickerPacks, context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))).start(next: { [weak self = self] contents, peer in
             guard let strongSelf = self else {
                 return
             }
@@ -423,7 +423,7 @@ private final class StickerPackContainer: ASDisplayNode {
                 
         self.titleNode.linkHighlightColor = self.presentationData.theme.actionSheet.controlAccentColor.withAlphaComponent(0.2)
         
-        addStickerPackImpl = { [weak self] info, items in
+        addStickerPackImpl = { [weak self = self] info, items in
             guard let strongSelf = self else {
                 return
             }
@@ -440,7 +440,7 @@ private final class StickerPackContainer: ASDisplayNode {
             }
         }
         
-        removeStickerPackImpl = { [weak self] info in
+        removeStickerPackImpl = { [weak self = self] info in
             guard let strongSelf = self else {
                 return
             }
@@ -465,7 +465,7 @@ private final class StickerPackContainer: ASDisplayNode {
             longPressEmoji?(text, attribute, node, frame)
         }
         
-        addPressedImpl = { [weak self] sourceView in
+        addPressedImpl = { [weak self = self] sourceView in
             self?.presentAddStickerOptions(sourceView: sourceView)
         }
     }
@@ -479,7 +479,7 @@ private final class StickerPackContainer: ASDisplayNode {
     override func didLoad() {
         super.didLoad()
                 
-        let peekGestureRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
+        let peekGestureRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
             if let strongSelf = self {
                 if let itemNode = strongSelf.gridNode.itemNodeAtPoint(point) as? StickerPackPreviewGridItemNode, let item = itemNode.stickerPackItem {
                     var canEdit = false
@@ -524,12 +524,12 @@ private final class StickerPackContainer: ASDisplayNode {
                                         f(.default)
                                     })))
                                 }
-                                menuItems.append(.action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                menuItems.append(.action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
                                     
                                     if let strongSelf = self {
                                         let _ = (strongSelf.context.engine.stickers.toggleStickerSaved(file: item.file._parse(), saved: !isStarred)
-                                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                             if let self, let controller = self.controller {
                                                 controller.present(UndoOverlayController(presentationData: self.presentationData, content: .sticker(context: context, file: item.file._parse(), loop: true, title: nil, text: !isStarred ? self.presentationData.strings.Conversation_StickerAddedToFavorites : self.presentationData.strings.Conversation_StickerRemovedFromFavorites, undoText: nil, customAction: nil), elevatedLayout: false, action: { _ in return false }), in: .window(.root))
                                             }
@@ -552,7 +552,7 @@ private final class StickerPackContainer: ASDisplayNode {
                                             }
                                         })))
                                     }
-                                    menuItems.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Stickers_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, f in
+                                    menuItems.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Stickers_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, f in
                                         if let self {
                                             let contextItems: [ContextMenuItem] = [
                                                 .action(ContextMenuActionItem(text: self.presentationData.strings.Common_Back, icon: { theme in
@@ -561,7 +561,7 @@ private final class StickerPackContainer: ASDisplayNode {
                                                     c?.popItems()
                                                 })),
                                                 .separator,
-                                                .action(ContextMenuActionItem(text: self.presentationData.strings.Stickers_Delete_ForEveryone, textColor: .destructive, icon: { _ in return nil }, action: { [weak self] _ ,f in
+                                                .action(ContextMenuActionItem(text: self.presentationData.strings.Stickers_Delete_ForEveryone, textColor: .destructive, icon: { _ in return nil }, action: { [weak self = self] _ ,f in
                                                     f(.default)
                                                     
                                                     if let self, let (info, items, installed) = self.currentStickerPack {
@@ -591,7 +591,7 @@ private final class StickerPackContainer: ASDisplayNode {
                                     })))
                                 }
                             }
-                            return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: .pack(item.file._parse()), isLocked: item.file.isPremiumSticker && !hasPremium, menu: menuItems, openPremiumIntro: { [weak self] in
+                            return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: .pack(item.file._parse()), isLocked: item.file.isPremiumSticker && !hasPremium, menu: menuItems, openPremiumIntro: { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -609,14 +609,14 @@ private final class StickerPackContainer: ASDisplayNode {
                 }
             }
             return nil
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             if let strongSelf = self {
                 strongSelf.hideMainPreviewIcon()
                 
                 let controller = makePeekController(presentationData: strongSelf.presentationData, content: content, sourceView: {
                     return (sourceView, sourceRect)
                 })
-                controller.visibilityUpdated = { [weak self] visible in
+                controller.visibilityUpdated = { [weak self = self] visible in
                     if let strongSelf = self {
                         strongSelf.gridNode.forceHidden = visible
                     }
@@ -626,7 +626,7 @@ private final class StickerPackContainer: ASDisplayNode {
                 return controller
             }
             return nil
-        }, updateContent: { [weak self] content in
+        }, updateContent: { [weak self = self] content in
             if let strongSelf = self {
                 var item: StickerPreviewPeekItem?
                 if let content = content as? StickerPreviewPeekContent {
@@ -639,7 +639,7 @@ private final class StickerPackContainer: ASDisplayNode {
         self.peekGestureRecognizer = peekGestureRecognizer
         self.gridNode.view.addGestureRecognizer(peekGestureRecognizer)
         
-        let reorderingGestureRecognizer = ReorderingGestureRecognizer(animateOnTouch: false, shouldBegin: { [weak self] point in
+        let reorderingGestureRecognizer = ReorderingGestureRecognizer(animateOnTouch: false, shouldBegin: { [weak self = self] point in
             if let strongSelf = self, !strongSelf.gridNode.scrollView.isDragging && strongSelf.currentEntries.count > 1 {
                 if let itemNode = strongSelf.gridNode.itemNodeAtPoint(point) as? StickerPackPreviewGridItemNode, !itemNode.isAdd {
                     return (true, true, itemNode)
@@ -649,9 +649,9 @@ private final class StickerPackContainer: ASDisplayNode {
             return (false, false, nil)
         }, willBegin: { _ in
 
-        }, began: { [weak self] itemNode in
+        }, began: { [weak self = self] itemNode in
             self?.beginReordering(itemNode: itemNode)
-        }, ended: { [weak self] point in
+        }, ended: { [weak self = self] point in
             if let strongSelf = self {
                 if let point = point {
                     strongSelf.endReordering(point: point)
@@ -659,7 +659,7 @@ private final class StickerPackContainer: ASDisplayNode {
                     strongSelf.endReordering(point: nil)
                 }
             }
-        }, moved: { [weak self] point, offset in
+        }, moved: { [weak self = self] point, offset in
             self?.updateReordering(point: point, offset: offset)
         })
         reorderingGestureRecognizer.isEnabled = self.isEditing
@@ -679,7 +679,7 @@ private final class StickerPackContainer: ASDisplayNode {
     
     private func hideMainPreviewIcon() {
         if let mainPreviewIconView = self.mainPreviewIcon?.view {
-            mainPreviewIconView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+            mainPreviewIconView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -973,7 +973,7 @@ private final class StickerPackContainer: ASDisplayNode {
                 return nil
             }
             
-            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self] in
+            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1108,7 +1108,7 @@ private final class StickerPackContainer: ASDisplayNode {
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: strings.StickerPack_Share, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Share"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             f(.default)
             
             if let strongSelf = self {
@@ -1134,7 +1134,7 @@ private final class StickerPackContainer: ASDisplayNode {
         let copyText = self.currentStickerPacks.count > 1 ? strings.Conversation_LinksCopied : strings.Conversation_LinkCopied
         items.append(.action(ContextMenuActionItem(text: copyTitle, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-        }, action: {  [weak self] _, f in
+        }, action: {  [weak self = self] _, f in
             f(.default)
         
             UIPasteboard.general.string = text
@@ -1150,7 +1150,7 @@ private final class StickerPackContainer: ASDisplayNode {
             if packItems.count > 0 {
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Reorder, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReorderItems"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     self?.updateIsEditing(true)
                 })))
@@ -1158,7 +1158,7 @@ private final class StickerPackContainer: ASDisplayNode {
             
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_EditName, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 
                 self?.presentEditPackTitle()
@@ -1166,16 +1166,16 @@ private final class StickerPackContainer: ASDisplayNode {
             
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Delete, textColor: .destructive, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-            }, action: { [weak self] c, f in
+            }, action: { [weak self = self] c, f in
                 if let self, let (_, _, isInstalled) = self.currentStickerPack {
                     if isInstalled {
                         let contextItems: [ContextMenuItem] = [
-                            .action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Delete_DeleteForEveyone, textColor: .destructive, icon: { _ in return nil }, action: { [weak self] _ ,f in
+                            .action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Delete_DeleteForEveyone, textColor: .destructive, icon: { _ in return nil }, action: { [weak self = self] _ ,f in
                                 f(.default)
                                 
                                 self?.presentDeletePack()
                             })),
-                            .action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Delete_RemoveForMe, icon: { _ in return nil }, action: { [weak self] _ ,f in
+                            .action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_Delete_RemoveForMe, icon: { _ in return nil }, action: { [weak self = self] _ ,f in
                                 f(.default)
                                 
                                 self?.togglePackInstalled()
@@ -1193,7 +1193,7 @@ private final class StickerPackContainer: ASDisplayNode {
             
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.StickerPack_EditInfo, textLayout: .multiline, textFont: .small, parseMarkdown: true, icon: { _ in
                 return nil
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
 
                 guard let self, let controller = self.controller else {
@@ -1224,7 +1224,7 @@ private final class StickerPackContainer: ASDisplayNode {
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.StickerPack_CreateNew, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             f(.default)
 
             guard let self, let controller = self.controller else {
@@ -1235,7 +1235,7 @@ private final class StickerPackContainer: ASDisplayNode {
         })))
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.StickerPack_AddExisting, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSticker"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             f(.default)
             
             guard let self, let controller = self.controller else {
@@ -1439,7 +1439,7 @@ private final class StickerPackContainer: ASDisplayNode {
         }
         let context = self.context
         var dismissImpl: (() -> Void)?
-        let controller = stickerPackEditTitleController(context: context, title: self.presentationData.strings.StickerPack_EditName_Title, text: self.presentationData.strings.StickerPack_EditName_Text, placeholder: self.presentationData.strings.ImportStickerPack_NamePlaceholder, actionTitle: presentationData.strings.Common_Done, value: self.updatedTitle ?? info.title, maxLength: 64, apply: { [weak self] title in
+        let controller = stickerPackEditTitleController(context: context, title: self.presentationData.strings.StickerPack_EditName_Title, text: self.presentationData.strings.StickerPack_EditName_Text, placeholder: self.presentationData.strings.ImportStickerPack_NamePlaceholder, actionTitle: presentationData.strings.Common_Done, value: self.updatedTitle ?? info.title, maxLength: 64, apply: { [weak self = self] title in
             guard let self, let title else {
                 return
             }
@@ -1462,7 +1462,7 @@ private final class StickerPackContainer: ASDisplayNode {
             return
         }
         let context = self.context
-        controller.present(textAlertController(context: context, updatedPresentationData: controller.updatedPresentationData, title: self.presentationData.strings.StickerPack_Delete_Title, text: self.presentationData.strings.StickerPack_Delete_Text, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.StickerPack_Delete_Delete, action: { [weak self] in
+        controller.present(textAlertController(context: context, updatedPresentationData: controller.updatedPresentationData, title: self.presentationData.strings.StickerPack_Delete_Title, text: self.presentationData.strings.StickerPack_Delete_Text, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.StickerPack_Delete_Delete, action: { [weak self = self] in
             let _ = (context.engine.stickers.deleteStickerSet(packReference: .id(id: info.id.id, accessHash: info.accessHash))
             |> deliverOnMainQueue).startStandalone()
             
@@ -1499,7 +1499,7 @@ private final class StickerPackContainer: ASDisplayNode {
                     }
                 }
                 let _ = (removedPacks
-                |> deliverOnMainQueue).start(next: { [weak self] results in
+                |> deliverOnMainQueue).start(next: { [weak self = self] results in
                     if !results.isEmpty {
                         self?.controller?.actionPerformed?(results.map { result -> (StickerPackCollectionInfo, [StickerPackItem], StickerPackScreenPerformedAction) in
                             return (result.0 as! StickerPackCollectionInfo, result.2.map { $0 as! StickerPackItem }, .remove(positionInList: result.1))
@@ -2016,7 +2016,7 @@ private final class StickerPackContainer: ASDisplayNode {
         self.validLayout = (layout, gridFrame, titleAreaInset, gridInsets)
         
         transition.updateFrame(node: self.gridNode, frame: gridFrame)
-        self.gridNode.transaction(GridNodeTransaction(deleteItems: [], insertItems: [], updateItems: [], scrollToItem: nil, updateLayout: GridNodeUpdateLayout(layout: GridNodeLayout(size: gridFrame.size, insets: gridInsets, scrollIndicatorInsets: nil, preloadSize: 200.0, type: .fixed(itemSize: CGSize(width: itemWidth, height: itemWidth), fillWidth: nil, lineSpacing: 0.0, itemSpacing: nil)), transition: transition), itemTransition: .immediate, stationaryItems: .none, updateFirstIndexInSectionOffset: nil, updateOpaqueState: nil, synchronousLoads: false), completion: { [weak self] _ in
+        self.gridNode.transaction(GridNodeTransaction(deleteItems: [], insertItems: [], updateItems: [], scrollToItem: nil, updateLayout: GridNodeUpdateLayout(layout: GridNodeLayout(size: gridFrame.size, insets: gridInsets, scrollIndicatorInsets: nil, preloadSize: 200.0, type: .fixed(itemSize: CGSize(width: itemWidth, height: itemWidth), fillWidth: nil, lineSpacing: 0.0, itemSpacing: nil)), transition: transition), itemTransition: .immediate, stationaryItems: .none, updateFirstIndexInSectionOffset: nil, updateOpaqueState: nil, synchronousLoads: false), completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -2048,7 +2048,7 @@ private final class StickerPackContainer: ASDisplayNode {
                         tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                     )
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2084,7 +2084,7 @@ private final class StickerPackContainer: ASDisplayNode {
                         playOnce: self.moreButtonPlayOnce
                     )
                 )),
-                action: { [weak self] view in
+                action: { [weak self = self] view in
                     guard let self else {
                         return
                     }
@@ -2176,7 +2176,7 @@ private final class StickerPackContainer: ASDisplayNode {
                         component: AnyComponent(Text(text: buttonTitle, font: Font.semibold(17.0), color: buttonForegroundColor))
                     ),
                     displaysProgress: buttonHasProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.buttonPressed()
                     }
                 )
@@ -2313,7 +2313,7 @@ private final class StickerPackContainer: ASDisplayNode {
         }
         let transaction = self.enqueuedTransactions.removeFirst()
         
-        self.gridNode.transaction(GridNodeTransaction(deleteItems: transaction.deletions, insertItems: transaction.insertions, updateItems: transaction.updates, scrollToItem: transaction.scrollToItem, updateLayout: nil, itemTransition: self.isReordering ? .animated(duration: 0.3, curve: .easeInOut) : .immediate, stationaryItems: .none, updateFirstIndexInSectionOffset: nil), completion: { [weak self] _ in
+        self.gridNode.transaction(GridNodeTransaction(deleteItems: transaction.deletions, insertItems: transaction.insertions, updateItems: transaction.updates, scrollToItem: transaction.scrollToItem, updateLayout: nil, itemTransition: self.isReordering ? .animated(duration: 0.3, curve: .easeInOut) : .immediate, stationaryItems: .none, updateFirstIndexInSectionOffset: nil), completion: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -2570,7 +2570,7 @@ private final class StickerPackScreenNode: ViewControllerTracingNode {
                 wasAdded = true
                 containerTransition = .immediate
                 let index = i
-                container = StickerPackContainer(index: index, context: self.context, presentationData: self.presentationData, stickerPacks: self.stickerPacks, loadedStickerPacks: self.controller?.loadedStickerPacks ?? [], previewIconFile: self.previewIconFile, decideNextAction: { [weak self] container, action in
+                container = StickerPackContainer(index: index, context: self.context, presentationData: self.presentationData, stickerPacks: self.stickerPacks, loadedStickerPacks: self.controller?.loadedStickerPacks ?? [], previewIconFile: self.previewIconFile, decideNextAction: { [weak self = self] container, action in
                     guard let strongSelf = self, let layout = strongSelf.validLayout else {
                         return .dismiss
                     }
@@ -2604,9 +2604,9 @@ private final class StickerPackScreenNode: ViewControllerTracingNode {
                     strongSelf.selectedStickerPackIndex = strongSelf.selectedStickerPackIndex + 1
                     strongSelf.containerLayoutUpdated(layout, transition: .animated(duration: 0.3, curve: .spring))
                     return .navigatedNext
-                }, requestDismiss: { [weak self] in
+                }, requestDismiss: { [weak self = self] in
                     self?.dismiss()
-                }, expandProgressUpdated: { [weak self] container, transition, expandTransition in
+                }, expandProgressUpdated: { [weak self = self] container, transition, expandTransition in
                     guard let strongSelf = self, let layout = strongSelf.validLayout else {
                         return
                     }
@@ -2621,13 +2621,13 @@ private final class StickerPackScreenNode: ViewControllerTracingNode {
                         }
                     }
                 }, presentInGlobalOverlay: presentInGlobalOverlay, sendSticker: self.sendSticker, sendEmoji: self.sendEmoji, longPressEmoji: self.longPressEmoji, openMention: self.openMention, controller: self.controller)
-                container.onReady = { [weak self] in
+                container.onReady = { [weak self = self] in
                     self?.onReady()
                 }
-                container.onLoading = { [weak self] in
+                container.onLoading = { [weak self = self] in
                     self?.onLoading()
                 }
-                container.onError = { [weak self] in
+                container.onError = { [weak self = self] in
                     self?.onError()
                 }
                 self.containerContainingNode.addSubnode(container)
@@ -2774,7 +2774,7 @@ private final class StickerPackScreenNode: ViewControllerTracingNode {
             return
         }
         self.isDismissed = true
-        self.animateOut(completion: { [weak self] in
+        self.animateOut(completion: { [weak self = self] in
             self?.dismissed()
         })
         
@@ -2916,7 +2916,7 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
         self.statusBar.statusBarStyle = .Ignore
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 strongSelf.presentationData = presentationData
                 strongSelf.controllerNode.updatePresentationData(presentationData)
@@ -2934,19 +2934,19 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = StickerPackScreenNode(context: self.context, controller: self, stickerPacks: self.stickerPacks, previewIconFile: self.previewIconFile, initialSelectedStickerPackIndex: self.initialSelectedStickerPackIndex, modalProgressUpdated: { [weak self] value, transition in
+        self.displayNode = StickerPackScreenNode(context: self.context, controller: self, stickerPacks: self.stickerPacks, previewIconFile: self.previewIconFile, initialSelectedStickerPackIndex: self.initialSelectedStickerPackIndex, modalProgressUpdated: { [weak self = self] value, transition in
             DispatchQueue.main.async {
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.updateModalStyleOverlayTransitionFactor(value, transition: transition)
             }
-        }, dismissed: { [weak self] in
+        }, dismissed: { [weak self = self] in
             self?.dismissed?()
             self?.dismiss()
-        }, presentInGlobalOverlay: { [weak self] c, a in
+        }, presentInGlobalOverlay: { [weak self = self] c, a in
             self?.presentInGlobalOverlay(c, with: a)
-        }, sendSticker: self.sendSticker.flatMap { [weak self] sendSticker in
+        }, sendSticker: self.sendSticker.flatMap { [weak self = self] sendSticker in
             return { file, sourceNode, sourceRect in
                 if sendSticker(file, sourceNode, sourceRect) {
                     self?.dismiss()
@@ -2955,19 +2955,19 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
                     return false
                 }
             }
-        }, sendEmoji: self.sendEmoji.flatMap { [weak self] sendEmoji in
+        }, sendEmoji: self.sendEmoji.flatMap { [weak self = self] sendEmoji in
             return { text, attribute in
                 sendEmoji(text, attribute)
                 self?.controllerNode.dismiss()
             }
-        }, longPressEmoji: { [weak self] text, attribute, node, frame in
+        }, longPressEmoji: { [weak self = self] text, attribute, node, frame in
             guard let strongSelf = self else {
                 return
             }
             
             var actions: [ContextMenuAction] = []
 
-            actions.append(ContextMenuAction(content: .text(title: strongSelf.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: strongSelf.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+            actions.append(ContextMenuAction(content: .text(title: strongSelf.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: strongSelf.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                 storeMessageTextInPasteboard(
                     text,
                     entities: [
@@ -2988,14 +2988,14 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
             }))
             
             let contextMenuController = makeContextMenuController(actions: actions)
-            strongSelf.present(contextMenuController, in: .window(.root), with: ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+            strongSelf.present(contextMenuController, in: .window(.root), with: ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
                 if let strongSelf = self {
                     return (node, frame.insetBy(dx: -40.0, dy: 0.0), strongSelf.controllerNode, strongSelf.controllerNode.view.bounds)
                 } else {
                     return nil
                 }
             }))
-        }, openMention: { [weak self] mention in
+        }, openMention: { [weak self = self] mention in
             guard let strongSelf = self else {
                 return
             }
@@ -3026,13 +3026,13 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
         var dismissed = false
         
         var overlayStatusController: ViewController?
-        let cancelImpl: (() -> Void)? = { [weak self] in
+        let cancelImpl: (() -> Void)? = { [weak self = self] in
             dismissed = true
             overlayStatusController?.dismiss()
             self?.dismiss()
         }
         
-        self.controllerNode.onReady = { [weak self] in
+        self.controllerNode.onReady = { [weak self = self] in
             loaded = true
             
             if let strongSelf = self {
@@ -3057,7 +3057,7 @@ public final class StickerPackScreenImpl: ViewController, StickerPackScreen {
         }
          
         let presentationData = self.presentationData
-        self.controllerNode.onLoading = { [weak self] in
+        self.controllerNode.onLoading = { [weak self = self] in
             Queue.mainQueue().after(0.15, {
                 if !loaded {
                     let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
@@ -3239,7 +3239,7 @@ private class ReorderingGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

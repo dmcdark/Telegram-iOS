@@ -91,12 +91,12 @@ public class ChatMessageInstantVideoBubbleContentNode: ChatMessageBubbleContentN
             
         self.addSubnode(self.interactiveVideoNode)
                 
-        self.interactiveVideoNode.requestUpdateLayout = { [weak self] _ in
+        self.interactiveVideoNode.requestUpdateLayout = { [weak self = self] _ in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
             }
         }
-        self.interactiveVideoNode.updateTranscriptionExpanded = { [weak self] state in
+        self.interactiveVideoNode.updateTranscriptionExpanded = { [weak self = self] state in
             if let strongSelf = self, let item = strongSelf.item {
                 let previous = strongSelf.audioTranscriptionState
                 strongSelf.audioTranscriptionState = state
@@ -104,13 +104,13 @@ public class ChatMessageInstantVideoBubbleContentNode: ChatMessageBubbleContentN
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, state != .inProgress && previous != state, nil)
             }
         }
-        self.interactiveVideoNode.updateTranscriptionText = { [weak self] text in
+        self.interactiveVideoNode.updateTranscriptionText = { [weak self = self] text in
             if let strongSelf = self, let item = strongSelf.item {
                 strongSelf.interactiveFileNode.forcedAudioTranscriptionText = text
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
             }
         }
-        self.interactiveFileNode.updateTranscriptionExpanded = { [weak self] state in
+        self.interactiveFileNode.updateTranscriptionExpanded = { [weak self = self] state in
             if let strongSelf = self, let item = strongSelf.item {
                 let previous = strongSelf.audioTranscriptionState
                 strongSelf.audioTranscriptionState = state
@@ -119,38 +119,38 @@ public class ChatMessageInstantVideoBubbleContentNode: ChatMessageBubbleContentN
             }
         }
         
-        self.interactiveFileNode.toggleSelection = { [weak self] value in
+        self.interactiveFileNode.toggleSelection = { [weak self = self] value in
             if let strongSelf = self, let item = strongSelf.item {
                 item.controllerInteraction.toggleMessagesSelection([item.message.id], value)
             }
         }
         
-        self.interactiveFileNode.activateLocalContent = { [weak self] in
+        self.interactiveFileNode.activateLocalContent = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.openMessage(item.message, OpenMessageParams(mode: .default))
             }
         }
         
-        self.interactiveFileNode.requestUpdateLayout = { [weak self] _ in
+        self.interactiveFileNode.requestUpdateLayout = { [weak self = self] _ in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
             }
         }
         
-        self.interactiveFileNode.displayImportedTooltip = { [weak self] sourceNode in
+        self.interactiveFileNode.displayImportedTooltip = { [weak self = self] sourceNode in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.displayImportedMessageTooltip(sourceNode)
             }
         }
         
-        self.interactiveFileNode.dateAndStatusNode.reactionSelected = { [weak self] _, value, sourceView in
+        self.interactiveFileNode.dateAndStatusNode.reactionSelected = { [weak self = self] _, value, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
         }
         
-        self.interactiveFileNode.dateAndStatusNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+        self.interactiveFileNode.dateAndStatusNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture?.cancel()
                 return
@@ -159,7 +159,7 @@ public class ChatMessageInstantVideoBubbleContentNode: ChatMessageBubbleContentN
             item.controllerInteraction.openMessageReactionContextMenu(item.topMessage, sourceNode, gesture, value)
         }
         
-        self.interactiveFileNode.updateIsTextSelectionActive = { [weak self] value in
+        self.interactiveFileNode.updateIsTextSelectionActive = { [weak self = self] value in
             self?.updateIsTextSelectionActive?(value)
         }
     }
@@ -310,7 +310,7 @@ public class ChatMessageInstantVideoBubbleContentNode: ChatMessageBubbleContentN
                         finalSize = CGSize(width: boundingWidth, height: videoFrame.height + 2.0)
                     }
                     
-                    return (finalSize, { [weak self] animation, synchronousLoads, applyInfo in
+                    return (finalSize, { [weak self = self] animation, synchronousLoads, applyInfo in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.isExpanded = isExpanded

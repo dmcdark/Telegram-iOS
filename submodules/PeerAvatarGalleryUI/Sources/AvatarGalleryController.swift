@@ -529,7 +529,7 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         
         let syncResult = Atomic<(Bool, (() -> Void)?)>(value: (false, nil))
         
-        self.disposable.set(combineLatest(entriesSignal, self.animatedIn.get()).start(next: { [weak self] entries, animatedIn in
+        self.disposable.set(combineLatest(entriesSignal, self.animatedIn.get()).start(next: { [weak self = self] entries, animatedIn in
             let f: () -> Void = {
                 if let strongSelf = self, animatedIn {
                     let isFirstTime = strongSelf.entries.isEmpty
@@ -551,11 +551,11 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
                     }
                     
                     if strongSelf.isViewLoaded {
-                        strongSelf.galleryNode.pager.replaceItems(strongSelf.entries.map({ entry in PeerAvatarImageGalleryItem(context: context, peer: peer, presentationData: presentationData, entry: entry, sourceCorners: sourceCorners, delete: strongSelf.canDelete ? { [weak self] sourceView in
+                        strongSelf.galleryNode.pager.replaceItems(strongSelf.entries.map({ entry in PeerAvatarImageGalleryItem(context: context, peer: peer, presentationData: presentationData, entry: entry, sourceCorners: sourceCorners, delete: strongSelf.canDelete ? { [weak self = self] sourceView in
                             self?.presentDeleteEntryConfirmation(entry, sourceView: sourceView, gesture: nil)
-                            } : nil, setMain: { [weak self] in
+                            } : nil, setMain: { [weak self = self] in
                                 self?.setMainEntry(entry)
-                            }, edit: { [weak self] sourceView, gesture in
+                            }, edit: { [weak self = self] sourceView, gesture in
                                 self?.editEntry(entry, sourceView: sourceView, gesture: gesture)
                         })
                         }), centralItemIndex: strongSelf.centralEntryIndex, synchronous: !isFirstTime)
@@ -596,21 +596,21 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         
         syncResultApply?()
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self] title in
+        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self = self] title in
             if let strongSelf = self {
                 strongSelf.navigationItem.setTitle(title, animated: strongSelf.navigationItem.title?.isEmpty ?? true)
             }
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitleContent.get().start(next: { [weak self] titleContent in
+        self.centralItemAttributesDisposable.add(self.centralItemTitleContent.get().start(next: { [weak self = self] titleContent in
             self?.titleView.setContent(content: titleContent)
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemRightBarButtonItems.get().start(next: { [weak self] rightBarButtonItems in
+        self.centralItemAttributesDisposable.add(self.centralItemRightBarButtonItems.get().start(next: { [weak self = self] rightBarButtonItems in
             self?.navigationItem.rightBarButtonItems = rightBarButtonItems
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self] footerContentNode, _ in
+        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self = self] footerContentNode, _ in
             self?.galleryNode.updatePresentationState({
                 $0.withUpdatedFooterContentNode(footerContentNode)
             }, transition: .immediate)
@@ -642,7 +642,7 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         var animatedOutNode = true
         var animatedOutInterface = false
         
-        let completion = { [weak self] in
+        let completion = { [weak self = self] in
             if animatedOutNode && animatedOutInterface {
                 self?._hiddenMedia.set(.single(nil))
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
@@ -672,21 +672,21 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
     }
     
     override public func loadDisplayNode() {
-        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self] controller, arguments in
+        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self = self] controller, arguments in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root), with: arguments, blockInteraction: true)
             }
         }, pushController: { _ in
-        }, dismissController: { [weak self] in
+        }, dismissController: { [weak self = self] in
             self?.dismiss(forceAway: true)
-        }, replaceRootController: { [weak self] controller, ready in
+        }, replaceRootController: { [weak self = self] controller, ready in
             if let strongSelf = self {
                 strongSelf.replaceRootController(controller, ready)
             }
         }, editMedia: { _ in
-        }, controller: { [weak self] in
+        }, controller: { [weak self = self] in
             return self
-        }, currentItemNode: { [weak self] in
+        }, currentItemNode: { [weak self = self] in
             return self?.galleryNode.pager.centralItemNode()
         })
         self.displayNode = GalleryControllerNode(context: self.context, controllerInteraction: controllerInteraction, titleView: self.titleView)
@@ -697,7 +697,7 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         self.galleryNode.navigationBar = self.navigationBar
         self.galleryNode.animateAlpha = false
         
-        self.galleryNode.transitionDataForCentralItem = { [weak self] in
+        self.galleryNode.transitionDataForCentralItem = { [weak self = self] in
             if let strongSelf = self {
                 if let centralItemNode = strongSelf.galleryNode.pager.centralItemNode(), let presentationArguments = strongSelf.presentationArguments as? AvatarGalleryControllerPresentationArguments {
                     var sourceHasRoundCorners = false
@@ -714,21 +714,21 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
             }
             return nil
         }
-        self.galleryNode.dismiss = { [weak self] in
+        self.galleryNode.dismiss = { [weak self = self] in
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
         let presentationData = self.presentationData
-        self.galleryNode.pager.replaceItems(self.entries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self] sourceView in
+        self.galleryNode.pager.replaceItems(self.entries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self = self] sourceView in
             self?.presentDeleteEntryConfirmation(entry, sourceView: sourceView, gesture: nil)
-        } : nil, setMain: { [weak self] in
+        } : nil, setMain: { [weak self = self] in
             self?.setMainEntry(entry)
-        }, edit: { [weak self] sourceView, gesture in
+        }, edit: { [weak self = self] sourceView, gesture in
             self?.editEntry(entry, sourceView: sourceView, gesture: gesture)
         }) }), centralItemIndex: self.centralEntryIndex)
         
-        self.galleryNode.pager.centralItemIndexUpdated = { [weak self] index in
+        self.galleryNode.pager.centralItemIndexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 var hiddenItem: AvatarGalleryEntry?
                 if let index = index {
@@ -748,7 +748,7 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
             }
         }
         
-        let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self] _ in
+        let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self = self] _ in
             self?.didSetReady = true
         }
         self._ready.set(ready |> map { true })
@@ -839,11 +839,11 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
     
     private func replaceEntries(_ entries: [AvatarGalleryEntry]) {
         self.galleryNode.currentThumbnailContainerNode?.updateSynchronously = true
-        self.galleryNode.pager.replaceItems(entries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: self.peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self] sourceView in
+        self.galleryNode.pager.replaceItems(entries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: self.peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self = self] sourceView in
             self?.presentDeleteEntryConfirmation(entry, sourceView: sourceView, gesture: nil)
-        } : nil, setMain: { [weak self] in
+        } : nil, setMain: { [weak self = self] in
             self?.setMainEntry(entry)
-        }, edit: { [weak self] sourceView, gesture in
+        }, edit: { [weak self = self] sourceView, gesture in
             self?.editEntry(entry, sourceView: sourceView, gesture: gesture)
         }) }), centralItemIndex: 0, synchronous: true)
         self.entries = entries
@@ -865,7 +865,7 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
             if self.peer.id == self.context.account.peerId, let peerReference = PeerReference(self.peer) {
                     if let reference = reference {
                         let _ = (self.context.engine.accountData.updatePeerPhotoExisting(reference: reference)
-                        |> deliverOnMainQueue).start(next: { [weak self] photo in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] photo in
                             if let strongSelf = self, let photo = photo, let firstEntry = strongSelf.entries.first, case let .image(_, _, _, _, _, index, indexData, messageId, _, caption, _, emojiMarkup) = firstEntry {
                                 let updatedEntry = AvatarGalleryEntry.image(photo.imageId, photo.reference, photo.representations.map({ ImageRepresentationWithReference(representation: $0, reference: MediaResourceReference.avatar(peer: peerReference, resource: $0.resource)) }), photo.videoRepresentations.map({ VideoRepresentationWithReference(representation: $0, reference: MediaResourceReference.avatarList(peer: peerReference, resource: $0.resource)) }), strongSelf.peer, index, indexData, messageId, photo.immediateThumbnailData, caption, false, emojiMarkup)
                                 
@@ -916,9 +916,9 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Settings_SetNewProfilePhotoOrVideo, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] c, _ in
-            c?.dismiss(completion: { [weak self] in
-                self?.openAvatarSetup?({ [weak self] in
+        }, action: { [weak self = self] c, _ in
+            c?.dismiss(completion: { [weak self = self] in
+                self?.openAvatarSetup?({ [weak self = self] in
                     self?.dismissImmediately()
                 })
             })
@@ -938,8 +938,8 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
             }
             items.append(.action(ContextMenuActionItem(text: title, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
-                c?.dismiss(completion: { [weak self] in
+            }, action: { [weak self = self] c, _ in
+                c?.dismiss(completion: { [weak self = self] in
                     self?.setMainEntry(rawEntry)
                 })
             })))
@@ -953,16 +953,16 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         }
         items.append(.action(ContextMenuActionItem(text: deleteTitle, textColor: .destructive, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-        }, action: { [weak self] c, _ in
+        }, action: { [weak self = self] c, _ in
             guard let self, let c else {
                 return
             }
             let items: [ContextMenuItem] = [
                 .action(ContextMenuActionItem(text: presentationData.strings.Settings_RemoveConfirmation, textColor: .destructive, icon: { _ in
                     return nil
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     if let c {
-                        c.dismiss(completion: { [weak self] in
+                        c.dismiss(completion: { [weak self = self] in
                             self?.performDeleteEntry(rawEntry)
                         })
                     } else {
@@ -991,9 +991,9 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         let items: [ContextMenuItem] = [
             .action(ContextMenuActionItem(text: self.presentationData.strings.Settings_RemoveConfirmation, textColor: .destructive, icon: { _ in
                 return nil
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 if let c {
-                    c.dismiss(completion: { [weak self] in
+                    c.dismiss(completion: { [weak self = self] in
                         self?.performDeleteEntry(rawEntry)
                     })
                 } else {
@@ -1076,11 +1076,11 @@ public class AvatarGalleryController: ViewController, StandalonePresentableContr
         
         if replaceItems {
             updatedEntries = normalizeEntries(updatedEntries)
-            self.galleryNode.pager.replaceItems(updatedEntries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: self.peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self] sourceView in
+            self.galleryNode.pager.replaceItems(updatedEntries.map({ entry in PeerAvatarImageGalleryItem(context: self.context, peer: self.peer, presentationData: presentationData, entry: entry, sourceCorners: self.sourceCorners, delete: self.canDelete ? { [weak self = self] sourceView in
                 self?.presentDeleteEntryConfirmation(entry, sourceView: sourceView, gesture: nil)
-            } : nil, setMain: { [weak self] in
+            } : nil, setMain: { [weak self = self] in
                 self?.setMainEntry(entry)
-            }, edit: { [weak self] sourceView, gesture in
+            }, edit: { [weak self = self] sourceView, gesture in
                 self?.editEntry(entry, sourceView: sourceView, gesture: gesture)
             }) }), centralItemIndex: focusOnItem, synchronous: true)
             self.entries = updatedEntries

@@ -178,7 +178,7 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                                     isContentInFocus: panelEnvironment.isContentInFocus,
                                     height: intrinsicHeight,
                                     visibilityFractionUpdated: panelView.visibilityFractionUpdated,
-                                    isExpandedUpdated: { [weak self] isExpanded, transition in
+                                    isExpandedUpdated: { [weak self = self] isExpanded, transition in
                                         guard let strongSelf = self else {
                                             return
                                         }
@@ -192,7 +192,7 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                             transition.animatePosition(view: panelView.view, from: CGPoint(x: transitionOffsetFraction * availableSize.width, y: 0.0), to: CGPoint(), additive: true, completion: nil)
                             transition.animatePosition(view: panelView.tintContentView, from: CGPoint(x: transitionOffsetFraction * availableSize.width, y: 0.0), to: CGPoint(), additive: true, completion: nil)
                         }
-                        panelTransition.setFrame(view: panelView.view, frame: panelFrame, completion: { [weak self] completed in
+                        panelTransition.setFrame(view: panelView.view, frame: panelFrame, completion: { [weak self = self] completed in
                             if isPartOfTransition && completed {
                                 self?.state?.updated(transition: .immediate)
                             }
@@ -219,7 +219,7 @@ final class EntityKeyboardTopContainerPanelComponent: Component {
                 self.panelViews.removeValue(forKey: id)
             }
             
-            environment[PagerComponentPanelEnvironment.self].value.visibilityFractionUpdated.connect { [weak self] (fraction, transition) in
+            environment[PagerComponentPanelEnvironment.self].value.visibilityFractionUpdated.connect { [weak self = self] (fraction, transition) in
                 guard let strongSelf = self else {
                     return
                 }

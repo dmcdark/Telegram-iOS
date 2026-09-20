@@ -239,7 +239,7 @@ private final class ChannelPollingContext {
 
     init(queue: Queue) {
         self.isUpdatedDisposable = (self.isUpdated.get()
-        |> deliverOn(queue)).start(next: { [weak self] value in
+        |> deliverOn(queue)).start(next: { [weak self = self] value in
             self?.isUpdatedValue = value
         })
     }
@@ -372,7 +372,7 @@ public final class AccountViewTracker {
         self.chatHistoryPreloadManager = ChatHistoryPreloadManager(postbox: account.postbox, network: account.network, accountPeerId: account.peerId, networkState: account.networkState, preloadItemsSignal: self.chatListPreloadItems.get() |> distinctUntilChanged |> map { Array($0) })
         
         self.externallyUpdatedPeerIdDisposable.set((account.stateManager.externallyUpdatedPeerIds
-        |> deliverOn(self.queue)).start(next: { [weak self] peerIds in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] peerIds in
             guard let strongSelf = self else {
                 return
             }
@@ -463,7 +463,7 @@ public final class AccountViewTracker {
                                         })
                                     }
                                 }
-                            }).start(completed: { [weak self] in
+                            }).start(completed: { [weak self = self] in
                                 if let strongSelf = self {
                                     strongSelf.queue.async {
                                         strongSelf.webpageDisposables.removeValue(forKey: messageId)
@@ -471,7 +471,7 @@ public final class AccountViewTracker {
                                 }
                             })
                         } else if messageId.namespace == Namespaces.Message.Cloud {
-                            self.webpageDisposables[messageId] = fetchWebpage(account: account, messageId: messageId, threadId: threadId).start(completed: { [weak self] in
+                            self.webpageDisposables[messageId] = fetchWebpage(account: account, messageId: messageId, threadId: threadId).start(completed: { [weak self = self] in
                                 if let strongSelf = self {
                                     strongSelf.queue.async {
                                         strongSelf.webpageDisposables.removeValue(forKey: messageId)
@@ -639,7 +639,7 @@ public final class AccountViewTracker {
             if let account = self.account {
                 for holeId in addedHoleIds {
                     if self.visibleCallListHoleDisposables[holeId] == nil {
-                        self.visibleCallListHoleDisposables[holeId] = fetchCallListHole(network: account.network, postbox: account.postbox, accountPeerId: account.peerId, holeIndex: holeId).start(completed: { [weak self] in
+                        self.visibleCallListHoleDisposables[holeId] = fetchCallListHole(network: account.network, postbox: account.postbox, accountPeerId: account.peerId, holeIndex: holeId).start(completed: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.queue.async {
                                     strongSelf.visibleCallListHoleDisposables.removeValue(forKey: holeId)
@@ -672,7 +672,7 @@ public final class AccountViewTracker {
     }
     
     public func replyInfoForMessageId(_ id: MessageId) -> Signal<UpdatedMessageReplyInfo?, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let state = self?.updatedViewCountMessageIdsAndTimestamps[id]
             let result = state?.result
             if let state = state, let result = result, let commentsPeerId = result.commentsPeerId {
@@ -687,7 +687,7 @@ public final class AccountViewTracker {
     }
     
     public func updateReplyInfoForMessageId(_ id: MessageId, info: UpdatedMessageReplyInfo) {
-        self.queue.async { [weak self] in
+        self.queue.async { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -820,13 +820,13 @@ public final class AccountViewTracker {
                             }
                         }
                         |> switchToLatest)
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedViewCountDisposables.set(nil, forKey: disposableId)
                             }
                         }
                         |> deliverOn(self.queue)
-                        self.updatedViewCountDisposables.set(signal.start(next: { [weak self] updatedStates in
+                        self.updatedViewCountDisposables.set(signal.start(next: { [weak self = self] updatedStates in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -930,7 +930,7 @@ public final class AccountViewTracker {
                             }
                         }
                         |> switchToLatest)
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedReactionsDisposables.set(nil, forKey: disposableId)
                             }
@@ -986,7 +986,7 @@ public final class AccountViewTracker {
                             }
                         }
                         |> switchToLatest)
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.seenLiveLocationDisposables.set(nil, forKey: disposableId)
                             }
@@ -1039,7 +1039,7 @@ public final class AccountViewTracker {
                                 return .complete()
                             }
                         }
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedExtendedMediaDisposables.set(nil, forKey: disposableId)
                             }
@@ -1140,7 +1140,7 @@ public final class AccountViewTracker {
                                 }
                             }
                         }
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                             }
@@ -1233,7 +1233,7 @@ public final class AccountViewTracker {
                                 }
                             }
                         }
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                             }
@@ -1313,7 +1313,7 @@ public final class AccountViewTracker {
                             return combineLatest(requests)
                             |> ignoreValues
                         }
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                             }
@@ -1377,7 +1377,7 @@ public final class AccountViewTracker {
                             return combineLatest(requests)
                             |> ignoreValues
                         }
-                        |> afterDisposed { [weak self] in
+                        |> afterDisposed { [weak self = self] in
                             self?.queue.async {
                                 self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                             }
@@ -1480,7 +1480,7 @@ public final class AccountViewTracker {
                         return combineLatest(requests)
                         |> ignoreValues
                     }
-                    |> afterDisposed { [weak self] in
+                    |> afterDisposed { [weak self = self] in
                         self?.queue.async {
                             self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                         }
@@ -1593,7 +1593,7 @@ public final class AccountViewTracker {
                         return combineLatest(requests)
                         |> ignoreValues
                     }
-                    |> afterDisposed { [weak self] in
+                    |> afterDisposed { [weak self = self] in
                         self?.queue.async {
                             self?.updatedUnsupportedMediaDisposables.set(nil, forKey: disposableId)
                         }
@@ -1804,7 +1804,7 @@ public final class AccountViewTracker {
                 return
             }
             let queue = self.queue
-            context.disposable.set(combineLatest(fetchAndUpdateSupplementalCachedPeerData(peerId: peerId, accountPeerId: account.peerId, network: account.network, postbox: account.postbox), _internal_fetchAndUpdateCachedPeerData(accountPeerId: account.peerId, peerId: peerId, network: account.network, postbox: account.postbox)).start(next: { [weak self] supplementalStatus, cachedStatus in
+            context.disposable.set(combineLatest(fetchAndUpdateSupplementalCachedPeerData(peerId: peerId, accountPeerId: account.peerId, network: account.network, postbox: account.postbox), _internal_fetchAndUpdateCachedPeerData(accountPeerId: account.peerId, peerId: peerId, network: account.network, postbox: account.postbox)).start(next: { [weak self = self] supplementalStatus, cachedStatus in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -1846,7 +1846,7 @@ public final class AccountViewTracker {
                     return
                 }
                 let queue = self.queue
-                context.disposable.set(combineLatest(fetchAndUpdateSupplementalCachedPeerData(peerId: peerId, accountPeerId: accountPeerId, network: account.network, postbox: account.postbox), _internal_fetchAndUpdateCachedPeerData(accountPeerId: account.peerId, peerId: peerId, network: account.network, postbox: account.postbox)).start(next: { [weak self] supplementalStatus, cachedStatus in
+                context.disposable.set(combineLatest(fetchAndUpdateSupplementalCachedPeerData(peerId: peerId, accountPeerId: accountPeerId, network: account.network, postbox: account.postbox), _internal_fetchAndUpdateCachedPeerData(accountPeerId: account.peerId, peerId: peerId, network: account.network, postbox: account.postbox)).start(next: { [weak self = self] supplementalStatus, cachedStatus in
                     queue.async {
                         guard let strongSelf = self else {
                             return
@@ -1962,13 +1962,13 @@ public final class AccountViewTracker {
             }
         }
         
-        let history = withState(signal, { [weak self] () -> Int32 in
+        let history = withState(signal, { [weak self = self] () -> Int32 in
             if let strongSelf = self {
                 return OSAtomicIncrement32(&strongSelf.nextViewId)
             } else {
                 return -1
             }
-        }, next: { [weak self] next, viewId in
+        }, next: { [weak self = self] next, viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     let (messageIds, localWebpages) = pendingWebpages(entries: next.0.entries)
@@ -1982,7 +1982,7 @@ public final class AccountViewTracker {
                     }
                 }
             }
-        }, disposed: { [weak self] viewId in
+        }, disposed: { [weak self = self] viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     strongSelf.updatePendingWebpages(viewId: viewId, threadId: chatLocation.threadId, messageIds: [], localWebpages: [:])
@@ -2105,13 +2105,13 @@ public final class AccountViewTracker {
     public func scheduledMessagesViewForLocation(_ chatLocation: ChatLocationInput, additionalData: [AdditionalMessageHistoryViewData] = []) -> Signal<(MessageHistoryView, ViewUpdateType, InitialMessageHistoryData?), NoError> {
         if let account = self.account {
             let signal = account.postbox.aroundMessageHistoryViewForLocation(chatLocation, anchor: .upperBound, ignoreMessagesInTimestampRange: nil, ignoreMessageIds: Set(), count: 200, fixedCombinedReadStates: nil, topTaggedMessageIdNamespaces: [], tag: nil, appendMessagesFromTheSameGroup: false, namespaces: .just(Namespaces.Message.allScheduled), orderStatistics: [], additionalData: additionalData)
-            return withState(signal, { [weak self] () -> Int32 in
+            return withState(signal, { [weak self = self] () -> Int32 in
                 if let strongSelf = self {
                     return OSAtomicIncrement32(&strongSelf.nextViewId)
                 } else {
                     return -1
                 }
-            }, next: { [weak self] next, viewId in
+            }, next: { [weak self = self] next, viewId in
                 if let strongSelf = self {
                     strongSelf.queue.async {
                         let (messageIds, localWebpages) = pendingWebpages(entries: next.0.entries)
@@ -2119,7 +2119,7 @@ public final class AccountViewTracker {
                         strongSelf.historyViewStateValidationContexts.updateView(id: viewId, view: next.0, location: chatLocation)
                     }
                 }
-            }, disposed: { [weak self] viewId in
+            }, disposed: { [weak self = self] viewId in
                 if let strongSelf = self {
                     strongSelf.queue.async {
                         strongSelf.updatePendingWebpages(viewId: viewId, threadId: chatLocation.threadId, messageIds: [], localWebpages: [:])
@@ -2138,13 +2138,13 @@ public final class AccountViewTracker {
         }
         let chatLocation: ChatLocationInput = .peer(peerId: account.peerId, threadId: Int64(quickReplyId))
         let signal = account.postbox.aroundMessageHistoryViewForLocation(chatLocation, anchor: .upperBound, ignoreMessagesInTimestampRange: nil, ignoreMessageIds: Set(), count: 200, fixedCombinedReadStates: nil, topTaggedMessageIdNamespaces: [], tag: nil, appendMessagesFromTheSameGroup: false, namespaces: .just(Namespaces.Message.allQuickReply), orderStatistics: [], additionalData: additionalData)
-        return withState(signal, { [weak self] () -> Int32 in
+        return withState(signal, { [weak self = self] () -> Int32 in
             if let strongSelf = self {
                 return OSAtomicIncrement32(&strongSelf.nextViewId)
             } else {
                 return -1
             }
-        }, next: { [weak self] next, viewId in
+        }, next: { [weak self = self] next, viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     let (messageIds, localWebpages) = pendingWebpages(entries: next.0.entries)
@@ -2152,7 +2152,7 @@ public final class AccountViewTracker {
                     strongSelf.historyViewStateValidationContexts.updateView(id: viewId, view: next.0, location: chatLocation)
                 }
             }
-        }, disposed: { [weak self] viewId in
+        }, disposed: { [weak self = self] viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     strongSelf.updatePendingWebpages(viewId: viewId, threadId: Int64(quickReplyId), messageIds: [], localWebpages: [:])
@@ -2314,17 +2314,17 @@ public final class AccountViewTracker {
             }
         }
         
-        return withState(signal, { [weak self] () -> Int32 in
+        return withState(signal, { [weak self = self] () -> Int32 in
             if let strongSelf = self {
                 return OSAtomicIncrement32(&strongSelf.nextViewId)
             } else {
                 return -1
             }
-        }, next: { [weak self] next, viewId in
+        }, next: { [weak self = self] next, viewId in
             if let strongSelf = self, let account = strongSelf.account {
                 strongSelf.updateCachedPeerData(peerId: peerId, accountPeerId: account.peerId, viewId: viewId, hasCachedData: next.cachedData != nil)
             }
-        }, disposed: { [weak self] viewId in
+        }, disposed: { [weak self = self] viewId in
             if let strongSelf = self {
                 strongSelf.removePeerView(peerId: peerId, id: viewId)
             }
@@ -2515,13 +2515,13 @@ public final class AccountViewTracker {
                 return messageView
             }
             
-            let managed = withState(signal, { [weak self] () -> Int32 in
+            let managed = withState(signal, { [weak self = self] () -> Int32 in
                 if let strongSelf = self {
                     return OSAtomicIncrement32(&strongSelf.nextViewId)
                 } else {
                     return -1
                 }
-            }, next: { [weak self] next, viewId in
+            }, next: { [weak self = self] next, viewId in
                 if let strongSelf = self {
                     var holes = Set<MessageIndex>()
                     for entry in next.entries {
@@ -2531,7 +2531,7 @@ public final class AccountViewTracker {
                     }
                     strongSelf.updateVisibleCallListHoles(viewId: viewId, holeIds: holes)
                 }
-            }, disposed: { [weak self] viewId in
+            }, disposed: { [weak self = self] viewId in
                 if let strongSelf = self {
                     strongSelf.updateVisibleCallListHoles(viewId: viewId, holeIds: Set())
                 }
@@ -2631,19 +2631,19 @@ public final class AccountViewTracker {
     }
     
     private func wrappedChatListView(signal: Signal<(ChatListView, ViewUpdateType), NoError>) -> Signal<(ChatListView, ViewUpdateType), NoError> {
-        return withState(signal, { [weak self] () -> Int32 in
+        return withState(signal, { [weak self = self] () -> Int32 in
             if let strongSelf = self {
                 return OSAtomicIncrement32(&strongSelf.nextViewId)
             } else {
                 return -1
             }
-        }, next: { [weak self] next, viewId in
+        }, next: { [weak self = self] next, viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     
                 }
             }
-        }, disposed: { [weak self] viewId in
+        }, disposed: { [weak self = self] viewId in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     
@@ -2755,7 +2755,7 @@ public final class AccountViewTracker {
         }
         self.hiddenChatListFilterIdsPromise.set(updatedIds)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             DispatchQueue.main.async {
                 guard let `self` = self else {
                     return

@@ -298,7 +298,7 @@ final class TextProcessingLanguageSelectionComponent: Component {
         private func animateOut() {
             self.endEditing(true)
             self.backgroundContainer.layer.animateScale(from: 1.0, to: 0.001, duration: 0.2, removeOnCompletion: false)
-            self.backgroundContainer.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+            self.backgroundContainer.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -377,7 +377,7 @@ final class TextProcessingLanguageSelectionComponent: Component {
                                 theme: component.theme,
                                 title: item.name,
                                 isSelected: item.languageCode == component.selectedLanguageCode,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -521,7 +521,7 @@ final class TextProcessingLanguageSelectionComponent: Component {
                             iconFileId: item.iconFileId,
                             iconFile: item.iconFile,
                             title: item.title,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -559,7 +559,7 @@ final class TextProcessingLanguageSelectionComponent: Component {
                     transition.setAlpha(view: self.stylesSelectionView, alpha: 1.0)
                 } else {
                     if !self.stylesSelectionView.isHidden {
-                        transition.setAlpha(view: self.stylesSelectionView, alpha: 0.0, completion: { [weak self] flag in
+                        transition.setAlpha(view: self.stylesSelectionView, alpha: 0.0, completion: { [weak self = self] flag in
                             guard let self, flag else {
                                 return
                             }
@@ -593,7 +593,7 @@ final class TextProcessingLanguageSelectionComponent: Component {
                     theme: component.theme,
                     placeholder: component.strings.Common_Search,
                     externalState: self.searchExternalState,
-                    valueChanged: { [weak self] query in
+                    valueChanged: { [weak self = self] query in
                         guard let self else {
                             return
                         }
@@ -1169,7 +1169,7 @@ private final class SearchItemComponent: Component {
                                 maxSize: CGSize(width: 24.0, height: 24.0)
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else { return }
                             self.textField.text = ""
                             self.component?.valueChanged("")

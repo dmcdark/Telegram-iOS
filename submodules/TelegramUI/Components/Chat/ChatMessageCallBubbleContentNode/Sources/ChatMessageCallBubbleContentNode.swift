@@ -291,7 +291,7 @@ public class ChatMessageCallBubbleContentNode: ChatMessageBubbleContentNode {
                 boundingSize.width += 54.0
                 
                 return (boundingSize.width, { boundingWidth in
-                    return (boundingSize, { [weak self] animation, _, _ in
+                    return (boundingSize, { [weak self = self] animation, _, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             

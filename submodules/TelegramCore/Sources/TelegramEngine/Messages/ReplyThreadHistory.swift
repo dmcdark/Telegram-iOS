@@ -95,7 +95,7 @@ private class ReplyThreadHistoryContextImpl {
             
             return State(messageId: referencedMessageId, holeIndices: [Namespaces.Message.Cloud: indices], maxReadIncomingMessageId: data.maxReadIncomingMessageId, maxReadOutgoingMessageId: data.maxReadOutgoingMessageId)
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] state in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] state in
             guard let strongSelf = self else {
                 return
             }
@@ -118,7 +118,7 @@ private class ReplyThreadHistoryContextImpl {
             return nil
         }
         |> distinctUntilChanged
-        |> deliverOn(self.queue)).start(next: { [weak self] entry in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] entry in
             guard let strongSelf = self else {
                 return
             }
@@ -126,7 +126,7 @@ private class ReplyThreadHistoryContextImpl {
         })
         
         self.readStateDisposable = (account.stateManager.threadReadStateUpdates
-        |> deliverOn(self.queue)).start(next: { [weak self] (_, outgoing) in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] (_, outgoing) in
             guard let strongSelf = self else {
                 return
             }
@@ -264,7 +264,7 @@ private class ReplyThreadHistoryContextImpl {
         }
         
         self.updateInitialStateDisposable = (updateInitialState
-        |> deliverOnMainQueue).start(next: { [weak self] updatedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updatedData in
             guard let strongSelf = self else {
                 return
             }
@@ -291,7 +291,7 @@ private class ReplyThreadHistoryContextImpl {
         if self.currentHole?.0 != entry {
             self.currentHole?.1.dispose()
             if let entry = entry {
-                self.currentHole = (entry, self.fetchHole(entry: entry).start(next: { [weak self] removedHoleIndices in
+                self.currentHole = (entry, self.fetchHole(entry: entry).start(next: { [weak self = self] removedHoleIndices in
                     guard let strongSelf = self, let removedHoleIndices = removedHoleIndices else {
                         return
                     }
@@ -436,7 +436,7 @@ private class ReplyThreadHistoryContextImpl {
             
             return (inputPeer, subPeerId, topMessageId, readCount)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] inputPeer, subPeerId, topMessageId, readCount in
+        |> deliverOnMainQueue).start(next: { [weak self = self] inputPeer, subPeerId, topMessageId, readCount in
             guard let strongSelf = self else {
                 return
             }

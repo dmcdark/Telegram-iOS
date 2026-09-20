@@ -136,13 +136,13 @@ final class AuthorizationSequencePasswordEntryControllerNode: ASDisplayNode, UIT
         self.forgotNode.addTarget(self, action: #selector(self.forgotPressed), forControlEvents: .touchUpInside)
         self.resetNode.addTarget(self, action: #selector(self.resetPressed), forControlEvents: .touchUpInside)
         
-        self.proceedNode.pressed = { [weak self] in
+        self.proceedNode.pressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.loginWithCode?(strongSelf.currentPassword)
             }
         }
         
-        self.timer = SwiftSignalKit.Timer(timeout: 7.5, repeat: true, completion: { [weak self] in
+        self.timer = SwiftSignalKit.Timer(timeout: 7.5, repeat: true, completion: { [weak self = self] in
             self?.animationNode.playOnce()
         }, queue: Queue.mainQueue())
         self.timer?.start()

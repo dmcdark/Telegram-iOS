@@ -469,7 +469,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
         }
                         
         self.disposable = (combineLatest(self.presentationDataPromise.get(), self.statePromise.get(), renderSelfPeer, renderLiveLocations, self.headerNode.mapNode.userLocation, userLocation, address, eta, self.travelTimesPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData, state, selfPeer, liveLocations, userLocation, distance, address, eta, travelTimes in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, state, selfPeer, liveLocations, userLocation, distance, address, eta, travelTimes in
             if let strongSelf = self, let location = getLocation(from: subject) {
                 var entries: [LocationViewEntry] = []
                 var annotations: [LocationPinAnnotation] = []
@@ -614,7 +614,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                                     walkingTime = maybeWalkingTime
                                     
                                     if timestamp > previousTimestamp + 60.0 {
-                                        strongSelf.travelDisposables.add(signal.start(next: { [weak self] drivingTime, walkingTime in
+                                        strongSelf.travelDisposables.add(signal.start(next: { [weak self = self] drivingTime, walkingTime in
                                             guard let strongSelf = self else {
                                                 return
                                             }
@@ -628,7 +628,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                                     drivingTime = .calculating
                                     walkingTime = .calculating
                                     
-                                    strongSelf.travelDisposables.add(signal.start(next: { [weak self] drivingTime, walkingTime in
+                                    strongSelf.travelDisposables.add(signal.start(next: { [weak self = self] drivingTime, walkingTime in
                                         guard let strongSelf = self else {
                                             return
                                         }
@@ -695,7 +695,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                     strongSelf.displayedProximityAlertTooltip = true
                     
                     let _ = (ApplicationSpecificNotice.getLocationProximityAlertTip(accountManager: context.sharedContext.accountManager)
-                    |> deliverOnMainQueue).start(next: { [weak self] counter in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] counter in
                         if let strongSelf = self, counter < 3 {
                             let _ = ApplicationSpecificNotice.incrementLocationProximityAlertTip(accountManager: context.sharedContext.accountManager).start()
                             strongSelf.displayProximityAlertTooltip()
@@ -770,7 +770,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
         })
         
         if !isPreview {
-            self.listNode.updateFloatingHeaderOffset = { [weak self] offset, listTransition in
+            self.listNode.updateFloatingHeaderOffset = { [weak self = self] offset, listTransition in
                 guard let self, self.listNode.scrollEnabled else {
                     return
                 }
@@ -779,7 +779,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
             }
         }
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -790,7 +790,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
             }
         }
         
-        self.headerNode.mapNode.beganInteractiveDragging = { [weak self] in
+        self.headerNode.mapNode.beganInteractiveDragging = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -803,7 +803,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
             }
         }
         
-        self.headerNode.mapNode.annotationSelected = { [weak self] annotation in
+        self.headerNode.mapNode.annotationSelected = { [weak self = self] annotation in
             guard let strongSelf = self else {
                 return
             }
@@ -812,7 +812,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
             }
         }
         
-        self.headerNode.mapNode.userLocationAnnotationSelected = { [weak self] in
+        self.headerNode.mapNode.userLocationAnnotationSelected = { [weak self = self] in
             if let strongSelf = self, let location = strongSelf.headerNode.mapNode.currentUserLocation {
                 strongSelf.interaction.goToCoordinate(location.coordinate)
             }
@@ -869,7 +869,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
 
     private func requestWeatherData(coordinate: CLLocationCoordinate2D) {
         self.weatherDisposable.set((Weather.requestWeatherData(context: self.context, location: coordinate)
-        |> deliverOnMainQueue).start(next: { [weak self] weatherData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] weatherData in
             guard let self else {
                 return
             }
@@ -1046,7 +1046,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                 return .never()
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let strongSelf = self else {
                 return
             }
@@ -1108,7 +1108,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                 GlassControlGroupComponent.Item(
                     id: AnyHashable("close"),
                     content: .icon("Navigation/Close"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1125,7 +1125,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                     GlassControlGroupComponent.Item(
                         id: AnyHashable("share"),
                         content: .icon("Navigation/Share"),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1138,7 +1138,7 @@ final class LocationViewControllerNode: ViewControllerTracingNode, CLLocationMan
                     GlassControlGroupComponent.Item(
                         id: AnyHashable("share"),
                         content: .text(self.presentationData.strings.Map_LiveLocationShowAll),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }

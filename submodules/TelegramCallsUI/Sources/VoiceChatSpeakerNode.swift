@@ -276,7 +276,7 @@ private class IconNode: ASDisplayNode {
             if let current = self.animator {
                 animator = current
             } else {
-                animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateAnimations()
                 })
                 self.animator = animator

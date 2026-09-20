@@ -52,7 +52,7 @@ open class ActionSheetController: ViewController, PresentableController, Standal
         self.displayNode = ActionSheetControllerNode(theme: self.theme, allowInputInset: self.allowInputInset)
         self.displayNodeDidLoad()
         
-        self.actionSheetNode.dismiss = { [weak self] cancelled in
+        self.actionSheetNode.dismiss = { [weak self = self] cancelled in
             self?.dismissed?(cancelled)
             self?.presentingViewController?.dismiss(animated: false)
         }
@@ -100,35 +100,35 @@ open class ActionSheetController: ViewController, PresentableController, Standal
             KeyShortcut(
                 input: UIKeyCommand.inputEscape,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissAnimated()
                 }
             ),
             KeyShortcut(
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissAnimated()
                 }
             ),
             KeyShortcut(
                 input: "\r",
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.actionSheetNode.performHighlightedAction()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.actionSheetNode.decreaseHighlightedIndex()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputDownArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.actionSheetNode.increaseHighlightedIndex()
                 }
             )

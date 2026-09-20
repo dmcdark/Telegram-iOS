@@ -101,7 +101,7 @@ open class TabBarControllerImpl: ViewController, TabBarController {
         
         super.init(navigationBarPresentationData: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -154,7 +154,7 @@ open class TabBarControllerImpl: ViewController, TabBarController {
     }
     
     override open func loadDisplayNode() {
-        self.displayNode = TabBarControllerNode(theme: self.theme, strings: self.strings, itemSelected: { [weak self] index, longTap, itemNodes in
+        self.displayNode = TabBarControllerNode(theme: self.theme, strings: self.strings, itemSelected: { [weak self = self] index, longTap, itemNodes in
             if let strongSelf = self {
                 if longTap, let controller = strongSelf.controllers[index] as? TabBarContainedController {
                     controller.presentTabBarPreviewingController(sourceNodes: itemNodes)
@@ -219,7 +219,7 @@ open class TabBarControllerImpl: ViewController, TabBarController {
                     }
                 }))
             }
-        }, itemHasDoubleTapAction: { [weak self] index in
+        }, itemHasDoubleTapAction: { [weak self = self] index in
             guard let self else {
                 return false
             }
@@ -227,37 +227,37 @@ open class TabBarControllerImpl: ViewController, TabBarController {
                 return self.controllers[index].tabBarItemHasDoubleTapAction()
             }
             return false
-        }, itemDoubleTapped: { [weak self] index in
+        }, itemDoubleTapped: { [weak self = self] index in
             guard let self else {
                 return
             }
             if index >= 0 && index < self.tabBarControllerNode.tabBarItems.count {
                 self.controllers[index].tabBarItemPerformDoubleTapAction()
             }
-        }, contextAction: { [weak self] index, view, gesture in
+        }, contextAction: { [weak self = self] index, view, gesture in
             guard let strongSelf = self else {
                 return
             }
             if index >= 0 && index < strongSelf.tabBarControllerNode.tabBarItems.count {
                 strongSelf.controllers[index].tabBarItemContextAction(sourceView: view, gesture: gesture)
             }
-        }, swipeAction: { [weak self] index, direction in
+        }, swipeAction: { [weak self = self] index, direction in
             guard let strongSelf = self else {
                 return
             }
             if index >= 0 && index < strongSelf.tabBarControllerNode.tabBarItems.count {
                 strongSelf.controllers[index].tabBarItemSwipeAction(direction: direction)
             }
-        }, toolbarActionSelected: { [weak self] action in
+        }, toolbarActionSelected: { [weak self = self] action in
             self?.currentController?.toolbarActionSelected(action: action)
-        }, disabledPressed: { [weak self] in
+        }, disabledPressed: { [weak self = self] in
             self?.currentController?.tabBarDisabledAction()
-        }, activateSearch: { [weak self] in
+        }, activateSearch: { [weak self = self] in
             guard let self else {
                 return
             }
             self.currentController?.tabBarActivateSearch()
-        }, deactivateSearch: { [weak self] in
+        }, deactivateSearch: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -332,7 +332,7 @@ open class TabBarControllerImpl: ViewController, TabBarController {
             currentController.displayNode.recursivelyEnsureDisplaySynchronously(true)
             self.statusBar.statusBarStyle = currentController.statusBar.statusBarStyle
 
-            currentController.tabBarSearchStateUpdated = { [weak self] transition in
+            currentController.tabBarSearchStateUpdated = { [weak self = self] transition in
                 guard let self else {
                     return
                 }
@@ -341,7 +341,7 @@ open class TabBarControllerImpl: ViewController, TabBarController {
                 }
             }
 
-            currentController.currentTabBarSearchNode = { [weak self] in
+            currentController.currentTabBarSearchNode = { [weak self = self] in
                 guard let self else {
                     return nil
                 }

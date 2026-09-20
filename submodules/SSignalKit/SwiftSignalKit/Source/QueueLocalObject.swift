@@ -46,7 +46,7 @@ public final class QueueLocalObject<T: AnyObject> {
     }
     
     public func signalWith<R, E>(_ f: @escaping (T, Subscriber<R, E>) -> Disposable) -> Signal<R, E> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self, let valueRef = strongSelf.valueRef {
                 let value = valueRef.takeUnretainedValue()
                 return f(value, subscriber)

@@ -250,7 +250,7 @@ public final class FilledRoundedRectangleComponent: Component {
                         }
                         
                     }
-                    transition.setCornerRadius(layer: self.layer, cornerRadius: cornerRadius, completion: { [weak self] completed in
+                    transition.setCornerRadius(layer: self.layer, cornerRadius: cornerRadius, completion: { [weak self = self] completed in
                         guard let self, completed else {
                             return
                         }
@@ -400,7 +400,7 @@ open class SolidRoundedCornersContainer: UIView {
                     }
                     
                 }
-                transition.setCornerRadius(layer: self.layer, cornerRadius: params.cornerRadius, completion: { [weak self] completed in
+                transition.setCornerRadius(layer: self.layer, cornerRadius: params.cornerRadius, completion: { [weak self = self] completed in
                     guard let self, completed else {
                         return
                     }

@@ -230,7 +230,7 @@ private final class EmojiItemComponent: Component {
             self.layer.addSublayer(self.hierarchyTrackingLayer)
             self.addSubview(self.containerView)
             
-            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] value in
+            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -572,7 +572,7 @@ final class VideoChatEncryptionKeyComponent: Component {
 
 #if DEBUG && false
             if self.component == nil {
-                self.mockStateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true, block: { [weak self] _ in
+                self.mockStateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 4.0, repeats: true, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }

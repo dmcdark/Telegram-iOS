@@ -227,7 +227,7 @@ public final class PhoneInputNode: ASDisplayNode, UITextFieldDelegate {
         self.addSubnode(self.placeholderNode)
         self.addSubnode(self.numberField)
         
-        self.numberField.textField.didDeleteBackwardWhileEmpty = { [weak self] in
+        self.numberField.textField.didDeleteBackwardWhileEmpty = { [weak self = self] in
             self?.countryCodeField.textField.becomeFirstResponder()
         }
         self.countryCodeField.textField.addTarget(self, action: #selector(self.countryCodeTextChanged(_:)), for: .editingChanged)

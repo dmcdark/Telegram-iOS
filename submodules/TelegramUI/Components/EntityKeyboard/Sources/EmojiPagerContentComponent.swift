@@ -1209,7 +1209,7 @@ public final class EmojiPagerContentComponent: Component {
                 if let content {
                     switch content {
                     case let .thumbnail(immediateThumbnailData):
-                        Queue.concurrentDefaultQueue().async { [weak self] in
+                        Queue.concurrentDefaultQueue().async { [weak self = self] in
                             if let image = generateStickerPlaceholderImage(data: immediateThumbnailData, size: size, scale: min(2.0, UIScreenScale), imageSize: dimensions ?? CGSize(width: 512.0, height: 512.0), backgroundColor: nil, foregroundColor: useDirectContent ? color : .black) {
                                 Queue.mainQueue().async {
                                     guard let strongSelf = self else {
@@ -1507,7 +1507,7 @@ public final class EmojiPagerContentComponent: Component {
             
             self.boundsChangeTrackerLayer.opacity = 0.0
             self.layer.addSublayer(self.boundsChangeTrackerLayer)
-            self.boundsChangeTrackerLayer.didEnterHierarchy = { [weak self] in
+            self.boundsChangeTrackerLayer.didEnterHierarchy = { [weak self = self] in
                 self?.standaloneShimmerEffect?.updateLayer()
             }
             
@@ -1532,7 +1532,7 @@ public final class EmojiPagerContentComponent: Component {
             
             let contextGesture = ContextGesture(target: self, action: #selector(self.tapGesture(_:)))
             contextGesture.activateOnTap = true
-            contextGesture.shouldBegin = { [weak self] point in
+            contextGesture.shouldBegin = { [weak self = self] point in
                 guard let `self` = self, let _ = self.component else {
                     return false
                 }
@@ -1574,7 +1574,7 @@ public final class EmojiPagerContentComponent: Component {
                 
                 return false
             }
-            contextGesture.activationProgress = { [weak self] progress, transition in
+            contextGesture.activationProgress = { [weak self = self] progress, transition in
                 guard let self = self, let contextFocusItemKey = self.contextFocusItemKey else {
                     return
                 }
@@ -1589,7 +1589,7 @@ public final class EmojiPagerContentComponent: Component {
                     }
                 }
             }
-            contextGesture.activatedAfterCompletion = { [weak self] point, wasTap in
+            contextGesture.activatedAfterCompletion = { [weak self = self] point, wasTap in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -2869,7 +2869,7 @@ public final class EmojiPagerContentComponent: Component {
                 }
                 
                 self.longPressTimer?.invalidate()
-                self.longPressTimer = SwiftSignalKit.Timer(timeout: longPressDuration, repeat: false, completion: { [weak self] in
+                self.longPressTimer = SwiftSignalKit.Timer(timeout: longPressDuration, repeat: false, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -3171,7 +3171,7 @@ public final class EmojiPagerContentComponent: Component {
                         groupHeaderTransition = .immediate
                         let groupId = itemGroup.groupId
                         groupHeaderView = GroupHeaderLayer(
-                            actionPressed: { [weak self] in
+                            actionPressed: { [weak self = self] in
                                 guard let strongSelf = self, let component = strongSelf.component else {
                                     return
                                 }
@@ -3181,7 +3181,7 @@ public final class EmojiPagerContentComponent: Component {
                                     component.inputInteractionHolder.inputInteraction?.addGroupAction(groupId, false, true)
                                 }
                             },
-                            performItemAction: { [weak self] item, view, rect, layer in
+                            performItemAction: { [weak self = self] item, view, rect, layer in
                                 guard let strongSelf = self, let component = strongSelf.component else {
                                     return
                                 }
@@ -3389,7 +3389,7 @@ public final class EmojiPagerContentComponent: Component {
                                     id: AnyHashable("\(title)-\(animationName ?? "")"),
                                     component: AnyComponent(HStack(groupPremiumButtonItems, spacing: 4.0))
                                 ),
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let strongSelf = self, let component = strongSelf.component else {
                                         return
                                     }
@@ -3433,7 +3433,7 @@ public final class EmojiPagerContentComponent: Component {
                     } else {
                         groupExpandActionButtonTransition = .immediate
                         animateButtonIn = !transition.animation.isImmediate
-                        groupExpandActionButton = GroupExpandActionButton(pressed: { [weak self] in
+                        groupExpandActionButton = GroupExpandActionButton(pressed: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -3509,7 +3509,7 @@ public final class EmojiPagerContentComponent: Component {
                                 blurredBadgeColor: keyboardChildEnvironment.theme.chat.inputPanel.panelBackgroundColor.withMultipliedAlpha(0.5),
                                 accentIconColor: keyboardChildEnvironment.theme.list.itemAccentColor,
                                 pointSize: pointSize,
-                                onUpdateDisplayPlaceholder: { [weak self] displayPlaceholder, duration in
+                                onUpdateDisplayPlaceholder: { [weak self = self] displayPlaceholder, duration in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -4281,7 +4281,7 @@ public final class EmojiPagerContentComponent: Component {
                 self.isSearchActivated = true
             }
             
-            component.inputInteractionHolder.inputInteraction?.peekBehavior?.setGestureRecognizerEnabled(view: self, isEnabled: true, itemAtPoint: { [weak self] point in
+            component.inputInteractionHolder.inputInteraction?.peekBehavior?.setGestureRecognizerEnabled(view: self, isEnabled: true, itemAtPoint: { [weak self = self] point in
                 guard let strongSelf = self else {
                     return nil
                 }
@@ -4305,7 +4305,7 @@ public final class EmojiPagerContentComponent: Component {
             
             self.pagerEnvironment = pagerEnvironment
             
-            pagerEnvironment.scrollToTop.connect { [weak self] in
+            pagerEnvironment.scrollToTop.connect { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -4612,7 +4612,7 @@ public final class EmojiPagerContentComponent: Component {
                 self.effectiveVisibleSize = self.scrollView.bounds.size
             } else {
                 self.effectiveVisibleSize = CGSize(width: scrollSize.width, height: max(self.effectiveVisibleSize.height, scrollSize.height))
-                transition.setBounds(layer: self.boundsChangeTrackerLayer, bounds: self.scrollView.bounds, completion: { [weak self] completed in
+                transition.setBounds(layer: self.boundsChangeTrackerLayer, bounds: self.scrollView.bounds, completion: { [weak self = self] completed in
                     guard let strongSelf = self else {
                         return
                     }
@@ -4765,7 +4765,7 @@ public final class EmojiPagerContentComponent: Component {
                         }*/
                     }
                 } else {
-                    visibleSearchHeader = EmojiSearchHeaderView(activated: { [weak self] isTextInput in
+                    visibleSearchHeader = EmojiSearchHeaderView(activated: { [weak self = self] isTextInput in
                         guard let strongSelf = self, let visibleSearchHeader = strongSelf.visibleSearchHeader else {
                             return
                         }
@@ -4779,7 +4779,7 @@ public final class EmojiPagerContentComponent: Component {
                             }
                             strongSelf.component?.inputInteractionHolder.inputInteraction?.requestUpdate(.immediate)
                         }
-                    }, deactivated: { [weak self] isFirstResponder in
+                    }, deactivated: { [weak self = self] isFirstResponder in
                         guard let strongSelf = self, let component = strongSelf.component else {
                             return
                         }
@@ -4806,7 +4806,7 @@ public final class EmojiPagerContentComponent: Component {
                                 strongSelf.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                             }
                         }
-                    }, updateQuery: { [weak self] query in
+                    }, updateQuery: { [weak self = self] query in
                         guard let strongSelf = self else {
                             return
                         }
@@ -4829,7 +4829,7 @@ public final class EmojiPagerContentComponent: Component {
                 // Temporary workaround for status selection; use a separate search container (see GIF)
 
                 if case let .curve(duration, _) = transition.animation, duration != 0.0 {
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + duration, execute: { [weak self] in
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + duration, execute: { [weak self = self] in
                         guard let strongSelf = self, let visibleSearchHeader = strongSelf.visibleSearchHeader else {
                             return
                         }

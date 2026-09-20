@@ -168,7 +168,7 @@ private final class ChatMessageTaskOptionRadioNode: ASDisplayNode {
                 self.startTime = timestamp
             }
             if self.displayLink == nil {
-                self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateAnimating()
                     self?.setNeedsDisplay()
                 })
@@ -458,7 +458,7 @@ private final class ChatMessageTodoItemNode: ASDisplayNode {
         self.addSubnode(self.buttonNode)
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.buttonNode.shouldHighlightAtPoint = { [weak self] location in
+        self.buttonNode.shouldHighlightAtPoint = { [weak self = self] location in
             guard let self else {
                 return true
             }
@@ -467,7 +467,7 @@ private final class ChatMessageTodoItemNode: ASDisplayNode {
             }
             return false
         }
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.containerNode.view.tag = 0x2bad
@@ -516,7 +516,7 @@ private final class ChatMessageTodoItemNode: ASDisplayNode {
             }
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtractedToContextPreview, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtractedToContextPreview, transition in
             guard let self else {
                 return
             }
@@ -625,7 +625,7 @@ private final class ChatMessageTodoItemNode: ASDisplayNode {
             }
         }
         
-        self.contextSourceNode.isExtractedToContextPreviewUpdated = { [weak self] isExtracted in
+        self.contextSourceNode.isExtractedToContextPreviewUpdated = { [weak self = self] isExtracted in
             guard let self else {
                 return
             }
@@ -1344,7 +1344,7 @@ public class ChatMessageTodoBubbleContentNode: ChatMessageBubbleContentNode {
                     
                     let buttonViewResultsTextFrame = CGRect(origin: CGPoint(x: floor((resultSize.width - buttonViewResultsTextLayout.size.width) / 2.0), y: optionsButtonSpacing), size: buttonViewResultsTextLayout.size)
                     
-                    return (resultSize, { [weak self] animation, synchronousLoad, _ in
+                    return (resultSize, { [weak self = self] animation, synchronousLoad, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.todo = todo

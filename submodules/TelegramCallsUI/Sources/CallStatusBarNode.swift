@@ -136,7 +136,7 @@ private class CallStatusBarBackgroundNode: ASDisplayNode {
         
         self.updateAnimations()
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
                 strongSelf.updateAnimations()
@@ -259,7 +259,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
         self.addSubnode(self.subtitleNode)
         self.addSubnode(self.speakerNode)
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
                 if value {
@@ -332,7 +332,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                             call.state,
                             call.isMuted
                         )
-                    |> deliverOnMainQueue).start(next: { [weak self] peer, state, isMuted in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer, state, isMuted in
                         if let strongSelf = self {
                             strongSelf.currentPeer = peer
                             strongSelf.currentCallState = state
@@ -352,7 +352,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                         }
                     }))
                     self.audioLevelDisposable.set((call.audioLevel
-                    |> deliverOnMainQueue).start(next: { [weak self] audioLevel in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] audioLevel in
                         guard let strongSelf = self else {
                             return
                         }
@@ -361,7 +361,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                 case let .groupCall(sharedContext, account, call):
                     self.presentationData = sharedContext.currentPresentationData.with { $0 }
                     self.presentationDataDisposable.set((sharedContext.presentationData
-                    |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                         if let strongSelf = self {
                             strongSelf.presentationData = presentationData
                             strongSelf.update()
@@ -380,7 +380,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                             call.isMuted,
                             call.members
                         )
-                    |> deliverOnMainQueue).start(next: { [weak self] view, state, isMuted, members in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] view, state, isMuted, members in
                         if let strongSelf = self {
                             if let view {
                                 strongSelf.currentPeer = view
@@ -421,7 +421,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                         }
                     }))
                     self.audioLevelDisposable.set((combineLatest(call.myAudioLevel, .single([]) |> then(call.audioLevels))
-                    |> deliverOnMainQueue).start(next: { [weak self] myAudioLevel, audioLevels in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] myAudioLevel, audioLevels in
                         guard let strongSelf = self else {
                             return
                         }
@@ -436,12 +436,12 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
                 
                     if let groupCall = call as? PresentationGroupCallImpl {
                         let _ = (allowedStoryReactions(engine: TelegramEngine(account: account))
-                        |> deliverOnMainQueue).start(next: { [weak self] reactionItems in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] reactionItems in
                             self?.reactionItems = reactionItems
                         })
                         
                         self.messagesStateDisposable.set((groupCall.messagesState
-                        |> deliverOnMainQueue).start(next: { [weak self] messagesState in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] messagesState in
                             guard let self else {
                                 return
                             }
@@ -566,7 +566,7 @@ public class CallStatusBarNodeImpl: CallStatusBarNode {
             
             if requiresTimer {
                 if self.currentCallTimer == nil {
-                    let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                    let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                         self?.update()
                     }, queue: Queue.mainQueue())
                     timer.start()
@@ -749,7 +749,7 @@ private final class VoiceCurveView: UIView {
         self.addSubview(self.mediumCurve)
         self.addSubview(self.smallCurve)
         
-        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let strongSelf = self else { return }
             
             strongSelf.presentationAudioLevel = strongSelf.presentationAudioLevel * 0.9 + strongSelf.audioLevel * 0.1
@@ -950,7 +950,7 @@ final class CurveView: UIView {
         animation.toValue = nextPath
         animation.isRemovedOnCompletion = false
         animation.fillMode = .forwards
-        animation.completion = { [weak self] finished in
+        animation.completion = { [weak self = self] finished in
             if finished {
                 self?.animateToNewShape()
             }

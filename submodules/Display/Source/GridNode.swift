@@ -399,14 +399,14 @@ open class GridNode: GridNodeScroller, ASScrollViewDelegate {
         
         /*let fromOffset: CGPoint = self.scrollView.contentOffset
         
-        self.autoscrollingAnimator = DisplayLinkAnimator(duration: duration, from: 0.0, to: 1.0, update: { [weak self] t in
+        self.autoscrollingAnimator = DisplayLinkAnimator(duration: duration, from: 0.0, to: 1.0, update: { [weak self = self] t in
             guard let strongSelf = self else {
                 return
             }
             let mappedT = bezierPoint(0.23, 1.0, 0.32, 1.0, t)
             let offset = CGPoint(x: 0.0, y: (1.0 - mappedT) * fromOffset.y + mappedT * toOffset.y)
             strongSelf.scrollView.setContentOffset(offset, animated: false)
-        }, completion: { [weak self] in
+        }, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

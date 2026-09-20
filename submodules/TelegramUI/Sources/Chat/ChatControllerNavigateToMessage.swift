@@ -36,7 +36,7 @@ extension ChatControllerImpl {
             }
         }
         
-        let continueNavigation: () -> Void = { [weak self] in
+        let continueNavigation: () -> Void = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -46,7 +46,7 @@ extension ChatControllerImpl {
         let _ = (self.context.engine.data.get(
             TelegramEngine.EngineData.Item.Peer.Peer(id: id.peerId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] toPeer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] toPeer in
             guard let self else {
                 return
             }
@@ -143,7 +143,7 @@ extension ChatControllerImpl {
                     return .single(result.map(EngineMessage.init))
                 }
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer, messages in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer, messages in
                 guard let self, let peer = peer else {
                     return
                 }
@@ -168,7 +168,7 @@ extension ChatControllerImpl {
                 TelegramEngine.EngineData.Item.Peer.Peer(id: messageId.peerId),
                 TelegramEngine.EngineData.Item.Messages.Message(id: messageId)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer, message in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer, message in
                 guard let self, let peer = peer else {
                     return
                 }
@@ -246,7 +246,7 @@ extension ChatControllerImpl {
                 var cancelImpl: (() -> Void)?
                 let presentationData = self.presentationData
                 let displayTime = CACurrentMediaTime()
-                let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+                let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
                     if let progressValue {
                         progressValue.set(.single(true))
                         return ActionDisposable {
@@ -284,7 +284,7 @@ extension ChatControllerImpl {
                         progressDisposable.dispose()
                     }
                 }
-                |> deliverOnMainQueue).startStrict(next: { [weak self] index in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] index in
                     guard let self else {
                         return
                     }
@@ -311,13 +311,13 @@ extension ChatControllerImpl {
                             }
                         }))
                     }
-                }, completed: { [weak self] in
+                }, completed: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.loadingMessage.set(.single(nil))
                     }
                     completion?()
                 }))
-                cancelImpl = { [weak self] in
+                cancelImpl = { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.loadingMessage.set(.single(nil))
                         strongSelf.messageIndexDisposable.set(nil)
@@ -441,7 +441,7 @@ extension ChatControllerImpl {
                     var cancelImpl: (() -> Void)?
                     let presentationData = self.presentationData
                     let displayTime = CACurrentMediaTime()
-                    let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+                    let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
                         if let progress {
                             progress.set(.single(true))
                             return ActionDisposable {
@@ -479,7 +479,7 @@ extension ChatControllerImpl {
                             progressDisposable.dispose()
                         }
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] index in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] index in
                         if let strongSelf = self, let index = index.0 {
                             strongSelf.chatDisplayNode.historyNode.scrollToMessage(from: scrollFromIndex, to: index, animated: animated, quote: quote, scrollPosition: scrollPosition, setupReply: setupReply)
                         } else if index.1 {
@@ -490,13 +490,13 @@ extension ChatControllerImpl {
                         } else if let strongSelf = self {
                             strongSelf.controllerInteraction?.displayUndo(.info(title: nil, text: strongSelf.presentationData.strings.Conversation_MessageDoesntExist, timeout: nil, customUndoText: nil))
                         }
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.loadingMessage.set(.single(nil))
                         }
                         completion?()
                     }))
-                    cancelImpl = { [weak self] in
+                    cancelImpl = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.loadingMessage.set(.single(nil))
                             strongSelf.messageIndexDisposable.set(nil)
@@ -549,7 +549,7 @@ extension ChatControllerImpl {
                 }
                 |> take(1)
                 
-                self.messageIndexDisposable.set((signal |> deliverOnMainQueue).startStrict(next: { [weak self] index in
+                self.messageIndexDisposable.set((signal |> deliverOnMainQueue).startStrict(next: { [weak self = self] index in
                     if let strongSelf = self {
                         if let index = index {
                             strongSelf.chatDisplayNode.historyNode.scrollToMessage(from: fromIndex, to: index, animated: animated, scrollPosition: scrollPosition)
@@ -585,7 +585,7 @@ extension ChatControllerImpl {
                             completion?()
                         }
                     }
-                }, completed: { [weak self] in
+                }, completed: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.loadingMessage.set(.single(nil))
                     }
@@ -601,7 +601,7 @@ extension ChatControllerImpl {
                     self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: messageLocation.peerId)),
                     messageSignal
                 )
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer, message in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer, message in
                     guard let self, let peer = peer else {
                         return
                     }

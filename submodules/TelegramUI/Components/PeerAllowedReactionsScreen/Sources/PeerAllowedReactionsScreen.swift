@@ -205,13 +205,13 @@ final class PeerAllowedReactionsScreenComponent: Component {
                 } else {
                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
                     self.environment?.controller()?.present(textAlertController(context: component.context, title: presentationData.strings.ChannelReactions_UnsavedChangesAlertTitle, text: presentationData.strings.ChannelReactions_UnsavedChangesAlertText, actions: [
-                        TextAlertAction(type: .genericAction, title: presentationData.strings.ChannelReactions_UnsavedChangesAlertDiscard, action: { [weak self] in
+                        TextAlertAction(type: .genericAction, title: presentationData.strings.ChannelReactions_UnsavedChangesAlertDiscard, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.environment?.controller()?.dismiss()
                         }),
-                        TextAlertAction(type: .defaultAction, title: presentationData.strings.ChannelReactions_UnsavedChangesAlertApply, action: { [weak self] in
+                        TextAlertAction(type: .defaultAction, title: presentationData.strings.ChannelReactions_UnsavedChangesAlertApply, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -295,7 +295,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
             let reactionSettings = PeerReactionSettings(allowedReactions: allowedReactions, maxReactionCount: self.allowedReactionCount == 11 ? nil : Int32(self.allowedReactionCount), starsAllowed: self.isEnabled && self.areStarsReactionsEnabled)
             
             let applyDisposable = (component.context.engine.peers.updatePeerReactionSettings(peerId: component.peerId, reactionSettings: reactionSettings)
-            |> deliverOnMainQueue).start(error: { [weak self] error in
+            |> deliverOnMainQueue).start(error: { [weak self = self] error in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -311,7 +311,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                         self.environment?.controller()?.present(textAlertController(context: component.context, title: nil, text: presentationData.strings.Login_UnknownError, actions: [TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: {})]), in: .window(.root))
                     }
                 }
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -334,7 +334,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
             }
             
             let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: component.peerId))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                 guard let self, let component = self.component, let peer, let status = self.boostStatus else {
                     return
                 }
@@ -342,7 +342,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                 let premiumConfiguration = PremiumConfiguration.with(appConfiguration: component.context.currentAppConfiguration.with { $0 })
                 
                 let link = status.url
-                let controller = PremiumLimitScreen(context: component.context, subject: .storiesChannelBoost(peer: peer, boostSubject: .channelReactions(reactionCount: reactionCount), isCurrent: true, level: Int32(status.level), currentLevelBoosts: Int32(status.currentLevelBoosts), nextLevelBoosts: status.nextLevelBoosts.flatMap(Int32.init), link: link, myBoostCount: 0, canBoostAgain: false), count: Int32(status.boosts), action: { [weak self] in
+                let controller = PremiumLimitScreen(context: component.context, subject: .storiesChannelBoost(peer: peer, boostSubject: .channelReactions(reactionCount: reactionCount), isCurrent: true, level: Int32(status.level), currentLevelBoosts: Int32(status.currentLevelBoosts), nextLevelBoosts: status.nextLevelBoosts.flatMap(Int32.init), link: link, myBoostCount: 0, canBoostAgain: false), count: Int32(status.boosts), action: { [weak self = self] in
                     guard let self, let component = self.component else {
                         return true
                     }
@@ -351,12 +351,12 @@ final class PeerAllowedReactionsScreenComponent: Component {
                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
                     self.environment?.controller()?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.ChannelBoost_BoostLinkCopied), elevatedLayout: false, position: .bottom, animateInAsReplacement: false, action: { _ in return false }), in: .current)
                     return true
-                }, openStats: { [weak self] in
+                }, openStats: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.openBoostStats()
-                }, openGift: premiumConfiguration.giveawayGiftsPurchaseAvailable ? { [weak self] in
+                }, openGift: premiumConfiguration.giveawayGiftsPurchaseAvailable ? { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -450,7 +450,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                     emojiContent,
                     self.emojiSearchState.get()
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] emojiContent, emojiSearchState in
+                |> deliverOnMainQueue).start(next: { [weak self = self] emojiContent, emojiSearchState in
                     guard let self else {
                         return
                     }
@@ -482,7 +482,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                     }
                     
                     emojiContent.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                        performItemAction: { [weak self] _, item, _, _, _, _ in
+                        performItemAction: { [weak self = self] _, item, _, _, _, _ in
                             guard let self, var enabledReactions = self.enabledReactions else {
                                 return
                             }
@@ -592,7 +592,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                         },
                         requestUpdate: { _ in
                         },
-                        updateSearchQuery: { [weak self] query in
+                        updateSearchQuery: { [weak self = self] query in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -857,7 +857,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                     self.emojiSearchStateValue.isSearching = true
                                     self.emojiSearchDisposable.set((resultSignal
                                     |> delay(0.15, queue: .mainQueue())
-                                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                         guard let self else {
                                             return
                                         }
@@ -916,7 +916,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                     
                                 var version = 0
                                 self.emojiSearchDisposable.set((resultSignal
-                                |> deliverOnMainQueue).start(next: { [weak self] result in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                     guard let self else {
                                         return
                                     }
@@ -957,7 +957,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                         updateScrollingToItemGroup: {
                         },
                         onScroll: {},
-                        loadMore: { [weak self] in
+                        loadMore: { [weak self = self] in
                             self?.emojiSearchContext?.loadMore()
                         },
                         chatPeerId: nil,
@@ -982,7 +982,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
             
             if self.boostStatusDisposable == nil {
                 self.boostStatusDisposable = (component.context.engine.peers.getChannelBoostStatus(peerId: component.peerId)
-                |> deliverOnMainQueue).start(next: { [weak self] boostStatus in
+                |> deliverOnMainQueue).start(next: { [weak self = self] boostStatus in
                     guard let self else {
                         return
                     }
@@ -1007,7 +1007,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                     theme: environment.theme,
                     title: environment.strings.PeerInfo_AllowedReactions_AllowAllText,
                     value: self.isEnabled,
-                    valueUpdated: { [weak self] value in
+                    valueUpdated: { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -1137,7 +1137,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                         reactionItems: enabledReactions,
                         isInputActive: self.displayInput,
                         caretPosition: caretPosition,
-                        activateInput: { [weak self] in
+                        activateInput: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1147,7 +1147,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                 self.state?.updated(transition: .spring(duration: 0.5))
                             }
                         },
-                        setCaretPosition: { [weak self] value in
+                        setCaretPosition: { [weak self = self] value in
                             guard let self else {
                                 return
                             }
@@ -1202,7 +1202,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             guard let self, let component = self.component, attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] != nil else {
                                 return
                             }
@@ -1214,7 +1214,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                 }
                                 return .single(result)
                             }
-                            |> deliverOnMainQueue).start(next: { [weak self] peer in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                 guard let self, let component = self.component, let peer else {
                                     return
                                 }
@@ -1297,7 +1297,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                     markPositions: false,
                                     selectedIndex: max(0, min(reactionCountValueList.count - 1, self.allowedReactionCount - 1)),
                                     title: sliderTitle,
-                                    selectedIndexUpdated: { [weak self] index in
+                                    selectedIndexUpdated: { [weak self = self] index in
                                         guard let self else {
                                             return
                                         }
@@ -1375,7 +1375,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                     } else {
                                         return nil
                                     }
-                                }, tapAction: { [weak self] attributes, _ in
+                                }, tapAction: { [weak self = self] attributes, _ in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1389,7 +1389,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                                     theme: environment.theme,
                                     title: environment.strings.PeerInfo_AllowedReactions_StarReactions,
                                     value: self.areStarsReactionsEnabled,
-                                    valueUpdated: { [weak self] value in
+                                    valueUpdated: { [weak self = self] value in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -1563,7 +1563,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                     isEnabled: true,
                     tintWhenDisabled: false,
                     displaysProgress: self.isApplyingSettings,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1600,7 +1600,7 @@ final class PeerAllowedReactionsScreenComponent: Component {
                         backgroundIconColor: nil,
                         backgroundColor: environment.theme.list.itemBlocksBackgroundColor,
                         separatorColor: environment.theme.list.itemBlocksSeparatorColor,
-                        backspace: enabledReactions.isEmpty ? nil : { [weak self] in
+                        backspace: enabledReactions.isEmpty ? nil : { [weak self = self] in
                             guard let self, var enabledReactions = self.enabledReactions, !enabledReactions.isEmpty else {
                                 return
                             }
@@ -1783,14 +1783,14 @@ public class PeerAllowedReactionsScreen: ViewControllerComponentContainer {
         
         self.title = context.sharedContext.currentPresentationData.with({ $0 }).strings.ChannelReactions_Reactions
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? PeerAllowedReactionsScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? PeerAllowedReactionsScreenComponent.View else {
                 return true
             }

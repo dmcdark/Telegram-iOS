@@ -46,7 +46,7 @@ final class ChatListSearchMessageSelectionPanelNode: ASDisplayNode {
                 } else {
                     if let chatAvailableMessageActions = self.chatAvailableMessageActions {
                         self.canDeleteMessagesDisposable.set((chatAvailableMessageActions(self.selectedMessages)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] actions in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] actions in
                             if let strongSelf = self {
                                 strongSelf.actions = actions
                                 if let layout = strongSelf.validLayout {

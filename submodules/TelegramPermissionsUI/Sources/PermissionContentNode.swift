@@ -240,7 +240,7 @@ public final class PermissionContentNode: ASDisplayNode {
                         color: self.theme.list.itemCheckColors.foregroundColor
                     ))
                 ),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.buttonAction?()
                 }
             )),

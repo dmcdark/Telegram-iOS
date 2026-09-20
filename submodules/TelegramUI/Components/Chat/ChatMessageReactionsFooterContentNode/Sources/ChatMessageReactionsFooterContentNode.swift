@@ -247,7 +247,7 @@ public final class MessageReactionButtonsNode: ASDisplayNode {
         
         let reactionButtonsResult = self.container.update(
             context: context,
-            action: { [weak self] _, value, sourceView in
+            action: { [weak self = self] _, value, sourceView in
                 guard let self else {
                     return
                 }
@@ -289,7 +289,7 @@ public final class MessageReactionButtonsNode: ASDisplayNode {
         let topInset: CGFloat = 0.0
         let bottomInset: CGFloat = 2.0
         
-        return (proposedWidth: reactionButtonsSize.width, continueLayout: { [weak self] boundingWidth in
+        return (proposedWidth: reactionButtonsSize.width, continueLayout: { [weak self = self] boundingWidth in
             let size = CGSize(width: boundingWidth, height: topInset + reactionButtonsSize.height + bottomInset)
             return (size: size, apply: { animation in
                 guard let strongSelf = self else {
@@ -591,14 +591,14 @@ public final class ChatMessageReactionsFooterContentNode: ChatMessageBubbleConte
         
         self.addSubnode(self.buttonsNode)
         
-        self.buttonsNode.reactionSelected = { [weak self] value, sourceView in
+        self.buttonsNode.reactionSelected = { [weak self = self] value, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
         }
         
-        self.buttonsNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+        self.buttonsNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture?.cancel()
                 return
@@ -643,7 +643,7 @@ public final class ChatMessageReactionsFooterContentNode: ChatMessageBubbleConte
                     boundingSize.width += layoutConstants.text.bubbleInsets.left + layoutConstants.text.bubbleInsets.right
                     boundingSize.height += topOffset + 2.0
                     
-                    return (boundingSize, { [weak self] animation, synchronousLoad, _ in
+                    return (boundingSize, { [weak self = self] animation, synchronousLoad, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             
@@ -759,11 +759,11 @@ public final class ChatMessageReactionButtonsNode: ASDisplayNode {
         
         self.addSubnode(self.buttonsNode)
         
-        self.buttonsNode.reactionSelected = { [weak self] value, sourceView in
+        self.buttonsNode.reactionSelected = { [weak self = self] value, sourceView in
             self?.reactionSelected?(value, sourceView)
         }
         
-        self.buttonsNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+        self.buttonsNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
             self?.openReactionPreview?(gesture, sourceNode, value)
         }
     }

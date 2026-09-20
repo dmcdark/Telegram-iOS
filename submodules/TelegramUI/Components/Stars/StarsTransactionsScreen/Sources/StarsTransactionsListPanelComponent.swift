@@ -200,7 +200,7 @@ final class StarsTransactionsListPanelComponent: Component {
             let decelerationRate: CGFloat = 0.998
             self.scrollView.forceDecelerating = true
             //self.scrollViewDidEndDragging(self.scrollView, willDecelerate: true)
-            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -525,7 +525,7 @@ final class StarsTransactionsListPanelComponent: Component {
                             leftIcon: .custom(AnyComponentWithIdentity(id: "avatar", component: AnyComponent(StarsAvatarComponent(context: component.context, theme: environment.theme, peer: itemPeer, photo: item.photo, media: item.media, gift: itemGift, backgroundColor: environment.theme.list.plainBackgroundColor))), false),
                             icon: nil,
                             accessory: .custom(ListActionItemComponent.CustomAccessory(component: AnyComponentWithIdentity(id: "label", component: AnyComponent(StarsLabelComponent(text: itemLabel, iconName: itemIconName, iconColor: itemIconColor))), insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16.0))),
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -533,7 +533,7 @@ final class StarsTransactionsListPanelComponent: Component {
                                     component.action(item)
                                 }
                             },
-                            updateIsHighlighted: { [weak self] _, highlighted in
+                            updateIsHighlighted: { [weak self = self] _, highlighted in
                                 guard let self else {
                                     return
                                 }

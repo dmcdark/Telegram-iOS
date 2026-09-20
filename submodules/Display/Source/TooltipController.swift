@@ -177,7 +177,7 @@ open class TooltipController: ViewController, StandalonePresentableController {
     }
     
     override open func loadDisplayNode() {
-        self.displayNode = TooltipControllerNode(content: self.content, baseFontSize: self.baseFontSize, balancedTextLayout: self.balancedTextLayout, alignment: self.alignment, isBlurred: self.isBlurred, dismiss: { [weak self] tappedInside in
+        self.displayNode = TooltipControllerNode(content: self.content, baseFontSize: self.baseFontSize, balancedTextLayout: self.balancedTextLayout, alignment: self.alignment, isBlurred: self.isBlurred, dismiss: { [weak self = self] tappedInside in
             self?.dismiss(tappedInside: tappedInside)
         }, dismissByTapOutside: self.dismissByTapOutside, dismissByTapOutsideSource: self.dismissByTapOutsideSource)
         self.controllerNode.padding = self.padding
@@ -224,7 +224,7 @@ open class TooltipController: ViewController, StandalonePresentableController {
     
     private func beginTimeout() {
         if self.timeoutTimer == nil {
-            let timeoutTimer = SwiftSignalKit.Timer(timeout: self.timeout, repeat: false, completion: { [weak self] in
+            let timeoutTimer = SwiftSignalKit.Timer(timeout: self.timeout, repeat: false, completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.dismissed?(false)
                     strongSelf.controllerNode.animateOut {
@@ -239,7 +239,7 @@ open class TooltipController: ViewController, StandalonePresentableController {
     
     private func dismiss(tappedInside: Bool, completion: (() -> Void)? = nil) {
         self.dismissed?(tappedInside)
-        self.controllerNode.animateOut { [weak self] in
+        self.controllerNode.animateOut { [weak self = self] in
              self?.presentingViewController?.dismiss(animated: false)
              completion?()
         }

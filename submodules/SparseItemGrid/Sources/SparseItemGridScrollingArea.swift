@@ -166,14 +166,14 @@ private final class ScrollingTooltipAnimationComponent: Component {
             let previous = self.previousTarget
             let target = CGFloat.random(in: 0.0 ... 1.0)
             self.previousTarget = target
-            let animator = DisplayLinkAnimator(duration: 1.0, from: previous, to: target, update: { [weak self] value in
+            let animator = DisplayLinkAnimator(duration: 1.0, from: previous, to: target, update: { [weak self = self] value in
                 guard let strongSelf = self else {
                     return
                 }
 
                 strongSelf.progress = listViewAnimationCurveEaseInOut(value)
                 strongSelf.setNeedsDisplay()
-            }, completion: { [weak self] in
+            }, completion: { [weak self = self] in
                 Queue.mainQueue().after(0.3, {
                     guard let strongSelf = self else {
                         return
@@ -918,7 +918,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
                         if shouldBeginValue.shouldDelay {
                             self.state = .began
                             if self.beginDelayTimer == nil {
-                                self.beginDelayTimer = SwiftSignalKit.Timer(timeout: 0.2, repeat: false, completion: { [weak self] in
+                                self.beginDelayTimer = SwiftSignalKit.Timer(timeout: 0.2, repeat: false, completion: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1060,7 +1060,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
         self.view.addSubview(self.lineIndicator)
 
         let dragGesture = DragGesture(
-            shouldBegin: { [weak self] point in
+            shouldBegin: { [weak self = self] point in
                 guard let strongSelf = self else {
                     return nil
                 }
@@ -1073,7 +1073,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
 
                 return ShouldBegin(shouldDelay: strongSelf.isDecelerating?() ?? false)
             },
-            began: { [weak self] in
+            began: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1099,7 +1099,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
                 strongSelf.updateActivityTimer(isScrolling: false)
                 strongSelf.dismissLineTooltip()
             },
-            ended: { [weak self] in
+            ended: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1123,7 +1123,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
                 
                 strongSelf.finishedScrolling?()
             },
-            moved: { [weak self] relativeOffset in
+            moved: { [weak self = self] relativeOffset in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1329,7 +1329,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
             let transition: ContainedViewLayoutTransition = .animated(duration: 0.3, curve: .easeInOut)
             transition.updateAlpha(layer: self.lineIndicator.layer, alpha: 1.0)
         } else {
-            self.activityTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self] in
+            self.activityTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1380,7 +1380,7 @@ public final class SparseItemGridScrollingArea: ASDisplayNode {
 
         //#if DEBUG
         //#else
-        Queue.mainQueue().after(5.0, { [weak self] in
+        Queue.mainQueue().after(5.0, { [weak self = self] in
             self?.dismissLineTooltip()
         })
         //#endif

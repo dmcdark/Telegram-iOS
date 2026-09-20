@@ -211,7 +211,7 @@ final class GalleryRateToastComponent: Component {
             }
             
             if self.tooltipTimer == nil {
-                self.tooltipTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self] _ in
+                self.tooltipTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }

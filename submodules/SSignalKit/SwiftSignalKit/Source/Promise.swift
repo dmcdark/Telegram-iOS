@@ -34,7 +34,7 @@ public final class Promise<T> {
         self.value = nil
         pthread_mutex_unlock(&self.lock)
 
-        self.disposable.set(signal.start(next: { [weak self] next in
+        self.disposable.set(signal.start(next: { [weak self = self] next in
             if let strongSelf = self {
                 pthread_mutex_lock(&strongSelf.lock)
                 strongSelf.value = next

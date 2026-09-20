@@ -162,7 +162,7 @@ private final class CommunitiesScreenComponent: Component {
             }
             if self.subjectPeerDisposable == nil {
                 self.subjectPeerDisposable = (component.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                     guard let self else {
                         return
                     }
@@ -258,7 +258,7 @@ private final class CommunitiesScreenComponent: Component {
             let controller = component.context.sharedContext.makeCommunityEditScreen(
                 context: component.context,
                 mode: .create(peerId: peerId),
-                completed: { [weak self] in
+                completed: { [weak self = self] in
                     self?.dismissController(additionalController: self?.createCommunityController)
                 }
             )
@@ -283,7 +283,7 @@ private final class CommunitiesScreenComponent: Component {
                 context: component.context,
                 communityId: community.id,
                 peerId: peerId,
-                completed: { [weak self] immediate in
+                completed: { [weak self = self] immediate in
                     self?.dismissController()
                 }
             )
@@ -463,7 +463,7 @@ private final class CommunitiesScreenComponent: Component {
                         )),
                         leftIcon: .custom(AnyComponentWithIdentity(id: "icon", component: AnyComponent(BundleIconComponent(name: "Item List/AddCommunityIcon", tintColor: theme.list.itemAccentColor))), false),
                         accessory: nil,
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -533,7 +533,7 @@ private final class CommunitiesScreenComponent: Component {
                         background: theme.list.itemBlocksBackgroundColor
                     ),
                     insets: UIEdgeInsets(top: -1.0, left: 0.0, bottom: -1.0, right: 0.0),
-                    action: canSelectCommunity ? { [weak self] peer, _, _ in
+                    action: canSelectCommunity ? { [weak self = self] peer, _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -616,7 +616,7 @@ public final class CommunitiesScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? CommunitiesScreenComponent.View else {
                 return
             }

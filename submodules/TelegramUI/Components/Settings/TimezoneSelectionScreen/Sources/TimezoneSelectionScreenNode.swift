@@ -146,7 +146,7 @@ private final class TimezoneListSearchContainerNode: SearchDisplayControllerCont
         }
         
         let previousEntriesHolder = Atomic<([TimezoneListEntry], PresentationTheme, PresentationStrings)?>(value: nil)
-        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get()).start(next: { [weak self] items, presentationData in
+        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get()).start(next: { [weak self = self] items, presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -167,7 +167,7 @@ private final class TimezoneListSearchContainerNode: SearchDisplayControllerCont
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -181,7 +181,7 @@ private final class TimezoneListSearchContainerNode: SearchDisplayControllerCont
                 }
             })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -229,7 +229,7 @@ private final class TimezoneListSearchContainerNode: SearchDisplayControllerCont
             let isSearching = transition.isSearching
             let isEmptyResult = transition.isEmptyResult
             
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -406,7 +406,7 @@ final class TimezoneSelectionScreenNode: ViewControllerTracingNode {
             self.presentationDataValue.get(),
             context.engine.accountData.cachedTimeZoneList()
         )
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData, timeZoneList in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, timeZoneList in
             guard let strongSelf = self else {
                 return
             }
@@ -501,7 +501,7 @@ final class TimezoneSelectionScreenNode: ViewControllerTracingNode {
             } else if transition.animated {
                 options.insert(.AnimateInsertion)
             }
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if !strongSelf.didSetReady {
                         strongSelf.didSetReady = true
@@ -520,7 +520,7 @@ final class TimezoneSelectionScreenNode: ViewControllerTracingNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: TimezoneListSearchContainerNode(context: self.context, timeZoneList: timeZoneList, action: self.action), inline: true, cancel: { [weak self] in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: TimezoneListSearchContainerNode(context: self.context, timeZoneList: timeZoneList, action: self.action), inline: true, cancel: { [weak self = self] in
             self?.requestDeactivateSearch()
         }, fieldStyle: placeholderNode.fieldStyle)
         

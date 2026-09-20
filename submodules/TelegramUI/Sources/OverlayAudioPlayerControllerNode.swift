@@ -351,16 +351,16 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
         self.historyNode.preloadPages = true
         self.historyNode.stackFromBottom = true
         self.historyNode.areContentAnimationsEnabled = true
-        self.historyNode.contentPositionChanged = { [weak self] offset in
+        self.historyNode.contentPositionChanged = { [weak self = self] offset in
             self?.updateHistoryContentOffset(offset, transition: .immediate)
         }
-        self.historyNode.updateFloatingHeaderOffset = { [weak self] offset, transition in
+        self.historyNode.updateFloatingHeaderOffset = { [weak self = self] offset, transition in
             if let strongSelf = self {
                 strongSelf.updateFloatingHeaderOffset(offset: offset, transition: transition)
             }
         }
         
-        self.historyNode.endedInteractiveDragging = { [weak self] _ in
+        self.historyNode.endedInteractiveDragging = { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -378,13 +378,13 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             }
         }
         
-        self.controlsNode.updateIsExpanded = { [weak self] in
+        self.controlsNode.updateIsExpanded = { [weak self = self] in
             if let strongSelf = self, let validLayout = strongSelf.validLayout {
                 strongSelf.containerLayoutUpdated(validLayout, transition: .animated(duration: 0.5, curve: .spring))
             }
         }
         
-        self.controlsNode.requestAlbumArtDisplay = { [weak self] fileReferenceAndAlbumArt in
+        self.controlsNode.requestAlbumArtDisplay = { [weak self = self] fileReferenceAndAlbumArt in
             guard let self, let layout = self.validLayout else {
                 return
             }
@@ -397,25 +397,25 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             self.containerLayoutUpdated(layout, transition: .animated(duration: 0.25, curve: .easeInOut))
         }
         
-        self.controlsNode.requestCollapse = { [weak self] in
+        self.controlsNode.requestCollapse = { [weak self = self] in
             self?.requestDismiss()
         }
         
-        self.controlsNode.requestShare = { [weak self] subject in
+        self.controlsNode.requestShare = { [weak self = self] subject in
             self?.requestShare(subject)
         }
         
-        self.controlsNode.requestSearchByArtist = { [weak self] artist in
+        self.controlsNode.requestSearchByArtist = { [weak self = self] artist in
             self?.requestSearchByArtist(artist)
         }
         
-        self.controlsNode.requestLayout = { [weak self] transition in
+        self.controlsNode.requestLayout = { [weak self = self] transition in
             if let self, let validLayout = self.validLayout {
                 self.containerLayoutUpdated(validLayout, transition: transition)
             }
         }
         
-        self.controlsNode.updateOrder = { [weak self] order in
+        self.controlsNode.updateOrder = { [weak self = self] order in
             if let strongSelf = self {
                 let reversed: Bool
                 if case .regular = order {
@@ -432,19 +432,19 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             }
         }
         
-        self.controlsNode.control = { [weak self] action in
+        self.controlsNode.control = { [weak self = self] action in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.mediaManager.playlistControl(action, type: strongSelf.type)
             }
         }
         
-        self.controlsNode.requestSaveToProfile = { [weak self] file in
+        self.controlsNode.requestSaveToProfile = { [weak self = self] file in
             if let self {
                 self.addToSavedMusic(file: file)
             }
         }
         
-        self.controlsNode.requestRemoveFromProfile = { [weak self] file in
+        self.controlsNode.requestRemoveFromProfile = { [weak self = self] file in
             if let self {
                 self.removeFromSavedMusic(file: file)
             }
@@ -465,11 +465,11 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
         self.historyFrameNode.addSubnode(self.historyFrameTopMaskNode)
         self.historyFrameNode.addSubnode(self.collapseNode)
         
-        self.historyNode.beganInteractiveDragging = { [weak self] _ in
+        self.historyNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.controlsNode.collapse()
         }
         
-        openMessageImpl = { [weak self] id in
+        openMessageImpl = { [weak self = self] id in
             if let strongSelf = self, strongSelf.isNodeLoaded, let message = strongSelf.historyNode.messageInCurrentHistoryView(id)?._asMessage() {
                 var playlistLocation: PeerMessagesPlaylistLocation?
                 if let location = strongSelf.playlistLocation as? PeerMessagesPlaylistLocation {
@@ -485,14 +485,14 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             return false
         }
         
-        openMessageContextMenuImpl = { [weak self] message, node, rect, gesture in
+        openMessageContextMenuImpl = { [weak self = self] message, node, rect, gesture in
             guard let self else {
                 return
             }
             self.openMessageContextMenu(message: message, node: node, frame: rect, gesture: gesture as? ContextGesture)
         }
         
-        self.presentationDataDisposable = context.sharedContext.presentationData.startStrict(next: { [weak self] presentationData in
+        self.presentationDataDisposable = context.sharedContext.presentationData.startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 if strongSelf.presentationData.theme !== presentationData.theme || strongSelf.presentationData.strings !== presentationData.strings {
                     strongSelf.updatePresentationData(presentationData)
@@ -530,7 +530,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             context.engine.peers.savedMusicIds(),
             copyProtectionEnabled,
             peer
-        ).start(next: { [weak self] savedIds, copyProtectionEnabled, peer in
+        ).start(next: { [weak self = self] savedIds, copyProtectionEnabled, peer in
             guard let self else {
                 return
             }
@@ -583,7 +583,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
         panRecognizer.delegate = self.wrappedGestureRecognizerDelegate
         panRecognizer.delaysTouchesBegan = false
         panRecognizer.cancelsTouchesInView = true
-        panRecognizer.shouldBegin = { [weak self] point in
+        panRecognizer.shouldBegin = { [weak self = self] point in
             guard let self else {
                 return false
             }
@@ -603,7 +603,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             return
         }
         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: savedMusicContext.peerId))
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let self, let peer = peer.flatMap({ PeerReference($0) }) else {
                 return
             }
@@ -641,7 +641,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             }
         })
         self.historyNode.autoScrollWhenReordering = false
-        self.historyNode.didEndScrollingWithOverscroll = { [weak self] in
+        self.historyNode.didEndScrollingWithOverscroll = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -730,10 +730,10 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                 customUndoText: actionText,
                 timeout: 3.0
             ),
-            action: { [weak self] action in
+            action: { [weak self = self] action in
                 if let self, case .undo = action {
                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let self, let peer else {
                             return
                         }
@@ -905,7 +905,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                 GlassControlGroupComponent.Item(
                     id: AnyHashable("close"),
                     content: .icon("Navigation/Close"),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -919,7 +919,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                     GlassControlGroupComponent.Item(
                         id: AnyHashable("add"),
                         content: .icon("Navigation/Add"),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1227,7 +1227,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
         historyNode.preloadPages = true
         historyNode.stackFromBottom = true
         historyNode.areContentAnimationsEnabled = true
-        historyNode.updateFloatingHeaderOffset = { [weak self] offset, _ in
+        historyNode.updateFloatingHeaderOffset = { [weak self = self] offset, _ in
             self?.replacementHistoryNodeFloatingOffset = offset
         }
         self.replacementHistoryNodeFloatingOffset = nil
@@ -1259,7 +1259,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             let updateSizeAndInsets = ListViewUpdateSizeAndInsets(size: listNodeSize, insets: insets, itemOffsetInsets: itemOffsetInsets, duration: 0.0, curve: .Default(duration: nil))
             historyNode.updateLayout(transition: .immediate, updateSizeAndInsets: updateSizeAndInsets)
         }
-        self.replacementHistoryNodeReadyDisposable.set((historyNode.historyState.get() |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        self.replacementHistoryNodeReadyDisposable.set((historyNode.historyState.get() |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.replaceWithReadyUpdatedHistoryNode()
             }
@@ -1299,16 +1299,16 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                 previousHistoryNode.removeFromSupernode()
             }
             
-            self.historyNode.updateFloatingHeaderOffset = { [weak self] offset, transition in
+            self.historyNode.updateFloatingHeaderOffset = { [weak self = self] offset, transition in
                 if let strongSelf = self {
                     strongSelf.updateFloatingHeaderOffset(offset: offset, transition: transition)
                 }
             }
-            self.historyNode.contentPositionChanged = { [weak self] offset in
+            self.historyNode.contentPositionChanged = { [weak self = self] offset in
                 self?.updateHistoryContentOffset(offset, transition: .immediate)
             }
             
-            self.historyNode.endedInteractiveDragging = { [weak self] _ in
+            self.historyNode.endedInteractiveDragging = { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1326,7 +1326,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                 }
             }
             
-            self.historyNode.beganInteractiveDragging = { [weak self] _ in
+            self.historyNode.beganInteractiveDragging = { [weak self = self] _ in
                 self?.controlsNode.collapse()
             }
             
@@ -1378,7 +1378,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
         let canSaveToSavedMessages = message.id.peerId != self.context.account.peerId || message.id.namespace == Namespaces.Message.Local
         
         let _ = (context.sharedContext.chatAvailableMessageActions(engine: context.engine, accountPeerId: context.account.peerId, messageIds: [message.id], keepUpdated: false)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] actions in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] actions in
             guard let self else {
                 return
             }
@@ -1386,7 +1386,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             var items: [ContextMenuItem] = []
             if canSaveToProfile || canSaveToSavedMessages {
                 items.append(
-                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/DownloadTone"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/DownloadTone"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                         if let self {
                             var subActions: [ContextMenuItem] = []
                             subActions.append(
@@ -1398,7 +1398,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                             
                             if canSaveToProfile {
                                 subActions.append(
-                                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_Profile, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_Profile, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                         f(.default)
                                         
                                         if let self {
@@ -1410,7 +1410,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                             
                             if canSaveToSavedMessages {
                                 subActions.append(
-                                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_SavedMessages, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_SavedMessages, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                         f(.default)
                                         
                                         if let self {
@@ -1421,7 +1421,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                             }
                             
                             subActions.append(
-                                .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_Files, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveTo_Files, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
                                     
                                     if let self {
@@ -1433,7 +1433,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                                             self.saveMediaDisposable = disposable
                                         }
                                         disposable.set(
-                                            saveMediaToFiles(context: context, fileReference: fileReference, present: { [weak self] c, a in
+                                            saveMediaToFiles(context: context, fileReference: fileReference, present: { [weak self = self] c, a in
                                                 if let self, let controller = (self.getParentController() as? OverlayAudioPlayerControllerImpl) {
                                                     controller.present(c, in: .window(.root), with: a)
                                                 }
@@ -1455,7 +1455,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
             } else {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_SaveToFiles, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     
                     if let self {
@@ -1467,7 +1467,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                             self.saveMediaDisposable = disposable
                         }
                         disposable.set(
-                            saveMediaToFiles(context: context, fileReference: fileReference, present: { [weak self] c, a in
+                            saveMediaToFiles(context: context, fileReference: fileReference, present: { [weak self = self] c, a in
                                 if let self, let controller = (self.getParentController() as? OverlayAudioPlayerControllerImpl) {
                                     controller.present(c, in: .window(.root), with: a)
                                 }
@@ -1485,7 +1485,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                     addedSeparator = true
                 }
                 items.append(
-                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_ShowInChat, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                    .action(ContextMenuActionItem(text: presentationData.strings.MediaPlayer_ContextMenu_ShowInChat, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         
                         guard let self else {
@@ -1530,7 +1530,7 @@ final class OverlayAudioPlayerControllerNode: ViewControllerTracingNode, ASGestu
                     actionTitle = presentationData.strings.MediaPlayer_ContextMenu_Remove
                 }
                 items.append(
-                    .action(ContextMenuActionItem(text: actionTitle, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, f in
+                    .action(ContextMenuActionItem(text: actionTitle, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, f in
                         guard let self else {
                             return
                         }

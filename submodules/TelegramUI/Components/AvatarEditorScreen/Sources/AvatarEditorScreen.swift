@@ -112,7 +112,7 @@ final class AvatarEditorScreenComponent: Component {
                 switch markup.content {
                 case let .emoji(fileId):
                     self.fileDisposable = (context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                    |> deliverOnMainQueue).start(next: { [weak self] files in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] files in
                         if let strongSelf = self, let file = files.values.first {
                             strongSelf.selectedFile = file
                             strongSelf.updated(transition: .immediate)
@@ -126,7 +126,7 @@ final class AvatarEditorScreenComponent: Component {
                         }
                         return nil
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] file in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] file in
                         if let strongSelf = self, let file {
                             strongSelf.selectedFile = file
                             strongSelf.updated(transition: .immediate)
@@ -271,7 +271,7 @@ final class AvatarEditorScreenComponent: Component {
                 self.state?.selectedFile = data.emoji.panelItemGroups.first?.items.first?.itemFile?._parse()
             }
                         
-            let updateSearchQuery: (EmojiPagerContentComponent.SearchQuery?) -> Void = { [weak self] query in
+            let updateSearchQuery: (EmojiPagerContentComponent.SearchQuery?) -> Void = { [weak self = self] query in
                 guard let self, let context = self.state?.context else {
                     return
                 }
@@ -452,7 +452,7 @@ final class AvatarEditorScreenComponent: Component {
                         self.emojiSearchStateValue.isSearching = true
                         self.emojiSearchDisposable.set((resultSignal
                         |> delay(0.15, queue: .mainQueue())
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -510,7 +510,7 @@ final class AvatarEditorScreenComponent: Component {
                         
                     var version = 0
                     self.emojiSearchDisposable.set((resultSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -550,7 +550,7 @@ final class AvatarEditorScreenComponent: Component {
             }
             
             data.emoji.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] _, item, _, _, _, _ in
+                performItemAction: { [weak self = self] _, item, _, _, _, _ in
                     guard let self, let _ = item.itemFile else {
                         return
                     }
@@ -562,7 +562,7 @@ final class AvatarEditorScreenComponent: Component {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let strongSelf = self, let controller = strongSelf.controller?(), let collectionId = groupId.base as? EngineItemCollectionId else {
                         return
                     }
@@ -596,7 +596,7 @@ final class AvatarEditorScreenComponent: Component {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let strongSelf = self, let controller = strongSelf.controller?() else {
                         return
                     }
@@ -643,10 +643,10 @@ final class AvatarEditorScreenComponent: Component {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.controller?()?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -659,7 +659,7 @@ final class AvatarEditorScreenComponent: Component {
                 },
                 updateScrollingToItemGroup: {
                 },
-                onScroll: { [weak self] in
+                onScroll: { [weak self = self] in
                     if let self {
                         self.endEditing(true)
                         if let state = self.state, state.expanded {
@@ -668,7 +668,7 @@ final class AvatarEditorScreenComponent: Component {
                         }
                     }
                 },
-                loadMore: { [weak self] in
+                loadMore: { [weak self = self] in
                     self?.stickerSearchContext?.loadMore()
                 },
                 chatPeerId: nil,
@@ -684,7 +684,7 @@ final class AvatarEditorScreenComponent: Component {
             )
             
             data.stickers?.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] _, item, _, _, _, _ in
+                performItemAction: { [weak self = self] _, item, _, _, _, _ in
                     guard let self, let _ = item.itemFile else {
                         return
                     }
@@ -696,7 +696,7 @@ final class AvatarEditorScreenComponent: Component {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let strongSelf = self, let controller = strongSelf.controller?(), let collectionId = groupId.base as? EngineItemCollectionId else {
                         return
                     }
@@ -730,7 +730,7 @@ final class AvatarEditorScreenComponent: Component {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let strongSelf = self, let controller = strongSelf.controller?() else {
                         return
                     }
@@ -769,10 +769,10 @@ final class AvatarEditorScreenComponent: Component {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.controller?()?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -785,7 +785,7 @@ final class AvatarEditorScreenComponent: Component {
                 },
                 updateScrollingToItemGroup: {
                 },
-                onScroll: { [weak self] in
+                onScroll: { [weak self = self] in
                     if let self {
                         self.endEditing(true)
                         if let state = self.state, state.expanded {
@@ -794,7 +794,7 @@ final class AvatarEditorScreenComponent: Component {
                         }
                     }
                 },
-                loadMore: { [weak self] in
+                loadMore: { [weak self = self] in
                     self?.stickerSearchContext?.loadMore()
                 },
                 chatPeerId: nil,
@@ -869,7 +869,7 @@ final class AvatarEditorScreenComponent: Component {
                         isDark: environment.theme.overallDarkAppearance,
                         state: .glass,
                         component: AnyComponentWithIdentity(id: "close", component: AnyComponent(BundleIconComponent(name: "Navigation/Close", tintColor: environment.theme.chat.inputPanel.panelControlColor))),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -897,7 +897,7 @@ final class AvatarEditorScreenComponent: Component {
                         isDark: environment.theme.overallDarkAppearance,
                         state: .tintedGlass,
                         component: AnyComponentWithIdentity(id: "done", component: AnyComponent(BundleIconComponent(name: "Navigation/Done", tintColor: environment.theme.list.itemCheckColors.foregroundColor))),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1196,7 +1196,7 @@ final class AvatarEditorScreenComponent: Component {
                                 ),
                                 maximumNumberOfLines: 1
                             )
-                        ), action: { [weak self] in
+                        ), action: { [weak self = self] in
                             if let strongSelf = self, let state = strongSelf.state {
                                 if let strongSelf = self, let pagerView = strongSelf.keyboardView.view as? EntityKeyboardComponent.View {
                                     let targetContentId: AnyHashable
@@ -1266,7 +1266,7 @@ final class AvatarEditorScreenComponent: Component {
                         topPanelExtensionUpdated: { _, _ in },
                         topPanelScrollingOffset: { _, _ in },
                         hideInputUpdated: { _, _, _ in },
-                        hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                        hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                             if let strongSelf = self {
                                 strongSelf.state?.isSearchActive = hideTopPanel
                                 if hideTopPanel {
@@ -1279,7 +1279,7 @@ final class AvatarEditorScreenComponent: Component {
                         switchToGifSubject: { _ in },
                         reorderItems: { _, _ in },
                         makeSearchContainerNode: { _ in return nil },
-                        contentIdUpdated: { [weak self] contentId in
+                        contentIdUpdated: { [weak self = self] contentId in
                             if let strongSelf = self {
                                 strongSelf.state?.keyboardContentId = contentId
                                 strongSelf.state?.updated(transition: .immediate)
@@ -1376,7 +1376,7 @@ final class AvatarEditorScreenComponent: Component {
                         )),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.complete()
                         }
                     )
@@ -1697,7 +1697,7 @@ public final class AvatarEditorScreen: ViewControllerComponentContainer {
         
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let self {
                 if let view = self.node.hostView.findTaggedView(tag: EmojiPagerContentComponent.Tag(id: AnyHashable("emoji"))) as? EmojiPagerContentComponent.View {
                     view.scrollToTop()

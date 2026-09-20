@@ -221,18 +221,18 @@ public final class MediaGroupsScreen: ViewController, AttachmentContainable {
                         
             let updatedState = combineLatest(queue: Queue.mainQueue(), controller.mediaAssetsContext.fetchAssetsCollections(.album), controller.mediaAssetsContext.fetchAssetsCollections(.smartAlbum))
             self.itemsDisposable = (updatedState
-            |> deliverOnMainQueue).start(next: { [weak self] albums, smartAlbums in
+            |> deliverOnMainQueue).start(next: { [weak self = self] albums, smartAlbums in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.updateState(State(albums: albums, smartAlbums: smartAlbums))
             })
             
-            self.listNode.beganInteractiveDragging = { [weak self] _ in
+            self.listNode.beganInteractiveDragging = { [weak self = self] _ in
                 self?.view.window?.endEditing(true)
             }
             
-            self.listNode.visibleContentOffsetChanged = { [weak self] _, _ in
+            self.listNode.visibleContentOffsetChanged = { [weak self = self] _, _ in
                 self?.updateNavigation(transition: .immediate)
             }
         }
@@ -300,7 +300,7 @@ public final class MediaGroupsScreen: ViewController, AttachmentContainable {
             let previousEntries = self.currentEntries
             self.currentEntries = entries
             
-            let transaction = preparedTransition(from: previousEntries, to: entries, presentationData: self.presentationData, openGroup: { [weak self] collection in
+            let transaction = preparedTransition(from: previousEntries, to: entries, presentationData: self.presentationData, openGroup: { [weak self = self] collection in
                 self?.view.window?.endEditing(true)
                 self?.controller?.openGroup(collection)
             })
@@ -335,7 +335,7 @@ public final class MediaGroupsScreen: ViewController, AttachmentContainable {
             
             let options = ListViewDeleteAndInsertOptions()
             
-            self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if !strongSelf.didSetReady {
                         strongSelf.didSetReady = true
@@ -421,7 +421,7 @@ public final class MediaGroupsScreen: ViewController, AttachmentContainable {
         self.statusBar.statusBarStyle = .Ignore
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -434,7 +434,7 @@ public final class MediaGroupsScreen: ViewController, AttachmentContainable {
             }
         })
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controllerNode.scrollToTop()
             }

@@ -92,13 +92,13 @@ final class NetworkFrameworkTcpConnectionInterface: NSObject, MTTcpConnectionInt
             self.connection = connection
             
             let queue = self.queue
-            connection.stateUpdateHandler = { [weak self] state in
+            connection.stateUpdateHandler = { [weak self = self] state in
                 queue.async {
                     self?.stateUpdated(state: state)
                 }
             }
             
-            connection.pathUpdateHandler = { [weak self] path in
+            connection.pathUpdateHandler = { [weak self = self] path in
                 queue.async {
                     guard let self = self else {
                         return
@@ -111,7 +111,7 @@ final class NetworkFrameworkTcpConnectionInterface: NSObject, MTTcpConnectionInt
                 }
             }
             
-            connection.viabilityUpdateHandler = { [weak self] isViable in
+            connection.viabilityUpdateHandler = { [weak self = self] isViable in
                 queue.async {
                     guard let self = self else {
                         return
@@ -122,7 +122,7 @@ final class NetworkFrameworkTcpConnectionInterface: NSObject, MTTcpConnectionInt
                 }
             }
             
-            /*connection.betterPathUpdateHandler = { [weak self] hasBetterPath in
+            /*connection.betterPathUpdateHandler = { [weak self = self] hasBetterPath in
                 queue.async {
                     guard let self = self else {
                         return
@@ -133,7 +133,7 @@ final class NetworkFrameworkTcpConnectionInterface: NSObject, MTTcpConnectionInt
                 }
             }*/
             
-            self.connectTimeoutTimer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self] in
+            self.connectTimeoutTimer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self = self] in
                 guard let self = self else {
                     return
                 }
@@ -231,7 +231,7 @@ final class NetworkFrameworkTcpConnectionInterface: NSObject, MTTcpConnectionInt
                 
                 self.processReadRequests()
             } else {
-                connection.receive(minimumIncompleteLength: requestChunkLength, maximumLength: requestChunkLength, completion: { [weak self] data, context, isComplete, error in
+                connection.receive(minimumIncompleteLength: requestChunkLength, maximumLength: requestChunkLength, completion: { [weak self = self] data, context, isComplete, error in
                     guard let self = self, let currentReadRequest = self.currentReadRequest else {
                         return
                     }

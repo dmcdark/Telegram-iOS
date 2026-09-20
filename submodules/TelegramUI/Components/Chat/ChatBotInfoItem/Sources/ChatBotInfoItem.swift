@@ -176,7 +176,7 @@ public final class ChatBotInfoItemNode: ListViewItemNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 let tapAction = strongSelf.tapActionAtPoint(point, gesture: .tap, isEstimating: true)
                 switch tapAction.content {
@@ -191,7 +191,7 @@ public final class ChatBotInfoItemNode: ListViewItemNode {
             
             return .waitForDoubleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }
@@ -220,7 +220,7 @@ public final class ChatBotInfoItemNode: ListViewItemNode {
         
         let currentItem = self.item
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             self?.item = item
             
             var updatedBackgroundImage: UIImage?
@@ -514,7 +514,7 @@ public final class ChatBotInfoItemNode: ListViewItemNode {
             if let url = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] as? String {
                 if url.isEmpty {
                     if let item = self.item, item.managedByBot != nil, case .tap = gesture {
-                        return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+                        return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -561,7 +561,7 @@ public final class ChatBotInfoItemNode: ListViewItemNode {
                         case let .peerMention(peerId, _, _):
                             if let item = self.item {
                                 let _ = (item.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                                     if let peer = peer {
                                         self?.item?.controllerInteraction.openPeer(peer, .chat(textInputState: nil, subject: nil, peekData: nil), nil, .default)
                                     }

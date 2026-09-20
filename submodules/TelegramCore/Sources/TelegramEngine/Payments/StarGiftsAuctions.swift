@@ -175,7 +175,7 @@ public final class GiftAuctionContext {
         self.pushState()
 
         self.disposable.set((_internal_getStarGiftAuctionState(postbox: self.account.postbox, network: self.account.network, accountPeerId: self.account.peerId, reference: .giftId(self.gift.giftId), version: self.currentVersion)
-        |> deliverOn(self.queue)).start(next: { [weak self] data in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] data in
             guard let self else {
                 return
             }
@@ -202,7 +202,7 @@ public final class GiftAuctionContext {
             self.pushState()
             
             self.updateTimer?.invalidate()
-            self.updateTimer = SwiftSignalKit.Timer(timeout: Double(effectiveTimeout), repeat: false, completion: { [weak self] _ in
+            self.updateTimer = SwiftSignalKit.Timer(timeout: Double(effectiveTimeout), repeat: false, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -488,7 +488,7 @@ public class GiftAuctionsManager {
         self.account = account
         
         self.updateAuctionStateDisposable = (self.account.stateManager.updatedStarGiftAuctionState()
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let self else {
                 return
             }
@@ -507,7 +507,7 @@ public class GiftAuctionsManager {
         })
         
         self.updateMyStateDisposable = (self.account.stateManager.updatedStarGiftAuctionMyState()
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let self else {
                 return
             }
@@ -536,7 +536,7 @@ public class GiftAuctionsManager {
     
     public func reload() {
         self.disposable.set((_internal_getActiveGiftAuctions(account: self.account, hash: 0)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] activeAuctions in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] activeAuctions in
             guard let self, let activeAuctions else {
                 return
             }
@@ -559,7 +559,7 @@ public class GiftAuctionsManager {
                 accountPeerId: self.account.peerId,
                 reference: reference,
                 version: 0
-            ) |> mapToSignal { [weak self] result in
+            ) |> mapToSignal { [weak self = self] result in
                 if let self, let result {
                     let auctionContext = GiftAuctionContext(account: self.account, gift: result.gift, initialAuctionState: result.state, initialMyState: result.myState, initialTimeout: result.timeout)
                     self.auctionContexts[result.gift.giftId] = auctionContext

@@ -153,7 +153,7 @@ private final class MediaGroupsGridAlbumItemNode : ListViewItemNode {
         let makeTitleLayout = TextNode.asyncLayout(self.titleNode)
         let makeCountLayout = TextNode.asyncLayout(self.countNode)
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let title = NSAttributedString(string: item.collection.localizedTitle ?? "", font: textFont, textColor: item.theme.list.itemPrimaryTextColor)
             let (titleLayout, titleApply) = makeTitleLayout(TextNodeLayoutArguments(attributedString: title, backgroundColor: nil, maximumNumberOfLines: 1, truncationType: .end, constrainedSize: CGSize(width: 170.0, height: CGFloat.greatestFiniteMagnitude), alignment: .natural, cutout: nil, insets: UIEdgeInsets()))
             
@@ -322,11 +322,11 @@ private class MediaGroupsAlbumGridItemNode: ListViewItemNode {
     }
     
     func asyncLayout() -> (_ item: MediaGroupsAlbumGridItem, _ params: ListViewItemLayoutParams) -> (ListViewItemNodeLayout, () -> (Signal<Void, NoError>?, (ListViewItemApply) -> Void)) {
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let contentSize = CGSize(width: params.width, height: 220.0)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets())
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 return (nil, { _ in
                     if let strongSelf = self {
                         strongSelf.item = item

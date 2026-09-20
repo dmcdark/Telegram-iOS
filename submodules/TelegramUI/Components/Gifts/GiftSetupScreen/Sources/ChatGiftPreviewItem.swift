@@ -309,7 +309,7 @@ final class ChatGiftPreviewItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: .zero)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

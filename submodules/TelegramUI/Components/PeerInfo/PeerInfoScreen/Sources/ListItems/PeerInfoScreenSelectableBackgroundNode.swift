@@ -34,7 +34,7 @@ final class PeerInfoScreenSelectableBackgroundNode: ASDisplayNode {
         self.view.addSubview(self.button)
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             self?.updateIsHighlighted(highlighted)
         }
     }

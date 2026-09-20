@@ -188,13 +188,13 @@ final class PhoneInputItemNode: ListViewItemNode, ItemListItemNode {
         
         self.countryButton.addTarget(self, action: #selector(self.countryPressed), forControlEvents: .touchUpInside)
         
-        self.phoneInputNode.numberTextUpdated = { [weak self] number in
+        self.phoneInputNode.numberTextUpdated = { [weak self = self] number in
             if let self {
                 let _ = self.processNumberChange(self.phoneInputNode.number)
             }
         }
         
-        self.phoneInputNode.countryCodeUpdated = { [weak self] code, name in
+        self.phoneInputNode.countryCodeUpdated = { [weak self = self] code, name in
             guard let self, let item = self.item else {
                 return
             }
@@ -344,7 +344,7 @@ final class PhoneInputItemNode: ListViewItemNode, ItemListItemNode {
                         
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

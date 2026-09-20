@@ -919,9 +919,11 @@ public final class MediaBox {
                 }
                 let index = context.subscribers.add(Void())
                 
-                disposable.set(ActionDisposable { [weak self, weak context] in
+                let weakSelf = Weak(self)
+                let weakContext = Weak(context)
+                disposable.set(ActionDisposable {
                     dataQueue.async {
-                        guard let strongSelf = self, let context = context, let currentContext = strongSelf.keepResourceContexts[id], currentContext === context else {
+                        guard let strongSelf = weakSelf.value, let context = weakContext.value, let currentContext = strongSelf.keepResourceContexts[id], currentContext === context else {
                             return
                         }
                         currentContext.subscribers.remove(index)
@@ -1055,13 +1057,18 @@ public final class MediaBox {
                             subscriber.putNext(MediaResourceData(path: paths.partial, offset: 0, size: 0, complete: false))
                         }
                         
-                        disposable.set(ActionDisposable { [weak context] in
-                            self.dataQueue.async {
-                                if let currentContext = self.cachedRepresentationContexts[key], currentContext === context {
+                        let weakSelf = Weak(self)
+                        let weakContext = Weak(context)
+                        disposable.set(ActionDisposable {
+                            weakSelf.value?.dataQueue.async {
+                                guard let strongSelf = weakSelf.value else {
+                                    return
+                                }
+                                if let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === weakContext.value {
                                     currentContext.dataSubscribers.remove(index)
                                     if currentContext.dataSubscribers.isEmpty {
                                         currentContext.disposable.dispose()
-                                        self.cachedRepresentationContexts.removeValue(forKey: key)
+                                        strongSelf.cachedRepresentationContexts.removeValue(forKey: key)
                                     }
                                 }
                             }
@@ -1077,8 +1084,8 @@ public final class MediaBox {
                                 |> map(Optional.init)
                             }
                             |> deliverOn(self.dataQueue)
-                            context.disposable.set(signal.startStrict(next: { [weak self, weak context] next in
-                                guard let strongSelf = self else {
+                            context.disposable.set(signal.startStrict(next: { next in
+                                guard let strongSelf = weakSelf.value else {
                                     return
                                 }
                                 if let next = next {
@@ -1122,7 +1129,7 @@ public final class MediaBox {
                                         isDone = true
                                     }
                                     
-                                    if let strongSelf = self, let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === context {
+                                    if let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === weakContext.value {
                                         if isDone {
                                             currentContext.disposable.dispose()
                                             strongSelf.cachedRepresentationContexts.removeValue(forKey: key)
@@ -1146,7 +1153,7 @@ public final class MediaBox {
                                         }
                                     }
                                 } else {
-                                    if let strongSelf = self, let context = strongSelf.cachedRepresentationContexts[key] {
+                                    if let context = strongSelf.cachedRepresentationContexts[key] {
                                         let data = MediaResourceData(path: paths.partial, offset: 0, size: 0, complete: false)
                                         context.currentData = data
                                         for subscriber in context.dataSubscribers.copyItems() {
@@ -1243,13 +1250,18 @@ public final class MediaBox {
                             subscriber.putNext(MediaResourceData(path: paths.partial, offset: 0, size: 0, complete: false))
                         }
 
-                        disposable.set(ActionDisposable { [weak context] in
-                            self.dataQueue.async {
-                                if let currentContext = self.cachedRepresentationContexts[key], currentContext === context {
+                        let weakSelf = Weak(self)
+                        let weakContext = Weak(context)
+                        disposable.set(ActionDisposable {
+                            weakSelf.value?.dataQueue.async {
+                                guard let strongSelf = weakSelf.value else {
+                                    return
+                                }
+                                if let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === weakContext.value {
                                     currentContext.dataSubscribers.remove(index)
                                     if currentContext.dataSubscribers.isEmpty {
                                         currentContext.disposable.dispose()
-                                        self.cachedRepresentationContexts.removeValue(forKey: key)
+                                        strongSelf.cachedRepresentationContexts.removeValue(forKey: key)
                                     }
                                 }
                             }
@@ -1260,8 +1272,8 @@ public final class MediaBox {
                             let cacheStorageBox = self.cacheStorageBox
                             let signal = fetch()
                             |> deliverOn(self.dataQueue)
-                            context.disposable.set(signal.startStrict(next: { [weak self, weak context] next in
-                                guard let strongSelf = self else {
+                            context.disposable.set(signal.startStrict(next: { next in
+                                guard let strongSelf = weakSelf.value else {
                                     return
                                 }
                                 var isDone = false
@@ -1304,7 +1316,7 @@ public final class MediaBox {
                                     }
                                 }
 
-                                if let strongSelf = self, let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === context {
+                                if let currentContext = strongSelf.cachedRepresentationContexts[key], currentContext === weakContext.value {
                                     if isDone {
                                         currentContext.disposable.dispose()
                                         strongSelf.cachedRepresentationContexts.removeValue(forKey: key)

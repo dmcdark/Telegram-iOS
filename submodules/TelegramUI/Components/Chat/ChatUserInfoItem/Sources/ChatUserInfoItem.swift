@@ -182,7 +182,7 @@ public final class ChatUserInfoItemNode: ListViewItemNode, ASGestureRecognizerDe
         self.offsetContainer.addSubnode(self.groupsButtonNode)
         self.wantsTrailingItemSpaceUpdates = true
         
-        self.groupsButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.groupsButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let self {
                 if highlighted {
                     self.groupsValueTextNode.layer.removeAnimation(forKey: "opacity")
@@ -268,7 +268,7 @@ public final class ChatUserInfoItemNode: ListViewItemNode, ASGestureRecognizerDe
         let currentRegistrationDateText = self.registrationDateText
         let currentPhoneCountryText = self.phoneCountryText
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let themeUpdated = item.presentationData.theme !== currentItem?.presentationData.theme
                             
             var backgroundSize = CGSize(width: 240.0, height: 0.0)
@@ -431,7 +431,7 @@ public final class ChatUserInfoItemNode: ListViewItemNode, ASGestureRecognizerDe
                             let groupsInCommonContext = GroupsInCommonContext(account: item.context.account, peerId: item.peer.id)
                             strongSelf.groupsInCommonContext = groupsInCommonContext
                             strongSelf.groupsInCommonDisposable = (groupsInCommonContext.state
-                            |> deliverOnMainQueue).start(next: { [weak self] state in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                                 guard let self, let item = self.item else {
                                     return
                                 }

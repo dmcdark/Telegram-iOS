@@ -28,9 +28,9 @@ public final class OverlayMediaControllerImpl: ViewController, OverlayMediaContr
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = OverlayMediaControllerNode(updatePossibleEmbeddingItem: { [weak self] item in
+        self.displayNode = OverlayMediaControllerNode(updatePossibleEmbeddingItem: { [weak self = self] item in
             self?.updatePossibleEmbeddingItem?(item)
-        }, embedPossibleEmbeddingItem: { [weak self] item in
+        }, embedPossibleEmbeddingItem: { [weak self = self] item in
             return self?.embedPossibleEmbeddingItem?(item) ?? false
         })
         self.displayNodeDidLoad()

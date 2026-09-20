@@ -71,7 +71,7 @@ final class PeerInfoHeaderNavigationButton: HighlightableButtonNode {
 
         self.addSubnode(self.containerNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }

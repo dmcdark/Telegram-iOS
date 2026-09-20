@@ -2909,7 +2909,7 @@ private final class ChatDeleteMessageContextItemNode: ASDisplayNode, ContextMenu
         }, willExit: {
         })
         
-        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
             self?.updateTime(transition: .immediate)
         }, queue: Queue.mainQueue())
         self.timer = timer
@@ -2985,7 +2985,7 @@ private final class ChatDeleteMessageContextItemNode: ASDisplayNode, ContextMenu
         guard let controller = self.getController() else {
             return
         }
-        self.item.action(controller, { [weak self] result in
+        self.item.action(controller, { [weak self = self] result in
             self?.actionSelected(result)
         })
     }
@@ -3083,7 +3083,7 @@ private final class ChatMessageAuthorContextItemNode: ASDisplayNode, ContextMenu
         self.buttonNode.isUserInteractionEnabled = false
 
         self.disposable = (item.context.engine.messages.requestMessageAuthor(id: item.message.id)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -3221,7 +3221,7 @@ private final class ChatMessageAuthorContextItemNode: ASDisplayNode, ContextMenu
             return
         }
         self.actionTemporarilyDisabled = true
-        Queue.mainQueue().async { [weak self] in
+        Queue.mainQueue().async { [weak self = self] in
             self?.actionTemporarilyDisabled = false
         }
 
@@ -3229,7 +3229,7 @@ private final class ChatMessageAuthorContextItemNode: ASDisplayNode, ContextMenu
             return
         }
         if let peer = self.peer {
-            self.item.action?(controller, { [weak self] result in
+            self.item.action?(controller, { [weak self = self] result in
                 self?.actionSelected(result)
             }, peer)
         }
@@ -3418,7 +3418,7 @@ private final class ChatReadReportContextItemNode: ASDisplayNode, ContextMenuCus
                     return (stickerPacks.compactMap { $0 }, firstCustomEmojiReaction)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] customEmojiPacks, firstCustomEmojiReaction in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] customEmojiPacks, firstCustomEmojiReaction in
                 guard let strongSelf = self else {
                     return
                 }
@@ -3437,7 +3437,7 @@ private final class ChatReadReportContextItemNode: ASDisplayNode, ContextMenuCus
             self.buttonNode.isUserInteractionEnabled = item.action != nil && reactionCount != 0
 
             self.disposable = (item.context.engine.messages.messageReadStats(id: item.message.id)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                 guard let strongSelf = self else {
                     return
                 }
@@ -3797,14 +3797,14 @@ private final class ChatReadReportContextItemNode: ASDisplayNode, ContextMenuCus
             return
         }
         self.actionTemporarilyDisabled = true
-        Queue.mainQueue().async { [weak self] in
+        Queue.mainQueue().async { [weak self = self] in
             self?.actionTemporarilyDisabled = false
         }
 
         guard let controller = self.getController() else {
             return
         }
-        self.item.action?(controller, { [weak self] result in
+        self.item.action?(controller, { [weak self = self] result in
             self?.actionSelected(result)
         }, self.currentStats, self.customEmojiPacks, self.firstCustomEmojiReaction)
     }

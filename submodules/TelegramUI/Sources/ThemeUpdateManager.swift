@@ -41,7 +41,7 @@ final class ThemeUpdateManagerImpl: ThemeUpdateManager {
         |> map { sharedData -> PresentationThemeSettings in
             return sharedData.entries[ApplicationSpecificSharedDataKeys.presentationThemeSettings]?.get(PresentationThemeSettings.self) ?? PresentationThemeSettings.defaultSettings
         }
-        |> deliverOn(queue)).startStrict(next: { [weak self] themeSettings in
+        |> deliverOn(queue)).startStrict(next: { [weak self = self] themeSettings in
             self?.presentationThemeSettingsUpdated(themeSettings)
         })
     }

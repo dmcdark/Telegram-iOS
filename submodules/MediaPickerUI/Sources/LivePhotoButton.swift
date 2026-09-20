@@ -57,25 +57,25 @@ final class LivePhotoButton: UIView, TGLivePhotoButton {
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: defaultDarkPresentationTheme)
         
         var items: [ContextMenuItem] = []
-        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Live, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveOn"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Live, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveOn"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
             self?.presentTooltip(.live)
             self?.modeUpdated?(.live)
             
             f(.default)
         })))
-        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Loop, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveLoop"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Loop, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveLoop"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
             self?.presentTooltip(.loop)
             self?.modeUpdated?(.loop)
             
             f(.default)
         })))
-        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Bounce, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveBounce"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_Bounce, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveBounce"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
             self?.presentTooltip(.bounce)
             self?.modeUpdated?(.bounce)
             
             f(.default)
         })))
-        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_LiveOff, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveOff"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+        items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_LivePhoto_LiveOff, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LiveOff"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
             self?.presentTooltip(.off)
             self?.modeUpdated?(.off)
             

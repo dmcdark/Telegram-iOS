@@ -341,7 +341,7 @@ public final class StorySubscriptionsContext {
                 
                 self.stateDisposable = (postbox.combinedView(keys: [PostboxViewKey.storiesState(key: .subscriptions(subscriptionsKey))])
                 |> take(1)
-                |> deliverOn(self.queue)).start(next: { [weak self] views in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] views in
                     guard let `self` = self else {
                         return
                     }
@@ -363,7 +363,7 @@ public final class StorySubscriptionsContext {
                 
                 self.stateDisposable = (postbox.combinedView(keys: [PostboxViewKey.storiesState(key: .subscriptions(subscriptionsKey))])
                 |> take(1)
-                |> deliverOn(self.queue)).start(next: { [weak self] views in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] views in
                     guard let `self` = self else {
                         return
                     }
@@ -425,7 +425,7 @@ public final class StorySubscriptionsContext {
             let subscriptionsKey: PostboxStorySubscriptionsKey = self.isHidden ? .hidden : .filtered
             
             self.loadMoreDisposable.set((self.network.request(Api.functions.stories.getAllStories(flags: flags, state: state))
-            |> deliverOn(self.queue)).start(next: { [weak self] result in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                 guard let `self` = self else {
                     return
                 }
@@ -524,7 +524,7 @@ public final class StorySubscriptionsContext {
                         _internal_setStoryConfigurationState(transaction: transaction, state: configuration)
                     }
                 }
-                |> deliverOn(self.queue)).start(completed: { [weak self] in
+                |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                     guard let `self` = self else {
                         return
                     }
@@ -533,7 +533,7 @@ public final class StorySubscriptionsContext {
                     if isRefresh {
                         self.taskState.isRefreshScheduled = false
                         self.refreshTimerDisposable.set((Signal<Never, NoError>.complete()
-                        |> suspendAwareDelay(60.0, queue: self.queue)).start(completed: { [weak self] in
+                        |> suspendAwareDelay(60.0, queue: self.queue)).start(completed: { [weak self = self] in
                             guard let `self` = self else {
                                 return
                             }
@@ -814,7 +814,7 @@ public final class PeerStoryListContext: StoryListContext {
                 
                 return (peerReference, items, cached.pinnedIds, Int(cached.totalCount), allEntityFiles, mainFolders, true)
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] peerReference, items, pinnedIds, totalCount, allEntityFiles, folders, hasCache in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] peerReference, items, pinnedIds, totalCount, allEntityFiles, folders, hasCache in
                 guard let self else {
                     return
                 }
@@ -1043,7 +1043,7 @@ public final class PeerStoryListContext: StoryListContext {
                     }
                 }
             }
-            |> deliverOn(queue)).start(next: { [weak self] storyItems, totalCount, peerReference, folderItems, hasMore in
+            |> deliverOn(queue)).start(next: { [weak self = self] storyItems, totalCount, peerReference, folderItems, hasMore in
                 guard let self else {
                     return
                 }
@@ -1093,7 +1093,7 @@ public final class PeerStoryListContext: StoryListContext {
                 
                 if self.updatesDisposable == nil && self.folderId == nil {
                     self.updatesDisposable = (self.account.stateManager.storyUpdates
-                    |> deliverOn(self.queue)).start(next: { [weak self] updates in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] updates in
                         guard let `self` = self else {
                             return
                         }
@@ -1132,7 +1132,7 @@ public final class PeerStoryListContext: StoryListContext {
                             
                             return peers
                         }
-                        |> deliverOn(self.queue)).start(next: { [weak self] peers in
+                        |> deliverOn(self.queue)).start(next: { [weak self = self] peers in
                             guard let self else {
                                 return
                             }
@@ -1447,7 +1447,7 @@ public final class PeerStoryListContext: StoryListContext {
                     return .single(nil)
                 }
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] result in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -2258,7 +2258,7 @@ public final class SearchStoryListContext: StoryListContext {
                     return (storyItems, totalCount, nextOffsetValue)
                 }
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] storyItems, totalCount, nextOffset in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] storyItems, totalCount, nextOffset in
                 guard let self else {
                     return
                 }
@@ -2298,7 +2298,7 @@ public final class SearchStoryListContext: StoryListContext {
                 
                 if self.updatesDisposable == nil {
                     self.updatesDisposable = (self.account.stateManager.storyUpdates
-                    |> deliverOn(self.queue)).start(next: { [weak self] updates in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] updates in
                         guard let self else {
                             return
                         }
@@ -2340,7 +2340,7 @@ public final class SearchStoryListContext: StoryListContext {
                             
                             return peers
                         }
-                        |> deliverOn(self.queue)).start(next: { [weak self] peers in
+                        |> deliverOn(self.queue)).start(next: { [weak self = self] peers in
                             guard let self else {
                                 return
                             }
@@ -2531,7 +2531,7 @@ public final class PeerExpiringStoryListContext {
                 ]),
                 self.polledOnce.get()
             )
-            |> deliverOn(self.queue)).start(next: { [weak self] views, polledOnce in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] views, polledOnce in
                 guard let `self` = self else {
                     return
                 }
@@ -2604,7 +2604,7 @@ public final class PeerExpiringStoryListContext {
                         isLoading: items.isEmpty && !polledOnce
                     )
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] state in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] state in
                     guard let `self` = self else {
                         return
                     }
@@ -2681,14 +2681,14 @@ public final class PeerExpiringStoryListContext {
                     }
                     |> ignoreValues
                 }
-            }).start(completed: { [weak self] in
+            }).start(completed: { [weak self = self] in
                 guard let `self` = self else {
                     return
                 }
                 
                 self.polledOnce.set(true)
                 
-                self.pollDisposable = (Signal<Never, NoError>.complete() |> suspendAwareDelay(60.0, queue: self.queue) |> deliverOn(self.queue)).start(completed: { [weak self] in
+                self.pollDisposable = (Signal<Never, NoError>.complete() |> suspendAwareDelay(60.0, queue: self.queue) |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                     guard let `self` = self else {
                         return
                     }
@@ -2966,7 +2966,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
                 let _ = (account.postbox.transaction { transaction -> Peer? in
                     return transaction.getPeer(peerId)
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] peer in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] peer in
                     guard let self else {
                         return
                     }
@@ -2998,7 +2998,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
                         localStateKey
                     ])
                 )
-                |> deliverOn(self.queue)).start(next: { [weak self] peerAndBotPreview, combinedView in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] peerAndBotPreview, combinedView in
                     guard let self else {
                         return
                     }
@@ -3168,7 +3168,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
             
             self.requestDisposable?.dispose()
             self.requestDisposable = (signal
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] botPreview, peer in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] botPreview, peer in
                 guard let self, let peer else {
                     return
                 }
@@ -3253,7 +3253,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
             self.updatesDisposable = (self.account.postbox.combinedView(keys: [
                 localStateKey
             ])
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] combinedView in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] combinedView in
                 guard let self else {
                     return
                 }
@@ -3316,7 +3316,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
             
             self.eventsDisposable?.dispose()
             self.eventsDisposable = (self.account.stateManager.botPreviewUpdates
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] events in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] events in
                 guard let self else {
                     return
                 }
@@ -3481,7 +3481,7 @@ public final class BotPreviewStoryListContext: StoryListContext {
                 
                 return (inputUser, inputMedia)
             })
-            |> deliverOn(self.queue)).startStandalone(next: { [weak self] inputUser, inputMedia in
+            |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] inputUser, inputMedia in
                 guard let self, let inputUser else {
                     return
                 }

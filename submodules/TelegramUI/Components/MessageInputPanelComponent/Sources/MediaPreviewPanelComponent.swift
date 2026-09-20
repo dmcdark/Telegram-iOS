@@ -156,7 +156,7 @@ public final class MediaPreviewPanelComponent: Component {
             self.playPauseIconButton.addTarget(self, action: #selector(self.playPauseButtonPressed), for: .touchUpInside)
             
             self.mediaPlayerStatusDisposable = (self.mediaPlayerStatus.get()
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 guard let self else {
                     return
                 }
@@ -290,13 +290,13 @@ public final class MediaPreviewPanelComponent: Component {
                             }
                         },
                         isViewOnceMessage: false,
-                        seek: { [weak self] timestamp in
+                        seek: { [weak self = self] timestamp in
                             guard let self, let mediaPlayer = self.mediaPlayer else {
                                 return
                             }
                             mediaPlayer.seek(timestamp: timestamp)
                         },
-                        updateIsSeeking: { [weak self] isSeeking in
+                        updateIsSeeking: { [weak self = self] isSeeking in
                             guard let self, let mediaPlayer = self.mediaPlayer else {
                                 return
                             }

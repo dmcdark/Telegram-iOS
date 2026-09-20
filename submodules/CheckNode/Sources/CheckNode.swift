@@ -193,11 +193,11 @@ public class CheckNode: ASDisplayNode {
             self.pop_add(animation, forKey: "progress")
             
             if selected {
-                self.layer.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                self.layer.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
-                    self.layer.animateScale(from: 0.9, to: 1.1, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.layer.animateScale(from: 0.9, to: 1.1, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -206,7 +206,7 @@ public class CheckNode: ASDisplayNode {
                     })
                 })
             } else {
-                self.layer.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                self.layer.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -273,7 +273,7 @@ public class InteractiveCheckNode: CheckNode {
         
         self.buttonNode.addTarget(self, action: #selector(buttonPressed), forControlEvents: .touchUpInside)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -424,11 +424,11 @@ public class CheckLayer: CALayer {
             
             if self.animateScale {
                 if selected {
-                    self.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
-                        self.animateScale(from: 0.9, to: 1.1, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        self.animateScale(from: 0.9, to: 1.1, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -437,7 +437,7 @@ public class CheckLayer: CALayer {
                         })
                     })
                 } else {
-                    self.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.animateScale(from: 1.0, to: 0.9, duration: 0.08, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                         guard let self else {
                             return
                         }

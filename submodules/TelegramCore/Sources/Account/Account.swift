@@ -21,7 +21,7 @@ private func makeExclusiveKeychain(id: AccountRecordId, postbox: Postbox) -> Key
         }
         return dict
     }
-    return Keychain(get: { [weak postbox] key in
+    return Keychain(get: { [weak postbox = postbox] key in
         let enabled = accountRecordToActiveKeychainId.with { dict -> Bool in
             return dict[id] == keychainId
         }
@@ -31,7 +31,7 @@ private func makeExclusiveKeychain(id: AccountRecordId, postbox: Postbox) -> Key
             Logger.shared.log("Keychain", "couldn't get \(key) — not current")
             return nil
         }
-    }, set: { [weak postbox] key, data in
+    }, set: { [weak postbox = postbox] key, data in
         let enabled = accountRecordToActiveKeychainId.with { dict -> Bool in
             return dict[id] == keychainId
         }
@@ -40,7 +40,7 @@ private func makeExclusiveKeychain(id: AccountRecordId, postbox: Postbox) -> Key
         } else {
             Logger.shared.log("Keychain", "couldn't set \(key) — not current")
         }
-    }, remove: { [weak postbox] key in
+    }, remove: { [weak postbox = postbox] key in
         let enabled = accountRecordToActiveKeychainId.with { dict -> Bool in
             return dict[id] == keychainId
         }
@@ -117,7 +117,7 @@ public class UnauthorizedAccount {
             }
         )
         
-        updateSentCodeImpl = { [weak self] sentCode in
+        updateSentCodeImpl = { [weak self = self] sentCode in
             switch sentCode {
             case .sentCodePaymentRequired:
                 break
@@ -137,7 +137,7 @@ public class UnauthorizedAccount {
                 switch authorization {
                 case let .authorization(authorizationData):
                     let (futureAuthToken, apiUser) = (authorizationData.futureAuthToken, authorizationData.user)
-                    let _ = postbox.transaction({ [weak self] transaction in
+                    let _ = postbox.transaction({ [weak self = self] transaction in
                         var syncContacts = true
                         if let state = transaction.getState() as? UnauthorizedAccountState, case let .payment(_, _, _, _, _, _, syncContactsValue) = state.contents {
                             syncContacts = syncContactsValue
@@ -155,7 +155,7 @@ public class UnauthorizedAccount {
                         let state = AuthorizedAccountState(isTestingEnvironment: testingEnvironment, masterDatacenterId: masterDatacenterId, peerId: user.id, state: nil, invalidatedChannels: [])
                         initializedAppSettingsAfterLogin(transaction: transaction, appVersion: networkArguments.appVersion, syncContacts: syncContacts)
                         transaction.setState(state)
-                        return accountManager.transaction { [weak self] transaction -> SendAuthorizationCodeResult in
+                        return accountManager.transaction { [weak self = self] transaction -> SendAuthorizationCodeResult in
                             if let self {
                                 switchToAuthorizedAccount(transaction: transaction, account: self, isSupportUser: isSupportUser)
                             }
@@ -164,7 +164,7 @@ public class UnauthorizedAccount {
                     }).start()
                 case let .authorizationSignUpRequired(authorizationSignUpRequiredData):
                     let termsOfService = authorizationSignUpRequiredData.termsOfService
-                    let _ = postbox.transaction({ [weak self] transaction in
+                    let _ = postbox.transaction({ [weak self = self] transaction in
                         if let self {
                             if let state = transaction.getState() as? UnauthorizedAccountState, case let .payment(number, codeHash, _, _, _, _, syncContacts) = state.contents {
                                 let _ = beginSignUp(
@@ -1264,18 +1264,18 @@ public class Account {
             self.hiddenStorySubscriptionsContext = nil
         }
         
-        self.callSessionManager = CallSessionManager(postbox: postbox, network: network, accountPeerId: peerId, maxLayer: networkArguments.voipMaxLayer, versions: networkArguments.voipVersions, addUpdates: { [weak self] updates in
+        self.callSessionManager = CallSessionManager(postbox: postbox, network: network, accountPeerId: peerId, maxLayer: networkArguments.voipMaxLayer, versions: networkArguments.voipVersions, addUpdates: { [weak self = self] updates in
             self?.stateManager?.addUpdates(updates)
         })
         
         self.mediaReferenceRevalidationContext = MediaReferenceRevalidationContext()
         
-        self.stateManager = AccountStateManager(accountPeerId: self.peerId, accountManager: accountManager, postbox: self.postbox, network: self.network, callSessionManager: self.callSessionManager, addIsContactUpdates: { [weak self] updates in
+        self.stateManager = AccountStateManager(accountPeerId: self.peerId, accountManager: accountManager, postbox: self.postbox, network: self.network, callSessionManager: self.callSessionManager, addIsContactUpdates: { [weak self = self] updates in
             self?.contactSyncManager?.addIsContactUpdates(updates)
         }, shouldKeepOnlinePresence: self.shouldKeepOnlinePresence.get(), peerInputActivityManager: self.peerInputActivityManager, auxiliaryMethods: auxiliaryMethods)
         
         self.viewTracker = AccountViewTracker(account: self)
-        self.viewTracker.resetPeerHoleManagement = { [weak self] peerId in
+        self.viewTracker.resetPeerHoleManagement = { [weak self = self] peerId in
             self?.resetPeerHoleManagement?(peerId)
         }
         
@@ -1313,14 +1313,14 @@ public class Account {
         self.pendingUpdateMessageManager = PendingUpdateMessageManager(postbox: postbox, network: network, stateManager: self.stateManager, messageMediaPreuploadManager: self.messageMediaPreuploadManager, mediaReferenceRevalidationContext: self.mediaReferenceRevalidationContext)
         self.pendingPeerMediaUploadManager = PendingPeerMediaUploadManager(postbox: postbox, network: network, stateManager: self.stateManager, accountPeerId: self.peerId)
         
-        self.network.loggedOut = { [weak self] in
+        self.network.loggedOut = { [weak self = self] in
             Logger.shared.log("Account", "network logged out")
             if let strongSelf = self {
                 strongSelf._loggedOut.set(true)
                 strongSelf.callSessionManager.dropAll()
             }
         }
-        self.network.didReceiveSoftAuthResetError = { [weak self] in
+        self.network.didReceiveSoftAuthResetError = { [weak self = self] in
             self?.postSmallLogIfNeeded()
         }
         
@@ -1369,14 +1369,14 @@ public class Account {
         |> distinctUntilChanged
         |> deliverOn(self.serviceQueue)
         
-        self.becomeMasterDisposable.set(serviceTasksMasterBecomeMaster.start(next: { [weak self] value in
+        self.becomeMasterDisposable.set(serviceTasksMasterBecomeMaster.start(next: { [weak self = self] value in
             if let strongSelf = self, (value == .now || value == .always) {
                 strongSelf.postbox.becomeMasterClient()
             }
         }))
         
         let shouldBeMaster = combineLatest(self.shouldBeServiceTaskMaster.get(), postbox.isMasterClient())
-        |> map { [weak self] shouldBeMaster, isMaster -> Bool in
+        |> map { [weak self = self] shouldBeMaster, isMaster -> Bool in
             if shouldBeMaster == .always && !isMaster {
                 self?.postbox.becomeMasterClient()
             }
@@ -1388,7 +1388,7 @@ public class Account {
         self.network.shouldExplicitelyKeepWorkerConnections.set(self.shouldExplicitelyKeepWorkerConnections.get())
         self.network.shouldKeepBackgroundDownloadConnections.set(self.shouldKeepBackgroundDownloadConnections.get())
         
-        self.managedServiceViewsDisposable.set(shouldBeMaster.start(next: { [weak self] value in
+        self.managedServiceViewsDisposable.set(shouldBeMaster.start(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1479,7 +1479,7 @@ public class Account {
             return result
         }
         
-        self.managedOperationsDisposable.add(importantBackgroundOperationsRunning.start(next: { [weak self] value in
+        self.managedOperationsDisposable.add(importantBackgroundOperationsRunning.start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf._importantTasksRunning.set(value)
             }
@@ -1532,7 +1532,7 @@ public class Account {
             }
         })
         
-        self.stateManager.updateConfigRequested = { [weak self] in
+        self.stateManager.updateConfigRequested = { [weak self = self] in
             self?.restartConfigurationUpdates()
             self?.taskManager?.reloadAppConfiguration()
         }
@@ -1791,7 +1791,7 @@ public func standaloneStateManager(
                                 |> map { network -> AccountStateManager? in
                                     Logger.shared.log("StandaloneStateManager", "received network")
                                     
-                                    postbox.mediaBox.fetchResource = { [weak postbox] resource, intervals, parameters -> Signal<MediaResourceDataFetchResult, MediaResourceDataFetchError> in
+                                    postbox.mediaBox.fetchResource = { [weak postbox = postbox] resource, intervals, parameters -> Signal<MediaResourceDataFetchResult, MediaResourceDataFetchError> in
                                         guard let postbox = postbox else {
                                             return .never()
                                         }

@@ -49,7 +49,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
                 
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -59,7 +59,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -72,7 +72,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             }
         })
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
@@ -101,28 +101,28 @@ public class ComposeControllerImpl: ViewController, ComposeController {
         
         self.contactsNode.navigationBar = self.navigationBar
         
-        self.contactsNode.requestDeactivateSearch = { [weak self] in
+        self.contactsNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch()
         }
         
-        self.contactsNode.requestOpenPeerFromSearch = { [weak self] peerId in
+        self.contactsNode.requestOpenPeerFromSearch = { [weak self = self] peerId in
             self?.openPeer(peerId: peerId)
         }
         
-        self.contactsNode.contactListNode.activateSearch = { [weak self] in
+        self.contactsNode.contactListNode.activateSearch = { [weak self = self] in
             self?.activateSearch()
         }
         
-        self.contactsNode.contactListNode.openPeer = { [weak self] peer, _, _, _ in
+        self.contactsNode.contactListNode.openPeer = { [weak self = self] peer, _, _, _ in
             if case let .peer(peer, _, _) = peer {
                 self?.openPeer(peerId: peer.id)
             }
         }
 
-        self.contactsNode.openCreateNewGroup = { [weak self] in
+        self.contactsNode.openCreateNewGroup = { [weak self = self] in
             if let strongSelf = self {
                 let controller = strongSelf.context.sharedContext.makeContactMultiselectionController(ContactMultiselectionControllerParams(context: strongSelf.context, mode: .groupCreation(isCall: false), onlyWriteable: true))
-                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self] in
+                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
                     }
@@ -148,7 +148,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             }
         }
         
-        self.contactsNode.openCreateNewSecretChat = { [weak self] in
+        self.contactsNode.openCreateNewSecretChat = { [weak self = self] in
             if let strongSelf = self {
                 let controller = ContactSelectionControllerImpl(ContactSelectionControllerParams(context: strongSelf.context, autoDismiss: false, title: { $0.Compose_NewEncryptedChatTitle }))
                 strongSelf.createActionDisposable.set((controller.result
@@ -178,7 +178,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
                         }))
                     }
                 }))
-                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self] in
+                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
                     }
@@ -186,7 +186,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             }
         }
         
-        self.contactsNode.openCreateContact = { [weak self] in
+        self.contactsNode.openCreateContact = { [weak self = self] in
             let _ = (DeviceAccess.authorizationStatus(subject: .contacts)
             |> take(1)
             |> deliverOnMainQueue).startStandalone(next: { status in
@@ -203,7 +203,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
                         lastName: nil,
                         phoneNumber: nil,
                         shareViaException: false,
-                        completion: { [weak self] peer, stableId, contactData in
+                        completion: { [weak self = self] peer, stableId, contactData in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -230,17 +230,17 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             })
         }
         
-        self.contactsNode.openCreateNewChannel = { [weak self] in
+        self.contactsNode.openCreateNewChannel = { [weak self = self] in
             if let strongSelf = self {
                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                 let controller = PermissionController(context: strongSelf.context, splashScreen: true)
                 controller.setState(.custom(icon: .animation("Channel"), title: presentationData.strings.ChannelIntro_Title, subtitle: nil, text: presentationData.strings.ChannelIntro_Text, buttonTitle: presentationData.strings.ChannelIntro_CreateChannel, secondaryButtonTitle: nil, footerText: nil), animated: false)
-                controller.proceed = { [weak self] result in
+                controller.proceed = { [weak self = self] result in
                     if let strongSelf = self {
                         (strongSelf.navigationController as? NavigationController)?.replaceTopController(createChannelController(context: strongSelf.context), animated: true)
                     }
                 }
-                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self] in
+                (strongSelf.navigationController as? NavigationController)?.pushViewController(controller, completion: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
                     }
@@ -248,7 +248,7 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             }
         }
         
-        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self] in
+        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.presentContactsWarningSuppression(context: strongSelf.context, present: { c, a in
                     strongSelf.present(c, in: .window(.root), with: a)
@@ -256,13 +256,13 @@ public class ComposeControllerImpl: ViewController, ComposeController {
             }
         }
         
-        self.contactsNode.contactListNode.contentOffsetChanged = { [weak self] offset in
+        self.contactsNode.contactListNode.contentOffsetChanged = { [weak self = self] offset in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
         }
         
-        self.contactsNode.contactListNode.contentScrollingEnded = { [weak self] listView in
+        self.contactsNode.contactListNode.contentScrollingEnded = { [weak self = self] listView in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 return fixNavigationSearchableListNodeScrolling(listView, searchNode: searchContentNode)
             } else {

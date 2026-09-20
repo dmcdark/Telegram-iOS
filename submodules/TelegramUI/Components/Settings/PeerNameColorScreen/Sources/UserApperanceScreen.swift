@@ -319,13 +319,13 @@ final class UserAppearanceScreenComponent: Component {
                     title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertTitle,
                     text: presentationData.strings.Channel_Appearance_UnsavedChangesAlertText,
                     actions: [
-                        TextAlertAction(type: .genericAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertDiscard, action: { [weak self] in
+                        TextAlertAction(type: .genericAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertDiscard, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.environment?.controller()?.dismiss()
                         }),
-                        TextAlertAction(type: .defaultAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertApply, action: { [weak self] in
+                        TextAlertAction(type: .defaultAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertApply, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -517,7 +517,7 @@ final class UserAppearanceScreenComponent: Component {
             
             if self.starsTopUpOptionsDisposable == nil {
                 self.starsTopUpOptionsDisposable = (component.context.engine.payments.starsTopUpOptions()
-                |> deliverOnMainQueue).start(next: { [weak self] options in
+                |> deliverOnMainQueue).start(next: { [weak self = self] options in
                     guard let self else {
                         return
                     }
@@ -584,7 +584,7 @@ final class UserAppearanceScreenComponent: Component {
                                 title: errorTitle,
                                 text: errorText,
                                 actions: [
-                                    TextAlertAction(type: .defaultAction, title: buttonText, action: { [weak self] in
+                                    TextAlertAction(type: .defaultAction, title: buttonText, action: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -601,7 +601,7 @@ final class UserAppearanceScreenComponent: Component {
                             let alertController = textAlertController(context: component.context, title: nil, text: presentationData.strings.Gift_Buy_ErrorUnknown, actions: [TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: {})], parseMarkdown: true)
                             controller.present(alertController, in: .window(.root))
                         }
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -654,7 +654,7 @@ final class UserAppearanceScreenComponent: Component {
                                     guard let self else {
                                         return
                                     }
-                                    Queue.mainQueue().after(0.1, { [weak self] in
+                                    Queue.mainQueue().after(0.1, { [weak self = self] in
                                         guard let self, let starsContext, let starsState = starsContext.currentState else {
                                             return
                                         }
@@ -843,7 +843,7 @@ final class UserAppearanceScreenComponent: Component {
             }
             
             self.applyDisposable = (combineLatest(signals)
-            |> deliverOnMainQueue).start(error: { [weak self] _ in
+            |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -862,7 +862,7 @@ final class UserAppearanceScreenComponent: Component {
                 
                 self.isApplyingSettings = false
                 self.state?.updated(transition: .immediate)
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -913,7 +913,7 @@ final class UserAppearanceScreenComponent: Component {
             let mappedMode: EmojiStatusSelectionController.Mode
             switch subject {
             case .status:
-                mappedMode = .customStatusSelection(completion: { [weak self] result, timestamp in
+                mappedMode = .customStatusSelection(completion: { [weak self = self] result, timestamp in
                     guard let self else {
                         return
                     }
@@ -935,7 +935,7 @@ final class UserAppearanceScreenComponent: Component {
                     self.state?.updated(transition: .spring(duration: 0.4))
                 })
             default:
-                mappedMode = .backgroundSelection(completion: { [weak self] result in
+                mappedMode = .backgroundSelection(completion: { [weak self = self] result in
                     guard let self, let resolvedState = self.resolveState() else {
                         return
                     }
@@ -1100,7 +1100,7 @@ final class UserAppearanceScreenComponent: Component {
             
             if self.contentsDataDisposable == nil {
                 self.contentsDataDisposable = (ContentsData.get(context: component.context)
-                |> deliverOnMainQueue).start(next: { [weak self] contentsData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] contentsData in
                     guard let self else {
                         return
                     }
@@ -1124,7 +1124,7 @@ final class UserAppearanceScreenComponent: Component {
                             }
                             return files
                         }
-                        |> deliverOnMainQueue).start(next: { [weak self] files in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] files in
                             guard let self else {
                                 return
                             }
@@ -1144,7 +1144,7 @@ final class UserAppearanceScreenComponent: Component {
                 let starGiftsContext = ProfileGiftsContext(account: component.context.account, peerId: component.context.account.peerId, collectionId: nil, filter: .peerColor, limit: 30)
                 self.starGiftsContext = starGiftsContext
                 self.starGiftsDisposable = (starGiftsContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -1192,7 +1192,7 @@ final class UserAppearanceScreenComponent: Component {
                         resolvedWallpaper = .single(presentationTheme.chat.defaultWallpaper)
                     }
                     disposable.set((resolvedWallpaper
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] resolvedWallpaper in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] resolvedWallpaper in
                         guard let self, let environment = self.environment else {
                             return
                         }
@@ -1344,7 +1344,7 @@ final class UserAppearanceScreenComponent: Component {
                                     return nil
                                 }
                             },
-                            tapAction: { [weak self] _, _ in
+                            tapAction: { [weak self = self] _, _ in
                                 guard let self else {
                                     return
                                 }
@@ -1369,7 +1369,7 @@ final class UserAppearanceScreenComponent: Component {
                                     colors: component.context.peerNameColors,
                                     mode: .profile,
                                     currentColor: resolvedState.profileColor,
-                                    updated: { [weak self] value in
+                                    updated: { [weak self = self] value in
                                         guard let self, let value, let resolvedState = self.resolveState() else {
                                             return
                                         }
@@ -1396,7 +1396,7 @@ final class UserAppearanceScreenComponent: Component {
                                     fileId: resolvedState.backgroundFileId,
                                     file: resolvedState.backgroundFileId.flatMap { self.cachedIconFiles[$0] }
                                 )))),
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self, let resolvedState = self.resolveState(), let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                         return
                                     }
@@ -1445,7 +1445,7 @@ final class UserAppearanceScreenComponent: Component {
                                 )),
                                 icon: nil,
                                 accessory: nil,
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self, let resolvedState = self.resolveState() else {
                                         return
                                     }
@@ -1516,7 +1516,7 @@ final class UserAppearanceScreenComponent: Component {
                                     gifts: contentsData.gifts,
                                     starGifts: contentsData.starGifts,
                                     selectedId: selectedGiftId,
-                                    selectionUpdated: { [weak self] gift in
+                                    selectionUpdated: { [weak self = self] gift in
                                         guard let self else {
                                             return
                                         }
@@ -1555,7 +1555,7 @@ final class UserAppearanceScreenComponent: Component {
                                             self.state?.updated(transition: .spring(duration: 0.4))
                                         }
                                     },
-                                    onTabChange: { [weak self] in
+                                    onTabChange: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -1564,7 +1564,7 @@ final class UserAppearanceScreenComponent: Component {
                                         }
                                     },
                                     tag: giftListTag,
-                                    updated: { [weak self] transition in
+                                    updated: { [weak self = self] transition in
                                         if let self, !self.isUpdating {
                                             self.state?.updated(transition: transition.withUserData(TransitionHint(forceGiftsUpdate: true)))
                                         }
@@ -1705,7 +1705,7 @@ final class UserAppearanceScreenComponent: Component {
                                     colors: component.context.peerNameColors,
                                     mode: .name,
                                     currentColor: resolvedState.nameColor.nameColor,
-                                    updated: { [weak self] value in
+                                    updated: { [weak self = self] value in
                                         guard let self, let resolvedState = self.resolveState(), let value else {
                                             return
                                         }
@@ -1730,7 +1730,7 @@ final class UserAppearanceScreenComponent: Component {
                                     fileId: resolvedState.replyFileId,
                                     file: resolvedState.replyFileId.flatMap { self.cachedIconFiles[$0] }
                                 )))),
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self, let resolvedState = self.resolveState(), let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                         return
                                     }
@@ -1793,7 +1793,7 @@ final class UserAppearanceScreenComponent: Component {
                                     gifts: self.starGifts,
                                     starGifts: peerColorStarGifts,
                                     selectedId: selectedGiftId,
-                                    selectionUpdated: { [weak self] gift in
+                                    selectionUpdated: { [weak self = self] gift in
                                         guard let self, let peerColor = gift.peerColor else {
                                             return
                                         }
@@ -1806,7 +1806,7 @@ final class UserAppearanceScreenComponent: Component {
                                         self.updatedPeerNameEmoji = peerColor.backgroundEmojiId
                                         self.state?.updated(transition: .spring(duration: 0.4))
                                     },
-                                    onTabChange: { [weak self] in
+                                    onTabChange: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -1815,7 +1815,7 @@ final class UserAppearanceScreenComponent: Component {
                                         }
                                     },
                                     tag: giftListTag,
-                                    updated: { [weak self] transition in
+                                    updated: { [weak self = self] transition in
                                         if let self, !self.isUpdating {
                                             self.state?.updated(transition: transition.withUserData(TransitionHint(forceGiftsUpdate: true)))
                                         }
@@ -1933,7 +1933,7 @@ final class UserAppearanceScreenComponent: Component {
                     isEnabled: true,
                     tintWhenDisabled: false,
                     displaysProgress: self.isApplyingSettings,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2067,20 +2067,20 @@ public class UserAppearanceScreen: ViewControllerComponentContainer {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         self.navigationItem.titleView = self.segmentedTitleView
 
-        self.segmentedTitleView.indexUpdated = { [weak self] index in
+        self.segmentedTitleView.indexUpdated = { [weak self = self] index in
             self?.switchToSection(UserAppearanceScreenComponent.View.Section(segmentIndex: index))
         }
         
         self.ready.set(.never())
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? UserAppearanceScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? UserAppearanceScreenComponent.View else {
                 return true
             }
@@ -2117,7 +2117,7 @@ public class UserAppearanceScreen: ViewControllerComponentContainer {
     }
     
     fileprivate func backPressed() {
-        if self.attemptNavigation({ [weak self] in
+        if self.attemptNavigation({ [weak self = self] in
             self?.dismiss()
         }) {
             self.dismiss()

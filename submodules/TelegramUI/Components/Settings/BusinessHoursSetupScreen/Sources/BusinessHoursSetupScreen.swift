@@ -310,7 +310,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                     self.environment?.controller()?.present(textAlertController(context: component.context, title: nil, text: environment.strings.BusinessHoursSetup_ErrorIntersectingDays_Text, actions: [
                         TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {
                         }),
-                        TextAlertAction(type: .defaultAction, title: environment.strings.BusinessHoursSetup_ErrorIntersectingDays_ResetAction, action: { [weak self] in
+                        TextAlertAction(type: .defaultAction, title: environment.strings.BusinessHoursSetup_ErrorIntersectingDays_ResetAction, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -386,7 +386,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                 }
                 
                 self.timezonesDisposable = (component.context.engine.accountData.cachedTimeZoneList()
-                |> deliverOnMainQueue).start(next: { [weak self] timeZoneList in
+                |> deliverOnMainQueue).start(next: { [weak self = self] timeZoneList in
                     guard let self else {
                         return
                     }
@@ -484,7 +484,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -526,7 +526,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                                     maximumNumberOfLines: 1
                                 ))),
                             ], alignment: .left, spacing: 2.0)),
-                            accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.showHours, action: { [weak self] _ in
+                            accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.showHours, action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -632,7 +632,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                         )))
                     ], alignment: .left, spacing: 3.0)),
                     contentInsets: UIEdgeInsets(top: 9.0, left: 0.0, bottom: 10.0, right: 0.0),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: day.ranges != nil, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: day.ranges != nil, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -647,7 +647,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                         }
                         self.state?.updated(transition: .immediate)
                     })),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -655,7 +655,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                             context: component.context,
                             dayIndex: dayIndex,
                             day: self.daysState.days[dayIndex],
-                            updateDay: { [weak self] day in
+                            updateDay: { [weak self = self] day in
                                 guard let self else {
                                     return
                                 }
@@ -742,7 +742,7 @@ final class BusinessHoursSetupScreenComponent: Component {
                                 maximumNumberOfLines: 1
                             )))),
                             accessory: .arrow,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -843,14 +843,14 @@ public final class BusinessHoursSetupScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessHoursSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessHoursSetupScreenComponent.View else {
                 return true
             }

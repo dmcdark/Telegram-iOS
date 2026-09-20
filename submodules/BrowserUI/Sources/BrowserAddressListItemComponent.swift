@@ -101,7 +101,7 @@ final class BrowserAddressListItemComponent: Component {
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -115,7 +115,7 @@ final class BrowserAddressListItemComponent: Component {
                 }
             }
             
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
+            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self = self] value in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -127,7 +127,7 @@ final class BrowserAddressListItemComponent: Component {
                     self.highlightedBackgroundLayer.opacity = 0.0
                 }
             }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, transition in
                 guard let self else {
                     return
                 }
@@ -142,7 +142,7 @@ final class BrowserAddressListItemComponent: Component {
                 self.state?.updated(transition: mappedTransition)
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return

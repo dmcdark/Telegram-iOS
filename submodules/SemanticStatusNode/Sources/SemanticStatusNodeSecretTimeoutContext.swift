@@ -107,7 +107,7 @@ final class SemanticStatusNodeSecretTimeoutContext: SemanticStatusNodeStateConte
         self.appearance = appearance
         
         self.animationNode = FireIconNode()
-        self.animationNode?.imageUpdated = { [weak self] image in
+        self.animationNode?.imageUpdated = { [weak self = self] image in
             if let strongSelf = self {
                 strongSelf.iconImage = image
                 strongSelf.requestUpdate()

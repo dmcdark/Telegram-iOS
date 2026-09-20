@@ -120,7 +120,7 @@ public final class ScrollComponent<ChildEnvironment: Equatable>: Component {
             )
             transition.setFrame(view: self.contentView, frame: CGRect(origin: .zero, size: contentSize), completion: nil)
             
-            component.resetScroll.connect { [weak self] point in
+            component.resetScroll.connect { [weak self = self] point in
                 self?.setContentOffset(point ?? .zero, animated: point != nil)
             }
             

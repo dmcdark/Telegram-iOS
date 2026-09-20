@@ -507,7 +507,7 @@ public final class PeerListItemComponent: Component {
             self.addSubview(self.avatarButtonView)
             self.avatarButtonView.addTarget(self, action: #selector(self.avatarButtonPressed), for: .touchUpInside)
             
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
+            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self = self] value in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -523,7 +523,7 @@ public final class PeerListItemComponent: Component {
                 self.containerButton.backgroundColor = value ? extractedBackgroundColor : nil
                 self.containerButton.layer.cornerRadius = value ? 26.0 : 0.0
             }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, transition in
                 guard let self else {
                     return
                 }
@@ -538,7 +538,7 @@ public final class PeerListItemComponent: Component {
                 self.state?.updated(transition: mappedTransition)
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component, let peer = component.peer else {
                     gesture.cancel()
                     return
@@ -546,7 +546,7 @@ public final class PeerListItemComponent: Component {
                 component.contextAction?(peer, self.extractedContainerView, gesture)
             }
             
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -555,13 +555,13 @@ public final class PeerListItemComponent: Component {
                 }
             }
             
-            self.swipeOptionContainer.updateRevealOffset = { [weak self] offset, transition in
+            self.swipeOptionContainer.updateRevealOffset = { [weak self = self] offset, transition in
                 guard let self else {
                     return
                 }
                 transition.setBounds(view: self.containerButton, bounds: CGRect(origin: CGPoint(x: -offset, y: 0.0), size: self.containerButton.bounds.size))
             }
-            self.swipeOptionContainer.revealOptionSelected = { [weak self] option, _ in
+            self.swipeOptionContainer.revealOptionSelected = { [weak self = self] option, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -676,7 +676,7 @@ public final class PeerListItemComponent: Component {
                 if let current = self.presenceManager {
                     presenceManager = current
                 } else {
-                    presenceManager = PeerPresenceStatusManager(update: { [weak self] in
+                    presenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
                         self?.state?.updated(transition: .immediate)
                     })
                     self.presenceManager = presenceManager
@@ -1341,7 +1341,7 @@ public final class PeerListItemComponent: Component {
                             self.updateReactionLayer()
                         case let .custom(fileId):
                             self.fileDisposable = (component.context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                            |> deliverOnMainQueue).start(next: { [weak self] files in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] files in
                                 guard let self, let file = files[fileId] else {
                                     return
                                 }

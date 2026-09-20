@@ -166,7 +166,7 @@ private final class AvatarUploadToastScreenComponent: Component {
             
             if self.component == nil {
                 self.statusDisposable = (component.uploadStatus
-                |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                     guard let self else {
                         return
                     }
@@ -176,7 +176,7 @@ private final class AvatarUploadToastScreenComponent: Component {
                     }
                     
                     if case .done = status, self.doneTimer == nil {
-                        self.doneTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { [weak self] _ in
+                        self.doneTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -254,7 +254,7 @@ private final class AvatarUploadToastScreenComponent: Component {
                     )),
                     effectAlignment: .center,
                     contentInsets: UIEdgeInsets(top: -8.0, left: -8.0, bottom: -8.0, right: -8.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -310,13 +310,13 @@ private final class AvatarUploadToastScreenComponent: Component {
             transition.setBounds(view: self.avatarView, bounds: CGRect(origin: CGPoint(), size: adjustedAvatarFrame.size))
             if isDone && !previousIsDone {
                 let topScale: CGFloat = 1.1
-                self.avatarView.layer.animateScale(from: 1.0, to: topScale, duration: 0.16, removeOnCompletion: false, completion: { [weak self] _ in
+                self.avatarView.layer.animateScale(from: 1.0, to: topScale, duration: 0.16, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
                     self.avatarView.layer.animateScale(from: topScale, to: 1.0, duration: 0.16)
                 })
-                self.progressNode.layer.animateScale(from: 1.0, to: topScale, duration: 0.16, removeOnCompletion: false, completion: { [weak self] _ in
+                self.progressNode.layer.animateScale(from: 1.0, to: topScale, duration: 0.16, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -471,7 +471,7 @@ public class AvatarUploadToastScreen: ViewControllerComponentContainer {
             self.processedDidDisappear = true
             
             if let componentView = self.node.hostView.componentView as? AvatarUploadToastScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     if let self {
                         self.superDismiss()
                     }

@@ -643,14 +643,14 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
         
         self.addSubnode(self.maskNode)
         
-        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self] in
+        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
             if let strongSelf = self, let layoutParams = strongSelf.layoutParams {
                 let (_, apply) = strongSelf.asyncLayout()(layoutParams.0, layoutParams.1, layoutParams.2, layoutParams.3, layoutParams.4, layoutParams.5)
                 let _ = apply()
             }
         })
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -658,7 +658,7 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
             contextAction(strongSelf.containerNode, gesture, nil)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -763,7 +763,7 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
             transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: highlightProgress)
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
-                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self] completed in
+                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self = self] completed in
                     if let strongSelf = self {
                         if completed {
                             strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -789,7 +789,7 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
         
         let currentHasBadge = self.labelBadgeNode.image != nil
         
-        return { [weak self] item, params, first, last, firstWithHeader, neighbors in
+        return { [weak self = self] item, params, first, last, firstWithHeader, neighbors in
             var updatedTheme: PresentationTheme?
             
             let titleFont = Font.regular(item.presentationData.fontSize.itemListBaseFontSize)
@@ -1266,7 +1266,7 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
                 updatedLabelBadgeImage = generateStretchableFilledCircleImage(diameter: badgeDiameter, color: badgeColor)
             }
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 if let strongSelf = self {
                     return (.complete(), { [weak strongSelf] animated, synchronousLoads in
                         if let strongSelf = strongSelf {
@@ -1749,7 +1749,7 @@ public class ContactsPeerItemNode: ItemListRevealOptionsItemNode {
                                     strongSelf.actionButtonBackgroundNode = actionButtonBackgroundNode
                                     
                                     actionButtonNode = HighlightTrackingButtonNode()
-                                    actionButtonNode.highligthedChanged = { [weak self] highlighted in
+                                    actionButtonNode.highligthedChanged = { [weak self = self] highlighted in
                                         if let strongSelf = self {
                                             if highlighted {
                                                 strongSelf.actionButtonTitleNode?.layer.removeAnimation(forKey: "opacity")

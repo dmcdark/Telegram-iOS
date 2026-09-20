@@ -38,7 +38,7 @@ public final class ChatMessageWebpageBubbleContentNode: ChatMessageBubbleContent
         super.init()
         
         self.addSubnode(self.contentNode)
-        self.contentNode.openMedia = { [weak self] mode in
+        self.contentNode.openMedia = { [weak self = self] mode in
             if let strongSelf = self, let item = strongSelf.item {
                 if let webPage = strongSelf.webPage, case let .Loaded(content) = webPage.content {
                     if let _ = content.instantPage {
@@ -109,12 +109,12 @@ public final class ChatMessageWebpageBubbleContentNode: ChatMessageBubbleContent
                 }
             }
         }
-        self.contentNode.activateBadgeAction = { [weak self] in
+        self.contentNode.activateBadgeAction = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 item.controllerInteraction.openAdsInfo()
             }
         }
-        self.contentNode.activateAction = { [weak self] in
+        self.contentNode.activateAction = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 if let _ = item.message.adAttribute {
                     item.controllerInteraction.activateAdAction(item.message.id, strongSelf.contentNode.makeProgress(), false, false)
@@ -149,12 +149,12 @@ public final class ChatMessageWebpageBubbleContentNode: ChatMessageBubbleContent
                 }
             }
         }
-        self.contentNode.requestUpdateLayout = { [weak self] in
+        self.contentNode.requestUpdateLayout = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
             }
         }
-        self.contentNode.defaultContentAction = { [weak self] in
+        self.contentNode.defaultContentAction = { [weak self = self] in
             guard let self, let item = self.item, let webPage = self.webPage, case let .Loaded(content) = webPage.content else {
                 return ChatMessageBubbleContentTapAction(content: .none)
             }
@@ -179,7 +179,7 @@ public final class ChatMessageWebpageBubbleContentNode: ChatMessageBubbleContent
                     isConcealed = false
                 }
             }
-            return ChatMessageBubbleContentTapAction(content: .url(ChatMessageBubbleContentTapAction.Url(url: content.url, concealed: isConcealed, allowInlineWebpageResolution: true)), hasLongTapAction: false, activate: { [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .url(ChatMessageBubbleContentTapAction.Url(url: content.url, concealed: isConcealed, allowInlineWebpageResolution: true)), hasLongTapAction: false, activate: { [weak self = self] in
                 guard let self else {
                     return nil
                 }
@@ -606,7 +606,7 @@ public final class ChatMessageWebpageBubbleContentNode: ChatMessageBubbleContent
                 return (refinedWidth, { boundingWidth in
                     let (size, apply) = finalizeLayout(boundingWidth)
                     
-                    return (size, { [weak self] animation, synchronousLoads, applyInfo in
+                    return (size, { [weak self = self] animation, synchronousLoads, applyInfo in
                         guard let self else {
                             return
                         }

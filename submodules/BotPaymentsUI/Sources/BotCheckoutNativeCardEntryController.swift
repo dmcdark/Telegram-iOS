@@ -74,11 +74,11 @@ final class BotCheckoutNativeCardEntryController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = BotCheckoutNativeCardEntryControllerNode(context: self.context, navigationBar: self.navigationBar, provider: self.provider, theme: self.presentationData.theme, strings: self.presentationData.strings, present: { [weak self] c, a in
+        self.displayNode = BotCheckoutNativeCardEntryControllerNode(context: self.context, navigationBar: self.navigationBar, provider: self.provider, theme: self.presentationData.theme, strings: self.presentationData.strings, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, dismiss: { [weak self] in
+        }, dismiss: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
-        }, openCountrySelection: { [weak self] in
+        }, openCountrySelection: { [weak self = self] in
             if let strongSelf = self {
                 let controller = AuthorizationSequenceCountrySelectionController(strings: strongSelf.presentationData.strings, theme: strongSelf.presentationData.theme, displayCodes: false, glass: true)
                 controller.completeWithCountryCode = { _, id in
@@ -88,7 +88,7 @@ final class BotCheckoutNativeCardEntryController: ViewController {
                 }
                 strongSelf.push(controller)
             }
-        }, updateStatus: { [weak self] status in
+        }, updateStatus: { [weak self = self] status in
             if let strongSelf = self {
                 switch status {
                     case .notReady:
@@ -111,7 +111,7 @@ final class BotCheckoutNativeCardEntryController: ViewController {
                         }
                 }
             }
-        }, completion: { [weak self] method in
+        }, completion: { [weak self = self] method in
             self?.completion(method)
         })
         

@@ -550,7 +550,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                     }
                 }
                 |> take(1)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     self?.currentItemDisappeared?()
                 }))
             } else {
@@ -594,7 +594,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                         }
                         |> take(1)
                         |> deliverOnMainQueue
-                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self] messageAndAroundMessages in
+                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self = self] messageAndAroundMessages in
                             if let strongSelf = self {
                                 assert(strongSelf.loadingItem)
                                 
@@ -613,7 +613,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                     case let .custom(messages, _, at, _, _):
                         self.navigationDisposable.set((messages
                         |> take(1)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] messages in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] messages in
                             guard let self else {
                                 return
                             }
@@ -638,7 +638,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                     default:
                         self.navigationDisposable.set((self.context.account.postbox.messageAtId(messageId)
                         |> take(1)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] message in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] message in
                             if let strongSelf = self {
                                 assert(strongSelf.loadingItem)
                                 
@@ -748,7 +748,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                         }
                         |> take(1)
                         |> deliverOnMainQueue
-                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self] messageAndAroundMessages in
+                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self = self] messageAndAroundMessages in
                             if let strongSelf = self {
                                 assert(strongSelf.loadingItem)
                                 
@@ -770,7 +770,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                     case .singleMessage:
                         self.navigationDisposable.set((self.context.account.postbox.messageAtId(index.id)
                         |> take(1)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] message in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] message in
                             if let strongSelf = self {
                                 assert(strongSelf.loadingItem)
                                 
@@ -864,7 +864,7 @@ public final class PeerMessagesMediaPlaylist: SharedMediaPlaylist {
                         }
                         |> take(1)
                         |> deliverOnMainQueue
-                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self] messageAndAroundMessages, previousMessagesCount, shouldLoadMore in
+                        self.navigationDisposable.set(historySignal.startStrict(next: { [weak self = self] messageAndAroundMessages, previousMessagesCount, shouldLoadMore in
                             if let strongSelf = self {
                                 assert(strongSelf.loadingItem)
                                 

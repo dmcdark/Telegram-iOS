@@ -98,7 +98,7 @@ public final class ChatListHeaderNoticeComponent: Component {
                 theme: component.theme,
                 strings: component.strings,
                 notice: component.data,
-                action: { [weak self] action in
+                action: { [weak self = self] action in
                     guard let self, let component = self.component else {
                         return
                     }

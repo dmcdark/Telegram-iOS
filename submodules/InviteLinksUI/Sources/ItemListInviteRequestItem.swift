@@ -242,14 +242,14 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
         self.contentWrapperNode.addSubnode(self.addButton)
         self.contentWrapperNode.addSubnode(self.dismissButton)
         
-        self.addButton.pressed = { [weak self] in
+        self.addButton.pressed = { [weak self = self] in
             if let (item, _, _, _, _) = self?.layoutParams {
                 item.addAction?()
             }
         }
         self.dismissButton.addTarget(self, action: #selector(self.dismissPressed), forControlEvents: .touchUpInside)
         
-        self.containerNode.shouldBegin = { [weak self] point in
+        self.containerNode.shouldBegin = { [weak self = self] point in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0 else {
                 return false
             }
@@ -259,7 +259,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
             return true
         }
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0, let _ = item.importer, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -267,7 +267,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
             contextAction(strongSelf.contextSourceNode, gesture)
         }
 
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0, let peer = item.importer?.peer.peer else {
                 return
             }
@@ -275,7 +275,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
             strongSelf.isExtracted = isExtracted
             
             if isExtracted {
-                strongSelf.contextSourceNode.contentNode.customHitTest = { [weak self] point in
+                strongSelf.contextSourceNode.contentNode.customHitTest = { [weak self = self] point in
                     if let strongSelf = self {
                         if let avatarListWrapperNode = strongSelf.avatarListWrapperNode, avatarListWrapperNode.frame.contains(point) {
                             return strongSelf.avatarListNode?.view
@@ -333,7 +333,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                             let avatarListWrapperNode = PinchSourceContainerNode()
                             avatarListWrapperNode.clipsToBounds = true
                             avatarListWrapperNode.cornerRadius = backgroundCornerRadius
-                            avatarListWrapperNode.activate = { [weak self] sourceNode in
+                            avatarListWrapperNode.activate = { [weak self = self] sourceNode in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -343,7 +343,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                                 })
                                 item.context.sharedContext.mainWindow?.presentInGlobalOverlay(pinchController)
                             }
-                            avatarListWrapperNode.deactivated = { [weak self] in
+                            avatarListWrapperNode.deactivated = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -352,7 +352,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                             }
                             avatarListWrapperNode.update(size: targetRect.size, transition: .immediate)
                             avatarListWrapperNode.frame = CGRect(x: targetRect.minX, y: targetRect.minY, width: targetRect.width, height: targetRect.height + backgroundCornerRadius)
-                            avatarListWrapperNode.animatedOut = { [weak self] in
+                            avatarListWrapperNode.animatedOut = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -391,7 +391,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                             avatarListNode.peer = EnginePeer(peer)
                             avatarListNode.firstFullSizeOnly = true
                             avatarListNode.offsetLocation = true
-                            avatarListNode.customCenterTapAction = { [weak self] in
+                            avatarListNode.customCenterTapAction = { [weak self = self] in
                                 self?.contextSourceNode.requestDismiss?()
                             }
                             avatarListNode.frame = CGRect(x: targetRect.width / 2.0, y: targetRect.height / 2.0, width: targetRect.width, height: targetRect.height)
@@ -471,7 +471,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                         strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, delay: 0.1, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue)
                     } else {
                         strongSelf.extractedBackgroundImageNode.alpha = 0.0
-                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             if let strongSelf = self {
                                 strongSelf.extractedBackgroundImageNode.image = nil
                                 strongSelf.extractedBackgroundImageNode.layer.removeAllAnimations()
@@ -485,7 +485,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
                         strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, delay: 0.1, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue)
                     } else {
                         strongSelf.extractedBackgroundImageNode.alpha = 0.0
-                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             if let strongSelf = self {
                                 strongSelf.extractedBackgroundImageNode.image = nil
                                 strongSelf.extractedBackgroundImageNode.layer.removeAllAnimations()
@@ -601,7 +601,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors, firstWithHeader, last)
                                         
@@ -842,7 +842,7 @@ public class ItemListInviteRequestItemNode: ListViewItemNode, ItemListItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

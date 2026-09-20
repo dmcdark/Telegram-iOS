@@ -127,7 +127,7 @@ public final class PeerInfoGiftsCoverComponent: Component {
             
             self.layer.addSublayer(self.trackingLayer)
             
-            self.trackingLayer.didEnterHierarchy = { [weak self] in
+            self.trackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -135,7 +135,7 @@ public final class PeerInfoGiftsCoverComponent: Component {
                 self.updateAnimations()
             }
             
-            self.trackingLayer.didExitHierarchy = { [weak self] in
+            self.trackingLayer.didExitHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -275,7 +275,7 @@ public final class PeerInfoGiftsCoverComponent: Component {
                         return nil
                     }
                     |> distinctUntilChanged
-                ).start(next: { [weak self] state, giftStatusId in
+                ).start(next: { [weak self = self] state, giftStatusId in
                     guard let self else {
                         return
                     }

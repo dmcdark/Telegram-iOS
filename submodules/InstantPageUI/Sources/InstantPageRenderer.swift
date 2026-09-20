@@ -810,7 +810,7 @@ public final class InstantPageV2View: UIView {
             return InstantPageV2AnchorView(item: anchor, theme: theme)
         case let .listMarker(marker):
             let view = InstantPageV2ListMarkerView(item: marker, theme: theme)
-            view.onCheckboxTapped = { [weak self] path, newValue in
+            view.onCheckboxTapped = { [weak self = self] path, newValue in
                 self?.checkboxTapped?(path, newValue)
             }
             view.update(item: marker, theme: theme, interactive: self.checkboxTapped != nil)
@@ -829,7 +829,7 @@ public final class InstantPageV2View: UIView {
             return InstantPageV2MediaPlaceholderView(item: media, theme: theme)
         case let .details(details):
             let view = InstantPageV2DetailsView(item: details, theme: theme, renderContext: self.renderContext)
-            view.onTitleTapped = { [weak self] index in
+            view.onTitleTapped = { [weak self = self] index in
                 self?.detailsTapped?(index)
             }
             return view
@@ -1976,7 +1976,7 @@ final class InstantPageV2DetailsView: UIView, InstantPageItemView {
                 // view uses: makeItemView wired our onTitleTapped to the owning InstantPageV2View's
                 // detailsTapped, so chaining through onTitleTapped reaches the bubble's toggle handler.
                 // Without this, a nested details' tap hits the body view's nil detailsTapped and is dropped.
-                body.detailsTapped = { [weak self] index in
+                body.detailsTapped = { [weak self = self] index in
                     self?.onTitleTapped?(index)
                 }
                 body.update(layout: innerLayout, theme: theme, animation: animation)

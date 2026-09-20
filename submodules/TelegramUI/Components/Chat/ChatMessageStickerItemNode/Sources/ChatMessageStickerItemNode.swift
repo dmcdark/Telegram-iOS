@@ -117,7 +117,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
         super.init(rotated: rotated)
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -126,7 +126,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
                     if strongSelf.enableSynchronousImageApply {
                         strongSelf.removePlaceholder(animated: false)
                     } else {
-                        strongSelf.imageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2, completion: { [weak self] _ in
+                        strongSelf.imageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2, completion: { [weak self = self] _ in
                             self?.removePlaceholder(animated: false)
                         })
                     }
@@ -137,7 +137,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
             }
         }
         
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self else {
                 return false
             }
@@ -160,7 +160,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
             return true
         }
         
-        self.containerNode.activated = { [weak self] gesture, location in
+        self.containerNode.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -184,7 +184,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
         self.contextSourceNode.contentNode.addSubnode(self.dateAndStatusNode)
         self.addSubnode(self.messageAccessibilityArea)
         
-        self.messageAccessibilityArea.focused = { [weak self] in
+        self.messageAccessibilityArea.focused = { [weak self = self] in
             self?.accessibilityElementDidBecomeFocused()
         }
     }
@@ -202,7 +202,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -212,7 +212,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 if let shareButtonNode = strongSelf.shareButtonNode, shareButtonNode.frame.contains(point) {
                     return .fail
@@ -236,7 +236,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
             }
             return .waitForDoubleTap
         }
-        recognizer.longTap = { [weak self] point, recognizer in
+        recognizer.longTap = { [weak self = self] point, recognizer in
             guard let strongSelf = self else {
                 return
             }
@@ -257,7 +257,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
         self.view.addGestureRecognizer(recognizer)
         
         let replyRecognizer = ChatSwipeToReplyRecognizer(target: self, action: #selector(self.swipeToReplyGesture(_:)))
-        replyRecognizer.shouldBegin = { [weak self] in
+        replyRecognizer.shouldBegin = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 if strongSelf.selectionNode != nil {
                     return false
@@ -1840,7 +1840,7 @@ public class ChatMessageStickerItemNode: ChatMessageItemView {
                 selectionNode.updateSelected(selected, animated: animated)
                 self.subnodeTransform = CATransform3DMakeTranslation(offset, 0.0, 0.0);
             } else {
-                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self] value in
+                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self = self] value in
                     if let strongSelf = self, let item = strongSelf.item {
                         item.controllerInteraction.toggleMessagesSelection([item.message.id], value)
                     }

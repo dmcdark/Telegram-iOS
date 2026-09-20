@@ -131,7 +131,7 @@ final class EmojiPickerItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: contentSize.height - 20.0), insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

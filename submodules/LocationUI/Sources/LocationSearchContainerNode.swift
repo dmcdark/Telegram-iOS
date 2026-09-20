@@ -239,7 +239,7 @@ final class LocationSearchContainerNode: ASDisplayNode {
         
         let previousSearchItems = Atomic<[LocationSearchEntry]>(value: [])
         self.searchDisposable.set((searchItems
-        |> deliverOnMainQueue).start(next: { [weak self] itemsAndQuery in
+        |> deliverOnMainQueue).start(next: { [weak self = self] itemsAndQuery in
             if let strongSelf = self {
                 let (items, query) = itemsAndQuery ?? (nil, "")
                 let previousItems = previousSearchItems.swap(items ?? [])
@@ -267,7 +267,7 @@ final class LocationSearchContainerNode: ASDisplayNode {
             }
         }))
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.interaction.dismissInput()
         }
     }
@@ -349,7 +349,7 @@ final class LocationSearchContainerNode: ASDisplayNode {
             options.insert(.PreferSynchronousDrawing)
             options.insert(.PreferSynchronousResourceLoading)
             
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

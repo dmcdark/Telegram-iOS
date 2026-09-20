@@ -927,7 +927,7 @@ final class MessageItemView: UIView {
             if let current = self.customEmojiContainerView {
                 customEmojiContainerView = current
             } else {
-                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self] emoji in
+                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self = self] emoji in
                     guard let self, let emojiViewProvider = self.emojiViewProvider else {
                         return nil
                     }

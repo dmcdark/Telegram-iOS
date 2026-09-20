@@ -134,13 +134,13 @@ final class AddGiftsScreenComponent: Component {
                 giftsListView = current
             } else {
                 giftsListView = GiftsListView(context: component.context, peerId: component.peerId, profileGifts: component.profileGifts, giftsCollections: nil, canSelect: true, ignoreCollection: component.collectionId, remainingSelectionCount: component.remainingCount)
-                giftsListView.onContentUpdated = { [weak self] in
+                giftsListView.onContentUpdated = { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.state?.updated(transition: .immediate)
                 }
-                giftsListView.selectionUpdated = { [weak self] in
+                giftsListView.selectionUpdated = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -166,7 +166,7 @@ final class AddGiftsScreenComponent: Component {
                     label: nil,
                     isEnabled: true,
                     insets: UIEdgeInsets(top: 0.0, left: sideInset, bottom: environment.safeInsets.bottom, right: sideInset),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let controller = self.environment?.controller() as? AddGiftsScreen, let giftsListView = self.giftsListView else {
                             return
                         }
@@ -254,14 +254,14 @@ public final class AddGiftsScreen: ViewControllerComponentContainer {
         self.title = presentationData.strings.AddGifts_Title
         self.navigationPresentation = .modal
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? AddGiftsScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
                 
-        self.filterButton.contextAction = { [weak self] sourceNode, gesture in
+        self.filterButton.contextAction = { [weak self = self] sourceNode, gesture in
             self?.presentContextMenu(sourceView: sourceNode.view, gesture: gesture)
         }
         self.filterButton.addTarget(self, action: #selector(self.filterPressed), forControlEvents: .touchUpInside)
@@ -429,13 +429,13 @@ private final class FilterHeaderButton: HighlightableButtonNode {
         self.containerNode.addSubnode(self.referenceNode)
         self.addSubnode(self.containerNode)
 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.contextAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }

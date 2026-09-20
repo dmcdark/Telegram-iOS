@@ -125,7 +125,7 @@ final class StoryItemImageView: UIView {
                                 return nil
                             }
                         }
-                        |> deliverOnMainQueue).start(next: { [weak self] image in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] image in
                             guard let self else {
                                 return
                             }
@@ -207,7 +207,7 @@ final class StoryItemImageView: UIView {
                             return nil
                         }
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] image in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] image in
                         guard let self else {
                             return
                         }

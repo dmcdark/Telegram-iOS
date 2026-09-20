@@ -156,13 +156,13 @@ public final class DustEffectLayer: MetalEngineSubjectLayer, MetalEngineSubject 
         self.isOpaque = false
         self.backgroundColor = nil
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
             self.updateNeedsAnimation()
         }
-        self.didExitHierarchy = { [weak self] in
+        self.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -218,7 +218,7 @@ public final class DustEffectLayer: MetalEngineSubjectLayer, MetalEngineSubject 
     private func updateNeedsAnimation() {
         if !self.items.isEmpty && self.isInHierarchy {
             if self.updateLink == nil {
-                self.updateLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] deltaTime in
+                self.updateLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] deltaTime in
                     guard let self else {
                         return
                     }
@@ -273,7 +273,7 @@ public final class DustEffectLayer: MetalEngineSubjectLayer, MetalEngineSubject 
         }
         #endif
         
-        let _ = context.compute(state: DustComputeState.self, commands: { [weak self] commandBuffer, state in
+        let _ = context.compute(state: DustComputeState.self, commands: { [weak self = self] commandBuffer, state in
             guard let self else {
                 return
             }
@@ -321,7 +321,7 @@ public final class DustEffectLayer: MetalEngineSubjectLayer, MetalEngineSubject 
             computeEncoder.endEncoding()
         })
         
-        context.renderToLayer(spec: RenderLayerSpec(size: RenderSize(width: Int(self.bounds.width * 3.0), height: Int(self.bounds.height * 3.0))), state: RenderState.self, layer: self, commands: { [weak self] encoder, placement in
+        context.renderToLayer(spec: RenderLayerSpec(size: RenderSize(width: Int(self.bounds.width * 3.0), height: Int(self.bounds.height * 3.0))), state: RenderState.self, layer: self, commands: { [weak self = self] encoder, placement in
             guard let self else {
                 return
             }

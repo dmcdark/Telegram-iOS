@@ -685,7 +685,7 @@ final class VideoChatScreenComponent: Component {
                     return .never()
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] chatPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] chatPeer in
                 guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                     return
                 }
@@ -705,7 +705,7 @@ final class VideoChatScreenComponent: Component {
                     text = environment.strings.VoiceChat_EditTitleText
                 }
 
-                let controller = voiceChatTitleEditController(context: groupCall.accountContext, forceTheme: environment.theme, title: title, text: text, placeholder: chatPeer.displayTitle(strings: environment.strings, displayOrder: groupCall.accountContext.sharedContext.currentPresentationData.with({ $0 }).nameDisplayOrder), value: initialTitle, maxLength: 40, apply: { [weak self] title in
+                let controller = voiceChatTitleEditController(context: groupCall.accountContext, forceTheme: environment.theme, title: title, text: text, placeholder: chatPeer.displayTitle(strings: environment.strings, displayOrder: groupCall.accountContext.sharedContext.currentPresentationData.with({ $0 }).nameDisplayOrder), value: initialTitle, maxLength: 40, apply: { [weak self = self] title in
                     guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                         return
                     }
@@ -771,7 +771,7 @@ final class VideoChatScreenComponent: Component {
                     )),
                     initialInvite: .link(link: inviteLinks.listenerLink, title: nil, isPermanent: true, requestApproval: false, isRevoked: false, adminId: groupCall.accountContext.account.peerId, date: 0, startDate: nil, expireDate: nil, usageLimit: nil, count: nil, requestedCount: nil, pricing: nil),
                     parentNavigationController: navigationController,
-                    completed: { [weak self] result in
+                    completed: { [weak self = self] result in
                         guard let self, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -811,7 +811,7 @@ final class VideoChatScreenComponent: Component {
                         return .never()
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                         return
                     }
@@ -839,13 +839,13 @@ final class VideoChatScreenComponent: Component {
                             return formatSendTitle(environment.strings.VoiceChat_InviteLink_InviteListeners(Int32(count)))
                         })]
                     }
-                    let shareController = groupCall.accountContext.sharedContext.makeShareController(context: groupCall.accountContext, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), segmentedValues: segmentedValues, forceTheme: environment.theme, forcedActionTitle: environment.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self] in
+                    let shareController = groupCall.accountContext.sharedContext.makeShareController(context: groupCall.accountContext, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), segmentedValues: segmentedValues, forceTheme: environment.theme, forcedActionTitle: environment.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self = self] in
                         guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                             return
                         }
                         let presentationData = groupCall.accountContext.sharedContext.currentPresentationData.with({ $0 }).withUpdated(theme: environment.theme)
                         self.presentToast(icon: .animation("anim_linkcopied"), text: presentationData.strings.VoiceChat_InviteLinkCopiedText, duration: 3)
-                    }, completed: { [weak self] peerIds in
+                    }, completed: { [weak self = self] peerIds in
                         guard let self, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -854,7 +854,7 @@ final class VideoChatScreenComponent: Component {
                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                             )
                         )
-                        |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                             guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                                 return
                             }
@@ -888,13 +888,13 @@ final class VideoChatScreenComponent: Component {
                     return
                 }
                 
-                let shareController = groupCall.accountContext.sharedContext.makeShareController(context: groupCall.accountContext, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), forceTheme: environment.theme, forcedActionTitle: environment.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self] in
+                let shareController = groupCall.accountContext.sharedContext.makeShareController(context: groupCall.accountContext, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), forceTheme: environment.theme, forcedActionTitle: environment.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self = self] in
                     guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                         return
                     }
                     let presentationData = groupCall.accountContext.sharedContext.currentPresentationData.with({ $0 }).withUpdated(theme: environment.theme)
                     self.presentToast(icon: .animation("anim_linkcopied"), text: presentationData.strings.VoiceChat_InviteLinkCopiedText, duration: 3)
-                }, completed: { [weak self] peerIds in
+                }, completed: { [weak self = self] peerIds in
                     guard let self, case let .group(groupCall) = self.currentCall else {
                         return
                     }
@@ -903,7 +903,7 @@ final class VideoChatScreenComponent: Component {
                             peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                         )
                     )
-                    |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                         guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -947,17 +947,17 @@ final class VideoChatScreenComponent: Component {
                 currentCall.disableVideo()
             } else {
                 let presentationData = currentCall.accountContext.sharedContext.currentPresentationData.with({ $0 }).withUpdated(theme: environment.theme)
-                DeviceAccess.authorizeAccess(to: .camera(.videoCall), onlyCheck: true, presentationData: presentationData, present: { [weak self] c, a in
+                DeviceAccess.authorizeAccess(to: .camera(.videoCall), onlyCheck: true, presentationData: presentationData, present: { [weak self = self] c, a in
                     guard let self, let environment = self.environment, let controller = environment.controller() else {
                         return
                     }
                     controller.present(c, in: .window(.root), with: a)
-                }, openSettings: { [weak self] in
+                }, openSettings: { [weak self = self] in
                     guard let self, let currentCall = self.currentCall else {
                         return
                     }
                     currentCall.accountContext.sharedContext.applicationBindings.openSettings()
-                }, _: { [weak self] ready in
+                }, _: { [weak self = self] ready in
                     guard let self, let environment = self.environment, let currentCall = self.currentCall, ready else {
                         return
                     }
@@ -968,7 +968,7 @@ final class VideoChatScreenComponent: Component {
                         videoView.updateIsEnabled(true)
                         
                         let cameraNode = GroupVideoNode(videoView: videoView, backdropVideoView: nil)
-                        let controller = VoiceChatCameraPreviewController(sharedContext: currentCall.accountContext.sharedContext, cameraNode: cameraNode, shareCamera: { [weak self] _, unmuted in
+                        let controller = VoiceChatCameraPreviewController(sharedContext: currentCall.accountContext.sharedContext, cameraNode: cameraNode, shareCamera: { [weak self = self] _, unmuted in
                             guard let self, let currentCall = self.currentCall else {
                                 return
                             }
@@ -1079,7 +1079,7 @@ final class VideoChatScreenComponent: Component {
             case let .group(groupCall):
                 let isScheduled = self.callState?.scheduleTimestamp != nil
                 
-                let action: (Bool) -> Void = { [weak self] terminateIfPossible in
+                let action: (Bool) -> Void = { [weak self = self] terminateIfPossible in
                     guard let self, case let .group(groupCall) = self.currentCall else {
                         return
                     }
@@ -1117,7 +1117,7 @@ final class VideoChatScreenComponent: Component {
                         title: nil,
                         text: leaveTitle,
                         actions: [
-                            .init(title: leaveAndCancelTitle, type: .defaultDestructive, action: { [weak self] in
+                            .init(title: leaveAndCancelTitle, type: .defaultDestructive, action: { [weak self = self] in
                                 guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                                     return
                                 }
@@ -1325,7 +1325,7 @@ final class VideoChatScreenComponent: Component {
             self.didInitializeInputMediaNodeDataPromise = true
             
             self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -1354,7 +1354,7 @@ final class VideoChatScreenComponent: Component {
                 sendSticker: { _, _, _, _, _, _, _, _, _ in
                     return false
                 },
-                sendEmoji: { [weak self] text, attribute, bool1 in
+                sendEmoji: { [weak self = self] text, attribute, bool1 in
                     if let self {
                         let _ = self
                     }
@@ -1368,42 +1368,42 @@ final class VideoChatScreenComponent: Component {
                 editGif: { _, _ in
                 },
                 updateChoosingSticker: { _ in },
-                switchToTextInput: { [weak self] in
+                switchToTextInput: { [weak self = self] in
                     if let self {
                         self.activateInput()
                     }
                 },
                 dismissTextInput: {
                 },
-                insertText: { [weak self] text in
+                insertText: { [weak self = self] text in
                     if let self {
                         self.inputPanelExternalState.insertText(text)
                     }
                 },
-                backwardsDeleteText: { [weak self] in
+                backwardsDeleteText: { [weak self = self] in
                     if let self {
                         self.inputPanelExternalState.deleteBackward()
                     }
                 },
                 openStickerEditor: {},
-                presentController: { [weak self] c, a in
+                presentController: { [weak self = self] c, a in
                     if let self {
                         self.environment?.controller()?.present(c, in: .window(.root), with: a)
                     }
                 },
-                presentGlobalOverlayController: { [weak self] c, a in
+                presentGlobalOverlayController: { [weak self = self] c, a in
                     if let self {
                         self.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                     }
                 },
-                getNavigationController: { [weak self] in
+                getNavigationController: { [weak self = self] in
                     if let self {
                         return self.environment?.controller()?.navigationController as? NavigationController
                     } else {
                         return nil
                     }
                 },
-                requestLayout: { [weak self] transition in
+                requestLayout: { [weak self = self] transition in
                     if let self {
                         (self.environment?.controller() as? VideoChatScreenV2Impl)?.requestLayout(forceUpdate: true, transition: ComponentTransition(transition))
                     }
@@ -1412,7 +1412,7 @@ final class VideoChatScreenComponent: Component {
             self.inputMediaInteraction?.forceTheme = defaultDarkColorPresentationTheme
             
             let _ = (allowedStoryReactions(engine: context.engine)
-            |> deliverOnMainQueue).start(next: { [weak self] reactionItems in
+            |> deliverOnMainQueue).start(next: { [weak self = self] reactionItems in
                 self?.reactionItems = reactionItems
             })
         }
@@ -1528,7 +1528,7 @@ final class VideoChatScreenComponent: Component {
                 case let .group(groupCall):
                     self.membersDisposable?.dispose()
                     self.membersDisposable = (groupCall.members
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] members in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] members in
                         guard let self else {
                             return
                         }
@@ -1714,7 +1714,7 @@ final class VideoChatScreenComponent: Component {
                             return result
                         }
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] invitedPeers in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] invitedPeers in
                         guard let self else {
                             return
                         }
@@ -1734,7 +1734,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.stateDisposable?.dispose()
                     self.stateDisposable = (groupCall.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] callState in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] callState in
                         guard let self else {
                             return
                         }
@@ -1749,7 +1749,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.encryptionKeyEmojiDisposable?.dispose()
                     self.encryptionKeyEmojiDisposable = (groupCall.e2eEncryptionKeyHash
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] e2eEncryptionKeyHash in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] e2eEncryptionKeyHash in
                         guard let self else {
                             return
                         }
@@ -1777,7 +1777,7 @@ final class VideoChatScreenComponent: Component {
                         groupCall.accountContext.sharedContext.applicationBindings.applicationIsActive,
                         self.isPresentedValue.get()
                     )
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] applicationIsActive, isPresented in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] applicationIsActive, isPresented in
                         guard let self, let currentCall = self.currentCall else {
                             return
                         }
@@ -1789,7 +1789,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.audioOutputStateDisposable?.dispose()
                     self.audioOutputStateDisposable = (groupCall.audioOutputState
-                    |> deliverOnMainQueue).start(next: { [weak self] state in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -1841,7 +1841,7 @@ final class VideoChatScreenComponent: Component {
                     )
                     self.displayAsPeersDisposable?.dispose()
                     self.displayAsPeersDisposable = (displayAsPeers
-                    |> deliverOnMainQueue).start(next: { [weak self] value in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -1850,7 +1850,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.inviteLinksDisposable?.dispose()
                     self.inviteLinksDisposable = (groupCall.inviteLinks
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -1862,7 +1862,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.reconnectedAsEventsDisposable?.dispose()
                     self.reconnectedAsEventsDisposable = (groupCall.reconnectedAsEvents
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                         guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -1877,7 +1877,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.memberEventsDisposable?.dispose()
                     self.memberEventsDisposable = (groupCall.memberEvents
-                    |> deliverOnMainQueue).start(next: { [weak self] event in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] event in
                         guard let self, let members = self.members, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -1913,7 +1913,7 @@ final class VideoChatScreenComponent: Component {
                             }
                             
                             self.lastTitleEventTimer?.invalidate()
-                            self.lastTitleEventTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 3.5, repeats: false, block: { [weak self] _ in
+                            self.lastTitleEventTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 3.5, repeats: false, block: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1930,7 +1930,7 @@ final class VideoChatScreenComponent: Component {
                     self.messagesStateDisposable?.dispose()
                     if let groupCall = groupCall as? PresentationGroupCallImpl {
                         self.messagesStateDisposable = (groupCall.messagesState
-                        |> deliverOnMainQueue).start(next: { [weak self] messagesState in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] messagesState in
                             guard let self else {
                                 return
                             }
@@ -1945,7 +1945,7 @@ final class VideoChatScreenComponent: Component {
                 case let .conferenceSource(conferenceSource):
                     self.membersDisposable?.dispose()
                     self.membersDisposable = (View.groupCallMembersForConferenceSource(conferenceSource: conferenceSource)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] members in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] members in
                         guard let self else {
                             return
                         }
@@ -2065,7 +2065,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.stateDisposable?.dispose()
                     self.stateDisposable = (View.groupCallStateForConferenceSource(conferenceSource: conferenceSource)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] callState, invitedPeers in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] callState, invitedPeers in
                         guard let self else {
                             return
                         }
@@ -2091,7 +2091,7 @@ final class VideoChatScreenComponent: Component {
                     self.conferenceCallStateDisposable = (conferenceSource.conferenceState
                     |> filter { $0 == .ready }
                     |> take(1)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                         guard let self, case let .conferenceSource(conferenceSource) = self.currentCall else {
                             return
                         }
@@ -2109,7 +2109,7 @@ final class VideoChatScreenComponent: Component {
                     
                     self.audioOutputStateDisposable?.dispose()
                     self.audioOutputStateDisposable = (conferenceSource.audioOutputState
-                    |> deliverOnMainQueue).start(next: { [weak self] state in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -2228,7 +2228,7 @@ final class VideoChatScreenComponent: Component {
             
             transition.setFrame(view: self.inputDimView, frame: CGRect(origin: .zero, size: availableSize))
             
-            transition.setFrame(view: self.containerView, frame: CGRect(origin: CGPoint(x: 0.0, y: containerOffset), size: availableSize), completion: { [weak self] completed in
+            transition.setFrame(view: self.containerView, frame: CGRect(origin: CGPoint(x: 0.0, y: containerOffset), size: availableSize), completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }
@@ -2302,7 +2302,7 @@ final class VideoChatScreenComponent: Component {
                     ),
                     effectAlignment: .center,
                     minSize: CGSize(width: navigationButtonDiameter, height: navigationButtonDiameter),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2325,7 +2325,7 @@ final class VideoChatScreenComponent: Component {
                     ),
                     effectAlignment: .center,
                     minSize: CGSize(width: navigationButtonDiameter, height: navigationButtonDiameter),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2376,7 +2376,7 @@ final class VideoChatScreenComponent: Component {
                         background: AnyComponent(GlassBackgroundComponent(size: CGSize(width: navigationButtonDiameter + 10.0, height: navigationButtonDiameter), cornerRadius: navigationButtonDiameter * 0.5, isDark: true, tintColor: .init(kind: .custom(style: .default, color: panelColor)))),
                         effectAlignment: .center,
                         minSize: CGSize(width: navigationButtonDiameter + 10.0, height: navigationButtonDiameter),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2450,7 +2450,7 @@ final class VideoChatScreenComponent: Component {
                     isRecording: self.callState?.recordingStartTimestamp != nil,
                     isLandscape: isLandscape,
                     strings: environment.strings,
-                    tapAction: self.callState?.recordingStartTimestamp != nil ? { [weak self] in
+                    tapAction: self.callState?.recordingStartTimestamp != nil ? { [weak self = self] in
                         guard let self, let environment = self.environment, let currentCall = self.currentCall else {
                             return
                         }
@@ -2477,7 +2477,7 @@ final class VideoChatScreenComponent: Component {
                             }), in: .current)
                         }
                     } : nil,
-                    longTapAction: canManageCall ? { [weak self] in
+                    longTapAction: canManageCall ? { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2561,7 +2561,7 @@ final class VideoChatScreenComponent: Component {
                         emoji: self.encryptionKeyEmoji ?? [],
                         isShort: isTwoColumnLayout,
                         isExpanded: self.isEncryptionKeyExpanded,
-                        tapAction: { [weak self] in
+                        tapAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2886,19 +2886,19 @@ final class VideoChatScreenComponent: Component {
                     safeInsets: participantsSafeInsets,
                     interfaceOrientation: environment.orientation ?? .portrait,
                     enableVideoSharpening: self.enableVideoSharpening,
-                    openParticipantContextMenu: { [weak self] id, sourceView, gesture in
+                    openParticipantContextMenu: { [weak self = self] id, sourceView, gesture in
                         guard let self else {
                             return
                         }
                         self.openParticipantContextMenu(id: id, sourceView: sourceView, gesture: gesture)
                     },
-                    openInvitedParticipantContextMenu: { [weak self] id, sourceView, gesture in
+                    openInvitedParticipantContextMenu: { [weak self = self] id, sourceView, gesture in
                         guard let self else {
                             return
                         }
                         self.openInvitedParticipantContextMenu(id: id, sourceView: sourceView, gesture: gesture)
                     },
-                    updateMainParticipant: { [weak self] key, alsoSetIsUIHidden in
+                    updateMainParticipant: { [weak self = self] key, alsoSetIsUIHidden in
                         guard let self else {
                             return
                         }
@@ -2920,7 +2920,7 @@ final class VideoChatScreenComponent: Component {
                             self.state?.updated(transition: .spring(duration: 0.4))
                         }
                     },
-                    updateIsMainParticipantPinned: { [weak self] isPinned in
+                    updateIsMainParticipantPinned: { [weak self = self] isPinned in
                         guard let self else {
                             return
                         }
@@ -2937,7 +2937,7 @@ final class VideoChatScreenComponent: Component {
                             self.state?.updated(transition: .spring(duration: 0.4))
                         }
                     },
-                    updateIsExpandedUIHidden: { [weak self] isUIHidden in
+                    updateIsExpandedUIHidden: { [weak self = self] isUIHidden in
                         guard let self else {
                             return
                         }
@@ -2954,7 +2954,7 @@ final class VideoChatScreenComponent: Component {
                             self.state?.updated(transition: .spring(duration: 0.4))
                         }
                     },
-                    openInviteMembers: { [weak self] type in
+                    openInviteMembers: { [weak self = self] type in
                         guard let self else {
                             return
                         }
@@ -2967,7 +2967,7 @@ final class VideoChatScreenComponent: Component {
                             self.openInviteMembers()
                         }
                     },
-                    visibleParticipantsUpdated: { [weak self] visibleParticipants in
+                    visibleParticipantsUpdated: { [weak self = self] visibleParticipants in
                         guard let self else {
                             return
                         }
@@ -3145,7 +3145,7 @@ final class VideoChatScreenComponent: Component {
                     content: micButtonContent,
                     isCollapsed: areButtonsActuallyCollapsed || buttonsOnTheSide,
                     isCompact: true,
-                    updateUnmutedStateIsPushToTalk: { [weak self] unmutedStateIsPushToTalk in
+                    updateUnmutedStateIsPushToTalk: { [weak self = self] unmutedStateIsPushToTalk in
                         guard let self, let currentCall = self.currentCall else {
                             return
                         }
@@ -3181,7 +3181,7 @@ final class VideoChatScreenComponent: Component {
                             self.state?.updated(transition: .spring(duration: 0.5))
                         }
                     },
-                    raiseHand: { [weak self] in
+                    raiseHand: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -3194,7 +3194,7 @@ final class VideoChatScreenComponent: Component {
                             }
                         }
                     },
-                    scheduleAction: { [weak self] in
+                    scheduleAction: { [weak self = self] in
                         guard let self, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -3233,7 +3233,7 @@ final class VideoChatScreenComponent: Component {
                         isCollapsed: areButtonsActuallyCollapsed || buttonsOnTheSide
                     )),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -3280,7 +3280,7 @@ final class VideoChatScreenComponent: Component {
                             isCollapsed: areButtonsActuallyCollapsed || buttonsOnTheSide
                         )),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -3340,7 +3340,7 @@ final class VideoChatScreenComponent: Component {
                             isCollapsed: areButtonsActuallyCollapsed || buttonsOnTheSide
                         )),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.onMessagePressed()
                         },
                         animateAlpha: false
@@ -3382,7 +3382,7 @@ final class VideoChatScreenComponent: Component {
                         isCollapsed: areButtonsActuallyCollapsed || buttonsOnTheSide
                     )),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -3558,7 +3558,7 @@ final class VideoChatScreenComponent: Component {
                         },
                         presentInGlobalOverlay: { c in
                         },
-                        sendMessageAction: { [weak self] transition in
+                        sendMessageAction: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
@@ -3580,7 +3580,7 @@ final class VideoChatScreenComponent: Component {
                         myReaction: nil,
                         likeAction: nil,
                         likeOptionsAction: nil,
-                        inputModeAction: { [weak self] in
+                        inputModeAction: { [weak self = self] in
                             if let self {
                                 switch self.currentInputMode {
                                 case .text:
@@ -3769,19 +3769,19 @@ final class VideoChatScreenComponent: Component {
                                 premiumIfSavedMessages: false
                             )
                         },
-                        isExpandedUpdated: { [weak self] transition in
+                        isExpandedUpdated: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
                             self.state?.updated(transition: ComponentTransition(transition))
                         },
-                        requestLayout: { [weak self] transition in
+                        requestLayout: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
                             self.state?.updated(transition: ComponentTransition(transition))
                         },
-                        requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                        requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
@@ -3865,7 +3865,7 @@ final class VideoChatScreenComponent: Component {
                         })
                     }
                     
-                    reactionContextNode.premiumReactionsSelected = { [weak self] file in
+                    reactionContextNode.premiumReactionsSelected = { [weak self = self] file in
                         guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() else {
                             return
                         }
@@ -3996,7 +3996,7 @@ final class VideoChatScreenComponent: Component {
                     items: messageItems,
                     availableReactions: self.reactionItems,
                     sendActionTransition: sendActionTransition,
-                    openPeer: { [weak self] peer in
+                    openPeer: { [weak self = self] peer in
                         guard let self else {
                             return
                         }
@@ -4181,7 +4181,7 @@ final class VideoChatScreenV2Impl: ViewControllerComponentContainer, VoiceChatCo
             
             if let componentView = self.node.hostView.componentView as? VideoChatScreenComponent.View {
                 self.isAnimatingDismiss = true
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     guard let self else {
                         return
                     }

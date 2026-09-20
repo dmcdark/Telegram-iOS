@@ -346,7 +346,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         self.emojiContainerNode.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.emojiImageNode.imageUpdated = { [weak self] image in
+        self.emojiImageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -369,7 +369,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -414,7 +414,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             var updatedEmoticon = false
             var updatedThemeReference = false
             var updatedTheme = false
@@ -506,7 +506,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
                             animatedStickerNode = current
                         } else {
                             animatedStickerNode = DefaultAnimatedStickerNodeImpl()
-                            animatedStickerNode.started = { [weak self] in
+                            animatedStickerNode.started = { [weak self = self] in
                                 self?.emojiImageNode.isHidden = true
                             }
                             strongSelf.animatedStickerNode = animatedStickerNode
@@ -633,7 +633,7 @@ public final class ChatQrCodeScreenImpl: ViewController, ChatQrCodeScreen {
         self.presentationThemePromise.set(.single(nil))
         
         self.presentationDataDisposable = (combineLatest(context.sharedContext.presentationData, self.presentationThemePromise.get())
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData, theme in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData, theme in
             if let strongSelf = self {
                 var presentationData = presentationData
                 if let theme = theme {
@@ -659,19 +659,19 @@ public final class ChatQrCodeScreenImpl: ViewController, ChatQrCodeScreen {
     
     override public func loadDisplayNode() {
         self.displayNode = ChatQrCodeScreenNode(context: self.context, presentationData: self.presentationData, controller: self)
-        self.controllerNode.previewTheme = { [weak self] _, _, theme in
+        self.controllerNode.previewTheme = { [weak self = self] _, _, theme in
             self?.presentationThemePromise.set(.single(theme))
         }
-        self.controllerNode.present = { [weak self] c in
+        self.controllerNode.present = { [weak self = self] c in
             self?.present(c, in: .current)
         }
-        self.controllerNode.completion = { [weak self] emoticon in
+        self.controllerNode.completion = { [weak self = self] emoticon in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.dismiss()
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -913,7 +913,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
         self.switchThemeButtonNode.addTarget(self, action: #selector(self.switchThemePressed), forControlEvents: .touchUpInside)
         self.cancelButtonNode.addTarget(self, action: #selector(self.cancelButtonPressed), forControlEvents: .touchUpInside)
         
-        self.segmentedNode.selectedIndexChanged = { [weak self] index in
+        self.segmentedNode.selectedIndexChanged = { [weak self = self] index in
             guard let strongSelf = self, let contentNode = strongSelf.contentNode as? MessageContentNode, let videoNode = contentNode.videoNode else {
                 return
             }
@@ -978,7 +978,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
         if case .messages = controller.subject {
             isMessage = true
         }
-        self.disposable.set(combineLatest(queue: Queue.mainQueue(), animatedEmojiStickers, initiallySelectedEmoticon, self.context.engine.themes.getChatThemes(accountManager: self.context.sharedContext.accountManager), self.selectedEmoticonPromise.get(), self.isDarkAppearancePromise.get()).startStrict(next: { [weak self] animatedEmojiStickers, initiallySelectedEmoticon, themes, selectedEmoticon, isDarkAppearance in
+        self.disposable.set(combineLatest(queue: Queue.mainQueue(), animatedEmojiStickers, initiallySelectedEmoticon, self.context.engine.themes.getChatThemes(accountManager: self.context.sharedContext.accountManager), self.selectedEmoticonPromise.get(), self.isDarkAppearancePromise.get()).startStrict(next: { [weak self = self] animatedEmojiStickers, initiallySelectedEmoticon, themes, selectedEmoticon, isDarkAppearance in
             guard let strongSelf = self else {
                 return
             }
@@ -1028,7 +1028,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                 previewTheme = defaultPresentationTheme
             }
             
-            let action: (String?) -> Void = { [weak self] emoticon in
+            let action: (String?) -> Void = { [weak self = self] emoticon in
                 if let strongSelf = self, strongSelf.selectedEmoticon != emoticon {
                     strongSelf.animateCrossfade(animateIcon: true)
                     
@@ -1089,7 +1089,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
             }
         }))
         
-        self.switchThemeButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.switchThemeButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.animationContainerNode.layer.removeAnimation(forKey: "opacity")
@@ -1106,7 +1106,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
         if case let .peer(_, _, temporary) = controller.subject, temporary {
             self.contactDisposable.set(
                 (context.engine.peers.exportContactToken()
-                 |> deliverOnMainQueue).startStrict(next: { [weak self] token in
+                 |> deliverOnMainQueue).startStrict(next: { [weak self = self] token in
                      if let strongSelf = self {
                          strongSelf.currentContactToken = token
                          if let contentNode = strongSelf.contentNode as? QrContentNode, let token = token {
@@ -1117,11 +1117,11 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
             )
             
             if let contentNode = self.contentNode as? QrContentNode {
-                contentNode.requestNextToken = { [weak self] in
+                contentNode.requestNextToken = { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.contactDisposable.set(
                             (context.engine.peers.exportContactToken()
-                             |> deliverOnMainQueue).startStrict(next: { [weak self] token in
+                             |> deliverOnMainQueue).startStrict(next: { [weak self = self] token in
                                  if let strongSelf = self {
                                      strongSelf.currentContactToken = token
                                      if let contentNode = strongSelf.contentNode as? QrContentNode, let token = token {
@@ -1198,9 +1198,9 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
             let themeCrossfadeDelay: Double = 0.25
             
             Queue.mainQueue().after(themeCrossfadeDelay) {
-                self.switchThemeIconAnimator = DisplayLinkAnimator(duration: themeCrossfadeDuration * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self] value in
+                self.switchThemeIconAnimator = DisplayLinkAnimator(duration: themeCrossfadeDuration * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self = self] value in
                     self?.animationNode.setColors(colors: interpolateColors(from: previousIconColors, to: newIconColors, fraction: value))
-                }, completion: { [weak self] in
+                }, completion: { [weak self = self] in
                     self?.switchThemeIconAnimator?.invalidate()
                     self?.switchThemeIconAnimator = nil
                 })
@@ -1231,7 +1231,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
         self.doneButton.view?.isUserInteractionEnabled = false
 
         if self.segmentedNode.selectedIndex == 0 {
-            self.contentNode.generateVideo { [weak self] url in
+            self.contentNode.generateVideo { [weak self = self] url in
                 if let strongSelf = self {
                     let tempFilePath = NSTemporaryDirectory() + "\(strongSelf.fileName).mp4"
                     try? FileManager.default.removeItem(atPath: tempFilePath)
@@ -1239,7 +1239,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                     try? FileManager.default.moveItem(at: url, to: tempFileUrl)
 
                     let activityController = UIActivityViewController(activityItems: [tempFileUrl], applicationActivities: [ShareToInstagramActivity(context: strongSelf.context)])
-                    activityController.completionWithItemsHandler = { [weak self] _, finished, _, _ in
+                    activityController.completionWithItemsHandler = { [weak self = self] _, finished, _, _ in
                         if let strongSelf = self {
                             if finished {
                                 strongSelf.completion?(strongSelf.selectedEmoticon)
@@ -1256,7 +1256,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                 }
             }
         } else {
-            self.contentNode.generateImage { [weak self] image in
+            self.contentNode.generateImage { [weak self = self] image in
                 if let strongSelf = self, let image = image, let jpgData = image.jpegData(compressionQuality: 0.9) {
                     let tempFilePath = NSTemporaryDirectory() + "\(strongSelf.fileName).jpg"
                     try? FileManager.default.removeItem(atPath: tempFilePath)
@@ -1264,7 +1264,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                     try? jpgData.write(to: tempFileUrl)
 
                     let activityController = UIActivityViewController(activityItems: [tempFileUrl], applicationActivities: [ShareToInstagramActivity(context: strongSelf.context)])
-                    activityController.completionWithItemsHandler = { [weak self] _, finished, _, _ in
+                    activityController.completionWithItemsHandler = { [weak self = self] _, finished, _, _ in
                         if let strongSelf = self {
                             if finished {
                                 strongSelf.completion?(strongSelf.selectedEmoticon)
@@ -1463,7 +1463,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                         tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                     )
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.cancelButtonPressed()
                 }
             )),
@@ -1489,7 +1489,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                 component: AnyComponentWithIdentity(id: "switchTheme", component: AnyComponent(
                     Rectangle(color: .clear)
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.switchThemePressed()
                 }
             )),
@@ -1544,7 +1544,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                 )),
                 isEnabled: true,
                 displaysProgress: false,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.doneButtonPressed()
                 }
             )),
@@ -1575,7 +1575,7 @@ private class ChatQrCodeScreenNode: ViewControllerTracingNode, ASScrollViewDeleg
                 )),
                 isEnabled: true,
                 displaysProgress: false,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.scanButtonPressed()
                 }
             )),
@@ -1812,7 +1812,7 @@ private class QrContentNode: ASDisplayNode, ContentNode {
         }
         
         let codeReadyPromise = ValuePromise<Bool>()
-        self.codeImageNode.setSignal(qrCode(string: codeLink, color: .black, backgroundColor: nil, icon: .cutout, ecl: "Q") |> beforeNext { [weak self] size, _ in
+        self.codeImageNode.setSignal(qrCode(string: codeLink, color: .black, backgroundColor: nil, icon: .cutout, ecl: "Q") |> beforeNext { [weak self = self] size, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1829,7 +1829,7 @@ private class QrContentNode: ASDisplayNode, ContentNode {
         })
         
         if temporary {
-            self.timer = Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            self.timer = Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.tick()
             }, queue: Queue.mainQueue())
             self.timer?.start()
@@ -1914,7 +1914,7 @@ private class QrContentNode: ASDisplayNode, ContentNode {
             self.tokenUpdated = true
         }
             
-        self.codeImageNode.setSignal(qrCode(string: token.url, color: .black, backgroundColor: nil, icon: .cutout, ecl: "Q") |> beforeNext { [weak self] size, _ in
+        self.codeImageNode.setSignal(qrCode(string: token.url, color: .black, backgroundColor: nil, icon: .cutout, ecl: "Q") |> beforeNext { [weak self = self] size, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1927,7 +1927,7 @@ private class QrContentNode: ASDisplayNode, ContentNode {
                 strongSelf.codeImageNode.alpha = 1.0
                 strongSelf.codeImageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
                 strongSelf.codePlaceholderNode.alpha = 0.0
-                strongSelf.codePlaceholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+                strongSelf.codePlaceholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                     self?.codePlaceholderNode.visibility = false
                 })
             }
@@ -2433,7 +2433,7 @@ private class MessageContentNode: ASDisplayNode, ContentNode {
                             let videoNode = UniversalVideoNode(context: self.context, postbox: self.context.account.postbox, audioSession: self.context.sharedContext.mediaManager.audioSession, manager: self.context.sharedContext.mediaManager.universalVideoManager, decoration: GalleryVideoDecoration(), content: videoContent, priority: .overlay, autoplay: !self.isStatic)
                             
                             self.videoStatusDisposable.set((videoNode.status
-                            |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                            |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                                 if let strongSelf = self {
                                     strongSelf.videoStatus = status
                                     if let (size, topInset, bottomInset) = strongSelf.validLayout {

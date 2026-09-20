@@ -70,7 +70,7 @@ final class PeerInfoBirthdayOverlay: ASDisplayNode {
             }
             return (effectFile, numberFiles)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] effectAndNumberFiles in
+        |> deliverOnMainQueue).start(next: { [weak self = self] effectAndNumberFiles in
             guard let self else {
                 return
             }
@@ -154,7 +154,7 @@ final class PeerInfoBirthdayOverlay: ASDisplayNode {
             riseAnimation.beginTime = CACurrentMediaTime() + 0.5
             riseAnimation.isRemovedOnCompletion = false
             riseAnimation.fillMode = .forwards
-            riseAnimation.completion = { [weak self] _ in
+            riseAnimation.completion = { [weak self = self] _ in
                 self?.removeFromSupernode()
             }
             animationNode.layer.add(riseAnimation, forKey: "position")

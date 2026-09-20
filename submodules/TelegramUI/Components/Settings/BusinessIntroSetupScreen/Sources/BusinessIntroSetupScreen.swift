@@ -180,7 +180,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                         source: result,
                         mode: .businessIntro,
                         transitionArguments: transitionView.flatMap { ($0, transitionRect, transitionImage) },
-                        completion: { [weak self] file, emoji, commit in
+                        completion: { [weak self = self] file, emoji, commit in
                             dismissImpl?()
                             
                             guard let self else {
@@ -285,14 +285,14 @@ final class BusinessIntroSetupScreenComponent: Component {
                     subject: .greetingStickers
                 )
                 self.stickerContentDisposable = (stickerContent
-                |> deliverOnMainQueue).start(next: { [weak self] stickerContent in
+                |> deliverOnMainQueue).start(next: { [weak self = self] stickerContent in
                     guard let self else {
                         return
                     }
                     self.stickerContent = stickerContent
                     
                     stickerContent.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                        performItemAction: { [weak self] _, item, _, _, _, _ in
+                        performItemAction: { [weak self = self] _, item, _, _, _, _ in
                             guard let self else {
                                 return
                             }
@@ -338,7 +338,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                         navigationController: {
                             return nil
                         },
-                        requestUpdate: { [weak self] transition in
+                        requestUpdate: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
@@ -346,7 +346,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                                 stickerSelectionControlView.internalRequestUpdate(transition: transition)
                             }
                         },
-                        updateSearchQuery: { [weak self] query in
+                        updateSearchQuery: { [weak self = self] query in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -543,7 +543,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                                     
                                     self.stickerSearchDisposable.set((signal
                                     |> delay(0.15, queue: .mainQueue())
-                                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                         guard let self else {
                                             return
                                         }
@@ -601,7 +601,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                                     
                                 var version = 0
                                 self.stickerSearchDisposable.set((resultSignal
-                                |> deliverOnMainQueue).start(next: { [weak self] result in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                     guard let self else {
                                         return
                                     }
@@ -645,7 +645,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                         updateScrollingToItemGroup: {
                         },
                         onScroll: {},
-                        loadMore: { [weak self] in
+                        loadMore: { [weak self = self] in
                             self?.stickerSearchContext?.loadMore()
                         },
                         chatPeerId: nil,
@@ -755,7 +755,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                 emptyLineHandling: .notAllowed,
                 updated: { _ in
                 },
-                returnKeyAction: { [weak self] in
+                returnKeyAction: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -787,7 +787,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                 emptyLineHandling: .notAllowed,
                 updated: { _ in
                 },
-                returnKeyAction: { [weak self] in
+                returnKeyAction: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -834,7 +834,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                 ], alignment: .left, spacing: 2.0)),
                 icon: stickerIcon,
                 accessory: .none,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -957,7 +957,7 @@ final class BusinessIntroSetupScreenComponent: Component {
                                 ))),
                             ], alignment: .center, spacing: 2.0, fillWidth: true)),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1176,14 +1176,14 @@ public final class BusinessIntroSetupScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessIntroSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessIntroSetupScreenComponent.View else {
                 return true
             }

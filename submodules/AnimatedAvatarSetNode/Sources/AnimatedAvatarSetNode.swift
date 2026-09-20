@@ -100,7 +100,7 @@ private final class ContentNode: ASDisplayNode {
                 self.updateImage(image: image, size: size, spacing: spacing)
 
                 let disposable = (signal
-                |> deliverOnMainQueue).startStrict(next: { [weak self] imageVersions in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] imageVersions in
                     guard let strongSelf = self else {
                         return
                     }
@@ -337,7 +337,7 @@ public final class AnimatedAvatarSetView: UIView {
                     self.updateImage(image: image, size: size, spacing: spacing)
 
                     let disposable = (signal
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] imageVersions in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] imageVersions in
                         guard let strongSelf = self else {
                             return
                         }

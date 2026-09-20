@@ -71,7 +71,7 @@ private final class PeerInfoScreenCommentItemNode: PeerInfoScreenItemNode {
         recognizer.tapActionAtPoint = { _ in
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }

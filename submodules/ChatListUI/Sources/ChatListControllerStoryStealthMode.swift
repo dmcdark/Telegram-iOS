@@ -16,7 +16,7 @@ extension ChatListControllerImpl {
             TelegramEngine.EngineData.Item.Configuration.StoryConfigurationState(),
             TelegramEngine.EngineData.Item.Configuration.App()
         )
-        |> deliverOnMainQueue).start(next: { [weak self] config, appConfig in
+        |> deliverOnMainQueue).start(next: { [weak self = self] config, appConfig in
             guard let self else {
                 return
             }
@@ -113,7 +113,7 @@ extension ChatListControllerImpl {
             TelegramEngine.EngineData.Item.Configuration.StoryConfigurationState(),
             TelegramEngine.EngineData.Item.Configuration.App()
         )
-        |> deliverOnMainQueue).start(next: { [weak self] config, appConfig in
+        |> deliverOnMainQueue).start(next: { [weak self = self] config, appConfig in
             guard let self else {
                 return
             }

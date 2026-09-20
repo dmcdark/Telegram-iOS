@@ -95,7 +95,7 @@ private final class InfoPageNode: ASDisplayNode {
     func asyncLayout() -> (_ theme: PresentationTheme, _ strings: PresentationStrings, _ width: CGFloat, _ index: Int) -> (CGFloat, () -> Void) {
         let makeTitleLayout = TextNode.asyncLayout(self.titleNode)
         let makeTextLayout = TextNode.asyncLayout(self.textNode)
-        return { [weak self] theme, strings, width, index in
+        return { [weak self = self] theme, strings, width, index in
             let title: String
             let text: String
             if index == 0 {
@@ -219,7 +219,7 @@ class ChatListArchiveInfoItemNode: ListViewItemNode, ASScrollViewDelegate {
             
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: maxHeight), insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

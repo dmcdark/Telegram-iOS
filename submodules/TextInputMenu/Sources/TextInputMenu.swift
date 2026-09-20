@@ -57,7 +57,7 @@ public final class TextInputMenu {
     public init(hasSpoilers: Bool = false, hasQuotes: Bool = false) {
         self.hasSpoilers = hasSpoilers
         self.hasQuotes = hasQuotes
-        self.observer = NotificationCenter.default.addObserver(forName: UIMenuController.didHideMenuNotification, object: nil, queue: nil, using: { [weak self] _ in
+        self.observer = NotificationCenter.default.addObserver(forName: UIMenuController.didHideMenuNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             self?.back()
         })
     }

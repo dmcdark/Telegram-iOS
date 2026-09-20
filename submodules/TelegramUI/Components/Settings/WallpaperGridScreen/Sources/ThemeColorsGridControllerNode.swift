@@ -134,7 +134,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
         
         let previousEntries = Atomic<[ThemeColorsGridControllerEntry]?>(value: nil)
                 
-        let interaction = ThemeColorsGridControllerInteraction(openWallpaper: { [weak self] wallpaper in
+        let interaction = ThemeColorsGridControllerInteraction(openWallpaper: { [weak self = self] wallpaper in
             if let strongSelf = self {
                 let entries = previousEntries.with { $0 }
                 if let entries = entries, !entries.isEmpty {
@@ -159,7 +159,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
                     }
                     
                     controller.navigationPresentation = .modal
-                    controller.apply = { [weak self] wallpaper, _, _, _, _, forBoth in
+                    controller.apply = { [weak self = self] wallpaper, _, _, _, _, forBoth in
                         if let strongSelf = self, let mode = strongSelf.controller?.mode, case let .peer(peer) = mode, case let .wallpaper(wallpaperValue, _) = wallpaper {
                             let _ = (strongSelf.context.engine.themes.setChatWallpaper(peerId: peer.id, wallpaper: wallpaperValue, forBoth: forBoth)
                             |> deliverOnMainQueue).start(completed: {
@@ -192,7 +192,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
             let previous = previousEntries.swap(entries)
             return (preparedThemeColorsGridEntryTransition(context: context, from: previous ?? [], to: entries, interaction: interaction), previous == nil)
         }
-        self.disposable = (transition |> deliverOnMainQueue).start(next: { [weak self] (transition, _) in
+        self.disposable = (transition |> deliverOnMainQueue).start(next: { [weak self = self] (transition, _) in
             if let strongSelf = self {
                 strongSelf.enqueueTransition(transition)
             }
@@ -211,7 +211,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
         tapRecognizer.tapActionAtPoint = { _ in
             return .waitForSingleTap
         }
-        tapRecognizer.highlight = { [weak self] point in
+        tapRecognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 var highlightedNode: ListViewItemNode?
                 if let point = point {
@@ -229,7 +229,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
         }
         self.gridNode.view.addGestureRecognizer(tapRecognizer)
 
-        self.gridNode.presentationLayoutUpdated = { [weak self] gridLayout, transition in
+        self.gridNode.presentationLayoutUpdated = { [weak self = self] gridLayout, transition in
             if let strongSelf = self, let (layout, _) = strongSelf.validLayout {
                 let sideInset = max(16.0, floor((layout.size.width - 674.0) / 2.0))
                 let maskSideInset: CGFloat = layout.size.width >= 320.0 ? sideInset : 0.0
@@ -287,7 +287,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
         self.topBackgroundNode.backgroundColor = presentationData.theme.list.blocksBackgroundColor
         self.maskNode.image = PresentationResourcesItemList.cornersImage(presentationData.theme, top: true, bottom: true, glass: true)
         
-        self.customColorItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.WallpaperColors_SetCustomColor, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self] in
+        self.customColorItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.WallpaperColors_SetCustomColor, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self = self] in
             self?.presentColorPicker()
         })
         
@@ -306,7 +306,7 @@ final class ThemeColorsGridControllerNode: ASDisplayNode {
     private func dequeueTransitions() {
         while !self.queuedTransitions.isEmpty {
             let transition = self.queuedTransitions.removeFirst()
-            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: .immediate, stationaryItems: transition.stationaryItems, updateFirstIndexInSectionOffset: transition.updateFirstIndexInSectionOffset), completion: { [weak self] _ in
+            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: .immediate, stationaryItems: transition.stationaryItems, updateFirstIndexInSectionOffset: transition.updateFirstIndexInSectionOffset), completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.ready.set(true)
                 }

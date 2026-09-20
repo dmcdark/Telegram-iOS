@@ -45,7 +45,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
     override func didLoad() {
         super.didLoad()
         
-        (self.view as! NotificationContainerControllerNodeView).hitTestImpl = { [weak self] point, event in
+        (self.view as! NotificationContainerControllerNodeView).hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
     }
@@ -100,7 +100,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
         let itemNode = item.node(compact: useCompactLayout)
         let containerNode = NotificationItemContainerNode(theme: self.presentationData.theme, contentNode: itemNode)
         containerNode.item = item
-        containerNode.dismissed = { [weak self] item in
+        containerNode.dismissed = { [weak self = self] item in
             if let strongSelf = self {
                 if let (topItem, topItemNode) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                     topItemNode.removeFromSupernode()
@@ -112,7 +112,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
                 }
             }
         }
-        containerNode.cancelTimeout = { [weak self] item in
+        containerNode.cancelTimeout = { [weak self = self] item in
             if let strongSelf = self {
                 if let (topItem, _) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                     strongSelf.timeoutTimer?.invalidate()
@@ -120,7 +120,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
                 }
             }
         }
-        containerNode.resumeTimeout = { [weak self] item in
+        containerNode.resumeTimeout = { [weak self = self] item in
             if let strongSelf = self {
                 if let (topItem, _) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                     strongSelf.resetTimeoutTimer()
@@ -167,7 +167,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
             let itemNode = item.node(compact: useCompactLayout)
             let containerNode = NotificationItemContainerNode(theme: self.presentationData.theme, contentNode: itemNode)
             containerNode.item = item
-            containerNode.dismissed = { [weak self] item in
+            containerNode.dismissed = { [weak self = self] item in
                 if let strongSelf = self {
                     if let (topItem, topItemNode) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                         topItemNode.removeFromSupernode()
@@ -179,7 +179,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
                     }
                 }
             }
-            containerNode.cancelTimeout = { [weak self] item in
+            containerNode.cancelTimeout = { [weak self = self] item in
                 if let strongSelf = self {
                     if let (topItem, _) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                         strongSelf.timeoutTimer?.invalidate()
@@ -187,7 +187,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
                     }
                 }
             }
-            containerNode.resumeTimeout = { [weak self] item in
+            containerNode.resumeTimeout = { [weak self = self] item in
                 if let strongSelf = self {
                     if let (topItem, _) = strongSelf.topItemAndNode, topItem.groupingKey != nil && topItem.groupingKey == item.groupingKey {
                         strongSelf.resetTimeoutTimer()
@@ -230,7 +230,7 @@ final class NotificationContainerControllerNode: ASDisplayNode {
         #else
             timeout = 5.0
         #endif
-        let timeoutTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: false, completion: { [weak self] in
+        let timeoutTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: false, completion: { [weak self = self] in
             if let strongSelf = self {
                 if let (_, topItemNode) = strongSelf.topItemAndNode {
                     strongSelf.topItemAndNode = nil

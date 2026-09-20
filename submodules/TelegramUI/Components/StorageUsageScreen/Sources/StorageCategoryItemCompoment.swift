@@ -104,7 +104,7 @@ final class StorageCategoryItemComponent: Component {
             
             self.addSubview(self.checkButtonArea)
             
-            self.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }
@@ -358,7 +358,7 @@ final class StorageCategoryItemComponent: Component {
                             isExpandedLevel: true,
                             isExpanded: false,
                             hasNext: i != component.category.subcategories.count - 1,
-                            action: { [weak self] key, _ in
+                            action: { [weak self = self] key, _ in
                                 guard let self else {
                                     return
                                 }

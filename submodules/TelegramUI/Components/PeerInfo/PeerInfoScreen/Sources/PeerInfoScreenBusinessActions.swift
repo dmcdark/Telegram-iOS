@@ -26,7 +26,7 @@ extension PeerInfoScreenNode {
             return
         }
         
-        let copyAction = { [weak self] in
+        let copyAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -38,7 +38,7 @@ extension PeerInfoScreenNode {
         var items: [ContextMenuItem] = []
         
         if self.isMyProfile {
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self else {
                         return
@@ -56,7 +56,7 @@ extension PeerInfoScreenNode {
         })))
         
         if self.isMyProfile {
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, _
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, _
                 in
                 guard let self else {
                     return
@@ -71,7 +71,7 @@ extension PeerInfoScreenNode {
                     icon: { _ in nil },
                     action: noAction
                 )))
-                subItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursRemoveConfirmation_Action, textColor: .destructive, icon: { _ in nil }, action: { [weak self] c, _ in
+                subItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_HoursRemoveConfirmation_Action, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return
@@ -106,7 +106,7 @@ extension PeerInfoScreenNode {
             return
         }
         
-        let copyAction = { [weak self] in
+        let copyAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -118,7 +118,7 @@ extension PeerInfoScreenNode {
         var items: [ContextMenuItem] = []
         
         if businessLocation.coordinates != nil {
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionOpen, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LocationSmall"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionOpen, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LocationSmall"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: {
                     guard let self else {
                         return
@@ -137,7 +137,7 @@ extension PeerInfoScreenNode {
         }
         
         if self.isMyProfile {
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self else {
                         return
@@ -147,7 +147,7 @@ extension PeerInfoScreenNode {
                 }
             })))
             
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, _ in
                 guard let self else {
                     return
                 }
@@ -161,7 +161,7 @@ extension PeerInfoScreenNode {
                     icon: { _ in nil },
                     action: noAction
                 )))
-                subItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationRemoveConfirmation_Action, textColor: .destructive, icon: { _ in nil }, action: { [weak self] c, _ in
+                subItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_LocationRemoveConfirmation_Action, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return

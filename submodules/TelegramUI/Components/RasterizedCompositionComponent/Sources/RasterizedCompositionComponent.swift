@@ -120,10 +120,10 @@ open class RasterizedCompositionLayer: CALayer {
             self.sublayerReferences.append(SublayerReference(layer: layer))
         }
         if let layer = layer as? RasterizedCompositionLayer {
-            layer.onUpdatedIsAnimating = { [weak self] in
+            layer.onUpdatedIsAnimating = { [weak self = self] in
                 self?.onUpdatedIsAnimating?()
             }
-            layer.onContentsUpdated = { [weak self] in
+            layer.onContentsUpdated = { [weak self = self] in
                 self?.onContentsUpdated?()
             }
         } else {
@@ -179,7 +179,7 @@ open class RasterizedCompositionLayer: CALayer {
     override public func add(_ anim: CAAnimation, forKey key: String?) {
         let anim = anim.copy() as! CAAnimation
         let completion = anim.completion
-        anim.completion = { [weak self] flag in
+        anim.completion = { [weak self = self] flag in
             completion?(flag)
             
             guard let self else {
@@ -275,7 +275,7 @@ public final class RasterizedCompositionMonochromeLayer: SimpleLayer {
         
         self.addSublayer(self.rasterizedLayer)
         
-        self.contentsLayer.onContentsUpdated = { [weak self] in
+        self.contentsLayer.onContentsUpdated = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -284,7 +284,7 @@ public final class RasterizedCompositionMonochromeLayer: SimpleLayer {
             }
         }
         
-        self.contentsLayer.onUpdatedIsAnimating = { [weak self] in
+        self.contentsLayer.onUpdatedIsAnimating = { [weak self = self] in
             guard let self else {
                 return
             }

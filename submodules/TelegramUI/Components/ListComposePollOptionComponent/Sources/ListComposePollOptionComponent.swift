@@ -279,7 +279,7 @@ public final class ListComposePollOptionComponent: Component {
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let animateScale = true
                     
@@ -299,7 +299,7 @@ public final class ListComposePollOptionComponent: Component {
                             let transition = ComponentTransition(animation: .none)
                             transition.setScale(layer: self.layer, scale: 1.0)
                             
-                            self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                            self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -524,7 +524,7 @@ public final class ListComposePollOptionComponent: Component {
         public override init(frame: CGRect) {
             super.init(frame: CGRect())
             
-            self.imageButton.highligthedChanged = { [weak self] highlighted in
+            self.imageButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -819,13 +819,13 @@ public final class ListComposePollOptionComponent: Component {
                     returnKeyType: component.returnKeyType,
                     lockedFormatAction: {
                     },
-                    present: { [weak self] c in
+                    present: { [weak self = self] c in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.present?(c)
                     },
-                    paste: { [weak self] data in
+                    paste: { [weak self = self] data in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -833,13 +833,13 @@ public final class ListComposePollOptionComponent: Component {
                             paste(data)
                         }
                     },
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.returnKeyAction?()
                     },
-                    backspaceKeyAction: { [weak self] in
+                    backspaceKeyAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -958,7 +958,7 @@ public final class ListComposePollOptionComponent: Component {
                     self.checkView = checkView
                     self.addSubview(checkView)
                     
-                    checkView.action = { [weak self] in
+                    checkView.action = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1008,7 +1008,7 @@ public final class ListComposePollOptionComponent: Component {
                             tintColor: component.theme.chat.inputPanel.inputControlColor.blitOver(component.theme.list.itemBlocksBackgroundColor, alpha: 1.0)
                         )),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1388,7 +1388,7 @@ public final class ListComposePollOptionComponent: Component {
                             size: modeSelectorSize
                         )),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1448,7 +1448,7 @@ public final class ListComposePollOptionComponent: Component {
                 } else {
                     deleteRevealViewTransition = .immediate
                     deleteRevealView = DeleteRevealView(title: component.strings.Common_Delete, color: component.theme.list.itemDisclosureActions.destructive.fillColor)
-                    deleteRevealView.tapped = { [weak self] action in
+                    deleteRevealView.tapped = { [weak self = self] action in
                         guard let self else {
                             return
                         }

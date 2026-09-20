@@ -130,7 +130,7 @@ private final class SuggestedPostApproveAlertContentNode: AlertContentNode {
             self.addSubnode(actionNode)
             
             let index = i
-            actionNode.highlightedUpdated = { [weak self] highlighted in
+            actionNode.highlightedUpdated = { [weak self = self] highlighted in
                 if highlighted {
                     self?.highlightedItemIndex = index
                 }
@@ -332,7 +332,7 @@ private final class SuggestedPostAlertImpl: AlertController {
         
         super.init(theme: theme, contentNode: contentNode, allowInputInset: allowInputInset)
         
-        self.willDismiss = { [weak self] in
+        self.willDismiss = { [weak self = self] in
             guard let self else {
                 return
             }

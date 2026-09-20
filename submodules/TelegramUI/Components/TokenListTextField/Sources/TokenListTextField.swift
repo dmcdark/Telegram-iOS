@@ -190,7 +190,7 @@ public final class TokenListTextField: Component {
                 self.tokenListNode = tokenListNode
                 self.addSubnode(tokenListNode)
                 
-                tokenListNode.isFirstResponderChanged = { [weak self] in
+                tokenListNode.isFirstResponderChanged = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -198,7 +198,7 @@ public final class TokenListTextField: Component {
                     self.componentState?.updated(transition: ComponentTransition(animation: .curve(duration: 0.35, curve: .spring)))
                 }
                 
-                tokenListNode.textUpdated = { [weak self] text in
+                tokenListNode.textUpdated = { [weak self = self] text in
                     guard let self else {
                         return
                     }
@@ -206,14 +206,14 @@ public final class TokenListTextField: Component {
                     self.componentState?.updated(transition: .immediate)
                 }
                 
-                tokenListNode.textReturned = { [weak self] in
+                tokenListNode.textReturned = { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.tokenListNode?.view.endEditing(true)
                 }
                 
-                tokenListNode.deleteToken = { [weak self] id in
+                tokenListNode.deleteToken = { [weak self = self] id in
                     guard let self, let component = self.component else {
                         return
                     }

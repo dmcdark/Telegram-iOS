@@ -103,7 +103,7 @@ public final class ViewController: UIViewController {
                 
                 self.fpsCount += 1
                 
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0 / 30.0, execute: { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0 / 30.0, execute: { [weak self = self] in
                     self?.updateImage()
                 })
                 /*DispatchQueue.main.async {

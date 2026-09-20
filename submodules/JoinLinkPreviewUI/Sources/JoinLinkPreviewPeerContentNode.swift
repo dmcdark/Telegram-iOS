@@ -212,7 +212,7 @@ final class JoinLinkPreviewPeerContentNode: ASDisplayNode, ShareContentContainer
             self.addSubnode(self.descriptionNode)
         }
         
-        self.actionButtonNode.pressed = { [weak self] in
+        self.actionButtonNode.pressed = { [weak self = self] in
             self?.join?()
             self?.actionButtonNode.transitionToProgress()
         }

@@ -204,7 +204,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
         }
         
         let previousEntriesHolder = Atomic<([LanguageListEntry], PresentationTheme, PresentationStrings)?>(value: nil)
-        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get(), applyingCode).start(next: { [weak self] items, presentationData, applyingCode in
+        self.searchDisposable.set(combineLatest(queue: .mainQueue(), foundItems, self.presentationDataPromise.get(), applyingCode).start(next: { [weak self = self] items, presentationData, applyingCode in
             guard let strongSelf = self else {
                 return
             }
@@ -220,7 +220,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -234,7 +234,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
                 }
             })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -280,7 +280,7 @@ private final class LocalizationListSearchContainerNode: SearchDisplayController
             options.insert(.PreferSynchronousDrawing)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
                 self?.dimNode.isHidden = isSearching
             })
@@ -424,7 +424,7 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
                     return nil
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] info in
+            |> deliverOnMainQueue).start(next: { [weak self = self] info in
                 if revealedCodeValue == id {
                     revealedCodeValue = nil
                     revealedCode.set(.single(nil))
@@ -472,7 +472,7 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
             self.applyingCode.get(),
             revealedCode.get(),
             self.isEditing.get()
-        ).start(next: { [weak self] localizationListState, peer, sharedData, presentationData, applyingCode, revealedCode, isEditing in
+        ).start(next: { [weak self = self] localizationListState, peer, sharedData, presentationData, applyingCode, revealedCode, isEditing in
             guard let strongSelf = self else {
                 return
             }
@@ -616,11 +616,11 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
                     }
                     return updated
                 }).start()
-            }, openDoNotTranslate: { [weak self] in
+            }, openDoNotTranslate: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.push(translationSettingsController(context: strongSelf.context))
                 }
-            }, selectLocalization: { [weak self] info in self?.selectLocalization(info) }, setItemWithRevealedOptions: setItemWithRevealedOptions, removeItem: removeItem, showPremiumInfo: {
+            }, selectLocalization: { [weak self = self] info in self?.selectLocalization(info) }, setItemWithRevealedOptions: setItemWithRevealedOptions, removeItem: removeItem, showPremiumInfo: {
                 var replaceImpl: ((ViewController) -> Void)?
                 let controller = PremiumDemoScreen(context: context, subject: .translation, action: {
                     let controller = PremiumIntroScreen(context: context, source: .translation)
@@ -635,7 +635,7 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
         })
         self.updatedDisposable = context.engine.localization.synchronizedLocalizationListState().start()
         
-        self.listNode.itemNodeHitTest = { [weak self] point in
+        self.listNode.itemNodeHitTest = { [weak self = self] point in
             if let strongSelf = self {
                 return point.x > strongSelf.leftOverlayNode.frame.maxX && point.x < strongSelf.rightOverlayNode.frame.minX
             } else {
@@ -737,7 +737,7 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
             } else if transition.animated {
                 options.insert(.AnimateInsertion)
             }
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if !strongSelf.didSetReady {
                         strongSelf.didSetReady = true
@@ -759,13 +759,13 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
     }
     
     private func selectLocalization(_ info: LocalizationInfo) -> Void {
-        let applyImpl: () -> Void = { [weak self] in
+        let applyImpl: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.applyingCode.set(.single(info.languageCode))
             strongSelf.applyDisposable.set((strongSelf.context.engine.localization.downloadAndApplyLocalization(accountManager: strongSelf.context.sharedContext.accountManager, languageCode: info.languageCode)
-                |> deliverOnMainQueue).start(completed: { [weak self] in
+                |> deliverOnMainQueue).start(completed: { [weak self = self] in
                     self?.applyingCode.set(.single(nil))
                 
                     self?.context.engine.messages.refreshAttachMenuBots()
@@ -787,12 +787,12 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
                 applyImpl()
             }))
         }
-        items.append(ActionSheetButtonItem(title: presentationData.strings.Conversation_ContextMenuShare, action: { [weak self] in
+        items.append(ActionSheetButtonItem(title: presentationData.strings.Conversation_ContextMenuShare, action: { [weak self = self] in
             dismissAction()
             guard let strongSelf = self else {
                 return
             }
-            let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .url("https://t.me/setlanguage/\(info.languageCode)"), actionCompleted: { [weak self] in
+            let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .url("https://t.me/setlanguage/\(info.languageCode)"), actionCompleted: { [weak self = self] in
                 if let strongSelf = self {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     strongSelf.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
@@ -817,7 +817,7 @@ final class LocalizationListControllerNode: ViewControllerTracingNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: LocalizationListSearchContainerNode(context: self.context, listState: self.currentListState ?? LocalizationListState.defaultSettings, selectLocalization: { [weak self] info in self?.selectLocalization(info) }, applyingCode: self.applyingCode.get()), inline: true, cancel: { [weak self] in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: LocalizationListSearchContainerNode(context: self.context, listState: self.currentListState ?? LocalizationListState.defaultSettings, selectLocalization: { [weak self = self] info in self?.selectLocalization(info) }, applyingCode: self.applyingCode.get()), inline: true, cancel: { [weak self = self] in
             self?.requestDeactivateSearch()
         }, fieldStyle: placeholderNode.fieldStyle)
         

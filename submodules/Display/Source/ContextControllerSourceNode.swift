@@ -50,7 +50,7 @@ open class ContextControllerSourceNode: ContextReferenceContentNode {
         contextGesture.beginDelay = self.beginDelay
         contextGesture.isEnabled = self.isGestureEnabled
         
-        contextGesture.shouldBegin = { [weak self] point in
+        contextGesture.shouldBegin = { [weak self = self] point in
             guard let self, !self.bounds.width.isZero else {
                 return false
             }
@@ -73,7 +73,7 @@ open class ContextControllerSourceNode: ContextReferenceContentNode {
             }
         }
         
-        contextGesture.activationProgress = { [weak self] progress, update in
+        contextGesture.activationProgress = { [weak self = self] progress, update in
             guard let strongSelf = self, !strongSelf.bounds.width.isZero else {
                 return
             }
@@ -135,7 +135,7 @@ open class ContextControllerSourceNode: ContextReferenceContentNode {
                 }
             }
         }
-        contextGesture.activated = { [weak self] gesture, location in
+        contextGesture.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self else {
                 gesture.cancel()
                 return
@@ -192,14 +192,14 @@ open class ContextControllerSourceView: UIView {
         contextGesture.beginDelay = self.beginDelay
         contextGesture.isEnabled = self.isGestureEnabled
         
-        contextGesture.shouldBegin = { [weak self] point in
+        contextGesture.shouldBegin = { [weak self = self] point in
             guard let strongSelf = self, !strongSelf.bounds.width.isZero else {
                 return false
             }
             return strongSelf.shouldBegin?(point) ?? true
         }
         
-        contextGesture.activationProgress = { [weak self] progress, update in
+        contextGesture.activationProgress = { [weak self = self] progress, update in
             guard let strongSelf = self, !strongSelf.bounds.width.isZero else {
                 return
             }
@@ -291,7 +291,7 @@ open class ContextControllerSourceView: UIView {
                 }
             }
         }
-        contextGesture.activated = { [weak self] gesture, location in
+        contextGesture.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self else {
                 gesture.cancel()
                 return

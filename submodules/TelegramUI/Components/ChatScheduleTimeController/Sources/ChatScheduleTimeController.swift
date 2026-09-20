@@ -56,7 +56,7 @@ public final class ChatScheduleTimeController: ViewController {
         self.blocksBackgroundWhenInOverlay = true
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
                 strongSelf.controllerNode.updatePresentationData(presentationData)
@@ -76,7 +76,7 @@ public final class ChatScheduleTimeController: ViewController {
     
     override public func loadDisplayNode() {
         self.displayNode = ChatScheduleTimeControllerNode(context: self.context, presentationData: self.presentationData, mode: self.mode, style: self.style, currentTime: self.currentTime, minimalTime: self.minimalTime, dismissByTapOutside: self.dismissByTapOutside)
-        self.controllerNode.completion = { [weak self] time in
+        self.controllerNode.completion = { [weak self = self] time in
             guard let strongSelf = self else {
                 return
             }
@@ -87,10 +87,10 @@ public final class ChatScheduleTimeController: ViewController {
             }
             strongSelf.dismiss()
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
     }

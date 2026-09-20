@@ -146,7 +146,7 @@ public final class SelectablePeerNode: ASDisplayNode {
         self.contextContainer.addSubnode(self.textNode)
         self.contextContainer.addSubnode(self.onlineNode)
         
-        self.contextContainer.activated = { [weak self] gesture, _ in
+        self.contextContainer.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let contextAction = strongSelf.contextAction else {
                 gesture.cancel()
                 return

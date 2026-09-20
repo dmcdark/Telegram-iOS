@@ -164,12 +164,12 @@ private final class VoiceChatVolumeContextItemNode: ASDisplayNode, ContextMenuCu
                 gestureRecognizer.setTranslation(CGPoint(), in: gestureRecognizer.view)
                 
                 if self.value == 2.0 && previousValue != 2.0 {
-                    self.backgroundIconNode.layer.animateScale(from: 1.0, to: 1.1, duration: 0.16, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.backgroundIconNode.layer.animateScale(from: 1.0, to: 1.1, duration: 0.16, removeOnCompletion: false, completion: { [weak self = self] _ in
                         if let strongSelf = self {
                             strongSelf.backgroundIconNode.layer.animateScale(from: 1.1, to: 1.0, duration: 0.16)
                         }
                     })
-                    self.foregroundIconNode.layer.animateScale(from: 1.0, to: 1.1, duration: 0.16, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.foregroundIconNode.layer.animateScale(from: 1.0, to: 1.1, duration: 0.16, removeOnCompletion: false, completion: { [weak self = self] _ in
                         if let strongSelf = self {
                             strongSelf.foregroundIconNode.layer.animateScale(from: 1.1, to: 1.0, duration: 0.16)
                         }

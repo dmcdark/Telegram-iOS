@@ -72,7 +72,7 @@ public final class ChatAvatarNavigationNode: ASDisplayNode {
         self.addSubnode(self.containerNode)
         self.containerNode.addSubnode(self.avatarNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -226,7 +226,7 @@ public final class ChatAvatarNavigationNode: ASDisplayNode {
         
         if let peer = peer, peer.isPremium {
             self.cachedDataDisposable.set((context.account.postbox.peerView(id: peer.id)
-            |> deliverOnMainQueue).start(next: { [weak self] peerView in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peerView in
                 guard let strongSelf = self else {
                     return
                 }
@@ -265,14 +265,14 @@ public final class ChatAvatarNavigationNode: ASDisplayNode {
                         
                         if strongSelf.hierarchyTrackingLayer == nil {
                             let hierarchyTrackingLayer = HierarchyTrackingLayer()
-                            hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+                            hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
                                 strongSelf.trackingIsInHierarchy = true
                             }
                             
-                            hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+                            hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }

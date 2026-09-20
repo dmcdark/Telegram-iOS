@@ -52,16 +52,16 @@ public final class LegacyJoinLinkPreviewController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = JoinLinkPreviewControllerNode(context: self.context, requestLayout: { [weak self] transition in
+        self.displayNode = JoinLinkPreviewControllerNode(context: self.context, requestLayout: { [weak self = self] transition in
             self?.requestLayout(transition: transition)
         })
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
-        self.controllerNode.join = { [weak self] in
+        self.controllerNode.join = { [weak self = self] in
             self?.join()
         }
         self.displayNodeDidLoad()
@@ -74,7 +74,7 @@ public final class LegacyJoinLinkPreviewController: ViewController {
         }
         
         self.disposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 strongSelf.resolvedState = result
                 switch result {
@@ -101,7 +101,7 @@ public final class LegacyJoinLinkPreviewController: ViewController {
                         }
                 }
             }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 switch error {
                     case .flood:
@@ -139,7 +139,7 @@ public final class LegacyJoinLinkPreviewController: ViewController {
     }
     
     private func join() {
-        self.disposable.set((self.context.engine.peers.joinChatInteractively(with: self.link) |> deliverOnMainQueue).start(next: { [weak self] result in
+        self.disposable.set((self.context.engine.peers.joinChatInteractively(with: self.link) |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 switch result {
                 case let .joined(peer):
@@ -161,7 +161,7 @@ public final class LegacyJoinLinkPreviewController: ViewController {
                     strongSelf.context.sharedContext.openJoinChatWebView(context: strongSelf.context, parentController: strongSelf, updatedPresentationData: nil, webView: webView, chatTitle: chatTitle)
                 }
             }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 switch error {
                     case .tooMuchJoined:

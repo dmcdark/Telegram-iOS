@@ -135,7 +135,7 @@ final class AvatarPreviewComponent: Component {
                         let animationNode = DefaultAnimatedStickerNodeImpl()
                         animationNode.autoplay = false
                         self.animationNode = animationNode
-                        animationNode.started = { [weak self] in
+                        animationNode.started = { [weak self = self] in
                             self?.imageNode.isHidden = true
                         }
                         self.addSubnode(animationNode)

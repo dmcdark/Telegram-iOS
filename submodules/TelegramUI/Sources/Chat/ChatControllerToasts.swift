@@ -26,7 +26,7 @@ extension ChatControllerImpl {
             TelegramEngine.EngineData.Item.Messages.Message(id: messageId),
             TelegramEngine.EngineData.Item.Peer.Peer(id: messageId.peerId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] message, peer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] message, peer in
             guard let self, let message, let peer else {
                 return
             }
@@ -100,7 +100,7 @@ extension ChatControllerImpl {
         let _ = (self.context.engine.data.get(
             EngineDataList(ids.map(TelegramEngine.EngineData.Item.Messages.Message.init(id:)))
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] messages in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] messages in
             guard let self else {
                 return
             }
@@ -158,7 +158,7 @@ extension ChatControllerImpl {
                         title: nil,
                         text: self.presentationData.strings.Chat_ToastVideoPublished_Title,
                         undoText: self.presentationData.strings.Chat_ToastVideoPublished_Action,
-                        customAction: { [weak self] in
+                        customAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }

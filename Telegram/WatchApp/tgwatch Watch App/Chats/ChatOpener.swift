@@ -40,7 +40,7 @@ final class ChatOpener {
         // Owned task: runs to completion regardless of the race below. Dropping a
         // Task handle does NOT cancel it, so the timeout-loser keeps loading.
         let warmTask = Task { await store.warm() }
-        Task { [weak self] in
+        Task { [weak self = self] in
             await Self.waitForWarmOrTimeout(store: store, timeoutNs: timeoutNs)
             guard let self else { return }
             self.target = OpenChatTarget(row: row, store: store)

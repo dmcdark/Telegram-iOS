@@ -412,7 +412,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                         peerIds.map(TelegramEngine.EngineData.Item.Peer.IsContact.init(id:))
                     )
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] peerMap, isContactMap in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peerMap, isContactMap in
                     guard let self else {
                         return
                     }
@@ -516,7 +516,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             strings.Wallpaper_Set
                         }
                     ),
-                    completion: { [weak self] value in
+                    completion: { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -559,7 +559,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             strings.Wallpaper_Set
                         }
                     ),
-                    completion: { [weak self] value in
+                    completion: { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -672,7 +672,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                 self.currentShortcut = component.initialData.shortcutMessageList.items.first(where: { $0.shortcut == shortcutName })
                 
                 self.currentShortcutDisposable = (component.context.engine.accountData.shortcutMessageList(onlyRemote: false)
-                |> deliverOnMainQueue).start(next: { [weak self] shortcutMessageList in
+                |> deliverOnMainQueue).start(next: { [weak self = self] shortcutMessageList in
                     guard let self else {
                         return
                     }
@@ -771,7 +771,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -806,7 +806,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                         maximumNumberOfLines: 1
                     ))),
                 ], alignment: .left, spacing: 2.0)),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOn, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOn, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -850,7 +850,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                         accountPeer: accountPeer,
                         message: currentShortcut.topMessage,
                         count: currentShortcut.totalCount,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -877,7 +877,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                         tintColor: environment.theme.list.itemAccentColor
                     ))), false),
                     accessory: nil,
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -956,7 +956,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             contentMode: .center
                         ))), false),
                         accessory: nil,
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1041,7 +1041,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                 effectAlignment: .center,
                                 minSize: nil,
                                 contentInsets: UIEdgeInsets(top: 7.0, left: 8.0, bottom: 7.0, right: 8.0),
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1058,7 +1058,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                 effectAlignment: .center,
                                 minSize: nil,
                                 contentInsets: UIEdgeInsets(top: 7.0, left: 8.0, bottom: 7.0, right: 8.0),
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1095,7 +1095,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                         ], alignment: .left, spacing: 2.0)),
                         icon: icon,
                         accessory: accessory,
-                        action: itemDate != nil ? nil : { [weak self] _ in
+                        action: itemDate != nil ? nil : { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1171,7 +1171,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                 accessory: .toggle(ListActionItemComponent.Toggle(
                                     style: .regular,
                                     isOn: self.sendWhenOffline,
-                                    action: { [weak self] value in
+                                    action: { [weak self = self] value in
                                         guard let self else {
                                             return
                                         }
@@ -1233,7 +1233,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                 contentMode: .center
                             ))), false),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1264,7 +1264,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                 contentMode: .center
                             ))), false),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1312,7 +1312,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                     tintColor: environment.theme.list.itemAccentColor
                 ))), false),
                 accessory: nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -1366,7 +1366,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             id: AnyHashable(0),
                             title: environment.strings.Common_Delete,
                             color: .destructive,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1398,7 +1398,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                             id: AnyHashable(0),
                             title: environment.strings.Common_Delete,
                             color: .destructive,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1499,7 +1499,7 @@ final class AutomaticBusinessMessageSetupScreenComponent: Component {
                                     markPositions: true,
                                     selectedIndex: selectedInactivityIndex,
                                     title: nil,
-                                    selectedIndexUpdated: { [weak self] index in
+                                    selectedIndexUpdated: { [weak self = self] index in
                                         guard let self else {
                                             return
                                         }
@@ -1622,14 +1622,14 @@ public final class AutomaticBusinessMessageSetupScreen: ViewControllerComponentC
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? AutomaticBusinessMessageSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? AutomaticBusinessMessageSetupScreenComponent.View else {
                 return true
             }

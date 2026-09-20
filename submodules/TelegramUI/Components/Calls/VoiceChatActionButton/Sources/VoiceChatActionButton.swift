@@ -152,7 +152,7 @@ public final class VoiceChatActionButton: HighlightTrackingButtonNode {
         
         self.containerNode.addSubnode(self.buttonTitleLabel)
         
-        self.highligthedChanged = { [weak self] pressing in
+        self.highligthedChanged = { [weak self = self] pressing in
             if let strongSelf = self {
                 guard let (_, _, state, _, small, _, _, snap) = strongSelf.currentParams else {
                     return
@@ -187,11 +187,11 @@ public final class VoiceChatActionButton: HighlightTrackingButtonNode {
             }
         }
         
-        self.backgroundNode.updatedActive = { [weak self] active in
+        self.backgroundNode.updatedActive = { [weak self = self] active in
             self?.activePromise.set(active)
         }
         
-        self.backgroundNode.updatedColors = { [weak self] outerColor, activeColor in
+        self.backgroundNode.updatedColors = { [weak self = self] outerColor, activeColor in
             self?.outerColorPromise.set(.single((outerColor, activeColor)))
         }
     }
@@ -404,7 +404,7 @@ public final class VoiceChatActionButton: HighlightTrackingButtonNode {
         
         if case .active = state, let previousState = previousState, case .connecting = previousState, animated {
             self.activeDisposable.set((self.activePromise.get()
-            |> deliverOnMainQueue).start(next: { [weak self] active in
+            |> deliverOnMainQueue).start(next: { [weak self = self] active in
                 if active {
                     self?.activeDisposable.set(nil)
                     self?.applyParams(animated: true)

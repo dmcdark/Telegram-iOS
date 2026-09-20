@@ -146,15 +146,15 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
         self.addSubnode(self.downButton)
         self.addSubnode(self.upButton)
         
-        self.reactionsButton.tapped = { [weak self] in
+        self.reactionsButton.tapped = { [weak self = self] in
             self?.reactionsPressed?()
         }
         
-        self.pollVotesButton.tapped = { [weak self] in
+        self.pollVotesButton.tapped = { [weak self = self] in
             self?.pollVotesPressed?()
         }
         
-        self.mentionsButton.tapped = { [weak self] in
+        self.mentionsButton.tapped = { [weak self = self] in
             self?.mentionsPressed?()
         }
         
@@ -227,7 +227,7 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
             transition.updateAlpha(node: self.downButton, alpha: 1.0)
             transition.updateTransformScale(node: self.downButton, scale: 1.0)
         } else {
-            transition.updateAlpha(node: self.downButton, alpha: 0.0, completion: { [weak self] completed in
+            transition.updateAlpha(node: self.downButton, alpha: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }
@@ -246,7 +246,7 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
             transition.updateAlpha(node: self.upButton, alpha: 1.0)
             transition.updateTransformScale(node: self.upButton, scale: 1.0)
         } else {
-            transition.updateAlpha(node: self.upButton, alpha: 0.0, completion: { [weak self] completed in
+            transition.updateAlpha(node: self.upButton, alpha: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }
@@ -262,7 +262,7 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
             transition.updateAlpha(node: self.mentionsButton, alpha: 1.0)
             transition.updateTransformScale(node: self.mentionsButton, scale: 1.0)
         } else {
-            transition.updateAlpha(node: self.mentionsButton, alpha: 0.0, completion: { [weak self] completed in
+            transition.updateAlpha(node: self.mentionsButton, alpha: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }
@@ -277,7 +277,7 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
             transition.updateAlpha(node: self.reactionsButton, alpha: 1.0)
             transition.updateTransformScale(node: self.reactionsButton, scale: 1.0)
         } else {
-            transition.updateAlpha(node: self.reactionsButton, alpha: 0.0, completion: { [weak self] completed in
+            transition.updateAlpha(node: self.reactionsButton, alpha: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }
@@ -291,7 +291,7 @@ final class ChatHistoryNavigationButtons: ASDisplayNode {
             transition.updateAlpha(node: self.pollVotesButton, alpha: 1.0)
             transition.updateTransformScale(node: self.pollVotesButton, scale: 1.0)
         } else {
-            transition.updateAlpha(node: self.pollVotesButton, alpha: 0.0, completion: { [weak self] completed in
+            transition.updateAlpha(node: self.pollVotesButton, alpha: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }

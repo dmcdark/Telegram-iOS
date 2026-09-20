@@ -82,7 +82,7 @@ final class RoundedCornersView: UIImageView {
                 }
                     
             }
-            transition.setCornerRadius(layer: self.layer, cornerRadius: cornerRadius, completion: { [weak self] completed in
+            transition.setCornerRadius(layer: self.layer, cornerRadius: cornerRadius, completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }

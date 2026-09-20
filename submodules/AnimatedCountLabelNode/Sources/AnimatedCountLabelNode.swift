@@ -94,7 +94,7 @@ public class AnimatedCountLabelNode: ASDisplayNode {
         let reverseAnimationDirection = self.reverseAnimationDirection
         let alwaysOneDirection = self.alwaysOneDirection
         
-        return { [weak self] size, insets, initialSegments in
+        return { [weak self = self] size, insets, initialSegments in
             var segments: [ResolvedSegment] = []
             loop: for segment in initialSegments {
                 switch segment {

@@ -364,7 +364,7 @@ final class PostSuggestionsSettingsScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -400,7 +400,7 @@ final class PostSuggestionsSettingsScreenComponent: Component {
                     ))),
                 ], alignment: .left, spacing: 2.0)),
                 accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.areSuggestionsEnabled, isInteractive: false)),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -445,7 +445,7 @@ final class PostSuggestionsSettingsScreenComponent: Component {
                     value: Int64(self.starCount),
                     price: price,
                     sectionId: 0,
-                    updated: { [weak self] value, _ in
+                    updated: { [weak self = self] value, _ in
                         guard let self else {
                             return
                         }
@@ -455,13 +455,13 @@ final class PostSuggestionsSettingsScreenComponent: Component {
                             self.state?.updated(transition: .immediate)
                         }
                     },
-                    openSetCustom: { [weak self] in
+                    openSetCustom: { [weak self = self] in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
                         
                         let currentAmount: StarsAmount = StarsAmount(value: Int64(self.starCount), nanos: 0)
-                        let starsScreen = component.context.sharedContext.makeStarsWithdrawalScreen(context: component.context, subject: .enterAmount(current: currentAmount, minValue: StarsAmount(value: 0, nanos: 0), fractionAfterCommission: component.channelMessageSuggestionCommissionPermille / 10, kind: .postSuggestion, completion: { [weak self] amount in
+                        let starsScreen = component.context.sharedContext.makeStarsWithdrawalScreen(context: component.context, subject: .enterAmount(current: currentAmount, minValue: StarsAmount(value: 0, nanos: 0), fractionAfterCommission: component.channelMessageSuggestionCommissionPermille / 10, kind: .postSuggestion, completion: { [weak self = self] amount in
                             guard let self else {
                                 return
                             }
@@ -528,10 +528,10 @@ final class PostSuggestionsSettingsScreenComponent: Component {
                     theme: environment.theme,
                     strings: environment.strings,
                     link: link,
-                    copyAction: { [weak self] in
+                    copyAction: { [weak self = self] in
                         self?.copyLink(fullLink)
                     },
-                    shareAction: { [weak self] in
+                    shareAction: { [weak self = self] in
                         self?.shareLink(fullLink)
                     }
                 )
@@ -654,14 +654,14 @@ public final class PostSuggestionsSettingsScreen: ViewControllerComponentContain
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? PostSuggestionsSettingsScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? PostSuggestionsSettingsScreenComponent.View else {
                 return true
             }
@@ -847,7 +847,7 @@ private final class LinkComponent: Component {
                 component: AnyComponent(
                     PlainButtonComponent(
                         content: AnyComponent(LinkContentComponent(theme: component.theme, link: component.link)),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -881,7 +881,7 @@ private final class LinkComponent: Component {
                     PlainButtonComponent(
                         content: AnyComponent(Image(image: moreButtonImage, contentMode: .center)),
                         minSize: CGSize(width: 52.0, height: 52.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -917,7 +917,7 @@ private final class LinkComponent: Component {
                         pressedColor: component.theme.list.itemCheckColors.fillColor.withMultipliedAlpha(0.8)
                     ),
                     content: AnyComponentWithIdentity(id: "label", component: AnyComponent(Text(text: component.strings.FolderLinkScreen_LinkActionCopy, font: Font.semibold(17.0), color: component.theme.list.itemCheckColors.foregroundColor))),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -945,7 +945,7 @@ private final class LinkComponent: Component {
                         pressedColor: component.theme.list.itemCheckColors.fillColor.withMultipliedAlpha(0.8)
                     ),
                     content: AnyComponentWithIdentity(id: "label", component: AnyComponent(Text(text: component.strings.FolderLinkScreen_LinkActionShare, font: Font.semibold(17.0), color: component.theme.list.itemCheckColors.foregroundColor))),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

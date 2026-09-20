@@ -153,7 +153,7 @@ final class TextProcessingTextAreaComponent: Component {
             self.addSubview(self.textSelectionContainer)
             self.addSubview(self.titleButton)
             
-            self.titleButton.highligthedChanged = { [weak self] highighed in
+            self.titleButton.highligthedChanged = { [weak self = self] highighed in
                 guard let self, let titleView = self.title.view, let titleArrowView = self.titleArrow?.view else {
                     return
                 }
@@ -470,22 +470,22 @@ final class TextProcessingTextAreaComponent: Component {
                 if let current = self.textSelectionNode {
                     textSelectionNode = current
                 } else {
-                    textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: component.theme.list.itemAccentColor.withMultipliedAlpha(0.5), knob: component.theme.list.itemAccentColor, isDark: component.theme.overallDarkAppearance), strings: component.strings, textNodeOrView: .node(selectionTextNode), updateIsActive: { [weak self] value in
+                    textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: component.theme.list.itemAccentColor.withMultipliedAlpha(0.5), knob: component.theme.list.itemAccentColor, isDark: component.theme.overallDarkAppearance), strings: component.strings, textNodeOrView: .node(selectionTextNode), updateIsActive: { [weak self = self] value in
                         guard let self else {
                             return
                         }
                         let _ = self
-                    }, present: { [weak self] c, a in
+                    }, present: { [weak self = self] c, a in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.present(c, a)
-                    }, rootView: { [weak self] in
+                    }, rootView: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return nil
                         }
                         return component.rootViewForTextSelection()
-                    }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self] text, action in
+                    }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self = self] text, action in
                         guard let self, let component = self.component else {
                             return
                         }

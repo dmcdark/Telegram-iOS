@@ -137,7 +137,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
         }
         
         self.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-            performItemAction: { [weak self] groupId, item, sourceView, sourceRect, sourceLayer, isPreview in
+            performItemAction: { [weak self = self] groupId, item, sourceView, sourceRect, sourceLayer, isPreview in
                 guard let self else {
                     return
                 }
@@ -154,7 +154,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
             },
             openSearch: {
             },
-            addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+            addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                 guard let self else {
                     return
                 }
@@ -183,7 +183,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
             },
             requestUpdate: { _ in
             },
-            updateSearchQuery: { [weak self] query in
+            updateSearchQuery: { [weak self = self] query in
                 guard let self else {
                     return
                 }
@@ -306,7 +306,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
                         self.emojiSearchStateValue.isSearching = true
                         self.emojiSearchDisposable.set((resultSignal
                         |> delay(0.15, queue: .mainQueue())
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -362,7 +362,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
                         
                     var version = 0
                     self.emojiSearchDisposable.set((resultSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -402,7 +402,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
             },
             updateScrollingToItemGroup: {
             },
-            externalCancel: { [weak self] in
+            externalCancel: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -424,7 +424,7 @@ public final class EmojiSearchContent: ASDisplayNode, EntitySearchContainerNode 
         self.dataDisposable = (
             self.emojiSearchState.get()
             |> deliverOnMainQueue
-        ).start(next: { [weak self] emojiSearchState in
+        ).start(next: { [weak self = self] emojiSearchState in
             guard let self else {
                 return
             }

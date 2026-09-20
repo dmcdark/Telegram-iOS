@@ -596,7 +596,7 @@ private class AdMessagesHistoryContextImpl {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] interPostInterval, startDelay, betweenDelay, messages in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] interPostInterval, startDelay, betweenDelay, messages in
             guard let strongSelf = self else {
                 return
             }

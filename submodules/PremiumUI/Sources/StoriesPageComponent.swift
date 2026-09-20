@@ -287,7 +287,7 @@ private final class StoriesListComponent: CombinedComponent {
                 TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: true),
                 TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] limits, premiumLimits, accountPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] limits, premiumLimits, accountPeer in
                 if let strongSelf = self {
                     strongSelf.limits = limits
                     strongSelf.premiumLimits = premiumLimits

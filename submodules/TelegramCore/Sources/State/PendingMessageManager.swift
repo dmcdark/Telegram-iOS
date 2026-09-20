@@ -262,7 +262,7 @@ public final class PendingMessageManager {
         let queue = self.queue
         self.allTypingDraftsDisposable.set(
             (postbox.combinedView(keys: [.allTypingDrafts])
-            |> deliverOn(queue)).start(next: { [weak self] view in
+            |> deliverOn(queue)).start(next: { [weak self = self] view in
                 self?.handleLiveTypingDraftsUpdate(view)
             })
         )
@@ -503,7 +503,7 @@ public final class PendingMessageManager {
                     }
                     return peerIdsWithDeliveredMessages
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] peerIdsWithDeliveredMessages in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] peerIdsWithDeliveredMessages in
                     guard let strongSelf = self else {
                         return
                     }
@@ -622,7 +622,7 @@ public final class PendingMessageManager {
             }
         }
         self.beginSendingMessagesDisposables.add(disposable)
-        disposable.set(messages.start(next: { [weak self] messages in
+        disposable.set(messages.start(next: { [weak self = self] messages in
             if let strongSelf = self {
                 assert(strongSelf.queue.isCurrent())
                 
@@ -991,7 +991,7 @@ public final class PendingMessageManager {
             return .progress(1.0)
         }
         messageContext.sendDisposable.set((sendMessage
-        |> deliverOn(self.queue)).start(next: { [weak self] next in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] next in
             if let strongSelf = self {
                 assert(strongSelf.queue.isCurrent())
                 
@@ -1035,7 +1035,7 @@ public final class PendingMessageManager {
         }
         |> deliverOn(self.queue)
         
-        messageContext.postponeDisposable.set(signal.start(next: { [weak self] _ in
+        messageContext.postponeDisposable.set(signal.start(next: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1065,7 +1065,7 @@ public final class PendingMessageManager {
         
         messageContext.uploadDisposable.set((uploadSignal
         |> deliverOn(queue)
-        |> `catch` { [weak self] _ -> Signal<PendingMessageUploadedContentResult, NoError> in
+        |> `catch` { [weak self = self] _ -> Signal<PendingMessageUploadedContentResult, NoError> in
             if let strongSelf = self {
                 let modify = strongSelf.postbox.transaction { transaction -> Void in
                     transaction.updateMessage(id, update: { currentMessage in
@@ -1083,7 +1083,7 @@ public final class PendingMessageManager {
             }
             return .complete()
         }
-        |> deliverOn(queue)).start(next: { [weak self] next in
+        |> deliverOn(queue)).start(next: { [weak self = self] next in
             if let strongSelf = self {
                 assert(strongSelf.queue.isCurrent())
                 
@@ -1141,7 +1141,7 @@ public final class PendingMessageManager {
                     self.addContextActivityIfNeeded(context, peerId: PeerActivitySpace(peerId: peerId, category: activityCategory))
                     self.updatePendingMediaUploads()
                     context.uploadDisposable.set((uploadSignal
-                    |> deliverOn(self.queue)).start(next: { [weak self] next in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] next in
                         if let strongSelf = self {
                             assert(strongSelf.queue.isCurrent())
                             
@@ -1174,7 +1174,7 @@ public final class PendingMessageManager {
     
     private func sendGroupMessagesContent(network: Network, postbox: Postbox, stateManager: AccountStateManager, accountPeerId: PeerId, group: [(messageId: MessageId, content: PendingMessageUploadedContentAndReuploadInfo)]) -> Signal<Void, NoError> {
         let queue = self.queue
-        return postbox.transaction { [weak self] transaction -> Signal<Void, NoError> in
+        return postbox.transaction { [weak self = self] transaction -> Signal<Void, NoError> in
             if group.isEmpty {
                 return .complete()
             }
@@ -1707,7 +1707,7 @@ public final class PendingMessageManager {
     
     private func sendMessageContent(network: Network, postbox: Postbox, stateManager: AccountStateManager, accountPeerId: PeerId, messageId: MessageId, content: PendingMessageUploadedContentAndReuploadInfo) -> Signal<Void, NoError> {
         let queue = self.queue
-        return postbox.transaction { [weak self] transaction -> Signal<Void, NoError> in
+        return postbox.transaction { [weak self = self] transaction -> Signal<Void, NoError> in
             guard let message = transaction.getMessage(messageId) else {
                 return .complete()
             }
@@ -2346,7 +2346,7 @@ public final class PendingMessageManager {
         }
         
         let queue = self.queue
-        return applyUpdateMessage(postbox: postbox, stateManager: stateManager, message: message, cacheReferenceKey: content.cacheReferenceKey, result: result, accountPeerId: self.accountPeerId, pendingMessageEvent: { [weak self] pendingMessageDelivered in
+        return applyUpdateMessage(postbox: postbox, stateManager: stateManager, message: message, cacheReferenceKey: content.cacheReferenceKey, result: result, accountPeerId: self.accountPeerId, pendingMessageEvent: { [weak self = self] pendingMessageDelivered in
             queue.async {
                 if let strongSelf = self {
                     if let context = strongSelf.peerSummaryContexts[message.id.peerId] {
@@ -2395,7 +2395,7 @@ public final class PendingMessageManager {
         }
         let queue = self.queue
         
-        return applyUpdateGroupMessages(postbox: postbox, stateManager: stateManager, messages: messages, result: result, pendingMessageEvents: { [weak self] pendingMessagesDelivered in
+        return applyUpdateGroupMessages(postbox: postbox, stateManager: stateManager, messages: messages, result: result, pendingMessageEvents: { [weak self = self] pendingMessagesDelivered in
             queue.async {
                 if let strongSelf = self {
                     if let message = messages.first, let context = strongSelf.peerSummaryContexts[message.id.peerId], !pendingMessagesDelivered.isEmpty {

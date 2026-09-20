@@ -346,7 +346,7 @@ public final class AgeVerificationScreen: ViewControllerComponentContainer {
                 context.sharedContext.mainWindow?.present(c, on: .root)
             }, openSettings: {
                 context.sharedContext.applicationBindings.openSettings()
-            }, { [weak self] granted in
+            }, { [weak self = self] granted in
                 guard let self, granted else {
                     return
                 }

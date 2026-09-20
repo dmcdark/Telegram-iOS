@@ -64,7 +64,7 @@ final class MediaGroupsContextMenuContent: ContextControllerItemsContent {
                 self.addSubnode(self.subtitleLabelNode)
                 self.addSubnode(self.iconNode)
 
-                self.highligthedChanged = { [weak self] highlighted in
+                self.highligthedChanged = { [weak self = self] highlighted in
                     guard let strongSelf = self else {
                         return
                     }
@@ -365,7 +365,7 @@ final class MediaGroupsContextMenuContent: ContextControllerItemsContent {
                     tabNode = GroupsListNode(
                         context: self.context,
                         items: self.items,
-                        requestUpdate: { [weak self] tab, transition in
+                        requestUpdate: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -373,7 +373,7 @@ final class MediaGroupsContextMenuContent: ContextControllerItemsContent {
                                 strongSelf.requestUpdate(transition)
                             }
                         },
-                        requestUpdateApparentHeight: { [weak self] tab, transition in
+                        requestUpdateApparentHeight: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }

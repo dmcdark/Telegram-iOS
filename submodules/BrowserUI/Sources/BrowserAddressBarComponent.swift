@@ -192,7 +192,7 @@ final class AddressBarContentComponent: Component {
             self.tapRecognizer = tapRecognizer
             self.addGestureRecognizer(tapRecognizer)
                         
-            self.clearIconButton.highligthedChanged = { [weak self] highlighted in
+            self.clearIconButton.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.clearIconView.layer.removeAnimation(forKey: "opacity")
@@ -381,7 +381,7 @@ final class AddressBarContentComponent: Component {
                         component: AnyComponentWithIdentity(id: "close", component: AnyComponent(
                             BundleIconComponent(name: "Navigation/Close", tintColor: theme.chat.inputPanel.panelControlColor)
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             self?.cancelPressed()
                         }
                     )

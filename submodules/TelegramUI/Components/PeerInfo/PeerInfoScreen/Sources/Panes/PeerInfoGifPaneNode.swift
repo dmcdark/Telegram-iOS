@@ -85,7 +85,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
         self.containerNode.addSubnode(self.imageNode)
         self.containerNode.addSubnode(self.mediaBadgeNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -107,7 +107,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
         }
         self.imageNode.view.addGestureRecognizer(recognizer)
         
-        self.mediaBadgeNode.pressed = { [weak self] in
+        self.mediaBadgeNode.pressed = { [weak self = self] in
             self?.progressPressed()
         }
     }
@@ -214,7 +214,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                 self.imageNode.setSignal(mediaGridMessagePhoto(account: context.account, userLocation: .peer(item.message.id.peerId), photoReference: .message(message: MessageReference(item.message), media: image), fullRepresentationSize: CGSize(width: 300.0, height: 300.0), synchronousLoad: synchronousLoad), attemptSynchronously: synchronousLoad, dispatchOnDisplayLink: true)
                 
                 self.fetchStatusDisposable.set(nil)
-                self.statusNode.transitionToState(.none, completion: { [weak self] in
+                self.statusNode.transitionToState(.none, completion: { [weak self = self] in
                     self?.statusNode.isHidden = true
                 })
                 self.mediaBadgeNode.isHidden = true
@@ -230,7 +230,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                 self.item = (item, media, size, mediaDimensions)
                 
                 self.fetchStatusDisposable.set((messageMediaFileStatus(context: context, messageId: item.message.id, file: file)
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     if let strongSelf = self, let (item, _, _, _) = strongSelf.item {
                         strongSelf.resourceStatus = status
                         
@@ -348,7 +348,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                     selectionNode.updateSelected(selected, animated: animated)
                     selectionNode.frame = CGRect(origin: CGPoint(), size: self.bounds.size)
                 } else {
-                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self] value in
+                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self = self] value in
                         if let strongSelf = self, let messageId = strongSelf.item?.0.message.id {
                             var toggledValue = true
                             if let selectedMessageIds = strongSelf.interaction.selectedMessageIds, selectedMessageIds.contains(messageId) {
@@ -683,13 +683,13 @@ final class PeerInfoGifPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScrollViewDe
         super.init()
         
         self._itemInteraction = VisualMediaItemInteraction(
-            openMessage: { [weak self] message in
+            openMessage: { [weak self = self] message in
                 let _ = self?.chatControllerInteraction.openMessage(message, OpenMessageParams(mode: .default))
             },
-            openMessageContextActions: { [weak self] message, sourceNode, sourceRect, gesture in
+            openMessageContextActions: { [weak self = self] message, sourceNode, sourceRect, gesture in
                 self?.chatControllerInteraction.openMessageContextActions(message, sourceNode, sourceRect, gesture)
             },
-            toggleSelection: { [weak self] id, value in
+            toggleSelection: { [weak self = self] id, value in
                 self?.chatControllerInteraction.toggleMessagesSelection([id], value)
             }
         )
@@ -710,7 +710,7 @@ final class PeerInfoGifPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScrollViewDe
         
         self.requestHistoryAroundVisiblePosition()
         
-        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().start(next: { [weak self] ids in
+        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().start(next: { [weak self = self] ids in
             guard let strongSelf = self else {
                 return
             }
@@ -772,7 +772,7 @@ final class PeerInfoGifPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScrollViewDe
         }
         self.isRequestingView = true
         self.listDisposable.set((self.context.account.viewTracker.aroundMessageHistoryViewForLocation(.peer(peerId: self.peerId, threadId: self.chatLocation.threadId), index: .upperBound, anchorIndex: .upperBound, count: self.numberOfItemsToRequest, fixedCombinedReadStates: nil, tag: .tag(tagMaskForType(self.contentType)))
-        |> deliverOnMainQueue).start(next: { [weak self] (view, updateType, _) in
+        |> deliverOnMainQueue).start(next: { [weak self = self] (view, updateType, _) in
             guard let strongSelf = self else {
                 return
             }
@@ -839,7 +839,7 @@ final class PeerInfoGifPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScrollViewDe
             var currentOffset = self.scrollNode.view.contentOffset
             let decelerationRate: CGFloat = 0.998
             self.scrollViewDidEndDragging(self.scrollNode.view, willDecelerate: true)
-            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1060,7 +1060,7 @@ final class PeerInfoGifPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScrollViewDe
                 }
             }
             
-            let timer = Timer(timeInterval: duration, target: TimerProxy { [weak self] in
+            let timer = Timer(timeInterval: duration, target: TimerProxy { [weak self = self] in
                 if let strongSelf = self {
                     if let flashHeaderDelayTimer = strongSelf.flashHeaderDelayTimer {
                         flashHeaderDelayTimer.invalidate()

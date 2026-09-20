@@ -446,7 +446,7 @@ public final class AvatarNode: ASDisplayNode {
             self.imageNode.isUserInteractionEnabled = false
             self.addSubnode(self.imageNode)
             
-            self.imageNode.contentUpdated = { [weak self] image in
+            self.imageNode.contentUpdated = { [weak self = self] image in
                 guard let self else {
                     return
                 }
@@ -563,7 +563,7 @@ public final class AvatarNode: ASDisplayNode {
                 animationNode.frame = CGRect(x: floor((self.bounds.width - size.width) / 2.0) + 1.0, y: floor((self.bounds.height - size.height) / 2.0), width: size.width, height: size.height)
                 Queue.mainQueue().after(0.15, {
                     animationNode.play()
-                    animationNode.completion = { [weak animationNode, weak animationBackgroundNode] in
+                    animationNode.completion = { [weak animationNode = animationNode, weak animationBackgroundNode = animationBackgroundNode] in
                         animationNode?.removeFromSupernode()
                         animationBackgroundNode?.removeFromSupernode()
                     }
@@ -647,7 +647,7 @@ public final class AvatarNode: ASDisplayNode {
                     self.contents = nil
                     self.displaySuspended = true
                     self.imageReady.set(self.imageNode.contentReady)
-                    self.imageNode.setSignal(signal |> beforeNext { [weak self] next in
+                    self.imageNode.setSignal(signal |> beforeNext { [weak self = self] next in
                         Queue.mainQueue().async {
                             self?.unroundedImage = next?.1
                         }
@@ -769,7 +769,7 @@ public final class AvatarNode: ASDisplayNode {
                         self.imageNode.contents = image.cgImage
                     }
                     if let loadSignal = result.loadSignal {
-                        self.loadDisposable.set((loadSignal |> deliverOnMainQueue).start(next: { [weak self] image in
+                        self.loadDisposable.set((loadSignal |> deliverOnMainQueue).start(next: { [weak self = self] image in
                             guard let self else {
                                 return
                             }
@@ -856,7 +856,7 @@ public final class AvatarNode: ASDisplayNode {
                     self.contents = nil
                     self.displaySuspended = true
                     self.imageReady.set(self.imageNode.contentReady)
-                    self.imageNode.setSignal(signal |> beforeNext { [weak self] next in
+                    self.imageNode.setSignal(signal |> beforeNext { [weak self = self] next in
                         Queue.mainQueue().async {
                             self?.unroundedImage = next?.1
                         }
@@ -1229,7 +1229,7 @@ public final class AvatarNode: ASDisplayNode {
         
         super.init()
         
-        self.onDidLoad { [weak self] _ in
+        self.onDidLoad { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1518,11 +1518,11 @@ public final class AvatarNode: ASDisplayNode {
         
         let index = self.loadingStatuses.add(disposable)
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self = self] in
             self?.updateStoryIndicator(transition: .immediate)
         })
         
-        disposable.set(signal.start(completed: { [weak self] in
+        disposable.set(signal.start(completed: { [weak self = self] in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -1537,7 +1537,7 @@ public final class AvatarNode: ASDisplayNode {
             }
         }))
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             guard let self else {
                 return
             }

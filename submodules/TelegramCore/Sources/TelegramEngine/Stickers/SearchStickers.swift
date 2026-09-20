@@ -424,7 +424,7 @@ public final class StickerSearchContext {
         self.pushState()
         
         self.disposable.set((stickerSearchContextPage(account: self.account, query: query, emoticon: self.emoticon, inputLanguageCode: self.inputLanguageCode, scope: self.scope, offset: nextOffset)
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -461,7 +461,7 @@ public final class StickerSearchContext {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -668,7 +668,7 @@ public final class EmojiSearchContext {
         self.pushState()
         
         self.disposable.set((emojiSearchContextPage(account: self.account, query: query, emoticon: self.emoticon, inputLanguageCode: self.inputLanguageCode, scope: self.scope, offset: nextOffset)
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -699,7 +699,7 @@ public final class EmojiSearchContext {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }

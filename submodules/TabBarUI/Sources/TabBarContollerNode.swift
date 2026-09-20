@@ -126,7 +126,7 @@ final class TabBarControllerNode: ASDisplayNode {
             return View(frame: CGRect())
         })
         
-        (self.view as? View)?.onLayout = { [weak self] in
+        (self.view as? View)?.onLayout = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -239,7 +239,7 @@ final class TabBarControllerNode: ASDisplayNode {
                     
                     return TabBarComponent.Item(
                         content: .tabBarItem(item.item),
-                        action: { [weak self] isLongTap in
+                        action: { [weak self = self] isLongTap in
                             guard let self else {
                                 return
                             }
@@ -247,7 +247,7 @@ final class TabBarControllerNode: ASDisplayNode {
                                 self.itemSelected(index, isLongTap, [])
                             }
                         },
-                        doubleTapAction: self.itemHasDoubleTapAction(index) ? { [weak self] in
+                        doubleTapAction: self.itemHasDoubleTapAction(index) ? { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -255,7 +255,7 @@ final class TabBarControllerNode: ASDisplayNode {
                                 self.itemDoubleTapped(index)
                             }
                         } : nil,
-                        contextAction: { [weak self] gesture, sourceView in
+                        contextAction: { [weak self = self] gesture, sourceView in
                             guard let self else {
                                 return
                             }
@@ -268,13 +268,13 @@ final class TabBarControllerNode: ASDisplayNode {
                 search: self.currentController?.tabBarSearchState.flatMap { tabBarSearchState in
                     return TabBarComponent.Search(
                         isActive: tabBarSearchState.isActive,
-                        activate: { [weak self] in
+                        activate: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.activateSearch()
                         },
-                        deactivate: { [weak self] in
+                        deactivate: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -323,7 +323,7 @@ final class TabBarControllerNode: ASDisplayNode {
                             items: [GlassControlGroupComponent.Item(
                                 id: "left_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -338,7 +338,7 @@ final class TabBarControllerNode: ASDisplayNode {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -353,7 +353,7 @@ final class TabBarControllerNode: ASDisplayNode {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }

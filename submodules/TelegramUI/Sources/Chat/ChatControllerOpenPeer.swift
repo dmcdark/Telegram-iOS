@@ -180,7 +180,7 @@ extension ChatControllerImpl {
                                 } else {
                                     peerSignal = self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peer.id))
                                 }
-                                self.navigationActionDisposable.set((peerSignal |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+                                self.navigationActionDisposable.set((peerSignal |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                                     if let strongSelf = self, let peer = peer {
                                         var mode: PeerInfoControllerMode = .generic
                                         if let messageId = fromMessage?.id, chatPeerId != nil {
@@ -216,14 +216,14 @@ extension ChatControllerImpl {
                                     let _ = (ChatInterfaceState.update(engine: self.context.engine, peerId: peer.id, threadId: nil, { currentState in
                                         return currentState.withUpdatedComposeInputState(textInputState)
                                     })
-                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                         if let strongSelf = self, let navigationController = strongSelf.effectiveNavigationController {
                                             strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .peer(peer), subject: subject, updateTextInputState: textInputState, peekData: peekData))
                                         }
                                     })
                                 } else {
                                     let _ = (requireAgeVerification(context: self.context, peer: peer)
-                                    |> deliverOnMainQueue).start(next: { [weak self] require in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] require in
                                         guard let self else {
                                             return
                                         }
@@ -276,7 +276,7 @@ extension ChatControllerImpl {
                                             let _ = (ChatInterfaceState.update(engine: strongSelf.context.engine, peerId: peerId, threadId: threadId, { currentState in
                                                 return currentState.withUpdatedComposeInputState(textInputState)
                                             })
-                                            |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                            |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                                 guard let strongSelf = self else {
                                                     return
                                                 }
@@ -340,7 +340,7 @@ extension ChatControllerImpl {
         } else {
             items.append(.action(ContextMenuActionItem(text: strings.Conversation_ContextMenuOpenProfile, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 
                 guard let self, let peer = self.presentationInterfaceState.renderedPeer?.chatMainPeer else {
@@ -359,7 +359,7 @@ extension ChatControllerImpl {
         }
         items.append(.action(ContextMenuActionItem(text: strings.Conversation_Search, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Search"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] action in
+        }, action: { [weak self = self] action in
             action.dismissWithResult(.default)
             
             self?.beginMessageSearch("")
@@ -368,12 +368,12 @@ extension ChatControllerImpl {
         if let threadId = self.chatLocation.threadId, let peer = self.presentationInterfaceState.renderedPeer?.chatMainPeer, (peer is TelegramChannel || peer is TelegramGroup) {
             items.append(.action(ContextMenuActionItem(text: strings.CreateTopic_EditTitle, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] action in
+            }, action: { [weak self = self] action in
                 guard let self else {
                     return
                 }
                 
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -415,7 +415,7 @@ extension ChatControllerImpl {
             if canCreateTopics {
                 items.append(.action(ContextMenuActionItem(text: strings.Chat_CreateTopic, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] action in
+                }, action: { [weak self = self] action in
                     guard let self else {
                         return
                     }

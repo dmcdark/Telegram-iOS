@@ -111,7 +111,7 @@ private final class ThemeGridThemeItemIconNode : ASDisplayNode {
         self.emojiContainerNode.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.emojiImageNode.imageUpdated = { [weak self] image in
+        self.emojiImageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -147,7 +147,7 @@ private final class ThemeGridThemeItemIconNode : ASDisplayNode {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -258,7 +258,7 @@ private final class ThemeGridThemeItemIconNode : ASDisplayNode {
                 animatedStickerNode = current
             } else {
                 animatedStickerNode = DefaultAnimatedStickerNodeImpl()
-                animatedStickerNode.started = { [weak self] in
+                animatedStickerNode.started = { [weak self = self] in
                     self?.emojiImageNode.isHidden = true
                 }
                 self.animatedStickerNode = animatedStickerNode
@@ -436,7 +436,7 @@ class ThemeGridThemeItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
 
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

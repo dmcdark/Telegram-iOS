@@ -23,7 +23,7 @@ extension PeerInfoScreenNode {
             progress?.set(.single(true))
             let _ = (collectibleInfo.get()
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] initialData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] initialData in
                 progress?.set(.single(false))
                 
                 guard let self else {
@@ -43,27 +43,27 @@ extension PeerInfoScreenNode {
         let _ = (combineLatest(
             getUserPeer(engine: self.context.engine, peerId: self.peerId),
             getUserPeer(engine: self.context.engine, peerId: self.context.account.peerId)
-        ) |> deliverOnMainQueue).startStandalone(next: { [weak self] peer, accountPeer in
+        ) |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer, accountPeer in
             guard let strongSelf = self else {
                 return
             }
             let presentationData = strongSelf.presentationData
                         
-            let telegramCallAction: (Bool) -> Void = { [weak self] isVideo in
+            let telegramCallAction: (Bool) -> Void = { [weak self = self] isVideo in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.requestCall(isVideo: isVideo)
             }
             
-            let phoneCallAction = { [weak self] in
+            let phoneCallAction = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.context.sharedContext.applicationBindings.openUrl("tel:\(formatPhoneNumber(context: strongSelf.context, number: value).replacingOccurrences(of: " ", with: ""))")
             }
             
-            let copyAction = { [weak self] in
+            let copyAction = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -85,7 +85,7 @@ extension PeerInfoScreenNode {
             var items: [ContextMenuItem] = []
             
             if strongSelf.isMyProfile {
-                items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.MyProfile_PhoneActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.MyProfile_PhoneActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return
@@ -151,14 +151,14 @@ extension PeerInfoScreenNode {
                 let collectibleInfo = Promise<CollectibleItemInfoScreenInitialData?>()
                 collectibleInfo.set(strongSelf.context.sharedContext.makeCollectibleItemInfoScreenInitialData(context: strongSelf.context, peerId: strongSelf.peerId, subject: .phoneNumber(value)))
                 
-                actions.tip = .animatedEmoji(text: strongSelf.presentationData.strings.UserInfo_AnonymousNumberInfo, arguments: nil, file: nil, action: { [weak self] in
+                actions.tip = .animatedEmoji(text: strongSelf.presentationData.strings.UserInfo_AnonymousNumberInfo, arguments: nil, file: nil, action: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     
                     let _ = (collectibleInfo.get()
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] initialData in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] initialData in
                         guard let self else {
                             return
                         }

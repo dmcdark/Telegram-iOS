@@ -231,7 +231,7 @@ public final class RichTextEditorView: UIView, UIScrollViewDelegate {
         // The canvas is sized frame-based in layoutSubviews, so a content-height change (typing wraps a
         // line, a cell grows, undo, …) must re-trigger our layout — otherwise it only updates on the next
         // layout pass (e.g. a rotation).
-        canvas.onContentSizeChange = { [weak self] in self?.onChange?() }   // pure relay; the host re-lays-out via update()
+        canvas.onContentSizeChange = { [weak self = self] in self?.onChange?() }   // pure relay; the host re-lays-out via update()
         // The OS moves the caret via arrows through the canvas's selectedTextRange setter, which can land
         // it off-screen (e.g. arrowing up out of a tall image to the block above). Scroll it back into view.
         // `scrollCaretIntoView` stays SYNCHRONOUS (arrow-key scroll-follow must settle before the setter
@@ -242,13 +242,13 @@ public final class RichTextEditorView: UIView, UIScrollViewDelegate {
         // range and flare a selection-gated toolbar into its "has selection" state and back out. Coalescing
         // to one trailing async call lets the host see only the settled selection. Content-size changes still
         // relay synchronously (above), so typed text lays out immediately.
-        canvas.onSelectionChange = { [weak self] in
+        canvas.onSelectionChange = { [weak self = self] in
             self?.scrollCaretIntoView()
             self?.scheduleSelectionDrivenOnChange()
         }
         // Surface first-responder transitions (the canvas is the actual first responder) to the host.
-        canvas.onBecameFirstResponder = { [weak self] in self?.onBecameFirstResponder?() }
-        canvas.onResignedFirstResponder = { [weak self] in self?.onResignedFirstResponder?() }
+        canvas.onBecameFirstResponder = { [weak self = self] in self?.onBecameFirstResponder?() }
+        canvas.onResignedFirstResponder = { [weak self = self] in self?.onResignedFirstResponder?() }
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) not used") }
 
@@ -647,7 +647,7 @@ public final class RichTextEditorView: UIView, UIScrollViewDelegate {
     private func scheduleSelectionDrivenOnChange() {
         if isSelectionOnChangeScheduled { return }
         isSelectionOnChangeScheduled = true
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let self else { return }
             self.isSelectionOnChangeScheduled = false
             self.onChange?()

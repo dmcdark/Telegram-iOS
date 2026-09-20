@@ -84,7 +84,7 @@ private final class StoryStealthModeSheetContentComponent: Component {
             }
             
             self.hideCooldownTimer?.invalidate()
-            self.hideCooldownTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { [weak self] _ in
+            self.hideCooldownTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false, block: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -111,7 +111,7 @@ private final class StoryStealthModeSheetContentComponent: Component {
             
             if remainingCooldownSeconds > 0 {
                 if self.timer == nil {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -190,7 +190,7 @@ private final class StoryStealthModeSheetContentComponent: Component {
                     backwardDuration: component.backwardDuration,
                     forwardDuration: component.forwardDuration,
                     mode: component.mode,
-                    dismiss: { [weak self] in
+                    dismiss: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -288,7 +288,7 @@ private final class StoryStealthModeSheetContentComponent: Component {
                     isEnabled: remainingCooldownSeconds <= 0,
                     allowActionWhenDisabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -409,7 +409,7 @@ private final class StoryStealthModeSheetScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     guard let self, let environment = self.environment else {
                         return
                     }
@@ -427,11 +427,11 @@ private final class StoryStealthModeSheetScreenComponent: Component {
                         mode: component.mode,
                         backwardDuration: component.backwardDuration,
                         forwardDuration: component.forwardDuration,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
-                            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+                            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                                 if let controller = environment.controller() {
                                     controller.dismiss(completion: nil)
                                 }

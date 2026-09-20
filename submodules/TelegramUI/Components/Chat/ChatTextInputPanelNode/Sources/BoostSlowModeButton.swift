@@ -60,7 +60,7 @@ final class BoostSlowModeButton: HighlightTrackingButtonNode {
         self.containerNode.addSubnode(self.iconNode)
         self.containerNode.addSubnode(self.textNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let self {
                 if highlighted {
                     self.containerNode.layer.animateScale(from: 1.0, to: 0.75, duration: 0.4, removeOnCompletion: false)
@@ -88,7 +88,7 @@ final class BoostSlowModeButton: HighlightTrackingButtonNode {
             if relativeTimestamp >= 0.0 {
                 text = stringForDuration(Int32(relativeTimestamp))
                 
-                self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self] in
+                self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self = self] in
                     self?.requestUpdate()
                 }, queue: .mainQueue())
                 self.updateTimer?.start()

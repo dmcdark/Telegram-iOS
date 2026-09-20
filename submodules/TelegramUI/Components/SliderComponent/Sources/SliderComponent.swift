@@ -297,13 +297,13 @@ public final class SliderComponent: Component {
 
                 var internalIsTrackingUpdated: ((Bool) -> Void)?
                 if let isTrackingUpdated = component.isTrackingUpdated {
-                    internalIsTrackingUpdated = { [weak self] isTracking in
+                    internalIsTrackingUpdated = { [weak self = self] isTracking in
                         if let self {
                             if component.displaysBorderOnTracking {
                                 if isTracking {
                                     self.sliderView?.bordered = true
                                 } else {
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: { [weak self] in
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1, execute: { [weak self = self] in
                                         self?.sliderView?.bordered = false
                                     })
                                 }

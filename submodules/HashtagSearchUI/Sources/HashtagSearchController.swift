@@ -72,7 +72,7 @@ public final class HashtagSearchController: TelegramBaseController {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
                         
         self.presentationDataDisposable = (self.context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let self {
                 let previousTheme = self.presentationData.theme
                 let previousStrings = self.presentationData.strings
@@ -93,7 +93,7 @@ public final class HashtagSearchController: TelegramBaseController {
             }
         })
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             self?.controllerNode.scrollToTop()
         }
     }

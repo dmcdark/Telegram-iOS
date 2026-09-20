@@ -128,7 +128,7 @@ private final class SheetContent: CombinedComponent {
                 inputData,
                 chatPeer
             )
-            |> deliverOnMainQueue).start(next: { [weak self] inputData, chatPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] inputData, chatPeer in
                 guard let self else {
                     return
                 }
@@ -141,7 +141,7 @@ private final class SheetContent: CombinedComponent {
                 
                 if self.optionsDisposable == nil, let balance = self.balance, balance < StarsAmount(value: self.invoice.totalAmount, nanos: 0) {
                     self.optionsDisposable = (context.engine.payments.starsTopUpOptions()
-                    |> deliverOnMainQueue).start(next: { [weak self] options in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] options in
                         guard let self else {
                             return
                         }
@@ -151,7 +151,7 @@ private final class SheetContent: CombinedComponent {
             })
             
             self.stateDisposable = (starsContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -172,7 +172,7 @@ private final class SheetContent: CombinedComponent {
             }
             
             let navigateToPeer = self.navigateToPeer
-            let action = { [weak self] in
+            let action = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -180,7 +180,7 @@ private final class SheetContent: CombinedComponent {
                 self.updated()
                 
                 let _ = (self.context.engine.payments.sendStarsPaymentForm(formId: form.id, source: self.source)
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -193,7 +193,7 @@ private final class SheetContent: CombinedComponent {
                             }
                         })
                     }
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -217,12 +217,12 @@ private final class SheetContent: CombinedComponent {
                 let _ = (self.optionsPromise.get()
                 |> filter { $0 != nil }
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                     if let self {
                         self.inProgress = false
                         self.updated()
                     
-                        requestTopUp({ [weak self] in
+                        requestTopUp({ [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -238,7 +238,7 @@ private final class SheetContent: CombinedComponent {
                             }
                             |> take(1)
                             |> deliverOnMainQueue).start(next: { _ in
-                                Queue.mainQueue().after(0.1, { [weak self] in
+                                Queue.mainQueue().after(0.1, { [weak self = self] in
                                     if let self, let balance = self.balance, balance < StarsAmount(value: self.invoice.totalAmount, nanos: 0) {
                                         self.inProgress = false
                                         self.updated()
@@ -609,7 +609,7 @@ private final class SheetContent: CombinedComponent {
                                     purpose: purpose,
                                     targetPeerId: nil,
                                     customTheme: nil,
-                                    completion: { [weak starsContext] stars in
+                                    completion: { [weak starsContext = starsContext] stars in
                                         guard let starsContext else {
                                             return
                                         }

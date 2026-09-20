@@ -100,7 +100,7 @@ public final class StarsBalanceOverlayComponent: Component {
                         self.balanceDisposable = combineLatest(queue: Queue.mainQueue(),
                             starsContext.state,
                             tonContext.state
-                        ).start(next: { [weak self] starsState, tonState in
+                        ).start(next: { [weak self = self] starsState, tonState in
                             guard let self else {
                                 return
                             }
@@ -120,7 +120,7 @@ public final class StarsBalanceOverlayComponent: Component {
                         return state.stats?.balances.currentBalance.amount.value ?? 0
                     }
                     |> distinctUntilChanged
-                    |> deliverOnMainQueue).start(next: { [weak self] balance in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] balance in
                         guard let self else {
                             return
                         }

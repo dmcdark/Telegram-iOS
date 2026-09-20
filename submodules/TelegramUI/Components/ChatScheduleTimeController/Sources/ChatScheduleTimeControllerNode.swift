@@ -227,7 +227,7 @@ class ChatScheduleTimeControllerNode: ViewControllerTracingNode, ASScrollViewDel
         }
         
         self.cancelButton.addTarget(self, action: #selector(self.cancelButtonPressed), forControlEvents: .touchUpInside)
-        self.doneButton.pressed = { [weak self] in
+        self.doneButton.pressed = { [weak self = self] in
             if let strongSelf = self, let pickerView = strongSelf.pickerView {
                 if pickerView.date < Date() {
                     strongSelf.updateMinimumDate()
@@ -239,7 +239,7 @@ class ChatScheduleTimeControllerNode: ViewControllerTracingNode, ASScrollViewDel
                 }
             }
         }
-        self.onlineButton.pressed = { [weak self] in
+        self.onlineButton.pressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.onlineButton.isUserInteractionEnabled = false
                 switch strongSelf.mode {
@@ -443,7 +443,7 @@ class ChatScheduleTimeControllerNode: ViewControllerTracingNode, ASScrollViewDel
         var dimCompleted = false
         var offsetCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && offsetCompleted {
                 strongSelf.dismiss?()
             }

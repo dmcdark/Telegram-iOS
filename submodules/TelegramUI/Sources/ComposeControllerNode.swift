@@ -63,19 +63,19 @@ final class ComposeControllerNode: ASDisplayNode {
         
         self.addSubnode(self.contactListNode)
         
-        openCreateNewGroupImpl = { [weak self] in
+        openCreateNewGroupImpl = { [weak self = self] in
             self?.openCreateNewGroup?()
         }
-        openCreateContactImpl = { [weak self] in
+        openCreateContactImpl = { [weak self = self] in
             self?.contactListNode.listNode.clearHighlightAnimated(true)
             self?.openCreateContact?()
         }
-        openCreateNewChannelImpl = { [weak self] in
+        openCreateNewChannelImpl = { [weak self = self] in
             self?.openCreateNewChannel?()
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -119,16 +119,16 @@ final class ComposeControllerNode: ASDisplayNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, onlyWriteable: false, categories: [.cloudContacts, .global], addContact: nil, openPeer: { [weak self] peer, _ in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, onlyWriteable: false, categories: [.cloudContacts, .global], addContact: nil, openPeer: { [weak self = self] peer, _ in
             if let requestOpenPeerFromSearch = self?.requestOpenPeerFromSearch, case let .peer(peer, _, _) = peer {
                 requestOpenPeerFromSearch(peer.id)
             }
-        }, openDisabledPeer: { [weak self] peer, reason in
+        }, openDisabledPeer: { [weak self = self] peer, reason in
             guard let self else {
                 return
             }
             self.requestOpenDisabledPeerFromSearch?(peer, reason)
-        }, contextAction: nil), cancel: { [weak self] in
+        }, contextAction: nil), cancel: { [weak self = self] in
             self?.requestDeactivateSearch?()
         }, fieldStyle: placeholderNode.fieldStyle)
         

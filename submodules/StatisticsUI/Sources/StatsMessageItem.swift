@@ -207,7 +207,7 @@ final class StatsMessageItemNode: ListViewItemNode, ItemListItemNode {
         
         self.addSubnode(self.activateArea)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -215,7 +215,7 @@ final class StatsMessageItemNode: ListViewItemNode, ItemListItemNode {
             contextAction(strongSelf.contextSourceNode, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -422,7 +422,7 @@ final class StatsMessageItemNode: ListViewItemNode, ItemListItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     let themeUpdated = strongSelf.item?.presentationData.theme !== item.presentationData.theme
                     strongSelf.item = item
@@ -741,7 +741,7 @@ final class StatsMessageItemNode: ListViewItemNode, ItemListItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

@@ -185,7 +185,7 @@ class GroupStickerPackCurrentItemNode: ItemListRevealOptionsItemNode {
         self.addSubnode(self.removeButton)
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -199,7 +199,7 @@ class GroupStickerPackCurrentItemNode: ItemListRevealOptionsItemNode {
         }
         
         self.removeButton.addTarget(self, action: #selector(self.removeButtonPressed), forControlEvents: .touchUpInside)
-        self.removeButton.highligthedChanged = { [weak self] highlighted in
+        self.removeButton.highligthedChanged = { [weak self = self] highlighted in
             if let self {
                 if highlighted {
                     self.removeButtonIcon.layer.removeAnimation(forKey: "opacity")
@@ -333,7 +333,7 @@ class GroupStickerPackCurrentItemNode: ItemListRevealOptionsItemNode {
                 }
             }
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.item = item
                     
@@ -487,7 +487,7 @@ class GroupStickerPackCurrentItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

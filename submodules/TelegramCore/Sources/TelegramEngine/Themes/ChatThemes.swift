@@ -539,7 +539,7 @@ public final class UniqueGiftChatThemesContext {
         if self.themes.isEmpty, !reload {
             self.cacheDisposable.set((postbox.transaction { transaction -> CachedUniqueGiftChatThemes? in
                 return transaction.retrieveItemCacheEntry(id: entryId())?.get(CachedUniqueGiftChatThemes.self)
-            } |> deliverOn(self.queue)).start(next: { [weak self] cachedUniqueGiftChatThemes in
+            } |> deliverOn(self.queue)).start(next: { [weak self = self] cachedUniqueGiftChatThemes in
                 guard let self, let cachedUniqueGiftChatThemes else {
                     return
                 }
@@ -578,7 +578,7 @@ public final class UniqueGiftChatThemesContext {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] themes, nextOffset in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] themes, nextOffset in
             guard let self else {
                 return
             }

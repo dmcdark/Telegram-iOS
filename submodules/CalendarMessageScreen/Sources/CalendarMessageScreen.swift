@@ -70,7 +70,7 @@ private final class MediaPreviewView: SimpleLayer {
                     |> map { image in
                         return image.flatMap(processImage)
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] image in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] image in
                         guard let strongSelf = self else {
                             return
                         }
@@ -383,7 +383,7 @@ private final class DayComponent: Component {
             self.layer.addSublayer(self.titleView)
 
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.highligthedChanged = { [weak self] highligthed in
+            self.highligthedChanged = { [weak self = self] highligthed in
                 guard let strongSelf = self, let mediaPreviewView = strongSelf.mediaPreviewView else {
                     return
                 }
@@ -1061,7 +1061,7 @@ public final class CalendarMessageScreen: ViewController {
 
             super.init()
 
-            self.contextGestureContainerNode.shouldBegin = { [weak self] point in
+            self.contextGestureContainerNode.shouldBegin = { [weak self = self] point in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -1079,7 +1079,7 @@ public final class CalendarMessageScreen: ViewController {
                 return true
             }
 
-            self.contextGestureContainerNode.customActivationProgress = { [weak self] progress, update in
+            self.contextGestureContainerNode.customActivationProgress = { [weak self = self] progress, update in
                 guard let strongSelf = self, let currentGestureDayView = strongSelf.currentGestureDayView else {
                     return
                 }
@@ -1116,7 +1116,7 @@ public final class CalendarMessageScreen: ViewController {
                 }
             }
 
-            self.contextGestureContainerNode.activated = { [weak self] gesture, _ in
+            self.contextGestureContainerNode.activated = { [weak self = self] gesture, _ in
                 guard let strongSelf = self, let currentGestureDayView = strongSelf.currentGestureDayView else {
                     return
                 }
@@ -1180,7 +1180,7 @@ public final class CalendarMessageScreen: ViewController {
             self.isLoadingMoreDisposable = (self.calendarSource.isLoadingMore
             |> distinctUntilChanged
             |> filter { !$0 }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1188,7 +1188,7 @@ public final class CalendarMessageScreen: ViewController {
             }).strict()
 
             self.stateDisposable = (self.calendarSource.state
-            |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1295,7 +1295,7 @@ public final class CalendarMessageScreen: ViewController {
                         },
                         right: {
                         },
-                        middle: { [weak self] in
+                        middle: { [weak self = self] in
                             self?.selectionToolbarActionSelected()
                         }
                     )
@@ -1487,7 +1487,7 @@ public final class CalendarMessageScreen: ViewController {
                     mainPeer: chatPeer
                 )
             }
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] info in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] info in
                 guard let strongSelf = self, let info = info else {
                     return
                 }
@@ -1653,7 +1653,7 @@ public final class CalendarMessageScreen: ViewController {
                         foregroundColor: self.presentationData.theme.list.itemPrimaryTextColor,
                         strings: self.presentationData.strings,
                         theme: self.presentationData.theme,
-                        dayAction: { [weak self] timestamp in
+                        dayAction: { [weak self = self] timestamp in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1706,7 +1706,7 @@ public final class CalendarMessageScreen: ViewController {
                                 }
                             }
                         },
-                        monthAction: { [weak self] range in
+                        monthAction: { [weak self = self] range in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1921,7 +1921,7 @@ public final class CalendarMessageScreen: ViewController {
             initialTimestamp: self.initialTimestamp,
             enableMessageRangeDeletion: self.enableMessageRangeDeletion,
             canNavigateToEmptyDays: self.canNavigateToEmptyDays,
-            navigateToOffset: { [weak self] index, timestamp in
+            navigateToOffset: { [weak self = self] index, timestamp in
                 guard let strongSelf = self else {
                     return
                 }

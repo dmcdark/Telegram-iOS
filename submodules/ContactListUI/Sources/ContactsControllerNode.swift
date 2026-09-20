@@ -130,7 +130,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         self.view.addSubview(self.edgeEffectView)
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -147,17 +147,17 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }).strict()
                 
-        inviteImpl = { [weak self] in
+        inviteImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.openInvite?()
             }
         }
         
-        contextAction = { [weak self] peer, node, gesture, location, isStories in
+        contextAction = { [weak self = self] peer, node, gesture, location, isStories in
             self?.contextAction(peer: peer, node: node, gesture: gesture, location: location, isStories: isStories)
         }
         
-        self.contactListNode.contentOffsetChanged = { [weak self] offset in
+        self.contactListNode.contentOffsetChanged = { [weak self = self] offset in
             guard let self else {
                 return
             }
@@ -187,7 +187,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                     if !self.storiesUnlocked {
                         if value < -40.0 {
                             self.storiesUnlocked = true
-                            DispatchQueue.main.async { [weak self] in
+                            DispatchQueue.main.async { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -209,7 +209,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                     if value >= ChatListNavigationBar.storiesScrollHeight {
                         self.storiesUnlocked = false
                         
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             self?.onStoriesLockedUpdated(isLocked: false)
                         }
                     }
@@ -219,7 +219,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }*/
         }
         
-        self.contactListNode.contentScrollingEnded = { [weak self] listView in
+        self.contactListNode.contentScrollingEnded = { [weak self = self] listView in
             guard let self else {
                 return false
             }
@@ -230,7 +230,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         self.storiesReady.set(.single(true))
         
         /*self.storySubscriptionsDisposable = (self.context.engine.messages.storySubscriptions(isHidden: true)
-        |> deliverOnMainQueue).start(next: { [weak self] storySubscriptions in
+        |> deliverOnMainQueue).start(next: { [weak self = self] storySubscriptions in
             guard let self else {
                 return
             }
@@ -241,7 +241,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             self.storiesReady.set(.single(true))
         }).strict()*/
 
-        self.contactListNode.openStories = { [weak self] peer, sourceNode in
+        self.contactListNode.openStories = { [weak self = self] peer, sourceNode in
             guard let self else {
                 return
             }
@@ -308,7 +308,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             title = self.presentationData.strings.Contacts_SelectedContacts(Int32(selectionState.selectedPeerIndices.count))
             leftButton = AnyComponentWithIdentity(id: "done", component: AnyComponent(NavigationButtonComponent(
                 content: .text(title: self.presentationData.strings.Common_Done, isBold: true),
-                pressed: { [weak self] sourceView in
+                pressed: { [weak self = self] sourceView in
                     guard let self else {
                         return
                     }
@@ -322,7 +322,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             title = self.presentationData.strings.Contacts_Title
             leftButton = AnyComponentWithIdentity(id: "sort", component: AnyComponent(NavigationButtonComponent(
                 content: .text(title: self.presentationData.strings.Contacts_Sort, isBold: false),
-                pressed: { [weak self] sourceView in
+                pressed: { [weak self = self] sourceView in
                     guard let self else {
                         return
                     }
@@ -332,7 +332,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             )))
             rightButtons = [AnyComponentWithIdentity(id: "add", component: AnyComponent(NavigationButtonComponent(
                 content: .icon(imageName: "Chat List/AddIcon"),
-                pressed: { [weak self] _ in
+                pressed: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -372,7 +372,7 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                 tabsNodeIsSearch: tabsNodeIsSearch,
                 accessoryPanelContainer: nil,
                 accessoryPanelContainerHeight: 0.0,
-                activateSearch: { [weak self] searchContentNode in
+                activateSearch: { [weak self = self] searchContentNode in
                     guard let self else {
                         return
                     }
@@ -484,28 +484,28 @@ final class ContactsControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         self.isSearchDisplayControllerActive = ChatListNavigationBar.ActiveSearch(isExternal: placeholderNode == nil)
         self.storiesUnlocked = false
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .navigation, contentNode: ContactsSearchContainerNode(context: self.context, glass: true, externalSearchBar: true, onlyWriteable: false, categories: [.cloudContacts, .global, .deviceContacts], addContact: { [weak self] phoneNumber in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .navigation, contentNode: ContactsSearchContainerNode(context: self.context, glass: true, externalSearchBar: true, onlyWriteable: false, categories: [.cloudContacts, .global, .deviceContacts], addContact: { [weak self = self] phoneNumber in
             if let requestAddContact = self?.requestAddContact {
                 requestAddContact(phoneNumber)
             }
-        }, openPeer: { [weak self] peer, _ in
+        }, openPeer: { [weak self = self] peer, _ in
             if let requestOpenPeerFromSearch = self?.requestOpenPeerFromSearch {
                 requestOpenPeerFromSearch(peer)
             }
-        }, openDisabledPeer: { [weak self] peer, reason in
+        }, openDisabledPeer: { [weak self = self] peer, reason in
             if let requestOpenDisabledPeerFromSearch = self?.requestOpenDisabledPeerFromSearch {
                 requestOpenDisabledPeerFromSearch(peer, reason)
             }
-        }, contextAction: { [weak self] peer, node, gesture, location in
+        }, contextAction: { [weak self = self] peer, node, gesture, location in
             self?.contextAction(peer: peer, node: node, gesture: gesture, location: location, isStories: false)
-        }), cancel: { [weak self] in
+        }), cancel: { [weak self = self] in
             if let requestDeactivateSearch = self?.requestDeactivateSearch {
                 requestDeactivateSearch()
             }
         }, fieldStyle: placeholderNode?.fieldStyle ?? .modern, searchBarIsExternal: placeholderNode == nil)
         
         self.searchDisplayController?.containerLayoutUpdated(containerLayout, navigationBarHeight: navigationBarHeight, transition: .immediate)
-        self.searchDisplayController?.activate(insertSubnode: { [weak self] subnode, isSearchBar in
+        self.searchDisplayController?.activate(insertSubnode: { [weak self = self] subnode, isSearchBar in
             if let strongSelf = self {
                 if isSearchBar {
                     if let navigationBarComponentView = strongSelf.navigationBarView.view as? ChatListNavigationBar.View {

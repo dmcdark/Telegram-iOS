@@ -110,7 +110,7 @@ final class FullscreenControlsComponent: Component {
             
             self.moreNode.updateColor(.white, transition: .immediate)
             
-            self.leftButton.highligthedChanged = { [weak self] highlighted in
+            self.leftButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -319,7 +319,7 @@ final class FullscreenControlsComponent: Component {
                     content: AnyComponent(
                         BundleIconComponent(name: "Instant View/MinimizeArrow", tintColor: textColor)
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -338,7 +338,7 @@ final class FullscreenControlsComponent: Component {
             }
                 
             transition.setFrame(view: self.moreNode.view, frame: CGRect(origin: CGPoint(x: rightBackgroundFrame.maxX - 42.0, y: -4.0), size: CGSize(width: 36.0, height: 36.0)))
-            self.moreNode.action = { [weak self] node, gesture in
+            self.moreNode.action = { [weak self = self] node, gesture in
                 guard let self, let component = self.component else {
                     return
                 }

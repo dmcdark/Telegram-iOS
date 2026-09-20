@@ -183,7 +183,7 @@ public class ItemListDatePickerItemNode: ListViewItemNode, ItemListItemNode {
                 insets = itemListNeighborsGroupedInsets(neighbors, params)
             }
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] animation in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] animation in
                 if let strongSelf = self {
                     strongSelf.item = item
                     
@@ -263,17 +263,17 @@ public class ItemListDatePickerItemNode: ListViewItemNode, ItemListItemNode {
                         strongSelf.containerNode.addSubnode(datePickerNode)
                         strongSelf.datePickerNode = datePickerNode
                     }
-                    datePickerNode.valueUpdated = { [weak self] date in
+                    datePickerNode.valueUpdated = { [weak self = self] date in
                         if let self {
                             self.item?.updated?(Int32(date.timeIntervalSince1970))
                         }
                     }
-                    datePickerNode.toggleDateSelection = { [weak self] in
+                    datePickerNode.toggleDateSelection = { [weak self = self] in
                         if let self {
                             self.item?.toggleDateSelection?()
                         }
                     }
-                    datePickerNode.toggleTimeSelection = { [weak self] in
+                    datePickerNode.toggleTimeSelection = { [weak self = self] in
                         if let self {
                             self.item?.toggleTimeSelection?()
                         }

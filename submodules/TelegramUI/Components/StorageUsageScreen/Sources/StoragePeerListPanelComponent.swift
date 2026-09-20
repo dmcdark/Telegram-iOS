@@ -138,7 +138,7 @@ private final class PeerListItemComponent: Component {
             
             self.containerButton.layer.addSublayer(self.avatarNode.layer)
             
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
+            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self = self] value in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -146,7 +146,7 @@ private final class PeerListItemComponent: Component {
                 self.containerButton.backgroundColor = value ? component.theme.list.plainBackgroundColor : nil
                 self.containerButton.layer.cornerRadius = value ? 10.0 : 0.0
             }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, transition in
                 guard let self else {
                     return
                 }
@@ -161,7 +161,7 @@ private final class PeerListItemComponent: Component {
                 self.state?.updated(transition: mappedTransition)
             }
             
-            self.containerButton.highligthedChanged = { [weak self] isHighlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }
@@ -191,7 +191,7 @@ private final class PeerListItemComponent: Component {
             }
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component, let peer = component.peer else {
                     gesture.cancel()
                     return

@@ -252,7 +252,7 @@ public final class GiftStoreContentComponent: Component {
                                         )
                                     ),
                                     effectAlignment: .center,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -265,13 +265,13 @@ public final class GiftStoreContentComponent: Component {
                                                 acceptedPrice: nil,
                                                 skipConfirmation: false,
                                                 starsTopUpOptions: starsTopUpOptions,
-                                                buyGift: { [weak self] slug, peerId, price in
+                                                buyGift: { [weak self = self] slug, peerId, price in
                                                     return self?.starGiftsContext?.buyStarGift(slug: slug, peerId: peerId, price: price) ?? .complete()
                                                 },
                                                 getController: controller,
                                                 updateProgress: { _ in },
                                                 updateIsBalanceVisible: { _ in },
-                                                completion: { [weak self] in
+                                                completion: { [weak self = self] in
                                                     if let self, let component = self.component {
                                                         component.completion?(uniqueGift)
                                                     }
@@ -370,7 +370,7 @@ public final class GiftStoreContentComponent: Component {
                             )
                         ),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -513,7 +513,7 @@ public final class GiftStoreContentComponent: Component {
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Store_SortByPrice, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/SortValue"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -524,7 +524,7 @@ public final class GiftStoreContentComponent: Component {
             })))
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Store_SortByDate, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/SortDate"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -535,7 +535,7 @@ public final class GiftStoreContentComponent: Component {
             })))
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Store_SortByNumber, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/SortNumber"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -548,19 +548,19 @@ public final class GiftStoreContentComponent: Component {
             items.append(.separator)
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Store_AllListings, icon: { theme in
                 return component.resaleGiftsContext.currentState?.starsOnly == false ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 self?.updateStarsOnly(false)
             })))
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Store_StarsOnlyListings, icon: { theme in
                 return component.resaleGiftsContext.currentState?.starsOnly == true ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 self?.updateStarsOnly(true)
             })))
             
             let contextController = makeContextController(presentationData: presentationData, source: .reference(GiftStoreReferenceContentSource(controller: controller, sourceView: sourceView)), items: .single(ContextController.Items(content: .list(items))), gesture: nil)
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -623,7 +623,7 @@ public final class GiftStoreContentComponent: Component {
                 selectedAttributes: selectedModelAttributes,
                 attributeCount: self.starGiftsState?.attributeCount ?? [:],
                 searchQuery: searchQueryPromise.get(),
-                attributeSelected: { [weak self] attribute, exclusive in
+                attributeSelected: { [weak self = self] attribute, exclusive in
                     guard let self else {
                         return
                     }
@@ -648,7 +648,7 @@ public final class GiftStoreContentComponent: Component {
                     self.starGiftsContext?.updateFilterAttributes(updatedFilterAttributes)
                     component.scrollToTop()
                 },
-                selectAll: { [weak self] in
+                selectAll: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -671,7 +671,7 @@ public final class GiftStoreContentComponent: Component {
                 items: .single(ContextController.Items(content: .list(items))),
                 gesture: nil
             )
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -731,7 +731,7 @@ public final class GiftStoreContentComponent: Component {
                 selectedAttributes: selectedBackdropAttributes,
                 attributeCount: self.starGiftsState?.attributeCount ?? [:],
                 searchQuery: searchQueryPromise.get(),
-                attributeSelected: { [weak self] attribute, exclusive in
+                attributeSelected: { [weak self = self] attribute, exclusive in
                     guard let self else {
                         return
                     }
@@ -756,7 +756,7 @@ public final class GiftStoreContentComponent: Component {
                     self.starGiftsContext?.updateFilterAttributes(updatedFilterAttributes)
                     component.scrollToTop()
                 },
-                selectAll: { [weak self] in
+                selectAll: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -779,7 +779,7 @@ public final class GiftStoreContentComponent: Component {
                 items: .single(ContextController.Items(content: .list(items))),
                 gesture: nil
             )
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -839,7 +839,7 @@ public final class GiftStoreContentComponent: Component {
                 selectedAttributes: selectedPatternAttributes,
                 attributeCount: self.starGiftsState?.attributeCount ?? [:],
                 searchQuery: searchQueryPromise.get(),
-                attributeSelected: { [weak self] attribute, exclusive in
+                attributeSelected: { [weak self = self] attribute, exclusive in
                     guard let self else {
                         return
                     }
@@ -864,7 +864,7 @@ public final class GiftStoreContentComponent: Component {
                     self.starGiftsContext?.updateFilterAttributes(updatedFilterAttributes)
                     component.scrollToTop()
                 },
-                selectAll: { [weak self] in
+                selectAll: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -887,7 +887,7 @@ public final class GiftStoreContentComponent: Component {
                 items: .single(ContextController.Items(content: .list(items))),
                 gesture: nil
             )
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -907,7 +907,7 @@ public final class GiftStoreContentComponent: Component {
             if self.component == nil {
                 self.starGiftsContext = component.resaleGiftsContext
                 self.starGiftsDisposable = (self.starGiftsContext!.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -999,7 +999,7 @@ public final class GiftStoreContentComponent: Component {
                 index: sortingIndex,
                 iconName: sortingIcon,
                 title: sortingTitle,
-                action: { [weak self] view in
+                action: { [weak self = self] view in
                     if let self {
                         self.selectedFilterId = AnyHashable(FilterItemId.sort)
                         self.openSortContextMenu(sourceView: view)
@@ -1041,7 +1041,7 @@ public final class GiftStoreContentComponent: Component {
                 id: AnyHashable(FilterItemId.model),
                 index: Int(modelCount),
                 title: modelTitle,
-                action: { [weak self] view in
+                action: { [weak self = self] view in
                     if let self {
                         self.selectedFilterId = AnyHashable(FilterItemId.model)
                         self.openModelContextMenu(sourceView: view)
@@ -1053,7 +1053,7 @@ public final class GiftStoreContentComponent: Component {
                 id: AnyHashable(FilterItemId.backdrop),
                 index: Int(backdropCount),
                 title: backdropTitle,
-                action: { [weak self] view in
+                action: { [weak self = self] view in
                     if let self {
                         self.selectedFilterId = AnyHashable(FilterItemId.backdrop)
                         self.openBackdropContextMenu(sourceView: view)
@@ -1065,7 +1065,7 @@ public final class GiftStoreContentComponent: Component {
                 id: AnyHashable(FilterItemId.symbol),
                 index: Int(symbolCount),
                 title: symbolTitle,
-                action: { [weak self] view in
+                action: { [weak self = self] view in
                     if let self {
                         self.selectedFilterId = AnyHashable(FilterItemId.symbol)
                         self.openSymbolContextMenu(sourceView: view)
@@ -1289,7 +1289,7 @@ final class GiftStoreScreenComponent: Component {
                     text: presentationData.strings.Gift_Store_Balance_MyStars,
                     textLayout: .secondLineWithValue(formatStarsAmountText(starsBalance, dateTimeFormat: presentationData.dateTimeFormat)),
                     icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Stars"), color: theme.contextMenu.primaryColor) },
-                    action: { [weak self] _, f in
+                    action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
@@ -1305,7 +1305,7 @@ final class GiftStoreScreenComponent: Component {
                     text: presentationData.strings.Gift_Store_Balance_MyTon,
                     textLayout: .secondLineWithValue(formatTonAmountText(tonBalance, dateTimeFormat: presentationData.dateTimeFormat)),
                     icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Ton"), color: theme.contextMenu.primaryColor) },
-                    action: { [weak self] _, f in
+                    action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
@@ -1337,7 +1337,7 @@ final class GiftStoreScreenComponent: Component {
             
             if self.component == nil, let tonContext = component.context.tonContext {
                 self.starsStateDisposable = (tonContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -1375,7 +1375,7 @@ final class GiftStoreScreenComponent: Component {
                     BalanceComponent(
                         context: component.context,
                         theme: environment.theme,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1443,7 +1443,7 @@ final class GiftStoreScreenComponent: Component {
                         isPlain: false,
                         confirmPurchaseImmediately: false,
                         starsTopUpOptions: nil,
-                        scrollToTop: { [weak self] in
+                        scrollToTop: { [weak self = self] in
                             self?.scrollToTop()
                         },
                         controller: {
@@ -1499,7 +1499,7 @@ final class GiftStoreScreenComponent: Component {
                 let starsFilterSize = self.starsFilter.update(
                     transition: transition,
                     component: AnyComponent(
-                        StarsFilterComponent(theme: theme, text: environment.strings.Gift_Store_ShowStarsListings, isSelected: component.resaleGiftsContext.currentState?.starsOnly ?? false, selectionUpdated: { [weak self] starsOnly in
+                        StarsFilterComponent(theme: theme, text: environment.strings.Gift_Store_ShowStarsListings, isSelected: component.resaleGiftsContext.currentState?.starsOnly ?? false, selectionUpdated: { [weak self = self] starsOnly in
                             guard let self else {
                                 return
                             }
@@ -1589,7 +1589,7 @@ public class GiftStoreScreen: ViewControllerComponentContainer {
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.context.sharedContext.currentPresentationData.with { $0 }.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? GiftStoreScreenComponent.View else {
                 return
             }

@@ -82,7 +82,7 @@ private final class ReorderingGestureRecognizer: UIGestureRecognizer, UIGestureR
                     return
                 }
                 self.initialLocation = location
-                let timer = Foundation.Timer(timeInterval: 0.2, target: ReorderingGestureRecognizerTimerTarget { [weak self] in
+                let timer = Foundation.Timer(timeInterval: 0.2, target: ReorderingGestureRecognizerTimerTarget { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -344,7 +344,7 @@ public final class HorizontalTabsComponent: Component {
             self.scrollView.clipsToBounds = true
             self.scrollView.delegate = self
             
-            self.scrollView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+            self.scrollView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
                 guard let self else {
                     return false
                 }
@@ -355,13 +355,13 @@ public final class HorizontalTabsComponent: Component {
             
             self.lensView.contentView.addSubview(self.scrollView)
             self.lensView.selectedContentView.addSubview(self.selectedScrollView)
-            /*self.lensView.onUpdatedIsAnimating = { [weak self] _ in
+            /*self.lensView.onUpdatedIsAnimating = { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.alpha = self.lensView.isAnimating ? 1.0 : 0.7
             }*/
-            /*self.lensView.isLiftedAnimationCompleted = { [weak self] in
+            /*self.lensView.isLiftedAnimationCompleted = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -379,7 +379,7 @@ public final class HorizontalTabsComponent: Component {
             self.tapRecognizer = tapRecognizer
             self.addGestureRecognizer(tapRecognizer)
             
-            let reorderingGesture = ReorderingGestureRecognizer(shouldBegin: { [weak self] point in
+            let reorderingGesture = ReorderingGestureRecognizer(shouldBegin: { [weak self = self] point in
                 guard let self else {
                     return false
                 }
@@ -392,7 +392,7 @@ public final class HorizontalTabsComponent: Component {
                     }
                 }
                 return false
-            }, began: { [weak self] point in
+            }, began: { [weak self = self] point in
                 guard let self else {
                     return
                 }
@@ -409,7 +409,7 @@ public final class HorizontalTabsComponent: Component {
                         regularItemView.frame = itemFrame
                         selectedItemView.frame = itemFrame
                         
-                        self.reorderingAutoScrollAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                        self.reorderingAutoScrollAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                             guard let self, let currentLocation = self.reorderingGesture?.currentLocation else {
                                 return
                             }
@@ -434,7 +434,7 @@ public final class HorizontalTabsComponent: Component {
                         return
                     }
                 }
-            }, ended: { [weak self] in
+            }, ended: { [weak self = self] in
                 guard let self, let reorderingItem = self.reorderingItem else {
                     return
                 }
@@ -458,7 +458,7 @@ public final class HorizontalTabsComponent: Component {
                 self.reorderingAutoScrollAnimator = nil
                 
                 self.state?.updated(transition: .easeInOut(duration: 0.25))
-            }, moved: { [weak self] offset in
+            }, moved: { [weak self = self] offset in
                 guard let self, let reorderingItem = self.reorderingItem else {
                     return
                 }
@@ -535,7 +535,7 @@ public final class HorizontalTabsComponent: Component {
                         if let tab = component.tabs.first(where: { $0.id == id }) {
                             self.didTapOnAnItem = true
                             self.didTapOnAnItemTimer?.invalidate()
-                            self.didTapOnAnItemTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
+                            self.didTapOnAnItemTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -557,7 +557,7 @@ public final class HorizontalTabsComponent: Component {
                 self.isDraggingTabs = isDragging
                 
                 if !isDragging {
-                    self.temporaryLiftTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false, block: { [weak self] timer in
+                    self.temporaryLiftTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false, block: { [weak self = self] timer in
                         guard let self else {
                             return
                         }
@@ -620,7 +620,7 @@ public final class HorizontalTabsComponent: Component {
                     self.temporaryLiftTimer = nil
                     
                     if !transition.animation.isImmediate && self.didTapOnAnItem {
-                        self.temporaryLiftTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false, block: { [weak self] _ in
+                        self.temporaryLiftTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false, block: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -971,14 +971,14 @@ private final class ItemComponent: Component {
             self.containerView.targetViewForActivationProgress = self.extractedContainerView.contentView
             self.addSubview(self.containerView)
             
-            self.containerView.activated = { [weak self] gesture, _ in
+            self.containerView.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
                 component.tab.contextAction?(self.extractedContainerView, gesture)
             }
             
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                 guard let self, let component else {
                     return
                 }

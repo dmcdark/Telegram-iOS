@@ -39,7 +39,7 @@ final class PeerInfoHeaderActionButtonNode: HighlightableButtonNode {
         self.addSubnode(self.containerNode)
         self.addSubnode(self.textNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.layer.removeAnimation(forKey: "opacity")
@@ -51,7 +51,7 @@ final class PeerInfoHeaderActionButtonNode: HighlightableButtonNode {
             }
         }
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             if let strongSelf = self {
                 strongSelf.action(strongSelf, gesture)
             }

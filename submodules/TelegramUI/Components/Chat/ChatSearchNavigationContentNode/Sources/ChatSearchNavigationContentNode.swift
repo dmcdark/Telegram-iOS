@@ -96,24 +96,24 @@ public final class ChatSearchNavigationContentNode: NavigationBarContentNode {
         self.backgroundContainer.contentView.addSubview(self.close.background)
         self.close.background.contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onCloseTapGesture(_:))))
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.interaction.dismissMessageSearch()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.interaction.updateMessageSearch(query)
         }
         
-        self.searchBar.clearPrefix = { [weak self] in
+        self.searchBar.clearPrefix = { [weak self = self] in
             self?.interaction.toggleMembersSearch(false)
         }
         
-        self.searchBar.clearTokens = { [weak self] in
+        self.searchBar.clearTokens = { [weak self = self] in
             self?.interaction.toggleMembersSearch(false)
         }
         
-        self.searchBar.tokensUpdated = { [weak self] tokens in
+        self.searchBar.tokensUpdated = { [weak self = self] tokens in
             if tokens.isEmpty {
                 self?.interaction.toggleMembersSearch(false)
             }
@@ -121,7 +121,7 @@ public final class ChatSearchNavigationContentNode: NavigationBarContentNode {
         
         if let statuses = interaction.statuses {
             self.searchingActivityDisposable = (statuses.searching
-            |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }

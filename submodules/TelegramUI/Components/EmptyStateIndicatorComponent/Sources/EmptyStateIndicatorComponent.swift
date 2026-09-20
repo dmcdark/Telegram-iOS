@@ -164,7 +164,7 @@ public final class EmptyStateIndicatorComponent: Component {
                         )),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -199,7 +199,7 @@ public final class EmptyStateIndicatorComponent: Component {
                                 Font.regular(17.0),
                             color: component.theme.list.itemAccentColor)
                         ), 
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

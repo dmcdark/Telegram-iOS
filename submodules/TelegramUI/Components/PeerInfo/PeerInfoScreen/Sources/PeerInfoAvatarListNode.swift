@@ -88,7 +88,7 @@ final class PeerInfoAvatarListNode: ASDisplayNode {
         }
         |> take(1))
         
-        self.listContainerNode.itemsUpdated = { [weak self] items in
+        self.listContainerNode.itemsUpdated = { [weak self = self] items in
             if let strongSelf = self {
                 strongSelf.item = items.first
                 strongSelf.itemsUpdated?(items)
@@ -98,7 +98,7 @@ final class PeerInfoAvatarListNode: ASDisplayNode {
             }
         }
 
-        self.pinchSourceNode.activate = { [weak self] sourceNode in
+        self.pinchSourceNode.activate = { [weak self = self] sourceNode in
             guard let strongSelf = self, let (_, _, _, _, _, isExpanded) = strongSelf.arguments, isExpanded else {
                 return
             }
@@ -111,7 +111,7 @@ final class PeerInfoAvatarListNode: ASDisplayNode {
             strongSelf.listContainerNode.contentNode.updateIsInPinchMode(true)
         }
 
-        self.pinchSourceNode.animatedOut = { [weak self] in
+        self.pinchSourceNode.animatedOut = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -119,7 +119,7 @@ final class PeerInfoAvatarListNode: ASDisplayNode {
             strongSelf.listContainerNode.contentNode.updateIsInPinchMode(false)
         }
         
-        self.listContainerNode.openStories = { [weak self] in
+        self.listContainerNode.openStories = { [weak self = self] in
             guard let self else {
                 return
             }

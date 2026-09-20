@@ -32,7 +32,7 @@ final class MediaPickerManageNode: ASDisplayNode {
         self.addSubnode(self.textNode)
         self.addSubnode(self.buttonNode)
         
-        self.buttonNode.pressed = { [weak self] in
+        self.buttonNode.pressed = { [weak self = self] in
             guard let self else {
                 return
             }

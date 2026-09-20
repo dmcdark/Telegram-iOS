@@ -47,14 +47,14 @@ public final class PeachHaptic: EmojiHaptic {
 
         let startTime: Double = 0.0
         
-        let block = { [weak self] in
+        let block = { [weak self = self] in
             guard let strongSelf = self, strongSelf.enabled else {
                 return
             }
             
             strongSelf.time = startTime
             strongSelf.beat(time: startTime)
-            strongSelf.timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self] in
+            strongSelf.timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self = self] in
                 guard let strongSelf = self, strongSelf.enabled else {
                     return
                 }

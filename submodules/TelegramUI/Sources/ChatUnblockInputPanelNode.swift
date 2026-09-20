@@ -25,7 +25,7 @@ final class ChatUnblockInputPanelNode: ChatInputPanelNode {
         didSet {
             if self.statusDisposable == nil {
                 if let startingBot = self.interfaceInteraction?.statuses?.unblockingPeer {
-                    self.statusDisposable = (startingBot |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                    self.statusDisposable = (startingBot |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                         if let strongSelf = self {
                             strongSelf.title.view?.alpha = value ? 0.7 : 1.0
                         }
@@ -54,7 +54,7 @@ final class ChatUnblockInputPanelNode: ChatInputPanelNode {
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), for: [.touchUpInside])
         
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }

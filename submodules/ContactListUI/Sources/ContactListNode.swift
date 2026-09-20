@@ -1290,7 +1290,7 @@ public final class ContactListNode: ASDisplayNode {
         self.addSubnode(self.authorizationNode)
         
         self.authorizationDisposable = (contactsAuthorization.get()
-        |> deliverOnMainQueue).start(next: { [weak self] authorization in
+        |> deliverOnMainQueue).start(next: { [weak self = self] authorization in
             guard let self else {
                 return
             }
@@ -1304,13 +1304,13 @@ public final class ContactListNode: ASDisplayNode {
         let previousSelectionState = Atomic<ContactListNodeGroupSelectionState?>(value: nil)
         let previousPendingRemovalPeerIds = Atomic<Set<EnginePeer.Id>?>(value: nil)
         
-        let interaction = ContactListNodeInteraction(activateSearch: { [weak self] in
+        let interaction = ContactListNodeInteraction(activateSearch: { [weak self = self] in
             self?.activateSearch?()
         }, authorize: {
             authorizeImpl?()
-        }, suppressWarning: { [weak self] in
+        }, suppressWarning: { [weak self = self] in
             self?.suppressPermissionWarning?()
-        }, openPeer: { [weak self] peer, action, sourceNode, gesture in
+        }, openPeer: { [weak self = self] peer, action, sourceNode, gesture in
             if let strongSelf = self {
                 if strongSelf.multipleSelection {
                     var updated = false
@@ -1331,17 +1331,17 @@ public final class ContactListNode: ASDisplayNode {
                     strongSelf.openPeer?(peer, action, sourceNode, gesture)
                 }
             }
-        }, openDisabledPeer: { [weak self] peer, reason in
+        }, openDisabledPeer: { [weak self = self] peer, reason in
             guard let self else {
                 return
             }
             self.openDisabledPeer?(peer, reason)
-        }, contextAction: contextAction, openStories: { [weak self] peer, sourceNode in
+        }, contextAction: contextAction, openStories: { [weak self = self] peer, sourceNode in
             guard let self else {
                 return
             }
             self.openStories?(peer, sourceNode)
-        }, deselectAll: { [weak self] in
+        }, deselectAll: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1349,7 +1349,7 @@ public final class ContactListNode: ASDisplayNode {
                 return ContactListNodeGroupSelectionState()
             })
             self.deselectedAll?()
-        }, toggleSelection: { [weak self] peers, value in
+        }, toggleSelection: { [weak self = self] peers, value in
             guard let self = self else {
                 return
             }
@@ -1371,11 +1371,11 @@ public final class ContactListNode: ASDisplayNode {
                 return state
             })
             self.updatedSelection?(peers, value)
-        }, openContactAccessPicker: { [weak self] in
+        }, openContactAccessPicker: { [weak self = self] in
             self?.openContactAccessPicker?()
         })
         
-        self.indexNode.indexSelected = { [weak self] section in
+        self.indexNode.indexSelected = { [weak self = self] section in
             guard let strongSelf = self, let layout = strongSelf.validLayout, let entries = previousEntries.with({ $0 }) else {
                 return
             }
@@ -2068,12 +2068,12 @@ public final class ContactListNode: ASDisplayNode {
             }
         }
         self.disposable.set((transition
-        |> deliverOnMainQueue).start(next: { [weak self] transition in
+        |> deliverOnMainQueue).start(next: { [weak self = self] transition in
             self?.enqueueTransition(transition)
         }))
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -2120,13 +2120,13 @@ public final class ContactListNode: ASDisplayNode {
             }
         }).strict()
         
-        self.listNode.didEndScrolling = { [weak self] _ in
+        self.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self {
                 let _ = strongSelf.contentScrollingEnded?(strongSelf.listNode)
             }
         }
         
-        self.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self {
                 strongSelf.contentOffsetChanged?(offset)
             }
@@ -2147,7 +2147,7 @@ public final class ContactListNode: ASDisplayNode {
             })
         }
         
-        openPrivacyPolicyImpl = { [weak self] in
+        openPrivacyPolicyImpl = { [weak self = self] in
             self?.openPrivacyPolicy?()
         }
         
@@ -2302,7 +2302,7 @@ public final class ContactListNode: ASDisplayNode {
                     self.indexNode.isUserInteractionEnabled = !transition.indexSections.isEmpty
                 }
                 
-                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, scrollToItem: transition.scrollToItem, updateOpaqueState: nil, completion: { [weak self] _ in
+                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, scrollToItem: transition.scrollToItem, updateOpaqueState: nil, completion: { [weak self = self] _ in
                     if let strongSelf = self {
                         if !strongSelf.didSetReady {
                             strongSelf.didSetReady = true

@@ -96,7 +96,7 @@ public final class SettingsThemeWallpaperNode: ASDisplayNode {
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
         var firstTime = true
-        self.emojiImageNode.imageUpdated = { [weak self] image in
+        self.emojiImageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -303,7 +303,7 @@ public final class SettingsThemeWallpaperNode: ASDisplayNode {
 
                         self.updateIsLoaded(isLoaded: false, animated: false)
                         self.isLoadedDisposable.set((anyStatus
-                        |> deliverOnMainQueue).start(next: { [weak self] value in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] value in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -362,7 +362,7 @@ public final class SettingsThemeWallpaperNode: ASDisplayNode {
                 animatedStickerNode = current
             } else {
                 animatedStickerNode = DefaultAnimatedStickerNodeImpl()
-                animatedStickerNode.started = { [weak self] in
+                animatedStickerNode.started = { [weak self = self] in
                     self?.emojiImageNode.isHidden = true
                 }
                 self.animatedStickerNode = animatedStickerNode

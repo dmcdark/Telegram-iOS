@@ -79,7 +79,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
         self.containerNode.addSubnode(self.imageNode)
         self.containerNode.addSubnode(self.mediaBadgeNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -103,7 +103,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
         }
         self.imageNode.view.addGestureRecognizer(recognizer)
         
-        self.mediaBadgeNode.pressed = { [weak self] in
+        self.mediaBadgeNode.pressed = { [weak self = self] in
             self?.progressPressed()
         }
     }
@@ -205,7 +205,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                 self.imageNode.setSignal(mediaGridMessagePhoto(account: context.account, userLocation: .peer(message.id.peerId), photoReference: .message(message: MessageReference(message), media: image), fullRepresentationSize: CGSize(width: 300.0, height: 300.0), synchronousLoad: synchronousLoad), attemptSynchronously: synchronousLoad, dispatchOnDisplayLink: true)
                 
                 self.fetchStatusDisposable.set(nil)
-                self.statusNode.transitionToState(.none, completion: { [weak self] in
+                self.statusNode.transitionToState(.none, completion: { [weak self = self] in
                     self?.statusNode.isHidden = true
                 })
                 self.mediaBadgeNode.isHidden = true
@@ -221,7 +221,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                 self.item = (item, media, size, mediaDimensions)
                 
                 self.fetchStatusDisposable.set((messageMediaFileStatus(context: context, messageId: message.id, file: file)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                     if let strongSelf = self, let _ = strongSelf.item {
                         strongSelf.resourceStatus = status
                         
@@ -334,7 +334,7 @@ private final class VisualMediaItemNode: ASDisplayNode {
                     selectionNode.updateSelected(selected, animated: animated)
                     selectionNode.frame = CGRect(origin: CGPoint(), size: self.bounds.size)
                 } else {
-                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self] value in
+                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self = self] value in
                         if let strongSelf = self, let messageId = strongSelf.item?.0.message?.id {
                             var toggledValue = true
                             if let selectedMessageIds = strongSelf.interaction.selectedMessageIds, selectedMessageIds.contains(messageId) {
@@ -670,7 +670,7 @@ final class ChatListSearchMediaNode: ASDisplayNode, ASScrollViewDelegate {
         self.addSubnode(self.scrollNode)
         self.addSubnode(self.floatingHeaderNode)
         
-        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self] ids in
+        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self = self] ids in
             guard let strongSelf = self else {
                 return
             }
@@ -937,7 +937,7 @@ final class ChatListSearchMediaNode: ASDisplayNode, ASScrollViewDelegate {
                 }
             }
             
-            let timer = Timer(timeInterval: duration, target: TimerProxy { [weak self] in
+            let timer = Timer(timeInterval: duration, target: TimerProxy { [weak self = self] in
                 if let strongSelf = self {
                     if let flashHeaderDelayTimer = strongSelf.flashHeaderDelayTimer {
                         flashHeaderDelayTimer.invalidate()

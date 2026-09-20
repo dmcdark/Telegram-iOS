@@ -59,7 +59,7 @@ final class AuthorizationSequenceAwaitingAccountResetController: ViewController 
         self.displayNode = AuthorizationSequenceAwaitingAccountResetControllerNode(strings: self.strings, theme: self.theme)
         self.displayNodeDidLoad()
         
-        self.controllerNode.reset = { [weak self] in
+        self.controllerNode.reset = { [weak self = self] in
             self?.reset?()
         }
         

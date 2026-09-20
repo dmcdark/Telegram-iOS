@@ -230,7 +230,7 @@ public class InvisibleInkDustView: UIView {
                 
                 self.emitterSpotNode.layer.anchorPoint = CGPoint(x: position.x / self.emitterMaskNode.frame.width, y: position.y / self.emitterMaskNode.frame.height)
                 self.emitterSpotNode.position = position
-                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self] _ in
+                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self = self] _ in
                     self?.alpha = 0.0
                     self?.emitterNode.view.mask = nil
                     
@@ -516,7 +516,7 @@ public class InvisibleInkDustNode: ASDisplayNode {
                 }
             }
             
-            Queue.mainQueue().after(0.1 * UIView.animationDurationFactor()) { [weak self] in
+            Queue.mainQueue().after(0.1 * UIView.animationDurationFactor()) { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -540,7 +540,7 @@ public class InvisibleInkDustNode: ASDisplayNode {
                 
                 self.textSpotNode.layer.anchorPoint = CGPoint(x: location.x / self.emitterMaskNode.frame.width, y: location.y / self.emitterMaskNode.frame.height)
                 self.textSpotNode.position = location
-                self.textSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self] _ in
+                self.textSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -555,7 +555,7 @@ public class InvisibleInkDustNode: ASDisplayNode {
                 
                 self.emitterSpotNode.layer.anchorPoint = CGPoint(x: location.x / self.emitterMaskNode.frame.width, y: location.y / self.emitterMaskNode.frame.height)
                 self.emitterSpotNode.position = location
-                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self] _ in
+                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.55 + durationAddition, removeOnCompletion: false, completion: { [weak self = self] _ in
                     self?.alpha = 0.0
                     self?.emitterNode.view.mask = nil
                     

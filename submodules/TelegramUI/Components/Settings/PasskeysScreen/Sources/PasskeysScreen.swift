@@ -73,7 +73,7 @@ final class PasskeysScreenComponent: Component {
         }
         
         func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -118,7 +118,7 @@ final class PasskeysScreenComponent: Component {
 
         private func createPasskey() {
             if #available(iOS 15.0, *) {
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -188,7 +188,7 @@ final class PasskeysScreenComponent: Component {
                 text: environment.strings.Passkeys_DeleteAlert_Text,
                 actions: [
                     TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                    TextAlertAction(type: .destructiveAction, title: environment.strings.Passkeys_DeleteAlert_Action, action: { [weak self] in
+                    TextAlertAction(type: .destructiveAction, title: environment.strings.Passkeys_DeleteAlert_Action, action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -242,7 +242,7 @@ final class PasskeysScreenComponent: Component {
                 if self.passkeysData == nil {
                     self.loadPasskeysDataDisposable = (component.context.engine.auth.passkeysData()
                     |> take(1)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] data in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] data in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -284,13 +284,13 @@ final class PasskeysScreenComponent: Component {
                         strings: environment.strings,
                         insets: UIEdgeInsets(top: environment.statusBarHeight + environment.navigationHeight, left: 0.0, bottom: environment.safeInsets.bottom, right: 0.0),
                         displaySkip: component.displaySkip,
-                        createPasskeyAction: { [weak self] in
+                        createPasskeyAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.createPasskey()
                         },
-                        skipAction: { [weak self] in
+                        skipAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -338,13 +338,13 @@ final class PasskeysScreenComponent: Component {
                         strings: environment.strings,
                         insets: UIEdgeInsets(top: environment.statusBarHeight, left: 0.0, bottom: environment.safeInsets.bottom, right: 0.0),
                         passkeys: passkeysData,
-                        addPasskeyAction: { [weak self] in
+                        addPasskeyAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.createPasskey()
                         },
-                        deletePasskeyAction: { [weak self] id in
+                        deletePasskeyAction: { [weak self = self] id in
                             guard let self else {
                                 return
                             }

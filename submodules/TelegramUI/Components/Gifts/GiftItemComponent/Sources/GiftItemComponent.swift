@@ -387,7 +387,7 @@ public final class GiftItemComponent: Component {
             }
             self.backgroundLayer.masksToBounds = true
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return
@@ -642,7 +642,7 @@ public final class GiftItemComponent: Component {
                 }
                 
                 if self.giftAuctionTimer == nil {
-                    self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                    self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                         self?.componentState?.updated()
                     }, queue: Queue.mainQueue())
                     self.giftAuctionTimer?.start()

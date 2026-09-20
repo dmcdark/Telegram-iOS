@@ -100,7 +100,7 @@ public final class LocationViewController: ViewController {
         self.navigationPresentation = .modal
                 
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let strongSelf = self, strongSelf.basePresentationData.theme !== presentationData.theme else {
                 return
             }
@@ -108,7 +108,7 @@ public final class LocationViewController: ViewController {
             strongSelf.updateEffectivePresentationData(animated: true)
         })
                 
-        self.interaction = LocationViewInteraction(toggleMapModeSelection: { [weak self] in
+        self.interaction = LocationViewInteraction(toggleMapModeSelection: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -117,7 +117,7 @@ public final class LocationViewController: ViewController {
                 state.displayingMapModeOptions = !state.displayingMapModeOptions
                 return state
             }
-        }, updateMapMode: { [weak self] mode in
+        }, updateMapMode: { [weak self = self] mode in
             guard let strongSelf = self else {
                 return
             }
@@ -129,7 +129,7 @@ public final class LocationViewController: ViewController {
                 return state
             }
             strongSelf.updateEffectivePresentationData(animated: true)
-        }, toggleTrackingMode: { [weak self] in
+        }, toggleTrackingMode: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -146,7 +146,7 @@ public final class LocationViewController: ViewController {
                 }
                 return state
             }
-        }, goToCoordinate: { [weak self] coordinate in
+        }, goToCoordinate: { [weak self = self] coordinate in
             guard let strongSelf = self else {
                 return
             }
@@ -156,7 +156,7 @@ public final class LocationViewController: ViewController {
                 state.selectedLocation = .coordinate(coordinate, false)
                 return state
             }
-        }, requestDirections: { [weak self] location, peerName, directions in
+        }, requestDirections: { [weak self = self] location, peerName, directions in
             guard let strongSelf = self else {
                 return
             }
@@ -182,7 +182,7 @@ public final class LocationViewController: ViewController {
             } else {
                 strongSelf.push(OpenInOptionsScreen(context: context, updatedPresentationData: updatedPresentationData, item: .location(location: location, directions: directions), additionalAction: nil, openUrl: params.openUrl))
             }
-        }, share: { [weak self] in
+        }, share: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -192,7 +192,7 @@ public final class LocationViewController: ViewController {
                 })
                 strongSelf.push(OpenInOptionsScreen(context: context, updatedPresentationData: updatedPresentationData, item: .location(location: location, directions: nil), additionalAction: shareAction, openUrl: params.openUrl))
             }
-        }, setupProximityNotification: { [weak self] reset, messageId in
+        }, setupProximityNotification: { [weak self = self] reset, messageId in
             guard let strongSelf = self else {
                 return
             }
@@ -205,7 +205,7 @@ public final class LocationViewController: ViewController {
                         return state
                     }
                     
-                    let _ = context.engine.messages.requestEditLiveLocation(messageId: messageId, stop: false, coordinate: nil, heading: nil, proximityNotificationRadius: 0, extendPeriod: nil).start(completed: { [weak self] in
+                    let _ = context.engine.messages.requestEditLiveLocation(messageId: messageId, stop: false, coordinate: nil, heading: nil, proximityNotificationRadius: 0, extendPeriod: nil).start(completed: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -240,7 +240,7 @@ public final class LocationViewController: ViewController {
                     strongSelf.present(c, in: .window(.root), with: a)
                 }, openSettings: {
                     context.sharedContext.applicationBindings.openSettings()
-                }, { [weak self] authorized in
+                }, { [weak self = self] authorized in
                     guard let strongSelf = self, authorized else {
                         return
                     }
@@ -254,7 +254,7 @@ public final class LocationViewController: ViewController {
                             return .never()
                         }
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let strongSelf = self else {
                             return
                         }
@@ -264,12 +264,12 @@ public final class LocationViewController: ViewController {
                             compactDisplayTitle = peer.compactDisplayTitle
                         }
 
-                        let controller = LocationDistancePickerScreen(context: context, style: .default, compactDisplayTitle: compactDisplayTitle, distances: strongSelf.controllerNode.headerNode.mapNode.distancesToAllAnnotations, updated: { [weak self] distance in
+                        let controller = LocationDistancePickerScreen(context: context, style: .default, compactDisplayTitle: compactDisplayTitle, distances: strongSelf.controllerNode.headerNode.mapNode.distancesToAllAnnotations, updated: { [weak self = self] distance in
                             guard let strongSelf = self else {
                                 return
                             }
                             strongSelf.controllerNode.setProximityIndicator(radius: distance)
-                        }, completion: { [weak self] distance, completion in
+                        }, completion: { [weak self = self] distance, completion in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -281,7 +281,7 @@ public final class LocationViewController: ViewController {
                                     return state
                                 }
                                 
-                                let _ = context.engine.messages.requestEditLiveLocation(messageId: messageId, stop: false, coordinate: nil, heading: nil, proximityNotificationRadius: distance, extendPeriod: nil).start(completed: { [weak self] in
+                                let _ = context.engine.messages.requestEditLiveLocation(messageId: messageId, stop: false, coordinate: nil, heading: nil, proximityNotificationRadius: distance, extendPeriod: nil).start(completed: { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -325,7 +325,7 @@ public final class LocationViewController: ViewController {
                                 }), TextAlertAction(type: .genericAction, title: strongSelf.presentationData.strings.Common_Cancel, action: {})], actionLayout: .vertical), in: .window(.root))
                             }
                             completion()
-                        }, willDismiss: { [weak self] in
+                        }, willDismiss: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.controllerNode.setProximityIndicator(radius: nil)
                             }
@@ -334,7 +334,7 @@ public final class LocationViewController: ViewController {
                     })
                 })
             }
-        }, sendLiveLocation: { [weak self] distance, extend, messageId in
+        }, sendLiveLocation: { [weak self = self] distance, extend, messageId in
             guard let strongSelf = self else {
                 return
             }
@@ -342,7 +342,7 @@ public final class LocationViewController: ViewController {
                 strongSelf.present(c, in: .window(.root), with: a)
             }, openSettings: {
                 context.sharedContext.applicationBindings.openSettings()
-            }, { [weak self] authorized in
+            }, { [weak self = self] authorized in
                 guard let strongSelf = self, authorized else {
                     return
                 }
@@ -361,7 +361,7 @@ public final class LocationViewController: ViewController {
                             return .never()
                         }
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let strongSelf = self else {
                             return
                         }
@@ -421,7 +421,7 @@ public final class LocationViewController: ViewController {
                             presentationData: strongSelf.presentationData,
                             sourceView: sourceView!,
                             title: title,
-                            selectPeriod: { [weak self] period in
+                            selectPeriod: { [weak self = self] period in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -444,16 +444,16 @@ public final class LocationViewController: ViewController {
                     })
                 }
             })
-        }, stopLiveLocation: { [weak self] in
+        }, stopLiveLocation: { [weak self = self] in
             params.stopLiveLocation(nil)
             self?.dismiss()
-        }, present: { [weak self] c in
+        }, present: { [weak self = self] c in
             if let strongSelf = self {
                 strongSelf.present(c, in: .window(.root))
             }
         })
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controllerNode.scrollToTop()
             }
@@ -523,7 +523,7 @@ public final class LocationViewController: ViewController {
         self.displayNode = LocationViewControllerNode(context: self.context, controller: self, presentationData: self.presentationData, subject: self.subject, interaction: interaction, locationManager: self.locationManager, isPreview: self.isPreview)
         self.displayNodeDidLoad()
         
-        self.controllerNode.onAnnotationsReady = { [weak self] in
+        self.controllerNode.onAnnotationsReady = { [weak self = self] in
             guard let strongSelf = self, strongSelf.showAll else {
                 return
             }

@@ -394,7 +394,7 @@ public final class PeerInfoCoverComponent: Component {
                             keyframeOnly: false,
                             customColor: .white
                         ),
-                        completion: { [weak self] _, _ in
+                        completion: { [weak self = self] _, _ in
                             guard let self else {
                                 return
                             }
@@ -424,7 +424,7 @@ public final class PeerInfoCoverComponent: Component {
             if previousComponent?.subject?.fileId != component.subject?.fileId {
                 if let fileId = component.subject?.fileId, fileId != 0 {
                     if self.patternContentsTarget == nil {
-                        self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self] hadContents in
+                        self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self = self] hadContents in
                             guard let self else {
                                 return
                             }
@@ -442,7 +442,7 @@ public final class PeerInfoCoverComponent: Component {
                         self.loadPatternFromFile()
                     } else {
                         self.patternFileDisposable = (component.context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] files in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] files in
                             guard let self else {
                                 return
                             }
@@ -461,7 +461,7 @@ public final class PeerInfoCoverComponent: Component {
                 }
             } else if case .managedBot = component.subject {
                 if self.patternContentsTarget == nil {
-                    self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self] hadContents in
+                    self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self = self] hadContents in
                         guard let self else {
                             return
                         }

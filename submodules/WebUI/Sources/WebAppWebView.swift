@@ -199,7 +199,7 @@ final class WebAppWebView: WKWebView {
             self.isInspectable = true
         } 
         
-        handleScriptMessageImpl = { [weak self] message in
+        handleScriptMessageImpl = { [weak self = self] message in
             if let strongSelf = self {
                 strongSelf.handleScriptMessage(message)
             }

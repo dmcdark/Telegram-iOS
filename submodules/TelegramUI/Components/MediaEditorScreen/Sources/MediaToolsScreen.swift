@@ -190,7 +190,7 @@ private final class MediaToolsScreenComponent: Component {
             super.init()
             
             self.histogramDisposable = (mediaEditor.histogram
-            |> deliverOnMainQueue).start(next: { [weak self] data in
+            |> deliverOnMainQueue).start(next: { [weak self = self] data in
                 if let self {
                     self.histogram = MediaEditorHistogram(data: data)
                     self.updated()
@@ -724,7 +724,7 @@ private final class MediaToolsScreenComponent: Component {
                                 state?.updated()
                             }
                         },
-                        isTrackingUpdated: { [weak self] isTracking in
+                        isTrackingUpdated: { [weak self = self] isTracking in
                             if let self {
                                 let transition: ComponentTransition
                                 if isTracking {
@@ -782,7 +782,7 @@ private final class MediaToolsScreenComponent: Component {
                                 state?.updated()
                             }
                         },
-                        isTrackingUpdated: { [weak self] isTracking in
+                        isTrackingUpdated: { [weak self = self] isTracking in
                             if let self {
                                 let transition: ComponentTransition
                                 if isTracking {
@@ -834,7 +834,7 @@ private final class MediaToolsScreenComponent: Component {
                                 state?.updated()
                             }
                         },
-                        isTrackingUpdated: { [weak self] isTracking in
+                        isTrackingUpdated: { [weak self = self] isTracking in
                             if let self {
                                 let transition: ComponentTransition
                                 if isTracking {
@@ -869,7 +869,7 @@ private final class MediaToolsScreenComponent: Component {
                                     state?.updated()
                                 }
                             },
-                            isTrackingUpdated: { [weak self] isTracking in
+                            isTrackingUpdated: { [weak self = self] isTracking in
                                 if let self {
                                     let transition: ComponentTransition
                                     if isTracking {
@@ -1077,7 +1077,7 @@ public final class MediaToolsScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -1090,7 +1090,7 @@ public final class MediaToolsScreen: ViewController {
                         mediaEditor: controller.mediaEditor,
                         section: self.currentSection,
                         hiddenTools: controller.hiddenTools,
-                        sectionUpdated: { [weak self] section in
+                        sectionUpdated: { [weak self = self] section in
                             if let self {
                                 self.currentSection = section
                                 if let mediaEditor = self.controller?.mediaEditor {

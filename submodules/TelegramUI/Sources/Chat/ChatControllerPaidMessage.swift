@@ -27,7 +27,7 @@ extension ChatControllerImpl {
             
             let _ = (ApplicationSpecificNotice.dismissedPaidMessageWarningNamespace(accountManager: self.context.sharedContext.accountManager, peerId: peer.id)
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] dismissedAmount in
+            |> deliverOnMainQueue).start(next: { [weak self = self] dismissedAmount in
                 guard let self, let starsContext = self.context.starsContext else {
                     return
                 }
@@ -59,7 +59,7 @@ extension ChatControllerImpl {
                         totalAmount: nil,
                         hasCheck: !alwaysAsk,
                         navigationController: self.navigationController as? NavigationController,
-                        completion: { [weak self] dontAskAgain in
+                        completion: { [weak self = self] dontAskAgain in
                             guard let self else {
                                 return
                             }
@@ -71,7 +71,7 @@ extension ChatControllerImpl {
                             if let currentState = starsContext.currentState, currentState.balance.value < totalAmount {
                                 let _ = (self.context.engine.payments.starsTopUpOptions()
                                 |> take(1)
-                                |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                                     guard let self else {
                                         return
                                     }
@@ -114,7 +114,7 @@ extension ChatControllerImpl {
         let textItems: [AnimatedTextComponent.Item] = [
             AnimatedTextComponent.Item(id: 0, content: .text(text))
         ]
-        let controller = UndoOverlayController(presentationData: self.presentationData, content: .starsSent(context: self.context, title: title, text: textItems, hasUndo: true), elevatedLayout: false, position: .top, action: { [weak self] action in
+        let controller = UndoOverlayController(presentationData: self.presentationData, content: .starsSent(context: self.context, title: title, text: textItems, hasUndo: true), elevatedLayout: false, position: .top, action: { [weak self = self] action in
             guard let self else {
                 return false
             }

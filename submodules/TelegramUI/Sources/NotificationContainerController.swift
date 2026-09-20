@@ -26,7 +26,7 @@ public final class NotificationContainerController: ViewController {
         self.statusBar.statusBarStyle = .Ignore
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-            |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
                 if let strongSelf = self {
                     let previousTheme = strongSelf.presentationData.theme
                     let previousStrings = strongSelf.presentationData.strings
@@ -62,7 +62,7 @@ public final class NotificationContainerController: ViewController {
         self.displayNode = NotificationContainerControllerNode(presentationData: self.presentationData)
         self.displayNodeDidLoad()
         
-        self.controllerNode.displayingItemsUpdated = { [weak self] value in
+        self.controllerNode.displayingItemsUpdated = { [weak self = self] value in
             if let strongSelf = self {
                 var statusBarHidden = false
                 if value, let layout = strongSelf.validLayout {

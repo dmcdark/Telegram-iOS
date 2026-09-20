@@ -103,13 +103,13 @@ class InstantPageReferenceControllerNode: ViewControllerTracingNode, ASScrollVie
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
         recognizer.delaysTouchesBegan = false
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self, let contentNode = strongSelf.contentNode {
                 return strongSelf.tapActionAtPoint(point.offsetBy(dx: -contentNode.frame.minX, dy: -contentNode.frame.minY))
             }
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self, let contentNode = strongSelf.contentNode {
                 strongSelf.updateTouchesAtPoint(point?.offsetBy(dx: -contentNode.frame.minX, dy: -contentNode.frame.minY))
             }
@@ -141,7 +141,7 @@ class InstantPageReferenceControllerNode: ViewControllerTracingNode, ASScrollVie
         var dimCompleted = false
         var offsetCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && offsetCompleted {
                 strongSelf.dismiss?()
             }
@@ -412,15 +412,15 @@ class InstantPageReferenceControllerNode: ViewControllerTracingNode, ASScrollVie
             
             let controller = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: {
                 UIPasteboard.general.string = text
-            }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuShare, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuShare), action: { [weak self] in
+            }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuShare, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuShare), action: { [weak self = self] in
                 if let strongSelf = self, case let .Loaded(content) = strongSelf.webPage.webPage.content {
                     strongSelf.present(strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .quote(text: text, url: content.url))), nil)
                 }
             })])
-            controller.dismissed = { [weak self] in
+            controller.dismissed = { [weak self = self] in
                 self?.updateTextSelectionRects([], text: nil)
             }
-            self.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+            self.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
                 if let strongSelf = self {
                     return (strongSelf.contentContainerNode, coveringRect.insetBy(dx: -3.0, dy: -3.0), strongSelf, strongSelf.bounds)
                 } else {

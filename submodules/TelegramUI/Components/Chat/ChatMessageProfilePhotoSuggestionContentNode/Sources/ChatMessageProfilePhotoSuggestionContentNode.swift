@@ -67,7 +67,7 @@ public class ChatMessageProfilePhotoSuggestionContentNode: ChatMessageBubbleCont
         self.addSubnode(self.buttonNode)
         self.addSubnode(self.buttonTitleNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonNode.layer.removeAnimation(forKey: "opacity")
@@ -96,7 +96,7 @@ public class ChatMessageProfilePhotoSuggestionContentNode: ChatMessageBubbleCont
     
     override public func transitionNode(messageId: EngineMessage.Id, media: EngineRawMedia, adjustRect: Bool) -> (ASDisplayNode, CGRect, () -> (UIView?, UIView?))? {
         if self.item?.message.id == messageId {
-            return (self.imageNode, self.imageNode.bounds, { [weak self] in
+            return (self.imageNode, self.imageNode.bounds, { [weak self = self] in
                 guard let strongSelf = self else {
                     return (nil, nil)
                 }
@@ -196,7 +196,7 @@ public class ChatMessageProfilePhotoSuggestionContentNode: ChatMessageBubbleCont
                 let backgroundSize = CGSize(width: width, height: subtitleLayout.size.height + 182.0)
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (backgroundSize, { [weak self] animation, synchronousLoads, _ in
+                    return (backgroundSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             
@@ -223,7 +223,7 @@ public class ChatMessageProfilePhotoSuggestionContentNode: ChatMessageBubbleCont
                                     let mediaManager = item.context.sharedContext.mediaManager
                                     let videoNode = UniversalVideoNode(context: item.context, postbox: item.context.account.postbox, audioSession: mediaManager.audioSession, manager: mediaManager.universalVideoManager, decoration: GalleryVideoDecoration(), content: videoContent, priority: .secondaryOverlay)
                                     videoNode.isUserInteractionEnabled = false
-                                    videoNode.ownsContentNodeUpdated = { [weak self] owns in
+                                    videoNode.ownsContentNodeUpdated = { [weak self = self] owns in
                                         if let strongSelf = self {
                                             strongSelf.videoNode?.isHidden = !owns
                                         }

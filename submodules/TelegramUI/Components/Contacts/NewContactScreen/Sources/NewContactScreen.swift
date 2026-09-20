@@ -337,7 +337,7 @@ final class NewContactScreenComponent: Component {
                     contentInsets: UIEdgeInsets(top: 0.0, left: avatarInset, bottom: 0.0, right: 0.0),
                     updated: { value in
                     },
-                    onReturn: { [weak self] in
+                    onReturn: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -358,7 +358,7 @@ final class NewContactScreenComponent: Component {
                     contentInsets: UIEdgeInsets(top: 0.0, left: avatarInset, bottom: 0.0, right: 0.0),
                     updated: { value in
                     },
-                    onReturn: { [weak self] in
+                    onReturn: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -461,12 +461,12 @@ final class NewContactScreenComponent: Component {
                             strings: strings,
                             value: (initialCountryCode, nil, initialPhoneNumberWithoutCountryCode ?? ""),
                             accessory: phoneAccesory,
-                            selectCountryCode: { [weak self] in
+                            selectCountryCode: { [weak self = self] in
                                 guard let self, let environment = self.environment, let controller = environment.controller() else {
                                     return
                                 }
                                 let countryController = AuthorizationSequenceCountrySelectionController(strings: strings, theme: environment.theme, glass: true)
-                                countryController.completeWithCountryCode = { [weak self] code, name in
+                                countryController.completeWithCountryCode = { [weak self = self] code, name in
                                     guard let self else {
                                         return
                                     }
@@ -476,7 +476,7 @@ final class NewContactScreenComponent: Component {
                                 self.deactivateInput()
                                 controller.push(countryController)
                             },
-                            updated: { [weak self] number, mask in
+                            updated: { [weak self = self] number, mask in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -503,7 +503,7 @@ final class NewContactScreenComponent: Component {
                                         ((Signal.complete() |> delay(resolveDelay, queue: Queue.mainQueue()))
                                          |> then(
                                             component.context.engine.peers.resolvePeerByPhone(phone: number)
-                                            |> beforeStarted({ [weak self] in
+                                            |> beforeStarted({ [weak self = self] in
                                                 guard let self else {
                                                     return
                                                 }
@@ -513,12 +513,12 @@ final class NewContactScreenComponent: Component {
                                                 }
                                             })
                                          )
-                                         |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                         |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                              guard let self, let component = self.component else {
                                                  return
                                              }
                                              if let peer {
-                                                 self.resolvedPeerDisposable.set((component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.IsContact(id: peer.id)) |> deliverOnMainQueue).start(next: { [weak self] isContact in
+                                                 self.resolvedPeerDisposable.set((component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.IsContact(id: peer.id)) |> deliverOnMainQueue).start(next: { [weak self = self] isContact in
                                                      guard let self else {
                                                          return
                                                      }
@@ -577,7 +577,7 @@ final class NewContactScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] _, _ in
+                        tapAction: { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -634,7 +634,7 @@ final class NewContactScreenComponent: Component {
                         )),
                         maximumNumberOfLines: 1
                     )),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.syncContactToPhone, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.syncContactToPhone, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -658,7 +658,7 @@ final class NewContactScreenComponent: Component {
                             )),
                             maximumNumberOfLines: 1
                         )),
-                        accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.addToPrivacyExceptions, action: { [weak self] _ in
+                        accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.addToPrivacyExceptions, action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -788,7 +788,7 @@ final class NewContactScreenComponent: Component {
                             false
                         ),
                         accessory: .none,
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() else {
                                 return
                             }
@@ -901,7 +901,7 @@ final class NewContactScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? NewContactScreen else {
                             return
                         }
@@ -933,7 +933,7 @@ final class NewContactScreenComponent: Component {
                             tintColor: environment.theme.list.itemCheckColors.foregroundColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? NewContactScreen else {
                             return
                         }
@@ -1017,7 +1017,7 @@ public class NewContactScreen: ViewControllerComponentContainer {
         self._hasGlassStyle = true
         self.navigationPresentation = .modal
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? NewContactScreenComponent.View else {
                 return
             }
@@ -1069,7 +1069,7 @@ public class NewContactScreen: ViewControllerComponentContainer {
                 noteText: result.note.string,
                 noteEntities: entities,
                 addToPrivacyExceptions: result.addToPrivacyExceptions
-            ) |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+            ) |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                 if !result.syncContactToPhone {
                     self?.completion(result.peer, nil, nil)
                 }
@@ -1125,7 +1125,7 @@ public class NewContactScreen: ViewControllerComponentContainer {
                 note: ""
             )
             let _ = (contactDataManager.createContactWithData(composedContactData)
-            |> deliverOnMainQueue).start(next: { [weak self] contactIdAndData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] contactIdAndData in
                 if let self, let contactIdAndData {
                     self.completion(result.peer, contactIdAndData.0, contactIdAndData.1)
                 }

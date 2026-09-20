@@ -1206,7 +1206,7 @@ private final class AdminUserActionsSheetComponent: Component {
             }
             |> deliverOnMainQueue
 
-            self.communityBanDisposable.set(signal.startStrict(next: { [weak self] communityPeer, _, joinedChats, participantCounts in
+            self.communityBanDisposable.set(signal.startStrict(next: { [weak self = self] communityPeer, _, joinedChats, participantCounts in
                 guard let self else {
                     return
                 }
@@ -1319,7 +1319,7 @@ private final class AdminUserActionsSheetComponent: Component {
             
             if self.component == nil {
                 let _ = (component.context.account.postbox.peerView(id: component.chatPeer.id)
-                |> take(1)).start(next: { [weak self] peerView in
+                |> take(1)).start(next: { [weak self = self] peerView in
                     guard let self else {
                         return
                     }
@@ -1397,7 +1397,7 @@ private final class AdminUserActionsSheetComponent: Component {
             let theme = environmentValue.theme.withModalBlocksBackground()
             let presentationData = component.context.sharedContext.currentPresentationData.with({ $0 })
             
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 guard let self, !self.isDismissing else {
                     return
                 }
@@ -1440,7 +1440,7 @@ private final class AdminUserActionsSheetComponent: Component {
                 banFromCommunity: self.banFromCommunity
             )
             
-            let commitMainAction: () -> Void = { [weak self] in
+            let commitMainAction: () -> Void = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -1462,7 +1462,7 @@ private final class AdminUserActionsSheetComponent: Component {
                 }
             }
 
-            let performMainAction: () -> Void = { [weak self] in
+            let performMainAction: () -> Void = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -1528,7 +1528,7 @@ private final class AdminUserActionsSheetComponent: Component {
                         presentationData: presentationData,
                         sheetState: currentState,
                         disableOptionsSectionAnimation: disableOptionsSectionAnimation,
-                        toggleOptionSelection: { [weak self] section in
+                        toggleOptionSelection: { [weak self = self] section in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1575,7 +1575,7 @@ private final class AdminUserActionsSheetComponent: Component {
                             
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleOptionExpansion: { [weak self] section in
+                        toggleOptionExpansion: { [weak self = self] section in
                             guard let self else {
                                 return
                             }
@@ -1591,7 +1591,7 @@ private final class AdminUserActionsSheetComponent: Component {
                             
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        togglePeerSelection: { [weak self] section, peer in
+                        togglePeerSelection: { [weak self = self] section, peer in
                             guard let self else {
                                 return
                             }
@@ -1632,7 +1632,7 @@ private final class AdminUserActionsSheetComponent: Component {
                             
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.3, curve: .easeInOut)))
                         },
-                        toggleDeleteAllOptionPeerSelection: { [weak self] option, peer in
+                        toggleDeleteAllOptionPeerSelection: { [weak self = self] option, peer in
                             guard let self else {
                                 return
                             }
@@ -1654,7 +1654,7 @@ private final class AdminUserActionsSheetComponent: Component {
 
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.3, curve: .easeInOut)))
                         },
-                        toggleConfiguration: { [weak self] in
+                        toggleConfiguration: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1666,7 +1666,7 @@ private final class AdminUserActionsSheetComponent: Component {
                             }
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleConfigItem: { [weak self] configItem in
+                        toggleConfigItem: { [weak self = self] configItem in
                             guard let self else {
                                 return
                             }
@@ -1705,14 +1705,14 @@ private final class AdminUserActionsSheetComponent: Component {
                             }
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleMediaSectionExpansion: { [weak self] in
+                        toggleMediaSectionExpansion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.isMediaSectionExpanded = !self.isMediaSectionExpanded
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleMediaRight: { [weak self] mediaRight in
+                        toggleMediaRight: { [weak self = self] mediaRight in
                             guard let self else {
                                 return
                             }
@@ -1725,7 +1725,7 @@ private final class AdminUserActionsSheetComponent: Component {
                             
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        setBanFromCommunity: { [weak self] value in
+                        setBanFromCommunity: { [weak self = self] value in
                             guard let self else {
                                 return
                             }

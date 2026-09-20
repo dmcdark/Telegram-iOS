@@ -111,7 +111,7 @@ final class SectionHeaderComponent: Component {
                     component: AnyComponent(
                         Button(content: AnyComponent(MultilineTextComponent(
                             text: .plain(NSAttributedString(string: actionTitle, font: Font.regular(13.0), textColor: component.theme.list.itemSecondaryTextColor))
-                        )), action: { [weak self] in
+                        )), action: { [weak self = self] in
                             if let self, let component = self.component {
                                 component.action?()
                             }

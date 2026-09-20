@@ -2174,20 +2174,20 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
         
         super.init(initParams: initParams, presentationData: presentationData)
         
-        self._itemParams = SecureIdDocumentFormParams(account: self.context.account, context: self.secureIdContext, addFile: { [weak self] type in
+        self._itemParams = SecureIdDocumentFormParams(account: self.context.account, context: self.secureIdContext, addFile: { [weak self = self] type in
             if let strongSelf = self {
                 strongSelf.view.endEditing(true)
                 strongSelf.presentAssetPicker(type)
             }
-        }, openDocument: { [weak self] document in
+        }, openDocument: { [weak self = self] document in
             if let strongSelf = self {
                 strongSelf.openDocument(document: document)
             }
-        }, deleteDocument: { [weak self] document in
+        }, deleteDocument: { [weak self = self] document in
             if let strongSelf = self {
                 strongSelf.deleteDocument(document: document)
             }
-        }, updateText: { [weak self] field, value in
+        }, updateText: { [weak self = self] field, value in
             if let strongSelf = self, var innerState = strongSelf.innerState {
                 innerState.documentState.updateTextField(type: field, value: value)
                 var valueKey: SecureIdValueKey?
@@ -2262,7 +2262,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                 }
                 strongSelf.updateInnerState(transition: .immediate, with: innerState)
             }
-        }, selectNextInputItem: { [weak self] entry in
+        }, selectNextInputItem: { [weak self = self] entry in
             guard let strongSelf = self else {
                 return
             }
@@ -2284,12 +2284,12 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                 return true
             })
             strongSelf.forceUpdateState(transition: .animated(duration: 0.2, curve: .spring))
-        }, endEditing: { [weak self] in
+        }, endEditing: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.view.endEditing(true)
-        }, activateSelection: { [weak self] field in
+        }, activateSelection: { [weak self = self] field in
             if let strongSelf = self {
                 switch field {
                     case .country:
@@ -2478,7 +2478,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                         strongSelf.present(controller, nil)
                 }
             }
-        }, scanPassport: { [weak self] in
+        }, scanPassport: { [weak self = self] in
             if let strongSelf = self {
                 let controller = legacySecureIdScanController(theme: strongSelf.theme, strings: strongSelf.strings, finished: { recognizedData in
                     if let strongSelf = self, let recognizedData = recognizedData, var innerState = strongSelf.innerState {
@@ -2488,13 +2488,13 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                 })
                 strongSelf.present(controller, nil)
             }
-        }, deleteValue: { [weak self] in
+        }, deleteValue: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.deleteValue()
             }
         })
         
-        updateImpl = { [weak self] id, state in
+        updateImpl = { [weak self = self] id, state in
             if let strongSelf = self, var innerState = strongSelf.innerState {
                 outer: for i in 0 ..< innerState.documents.count {
                     switch innerState.documents[i] {
@@ -2600,10 +2600,10 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
             case .translation:
                 attachmentType = .multiple
         }
-        presentLegacySecureIdAttachmentMenu(context: self.context, present: { [weak self] c in
+        presentLegacySecureIdAttachmentMenu(context: self.context, present: { [weak self = self] c in
             self?.view.endEditing(true)
             self?.present(c, nil)
-            }, validLayout: validLayout, type: attachmentType, recognizeDocumentData: recognizeDocumentData, completion: { [weak self] resources, recognizedData in
+            }, validLayout: validLayout, type: attachmentType, recognizeDocumentData: recognizeDocumentData, completion: { [weak self = self] resources, recognizedData in
                 self?.addDocuments(type: type, resources: resources, recognizedData: recognizedData, removeDocumentId: replaceDocumentId)
         })
     }
@@ -2757,11 +2757,11 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
         }
         
         self.actionDisposable.set((combineLatest(saveValues)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 strongSelf.completedWithValues?(result)
             }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 guard var innerState = strongSelf.innerState else {
                     return
@@ -2805,7 +2805,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
         controller.setItemGroups([
             ActionSheetItemGroup(items: [
                 ActionSheetTextItem(title: text),
-                ActionSheetButtonItem(title: title, color: .destructive, action: { [weak self] in
+                ActionSheetButtonItem(title: title, color: .destructive, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return
@@ -2829,7 +2829,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                         }
                         innerState.actionState = .none
                         strongSelf.updateInnerState(transition: .immediate, with: innerState)
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         self?.completedWithValues?([])
                     }))
                 })
@@ -2849,11 +2849,11 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
         }
         controller.setItemGroups([
             ActionSheetItemGroup(items: [
-                ActionSheetButtonItem(title: strings.Passport_Identity_FilesView, action: { [weak self] in
+                ActionSheetButtonItem(title: strings.Passport_Identity_FilesView, action: { [weak self = self] in
                     dismissAction()
                     self?.presentGallery(document: document)
                 }),
-                ActionSheetButtonItem(title: strings.Passport_Identity_FilesUploadNew, action: { [weak self] in
+                ActionSheetButtonItem(title: strings.Passport_Identity_FilesUploadNew, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return
@@ -2911,7 +2911,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
                         strongSelf.presentAssetPicker(target, replaceDocumentId: document.id)
                     }
                 }),
-                ActionSheetButtonItem(title: strings.Common_Delete, color: .destructive, action: { [weak self] in
+                ActionSheetButtonItem(title: strings.Common_Delete, color: .destructive, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return
@@ -3003,7 +3003,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
         let galleryController = SecureIdDocumentGalleryController(context: self.context, secureIdContext: self.secureIdContext, entries: entries, centralIndex: centralIndex, replaceRootController: { _, _ in
             
         })
-        galleryController.deleteResource = { [weak self] resource in
+        galleryController.deleteResource = { [weak self = self] resource in
             guard let strongSelf = self else {
                 return
             }
@@ -3040,7 +3040,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
             strongSelf.updateInnerState(transition: .immediate, with: innerState)
         }
         self.hiddenItemDisposable.set((galleryController.hiddenMedia
-        |> deliverOnMainQueue).start(next: { [weak self] entry in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entry in
             guard let strongSelf = self else {
                 return
             }
@@ -3055,7 +3055,7 @@ final class SecureIdDocumentFormControllerNode: FormControllerNode<SecureIdDocum
             }
         }))
         self.view.endEditing(true)
-        self.present(galleryController, SecureIdDocumentGalleryControllerPresentationArguments(transitionArguments: { [weak self] entry in
+        self.present(galleryController, SecureIdDocumentGalleryControllerPresentationArguments(transitionArguments: { [weak self = self] entry in
             guard let strongSelf = self else {
                 return nil
             }

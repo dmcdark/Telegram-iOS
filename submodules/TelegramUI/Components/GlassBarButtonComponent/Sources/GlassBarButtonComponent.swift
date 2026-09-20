@@ -115,7 +115,7 @@ public final class GlassBarButtonComponent: Component {
                         
             self.containerView.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.containerView.highligthedChanged = { [weak self] highlighted in
+            self.containerView.highligthedChanged = { [weak self = self] highlighted in
                 guard let self, let component = self.component, component.animateScale else {
                     return
                 }

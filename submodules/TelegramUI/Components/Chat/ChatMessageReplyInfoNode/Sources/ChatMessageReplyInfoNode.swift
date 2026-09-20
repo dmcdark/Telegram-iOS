@@ -174,7 +174,7 @@ public class ChatMessageReplyInfoNode: ASDisplayNode {
         self.currentProgressDisposable?.dispose()
         self.currentProgressDisposable = (progress.get()
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
             guard let self else {
                 return
             }

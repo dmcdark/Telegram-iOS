@@ -80,7 +80,7 @@ public final class TwoFactorAuthSplashScreen: ViewController {
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(customDisplayNode: ASDisplayNode())
         }
         
-        self.attemptNavigation = { [weak self] f in
+        self.attemptNavigation = { [weak self = self] f in
             guard let strongSelf = self, let dismissConfirmation = strongSelf.dismissConfirmation else {
                 return true
             }
@@ -97,7 +97,7 @@ public final class TwoFactorAuthSplashScreen: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = TwoFactorAuthSplashScreenNode(sharedContext: self.sharedContext, presentationData: self.presentationData, mode: self.mode, action: { [weak self] in
+        self.displayNode = TwoFactorAuthSplashScreenNode(sharedContext: self.sharedContext, presentationData: self.presentationData, mode: self.mode, action: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

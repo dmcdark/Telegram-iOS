@@ -126,7 +126,7 @@ private final class PeerInfoScreenDisclosureItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -227,7 +227,7 @@ private final class PeerInfoScreenDisclosureItemNode: PeerInfoScreenItemNode {
                 if previousItem?.text != item.text {
                     self.iconNode.image = nil
                     self.iconDisposable.set((iconSignal
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] icon in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] icon in
                         if let self {
                             self.iconNode.image = icon
                         }

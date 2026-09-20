@@ -84,7 +84,7 @@ public class PremiumLimitsListScreen: ViewController {
             self.containerView.addSubnode(self.footerNode)
             self.containerView.addSubview(self.closeView)
         
-            self.footerNode.action = { [weak self] in
+            self.footerNode.action = { [weak self = self] in
                 self?.controller?.action()
             }
             
@@ -151,7 +151,7 @@ public class PremiumLimitsListScreen: ViewController {
                     }
                     return file
                 }, data.0?.isPremium ?? false, data.1)
-            }).start(next: { [weak self] stickers, isPremium, promoConfiguration in
+            }).start(next: { [weak self = self] stickers, isPremium, promoConfiguration in
                 guard let strongSelf = self else {
                     return
                 }
@@ -239,7 +239,7 @@ public class PremiumLimitsListScreen: ViewController {
             self.isDismissing = true
             
             let positionTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
-            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self] _ in
+            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self = self] _ in
                 self?.controller?.dismiss(animated: false, completion: completion)
             })
             let alphaTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
@@ -427,17 +427,17 @@ public class PremiumLimitsListScreen: ViewController {
                                 theme: self.presentationData.theme,
                                 neighbors: limitsNeighbors,
                                 bottomInset: self.footerNode.frame.height,
-                                updatedBottomAlpha: { [weak self] alpha in
+                                updatedBottomAlpha: { [weak self = self] alpha in
                                     if let strongSelf = self {
                                         strongSelf.footerNode.updateCoverAlpha(alpha, transition: .immediate)
                                     }
                                 },
-                                updatedDismissOffset: { [weak self] offset in
+                                updatedDismissOffset: { [weak self = self] offset in
                                     if let strongSelf = self {
                                         strongSelf.updateDismissOffset(offset)
                                     }
                                 },
-                                updatedIsDisplaying: { [weak self] isDisplaying in
+                                updatedIsDisplaying: { [weak self = self] isDisplaying in
                                     if let self, self.isExpanded && !isDisplaying {
                                         if let storiesIndex, let indexPosition = self.indexPosition, abs(CGFloat(storiesIndex) - indexPosition) < 0.1 {
                                         } else {
@@ -458,17 +458,17 @@ public class PremiumLimitsListScreen: ViewController {
                                 theme: self.presentationData.theme,
                                 neighbors: storiesNeighbors,
                                 bottomInset: self.footerNode.frame.height,
-                                updatedBottomAlpha: { [weak self] alpha in
+                                updatedBottomAlpha: { [weak self = self] alpha in
                                     if let strongSelf = self {
                                         strongSelf.footerNode.updateCoverAlpha(alpha, transition: .immediate)
                                     }
                                 },
-                                updatedDismissOffset: { [weak self] offset in
+                                updatedDismissOffset: { [weak self = self] offset in
                                     if let strongSelf = self {
                                         strongSelf.updateDismissOffset(offset)
                                     }
                                 },
-                                updatedIsDisplaying: { [weak self] isDisplaying in
+                                updatedIsDisplaying: { [weak self = self] isDisplaying in
                                     if let self, self.isExpanded && !isDisplaying {
                                         if let limitsIndex, let indexPosition = self.indexPosition, abs(CGFloat(limitsIndex) - indexPosition) < 0.1 {
                                         } else {
@@ -579,7 +579,7 @@ public class PremiumLimitsListScreen: ViewController {
                                     StickersCarouselComponent(
                                         context: context,
                                         stickers: stickers,
-                                        tapAction: { [weak self] in
+                                        tapAction: { [weak self = self] in
                                             self?.nextAction.invoke(Void())
                                         }
                                     )
@@ -919,17 +919,17 @@ public class PremiumLimitsListScreen: ViewController {
                                 theme: self.presentationData.theme,
                                 neighbors: businessNeighbors,
                                 bottomInset: self.footerNode.frame.height,
-                                updatedBottomAlpha: { [weak self] alpha in
+                                updatedBottomAlpha: { [weak self = self] alpha in
                                     if let strongSelf = self {
                                         strongSelf.footerNode.updateCoverAlpha(alpha, transition: .immediate)
                                     }
                                 },
-                                updatedDismissOffset: { [weak self] offset in
+                                updatedDismissOffset: { [weak self = self] offset in
                                     if let strongSelf = self {
                                         strongSelf.updateDismissOffset(offset)
                                     }
                                 },
-                                updatedIsDisplaying: { [weak self] isDisplaying in
+                                updatedIsDisplaying: { [weak self = self] isDisplaying in
                                     if let self, self.isExpanded && !isDisplaying {
                                         if let businessIndex, let indexPosition = self.indexPosition, abs(CGFloat(businessIndex) - indexPosition) < 0.1 {
                                         } else {
@@ -1123,7 +1123,7 @@ public class PremiumLimitsListScreen: ViewController {
                                 items: items,
                                 index: initialIndex,
                                 nextAction: nextAction,
-                                updated: { [weak self] position, count in
+                                updated: { [weak self = self] position, count in
                                     if let self {
                                         let indexPosition = position * CGFloat(count - 1)
                                         self.indexPosition = indexPosition
@@ -1200,7 +1200,7 @@ public class PremiumLimitsListScreen: ViewController {
                                 )
                             ),
                         ])),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.controller?.dismiss(animated: true, completion: nil)
                         }
                     )
@@ -1599,7 +1599,7 @@ private class FooterNode: ASDisplayNode {
         
         self.updateTheme(theme)
         
-        self.buttonNode.pressed = { [weak self] in
+        self.buttonNode.pressed = { [weak self = self] in
             self?.action()
         }
     }

@@ -339,7 +339,7 @@ private final class LimitsListComponent: CombinedComponent {
                 TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: false),
                 TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: true)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] limits, premiumLimits in
+            |> deliverOnMainQueue).start(next: { [weak self = self] limits, premiumLimits in
                 if let strongSelf = self {
                     strongSelf.limits = limits
                     strongSelf.premiumLimits = premiumLimits

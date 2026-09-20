@@ -693,7 +693,7 @@ final class ShareWithPeersScreenComponent: Component {
             |> delay(0.15, queue: Queue.mainQueue())
             let progressDisposable = progressSignal.start()
             
-            let processPeers: ([EnginePeer]) -> Void = { [weak self] peers in
+            let processPeers: ([EnginePeer]) -> Void = { [weak self = self] peers in
                 guard let self else {
                     return
                 }
@@ -825,7 +825,7 @@ final class ShareWithPeersScreenComponent: Component {
                 editing: false
             )
             
-            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -836,7 +836,7 @@ final class ShareWithPeersScreenComponent: Component {
                     completion: { _, _, _, _, _, _, _ in },
                     editCategory: { _, _, _, _ in },
                     editBlockedPeers: { _, _, _, _ in },
-                    peerCompletion: { [weak self] peerId in
+                    peerCompletion: { [weak self = self] peerId in
                         guard let self else {
                             return
                         }
@@ -885,7 +885,7 @@ final class ShareWithPeersScreenComponent: Component {
         }
         
         private func displayFolderSelectionMenu(sourceView: UIView) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() else {
                     return
                 }
@@ -897,13 +897,13 @@ final class ShareWithPeersScreenComponent: Component {
                 
                 var items: [ContextMenuItem] = []
                 
-                items.append(.action(ContextMenuActionItem(text: "New Album", icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddFolder"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self] c, f in
+                items.append(.action(ContextMenuActionItem(text: "New Album", icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddFolder"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self = self] c, f in
                     guard let self else {
                         f(.default)
                         return
                     }
                     
-                    c?.dismiss(completion: { [weak self] in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -961,7 +961,7 @@ final class ShareWithPeersScreenComponent: Component {
                             return UIImage()
                         }
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-                    }, iconSource: iconSource, iconPosition: .left, action: { [weak self] c, f in
+                    }, iconSource: iconSource, iconPosition: .left, action: { [weak self = self] c, f in
                         guard let self, let _ = self.component else {
                             f(.default)
                             return
@@ -1000,12 +1000,12 @@ final class ShareWithPeersScreenComponent: Component {
                 value: "",
                 placeholder: presentationData.strings.Stories_CreateAlbum_Placeholder,
                 characterLimit: 20,
-                apply: { [weak self] value in
+                apply: { [weak self = self] value in
                     guard let self, let component = self.component else {
                         return
                     }
                     if let value, !value.isEmpty {
-                        let _ = PeerStoryListContext.addFolderExternal(account: component.context.account, peerId: self.sendAsPeerId ?? component.context.account.peerId, title: value, completion: { [weak self] id in
+                        let _ = PeerStoryListContext.addFolderExternal(account: component.context.account, peerId: self.sendAsPeerId ?? component.context.account.peerId, title: value, completion: { [weak self = self] id in
                             guard let self, let id else {
                                 return
                             }
@@ -1171,7 +1171,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 style: itemLayout.style,
                                 title: sectionTitle,
                                 actionTitle: (section.id == 1 && !self.selectedPeers.isEmpty) ? environment.strings.Contacts_DeselectAll : nil,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     if let self {
                                         self.selectedPeers = []
                                         self.selectedGroups = []
@@ -1292,7 +1292,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 rightAccessory: accessory,
                                 selectionState: .none,
                                 hasNext: i < peers.count - 1,
-                                action: { [weak self] peer, _, _ in
+                                action: { [weak self = self] peer, _, _ in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1308,7 +1308,7 @@ final class ShareWithPeersScreenComponent: Component {
                                             self.hapticFeedback.impact(.light)
                                         } else {
                                             self.postingAvailabilityDisposable.set((component.context.engine.messages.checkStoriesUploadAvailability(target: .peer(peer.id))
-                                            |> deliverOnMainQueue).start(next: { [weak self] status in
+                                            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                                                 guard let self, let component = self.component else {
                                                     return
                                                 }
@@ -1322,7 +1322,7 @@ final class ShareWithPeersScreenComponent: Component {
                                                         component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peer.id)),
                                                         component.context.engine.peers.getChannelBoostStatus(peerId: peer.id),
                                                         component.context.engine.peers.getMyBoostStatus()
-                                                    ).start(next: { [weak self] peer, boostStatus, myBoostStatus in
+                                                    ).start(next: { [weak self = self] peer, boostStatus, myBoostStatus in
                                                         guard let self, let component = self.component, let peer, let boostStatus, let myBoostStatus else {
                                                             return
                                                         }
@@ -1394,7 +1394,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 subtitle: item.actionTitle,
                                 selectionState: .editing(isSelected: self.selectedCategories.contains(item.id), isTinted: false),
                                 hasNext: i != component.categoryItems.count - 1,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let environment = self.environment, let controller = environment.controller() as? ShareWithPeersScreen else {
                                         return
                                     }
@@ -1439,7 +1439,7 @@ final class ShareWithPeersScreenComponent: Component {
                                     }
                                     self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.35, curve: .spring)))
                                 },
-                                secondaryAction: { [weak self] in
+                                secondaryAction: { [weak self = self] in
                                     guard let self, let environment = self.environment, let controller = environment.controller() as? ShareWithPeersScreen else {
                                         return
                                     }
@@ -1529,7 +1529,7 @@ final class ShareWithPeersScreenComponent: Component {
                                     return nil
                                 }
                             },
-                            tapAction: { [weak self] _, _ in
+                            tapAction: { [weak self = self] _, _ in
                                 guard let self, let environment = self.environment, let controller = environment.controller() as? ShareWithPeersScreen else {
                                     return
                                 }
@@ -1631,7 +1631,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 presence: stateValue.presences[peer.id],
                                 selectionState: .editing(isSelected: isSelected, isTinted: false),
                                 hasNext: true,
-                                action: { [weak self] peer, _, _ in
+                                action: { [weak self = self] peer, _, _ in
                                     guard let self, let environment = self.environment, let controller = environment.controller() as? ShareWithPeersScreen else {
                                         return
                                     }
@@ -1756,7 +1756,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 title: title,
                                 hasNext: i != component.optionItems.count - 1,
                                 selected: self.selectedOptions.contains(item.id),
-                                selectionChanged: { [weak self] selected in
+                                selectionChanged: { [weak self = self] selected in
                                     if let self {
                                         if selected {
                                             self.selectedOptions.insert(optionId)
@@ -1882,7 +1882,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 accessory: .custom(ListActionItemComponent.CustomAccessory(component: AnyComponentWithIdentity(id: 0, component: AnyComponent(AlbumLabelComponent(
                                     theme: environment.theme,
                                     title: foldersText,
-                                    action: { [weak self] sourceView in
+                                    action: { [weak self = self] sourceView in
                                         guard let self else {
                                             return
                                         }
@@ -1935,7 +1935,7 @@ final class ShareWithPeersScreenComponent: Component {
                                 title: item.title,
                                 image: item.image,
                                 hasNext: false,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -2380,7 +2380,7 @@ final class ShareWithPeersScreenComponent: Component {
                 }
                 
                 self.stateDisposable = (component.stateContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] stateValue in
+                |> deliverOnMainQueue).start(next: { [weak self = self] stateValue in
                     guard let self else {
                         return
                     }
@@ -2486,7 +2486,7 @@ final class ShareWithPeersScreenComponent: Component {
                         placeholder: placeholder,
                         tokens: tokens,
                         sideInset: sideInset,
-                        deleteToken: { [weak self] tokenId in
+                        deleteToken: { [weak self = self] tokenId in
                             guard let self else {
                                 return
                             }
@@ -2501,7 +2501,7 @@ final class ShareWithPeersScreenComponent: Component {
                             }
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.35, curve: .spring)))
                         },
-                        isFocusedUpdated: { [weak self] isFocused in
+                        isFocusedUpdated: { [weak self = self] isFocused in
                             guard let self else {
                                 return
                             }
@@ -2537,7 +2537,7 @@ final class ShareWithPeersScreenComponent: Component {
                         self.searchStateDisposable?.dispose()
                         let searchStateContext = ShareWithPeersScreen.StateContext(context: component.context, subject: searchSubject)
                         var applyState = false
-                        self.searchStateDisposable = (searchStateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+                        self.searchStateDisposable = (searchStateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -2775,7 +2775,7 @@ final class ShareWithPeersScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.saveAndDismiss()
                     }
                 )),
@@ -2976,7 +2976,7 @@ final class ShareWithPeersScreenComponent: Component {
                         ),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let environment = self.environment, let controller = self.environment?.controller() as? ShareWithPeersScreen else {
                                 return
                             }
@@ -3023,7 +3023,7 @@ final class ShareWithPeersScreenComponent: Component {
                                     }))
                                     
                                     let _ = (peers
-                                    |> deliverOnMainQueue).start(next: { [weak controller, weak component] peers in
+                                    |> deliverOnMainQueue).start(next: { [weak controller = controller, weak component = component] peers in
                                         guard let controller, let component else {
                                             return
                                         }
@@ -3539,7 +3539,7 @@ public class ShareWithPeersScreen: ViewControllerComponentContainer {
            
             if self.isCustomModal {
                 if let componentView = self.node.hostView.componentView as? ShareWithPeersScreenComponent.View {
-                    componentView.animateOut(completion: { [weak self] in
+                    componentView.animateOut(completion: { [weak self = self] in
                         completion?()
                         self?.dismiss(animated: false)
                     })

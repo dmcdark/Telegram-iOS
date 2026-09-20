@@ -70,7 +70,7 @@ public final class AnimatedStickerComponent: Component {
             super.init(frame: frame)
             
             self.layer.addSublayer(self.hierarchyTrackingLayer)
-            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -78,7 +78,7 @@ public final class AnimatedStickerComponent: Component {
                 strongSelf.animationNode?.visibility = true
             }
             
-            self.hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

@@ -235,7 +235,7 @@ final class WebBrowserDomainExceptionItemNode: ItemListRevealOptionsItemNode, It
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

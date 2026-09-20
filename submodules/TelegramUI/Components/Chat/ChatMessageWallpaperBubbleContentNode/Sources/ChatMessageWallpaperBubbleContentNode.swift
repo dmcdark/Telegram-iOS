@@ -88,7 +88,7 @@ public class ChatMessageWallpaperBubbleContentNode: ChatMessageBubbleContentNode
         self.addSubnode(self.statusOverlayNode)
         self.statusOverlayNode.addSubnode(self.statusNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonNode.layer.removeAnimation(forKey: "opacity")
@@ -136,7 +136,7 @@ public class ChatMessageWallpaperBubbleContentNode: ChatMessageBubbleContentNode
     
     override public func transitionNode(messageId: EngineMessage.Id, media: EngineRawMedia, adjustRect: Bool) -> (ASDisplayNode, CGRect, () -> (UIView?, UIView?))? {
         if self.item?.message.id == messageId {
-            return (self.imageNode, self.imageNode.bounds, { [weak self] in
+            return (self.imageNode, self.imageNode.bounds, { [weak self = self] in
                 guard let strongSelf = self else {
                     return (nil, nil)
                 }
@@ -326,7 +326,7 @@ public class ChatMessageWallpaperBubbleContentNode: ChatMessageBubbleContentNode
                 let backgroundSize = CGSize(width: width, height: textHeight + 140.0 + (fromYou || isGroupOrChannel ? 0.0 : 42.0))
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (backgroundSize, { [weak self] animation, synchronousLoads, _ in
+                    return (backgroundSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             
@@ -428,7 +428,7 @@ public class ChatMessageWallpaperBubbleContentNode: ChatMessageBubbleContentNode
                             if mediaUpdated {
                                 if item.message.id.namespace == Namespaces.Message.Local {
                                     strongSelf.statusDisposable.set((item.context.account.pendingPeerMediaUploadManager.uploadProgress(messageId: item.message.id)
-                                    |> deliverOnMainQueue).startStrict(next: { [weak self] progress in
+                                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] progress in
                                         if let strongSelf = self {
                                             strongSelf.updateProgress(progress)
                                         }

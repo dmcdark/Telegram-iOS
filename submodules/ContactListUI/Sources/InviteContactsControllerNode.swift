@@ -313,7 +313,7 @@ final class InviteContactsControllerNode: ASDisplayNode {
         self.addSubnode(self.countPanelNode)
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -332,11 +332,11 @@ final class InviteContactsControllerNode: ASDisplayNode {
         let presentationDataPromise = self.presentationDataPromise
         let previousEntries = Atomic<[InviteContactsEntry]?>(value: nil)
         
-        let interaction = InviteContactsInteraction(toggleContact: { [weak self] id in
+        let interaction = InviteContactsInteraction(toggleContact: { [weak self = self] id in
             if let strongSelf = self {
                 strongSelf.selectionState = strongSelf.selectionState.withToggledContactId(id)
             }
-        }, shareTelegram: { [weak self] in
+        }, shareTelegram: { [weak self = self] in
             self?.requestShareTelegram?()
         })
         
@@ -426,11 +426,11 @@ final class InviteContactsControllerNode: ASDisplayNode {
         })
         |> deliverOnMainQueue
         
-        self.disposable = transition.start(next: { [weak self] transition in
+        self.disposable = transition.start(next: { [weak self = self] transition in
             self?.enqueueTransition(transition)
         }).strict()
         
-        shareImpl = { [weak self] in
+        shareImpl = { [weak self = self] in
             if let strongSelf = self {
                 var result: [(DeviceContactBasicData, Int32)] = []
                 for contact in (strongSelf.currentSortedContacts.with { $0 } ?? []) {
@@ -508,13 +508,13 @@ final class InviteContactsControllerNode: ASDisplayNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, onlyWriteable: false, categories: [.deviceContacts], addContact: nil, openPeer: { [weak self] peer, _ in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, onlyWriteable: false, categories: [.deviceContacts], addContact: nil, openPeer: { [weak self = self] peer, _ in
             if let strongSelf = self, case let .deviceContact(id, _) = peer {
                 strongSelf.selectionState = strongSelf.selectionState.withSelectedContactId(id)
                 strongSelf.requestDeactivateSearch?()
             }
         }, openDisabledPeer: { _, _ in
-        }, contextAction: nil), cancel: { [weak self] in
+        }, contextAction: nil), cancel: { [weak self = self] in
             if let requestDeactivateSearch = self?.requestDeactivateSearch {
                 requestDeactivateSearch()
             }
@@ -559,7 +559,7 @@ final class InviteContactsControllerNode: ASDisplayNode {
                 } else if transition.crossfade {
                     options.insert(.AnimateCrossfade)
                 }
-                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                     if let strongSelf = self {
                         strongSelf.readyValue = true
                         

@@ -114,14 +114,14 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
         self.navigationItem.titleView = self.titleView
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.contactsNode.scrollToTop()
             }
         }
         
         self.presentationDataDisposable = ((params.updatedPresentationData?.signal ?? params.context.sharedContext.presentationData)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -135,7 +135,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
         })
         
         self.limitsConfigurationDisposable = (context.engine.data.get(TelegramEngine.EngineData.Item.Configuration.Limits())
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.limitsConfiguration = value._asLimits()
                 strongSelf.updateTitle()
@@ -152,7 +152,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
                     selectedChats.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                 )
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                 guard let strongSelf = self else {
                     return
                 }
@@ -189,7 +189,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
                         todayPeers.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                     )
                 )
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                     guard let strongSelf = self else {
                         return
                     }
@@ -323,7 +323,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
     }
     
     override func loadDisplayNode() {
-        self.displayNode = ContactMultiselectionControllerNode(navigationBar: self.navigationBar, context: self.context, presentationData: self.presentationData, updatedPresentationData: self.params.updatedPresentationData, mode: self.mode, isPeerEnabled: self.isPeerEnabled, attemptDisabledItemSelection: self.attemptDisabledItemSelection, options: self.options, filters: self.filters, onlyWriteable: self.onlyWriteable, isGroupInvitation: self.isGroupInvitation, limit: self.limit, reachedSelectionLimit: self.params.reachedLimit, present: { [weak self] c, a in
+        self.displayNode = ContactMultiselectionControllerNode(navigationBar: self.navigationBar, context: self.context, presentationData: self.presentationData, updatedPresentationData: self.params.updatedPresentationData, mode: self.mode, isPeerEnabled: self.isPeerEnabled, attemptDisabledItemSelection: self.attemptDisabledItemSelection, options: self.options, filters: self.filters, onlyWriteable: self.onlyWriteable, isGroupInvitation: self.isGroupInvitation, limit: self.limit, reachedSelectionLimit: self.params.reachedLimit, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         })
         switch self.contactsNode.contentNode {
@@ -335,12 +335,12 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
         
         let accountPeerId = self.context.account.peerId
         
-        self.contactsNode.dismiss = { [weak self] in
+        self.contactsNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         
         let limit = self.limit
-        self.contactsNode.openPeer = { [weak self] peer in
+        self.contactsNode.openPeer = { [weak self = self] peer in
             if let strongSelf = self, case let .peer(peer, _, _) = peer {
                 var updatedCount: Int?
                 var addedToken: EditableTokenListToken?
@@ -461,7 +461,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             }*/
         }
         
-        self.contactsNode.openPeerMore  = { [weak self] peer, node, gesture in
+        self.contactsNode.openPeerMore  = { [weak self = self] peer, node, gesture in
             guard let self, case let .peer(peer, _, _) = peer, let node = node as? ContextReferenceContentNode else {
                 return
             }
@@ -471,7 +471,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Premium_Gift_ContactSelection_SendMessage, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor)
-            }, iconPosition: .left, action: { [weak self] _, a in
+            }, iconPosition: .left, action: { [weak self = self] _, a in
                 a(.default)
               
                 if let self {
@@ -481,7 +481,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Premium_Gift_ContactSelection_OpenProfile, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor)
-            }, iconPosition: .left, action: { [weak self] _, a in
+            }, iconPosition: .left, action: { [weak self = self] _, a in
                 a(.default)
 
                 if let self {
@@ -493,7 +493,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             self.present(contextController, in: .window(.root))
         }
         
-        self.contactsNode.openDisabledPeer = { [weak self] peer, reason in
+        self.contactsNode.openDisabledPeer = { [weak self = self] peer, reason in
             guard let self else {
                 return
             }
@@ -515,7 +515,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
                 }
                 
                 self.present(UndoOverlayController(presentationData: presentationData, content: .premiumPaywall(title: nil, text: presentationData.strings.Chat_ToastMessagingRestrictedToPremium_Text(peer.compactDisplayTitle).string, customUndoText: hasAction ? self.presentationData.strings.Chat_ToastMessagingRestrictedToPremium_Action : nil, timeout: nil, linkAction: { _ in
-                }), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+                }), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                     guard let self else {
                         return false
                     }
@@ -528,7 +528,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             }
         }
         
-        self.contactsNode.removeSelectedPeer = { [weak self] peerId in
+        self.contactsNode.removeSelectedPeer = { [weak self = self] peerId in
             if let strongSelf = self {
                 var updatedCount: Int?
                 var removedTokenId: AnyHashable?
@@ -613,7 +613,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             }
         }
         
-        self.contactsNode.removeSelectedCategory = { [weak self] id in
+        self.contactsNode.removeSelectedCategory = { [weak self = self] id in
             guard let strongSelf = self else {
                 return
             }
@@ -641,7 +641,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
             strongSelf.updateTitle()
         }
         
-        self.contactsNode.additionalCategorySelected = { [weak self] id in
+        self.contactsNode.additionalCategorySelected = { [weak self = self] id in
             guard let strongSelf = self else {
                 return
             }
@@ -706,7 +706,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
                 strongSelf.updateTitle()
             }
         }
-        self.contactsNode.complete = { [weak self] in
+        self.contactsNode.complete = { [weak self = self] in
             if let strongSelf = self {
                 var available = true
                 if let rightBarButtonItem = strongSelf.navigationItem.rightBarButtonItem {
@@ -720,7 +720,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
         
         switch self.contactsNode.contentNode {
         case let .contacts(contactsNode):
-            contactsNode.deselectedAll = { [weak self] in
+            contactsNode.deselectedAll = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -728,7 +728,7 @@ class ContactMultiselectionControllerImpl: ViewController, ContactMultiselection
                 self.updateTitle()
                 self.requestLayout(transition: ContainedViewLayoutTransition.animated(duration: 0.4, curve: .spring))
             }
-            contactsNode.updatedSelection = { [weak self] peers, value in
+            contactsNode.updatedSelection = { [weak self = self] peers, value in
                 guard let self else {
                     return
                 }

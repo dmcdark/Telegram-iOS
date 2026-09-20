@@ -187,7 +187,7 @@ public class ItemListSingleLineInputItemNode: ListViewItemNode, UITextFieldDeleg
         self.addSubnode(self.labelNode)
         
         self.clearButtonNode.addTarget(self, action: #selector(self.clearButtonPressed), forControlEvents: .touchUpInside)
-        self.clearButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.clearButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.clearIconNode.layer.removeAnimation(forKey: "opacity")
@@ -292,7 +292,7 @@ public class ItemListSingleLineInputItemNode: ListViewItemNode, UITextFieldDeleg
             
             let attributedPlaceholderText = NSAttributedString(string: item.placeholder, font: Font.regular(item.presentationData.fontSize.itemListBaseFontSize), textColor: item.presentationData.theme.list.itemPlaceholderTextColor)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

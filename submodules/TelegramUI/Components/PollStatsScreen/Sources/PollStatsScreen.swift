@@ -69,7 +69,7 @@ private final class PollStatsSheetContent: CombinedComponent {
             super.init()
             
             self.stateDisposable.set((self.pollStatsContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }

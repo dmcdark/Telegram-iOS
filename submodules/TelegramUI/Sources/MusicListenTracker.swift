@@ -146,7 +146,7 @@ final class MusicListenTracker {
 
     private func startPauseTimer() {
         self.pauseTimer?.invalidate()
-        let timer = SwiftSignalKit.Timer(timeout: MusicListenTracker.pauseTimeoutSeconds, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: MusicListenTracker.pauseTimeoutSeconds, repeat: false, completion: { [weak self = self] in
             self?.pauseTimerFired()
         }, queue: Queue.mainQueue())
         self.pauseTimer = timer

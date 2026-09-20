@@ -214,7 +214,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
             let makeDescriptionLayout = TextNode.asyncLayout(self.descriptionNode)
             let makeTopicTitleLayout = TextNode.asyncLayout(self.topicTitleNode)
             
-            return { [weak self] context, constrainedWidth, theme, authorTitle, truncateType, topic in
+            return { [weak self = self] context, constrainedWidth, theme, authorTitle, truncateType, topic in
                 var maxTitleWidth = constrainedWidth
                 if let _ = topic {
                     maxTitleWidth = floor(constrainedWidth * 0.7)
@@ -507,7 +507,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
         self.addSubnode(self.restrictionNode)
         self.addSubnode(self.separatorNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let message = item.message else {
                 return
             }
@@ -517,7 +517,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
             item.interaction.openMessageContextMenu(message, false, strongSelf.contextSourceNode, strongSelf.contextSourceNode.bounds, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -625,7 +625,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
         
         let selectionNodeLayout = ItemListSelectableControlNode.asyncLayout(self.selectionNode)
         
-        return { [weak self] item, params, mergedTop, mergedBottom, dateHeaderAtBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom, dateHeaderAtBottom in
             var updatedTheme: PresentationTheme?
             
             if currentItem?.presentationData.theme.theme !== item.presentationData.theme.theme {
@@ -918,7 +918,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
             if let message = message, let selectedMedia = selectedMedia {
                 if mediaUpdated {
                     let context = item.context
-                    updatedFetchControls = FetchControls(fetch: { [weak self] in
+                    updatedFetchControls = FetchControls(fetch: { [weak self = self] in
                         if let strongSelf = self {
                             if let file = selectedMedia as? TelegramMediaFile {
                                 strongSelf.fetchDisposable.set(messageMediaFileInteractiveFetched(context: context, message: message, file: file, userInitiated: true).start())
@@ -1510,7 +1510,7 @@ public final class ListMessageFileItemNode: ListMessageNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -1797,7 +1797,7 @@ private final class LinearProgressNode: ASDisplayNode {
         self.shimmerClippingNode.addSubnode(self.shimmerNode)
         self.addSubnode(self.shimmerClippingNode)
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1807,7 +1807,7 @@ private final class LinearProgressNode: ASDisplayNode {
             }
         }
         
-        animationStep = { [weak self] in
+        animationStep = { [weak self = self] in
             self?.update()
         }
     }

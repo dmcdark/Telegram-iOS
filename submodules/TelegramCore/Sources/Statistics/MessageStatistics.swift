@@ -176,7 +176,7 @@ private final class MessageStatsContextImpl {
         assert(Queue.mainQueue().isCurrent())
         
         self.disposable.set((requestMessageStats(postbox: self.postbox, network: self.network, messageId: self.messageId)
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let strongSelf = self {
                 strongSelf._state = MessageStatsContextState(stats: stats)
                 strongSelf._statePromise.set(.single(strongSelf._state))

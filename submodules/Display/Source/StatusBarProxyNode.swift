@@ -488,7 +488,7 @@ class StatusBarProxyNode: ASDisplayNode {
                 
                 if !value {
                     self.updateItems()
-                    self.timer = Timer(timeInterval: 5.0, target: StatusBarProxyNodeTimerTarget { [weak self] in
+                    self.timer = Timer(timeInterval: 5.0, target: StatusBarProxyNodeTimerTarget { [weak self = self] in
                         self?.updateItems()
                     }, selector: #selector(StatusBarProxyNodeTimerTarget.tick), userInfo: nil, repeats: true)
                     RunLoop.main.add(self.timer!, forMode: .common)

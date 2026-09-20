@@ -44,10 +44,10 @@ public final class InstantPageReferenceController: ViewController {
     
     override public func loadDisplayNode() {
         self.displayNode = InstantPageReferenceControllerNode(context: self.context, sourceLocation: self.sourceLocation, theme: self.theme, webPage: self.webPage.webPage, instantPage: self.webPage.instantPage, anchorText: self.anchorText, openUrl: self.openUrl, openUrlIn: self.openUrlIn, present: self.present)
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.close = { [weak self] in
+        self.controllerNode.close = { [weak self = self] in
             self?.dismiss()
         }
     }

@@ -42,7 +42,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
         params.progress?.set(.single(true))
         
         let _ = (self.context.engine.peers.resolvePeerByPhone(phone: number)
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let self else {
                 return
             }
@@ -64,7 +64,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
             
             var items: [ContextMenuItem] = []
             items.append(
-                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_AddToContacts, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddUser"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_AddToContacts, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddUser"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                     guard let self, let c else {
                         return
                     }
@@ -73,7 +73,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                     ])
                     let contactData = DeviceContactExtendedData(basicData: basicData, middleName: "", prefix: "", suffix: "", organization: "", jobTitle: "", department: "", emailAddresses: [], urls: [], addresses: [], birthdayDate: nil, socialProfiles: [], instantMessagingProfiles: [], note: "")
                     
-                    pushContactContextOptionsController(context: self.context, contextController: c, presentationData: self.presentationData, peer: peer, contactData: contactData, parentController: self, push: { [weak self] c in
+                    pushContactContextOptionsController(context: self.context, contextController: c, presentationData: self.presentationData, peer: peer, contactData: contactData, parentController: self, push: { [weak self = self] c in
                         self?.push(c)
                     })
                 }))
@@ -84,7 +84,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                     
                 } else {
                     items.append(
-                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_SendMessage, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_SendMessage, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                             f(.default)
                             guard let self else {
                                 return
@@ -93,7 +93,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                         }))
                     )
                     items.append(
-                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_TelegramVoiceCall, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Call"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_TelegramVoiceCall, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Call"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                             f(.default)
                             
                             guard let self else {
@@ -103,7 +103,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                         }))
                     )
                     items.append(
-                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_TelegramVideoCall, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/VideoCall"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_TelegramVideoCall, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/VideoCall"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                             f(.default)
                             
                             guard let self else {
@@ -115,7 +115,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                 }
             } else {
                 items.append(
-                    .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_InviteToTelegram, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Telegram"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                    .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_InviteToTelegram, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Telegram"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -129,7 +129,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                 
             } else {
                 items.append(
-                    .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_CallViaCarrier, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/PhoneCall"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                    .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_CallViaCarrier, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/PhoneCall"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -141,7 +141,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
             }
             
             items.append(
-                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_CopyNumber, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Phone_CopyNumber, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                     f(.default)
 
                     guard let self else {
@@ -166,7 +166,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
                 }
                 
                 items.append(
-                    .action(ContextMenuActionItem(text: peer.displayTitle(strings: self.presentationData.strings, displayOrder: self.presentationData.nameDisplayOrder), textLayout: .secondLineWithAttributedValue(subtitle), icon: { theme in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), iconPosition: .left, action: { [weak self]  _, f in
+                    .action(ContextMenuActionItem(text: peer.displayTitle(strings: self.presentationData.strings, displayOrder: self.presentationData.nameDisplayOrder), textLayout: .secondLineWithAttributedValue(subtitle), icon: { theme in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), iconPosition: .left, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -185,7 +185,7 @@ extension ChatControllerImpl: MFMessageComposeViewControllerDelegate {
             self.canReadHistory.set(false)
             
             let controller = makeContextController(presentationData: self.presentationData, source: source, items: .single(ContextController.Items(content: .list(items))), recognizer: recognizer, gesture: gesture, disableScreenshots: false)
-            controller.dismissed = { [weak self] in
+            controller.dismissed = { [weak self = self] in
                 self?.canReadHistory.set(true)
             }
             

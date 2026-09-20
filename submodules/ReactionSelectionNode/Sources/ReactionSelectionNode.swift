@@ -223,7 +223,7 @@ public final class ReactionNode: ASDisplayNode, ReactionItemNode {
         }
         self.addSubnode(self.staticAnimationNode)
         
-        self.animateInAnimationNode?.completed = { [weak self] _ in
+        self.animateInAnimationNode?.completed = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -349,7 +349,7 @@ public final class ReactionNode: ASDisplayNode, ReactionItemNode {
             self.addSubnode(animationNode)
             
             var didReportStarted = false
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 if !didReportStarted {
                     didReportStarted = true
                     self?.expandedAnimationDidBegin?()
@@ -370,7 +370,7 @@ public final class ReactionNode: ASDisplayNode, ReactionItemNode {
             if transition.isAnimated {
                 if let stillAnimationNode = self.stillAnimationNode, !stillAnimationNode.frame.isEmpty {
                     stillAnimationNode.alpha = 0.0
-                    stillAnimationNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+                    stillAnimationNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                         guard let strongSelf = self, let stillAnimationNode = strongSelf.stillAnimationNode else {
                             return
                         }
@@ -380,7 +380,7 @@ public final class ReactionNode: ASDisplayNode, ReactionItemNode {
                 }
                 if let animateInAnimationNode = self.animateInAnimationNode {
                     animateInAnimationNode.alpha = 0.0
-                    animateInAnimationNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+                    animateInAnimationNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                         guard let strongSelf = self, let animateInAnimationNode = strongSelf.animateInAnimationNode else {
                             return
                         }
@@ -519,7 +519,7 @@ public final class ReactionNode: ASDisplayNode, ReactionItemNode {
                     }
                 }
                 
-                self.staticAnimationNode.started = { [weak self] in
+                self.staticAnimationNode.started = { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

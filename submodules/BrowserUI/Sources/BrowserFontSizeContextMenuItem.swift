@@ -139,7 +139,7 @@ private final class BrowserFontSizeContextMenuItemNode: ASDisplayNode, ContextMe
         self.addSubnode(self.leftSeparatorNode)
         self.addSubnode(self.rightSeparatorNode)
         
-        self.leftButtonNode.highligthedChanged = { [weak self] highligted in
+        self.leftButtonNode.highligthedChanged = { [weak self = self] highligted in
             guard let strongSelf = self else {
                 return
             }
@@ -152,7 +152,7 @@ private final class BrowserFontSizeContextMenuItemNode: ASDisplayNode, ContextMe
         }
         self.leftButtonNode.addTarget(self, action: #selector(self.leftPressed), forControlEvents: .touchUpInside)
         
-        self.rightButtonNode.highligthedChanged = { [weak self] highligted in
+        self.rightButtonNode.highligthedChanged = { [weak self = self] highligted in
             guard let strongSelf = self else {
                 return
             }
@@ -165,7 +165,7 @@ private final class BrowserFontSizeContextMenuItemNode: ASDisplayNode, ContextMe
         }
         self.rightButtonNode.addTarget(self, action: #selector(self.rightPressed), forControlEvents: .touchUpInside)
         
-        self.centerButtonNode.highligthedChanged = { [weak self] highligted in
+        self.centerButtonNode.highligthedChanged = { [weak self = self] highligted in
             guard let strongSelf = self else {
                 return
             }

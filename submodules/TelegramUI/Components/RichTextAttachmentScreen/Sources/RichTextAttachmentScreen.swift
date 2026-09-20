@@ -246,7 +246,7 @@ public class RichTextAttachmentScreen: ViewControllerComponentContainer, Attachm
     public var mediaPickerContext: AttachmentMediaPickerContext?
 
     public var isPanGestureEnabled: (() -> Bool)? {
-        return { [weak self] in
+        return { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? RichTextAttachmentScreenComponent.View else {
                 return true
             }
@@ -310,7 +310,7 @@ public class RichTextAttachmentScreen: ViewControllerComponentContainer, Attachm
             navigationBar.customOverBackgroundContentView.insertSubview(overNavigationContainer, at: 0)
         }
         
-        self.attemptNavigation = { [weak self] _ in
+        self.attemptNavigation = { [weak self = self] _ in
             guard let self, let syncContent = self.syncContent, let componentView = self.node.hostView.componentView as? RichTextAttachmentScreenComponent.View else {
                 return true
             }
@@ -341,7 +341,7 @@ public class RichTextAttachmentScreen: ViewControllerComponentContainer, Attachm
 
         let strings = self.context.sharedContext.currentPresentationData.with { $0 }.strings
         let controller = textAlertController(context: self.context, title: strings.RichText_RemoveFormattingTitle, text: strings.RichText_RemoveFormattingText, actions: [
-            TextAlertAction(type: .defaultAction, title: strings.RichText_SubscribeToPremium, action: { [weak self] in
+            TextAlertAction(type: .defaultAction, title: strings.RichText_SubscribeToPremium, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -352,7 +352,7 @@ public class RichTextAttachmentScreen: ViewControllerComponentContainer, Attachm
                     self.push(premiumController)
                 }
             }),
-            TextAlertAction(type: .genericAction, title: strings.RichText_SendWithoutFormatting, action: { [weak self] in
+            TextAlertAction(type: .genericAction, title: strings.RichText_SendWithoutFormatting, action: { [weak self = self] in
                 self?.complete(withoutFormatting: true)
             }),
             TextAlertAction(type: .genericAction, title: strings.Common_Cancel, action: {
@@ -488,7 +488,7 @@ final class RichTextAttachmentScreenComponent: Component {
             guard let component = self.component else {
                 return
             }
-            component.presentAttachmentMenu?(photoVideoOnly, { [weak self] attachment in
+            component.presentAttachmentMenu?(photoVideoOnly, { [weak self = self] attachment in
                 guard let self else {
                     return
                 }
@@ -534,7 +534,7 @@ final class RichTextAttachmentScreenComponent: Component {
         }
 
         private func presentImagePicker() {
-            self.pickMedia(photoVideoOnly: false) { [weak self] mediaID, naturalSize, kind, caption in
+            self.pickMedia(photoVideoOnly: false) { [weak self = self] mediaID, naturalSize, kind, caption in
                 self?.editor.insertMedia(mediaID: mediaID, naturalSize: naturalSize, kind: kind, caption: caption)
             }
         }
@@ -555,7 +555,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 context: component.context,
                 text: environment.strings.TextFormat_AddLinkText(selectedText).string,
                 link: existingLink,
-                apply: { [weak self] link, _ in
+                apply: { [weak self = self] link, _ in
                     guard let self, let link else { return }
                     self.editor.becomeFirstResponder()
                     if link.isEmpty {
@@ -587,7 +587,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 UIImage()
             }, additionalLeftIcon: { theme in
                 return current == nil ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -599,7 +599,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatBulletList"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: { theme in
                 return current == .bullet ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, iconPosition: .left, action: { [weak self] _, f in
+            }, iconPosition: .left, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -611,7 +611,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatNumberList"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: { theme in
                 return current == .ordered ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, iconPosition: .left, action: { [weak self] _, f in
+            }, iconPosition: .left, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -623,7 +623,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatChecklist"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: { theme in
                 return current == .checklist ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, iconPosition: .left, action: { [weak self] _, f in
+            }, iconPosition: .left, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -697,7 +697,7 @@ final class RichTextAttachmentScreenComponent: Component {
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatHeading"), color: theme.contextMenu.primaryColor)
                 }, additionalLeftIcon: component.context.isPremium ? nil : { _ in
                     return UIImage(bundleImageName: "Premium/ContextStar")
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     guard let self, let environment = self.environment else {
                         c?.dismiss(completion: nil)
                         return
@@ -753,7 +753,7 @@ final class RichTextAttachmentScreenComponent: Component {
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatHeading\(level + 1)"), color: theme.contextMenu.primaryColor)
                         }, additionalLeftIcon: { theme in
                             return live.paragraphStyle == mappedStyle ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-                        }, iconPosition: .left, action: { [weak self] _, f in
+                        }, iconPosition: .left, action: { [weak self = self] _, f in
                             guard let self else {
                                 f(.default)
                                 return
@@ -787,7 +787,7 @@ final class RichTextAttachmentScreenComponent: Component {
             if !editorState.hasSelection || !isPlainBody {
                 items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_MenuText, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatText"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     guard let self else {
                         c?.dismiss(completion: nil)
                         return
@@ -801,7 +801,7 @@ final class RichTextAttachmentScreenComponent: Component {
             
             items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_MenuQuote, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatQuote"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 guard let self else {
                     c?.dismiss(completion: nil)
                     return
@@ -821,7 +821,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatPullquote"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: component.context.isPremium ? nil : { _ in
                 return UIImage(bundleImageName: "Premium/ContextStar")
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 guard let self else {
                     c?.dismiss(completion: nil)
                     return
@@ -843,7 +843,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatCode"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: component.context.isPremium ? nil : { _ in
                 return UIImage(bundleImageName: "Premium/ContextStar")
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 guard let self else {
                     c?.dismiss(completion: nil)
                     return
@@ -865,19 +865,19 @@ final class RichTextAttachmentScreenComponent: Component {
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/FormatFormula"), color: theme.contextMenu.primaryColor)
             }, additionalLeftIcon: component.context.isPremium ? nil : { _ in
                 return UIImage(bundleImageName: "Premium/ContextStar")
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 guard let self else {
                     c?.dismiss(completion: nil)
                     return
                 }
 
                 self.focusEditorAtDocumentEndIfNeeded(hasCursor: hasCursor)
-                self.component?.presentFormulaEditor?(nil, { [weak self] latex in
+                self.component?.presentFormulaEditor?(nil, { [weak self = self] latex in
                     guard let self else {
                         return
                     }
                     self.editor.insertFormula(latex: latex)
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self = self] in
                         self?.editor.becomeFirstResponder()
                     }
                 })
@@ -1003,16 +1003,16 @@ final class RichTextAttachmentScreenComponent: Component {
                 }
                 // Table row/column structural menu: the editor hands us a framework-agnostic descriptor; we
                 // present it as a ContextController anchored to the tapped handle (in the editor's canvas).
-                editor.onRequestTableStructuralMenu = { [weak self] request in
+                editor.onRequestTableStructuralMenu = { [weak self = self] request in
                     guard let self, let component = self.component else { return }
                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
-                    presentTableStructuralMenu(request, presentationData: presentationData) { [weak self] controller in
+                    presentTableStructuralMenu(request, presentationData: presentationData) { [weak self = self] controller in
                         self?.environment?.controller()?.presentInGlobalOverlay(controller)
                     }
                 }
                 // Media control (more button) menu: the editor hands us an account-free request; we present
                 // our own menu anchored to the tapped control. `delete` is bound to the exact occurrence.
-                editor.onRequestMediaControl = { [weak self] request in
+                editor.onRequestMediaControl = { [weak self = self] request in
                     guard let self, let component = self.component, let anchor = request.view else { return }
                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
                     switch request.control {
@@ -1031,7 +1031,7 @@ final class RichTextAttachmentScreenComponent: Component {
                             action: { _, f in f(.default); request.delete() }
                         )))
                         presentMediaControlMenu(anchorView: anchor, items: items,
-                                                presentationData: presentationData) { [weak self] controller in
+                                                presentationData: presentationData) { [weak self = self] controller in
                             self?.environment?.controller()?.presentInGlobalOverlay(controller)
                         }
                     case .add:
@@ -1071,7 +1071,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 // so any media referenced by the initial document resolves on first layout.
                 self.attachedMedia = initialMedia
 
-                let emojiKeyboard = RichTextEmojiKeyboardController(context: component.context, editor: editor, requestLayout: { [weak self] in
+                let emojiKeyboard = RichTextEmojiKeyboardController(context: component.context, editor: editor, requestLayout: { [weak self = self] in
                     guard let self, !self.isUpdating else { return }
                     self.componentState?.updated(transition: .spring(duration: 0.4))
                 })
@@ -1081,7 +1081,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 // custom emoji carried in from the chat composer renders, and its file survives back out.
                 emojiKeyboard.seedEmojiFiles(initialEmojiFiles)
 
-                editor.registerEmojiViewProvider { [weak self] id, size in
+                editor.registerEmojiViewProvider { [weak self = self] id, size in
                     return self?.emojiKeyboard?.customEmojiView(forId: id, size: size)
                 }
 
@@ -1102,19 +1102,19 @@ final class RichTextAttachmentScreenComponent: Component {
                     )
                 }
 
-                editor.onEditFormulaRequested = { [weak self] latex, completion in
+                editor.onEditFormulaRequested = { [weak self = self] latex, completion in
                     guard let self, let component = self.component else {
                         return
                     }
-                    component.presentFormulaEditor?(latex, { [weak self] updatedLatex in
+                    component.presentFormulaEditor?(latex, { [weak self = self] updatedLatex in
                         completion(updatedLatex)
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             self?.editor.becomeFirstResponder()
                         }
                     })
                 }
 
-                editor.registerMediaViewProvider { [weak self] items, _, displayMode, existing in
+                editor.registerMediaViewProvider { [weak self = self] items, _, displayMode, existing in
                     guard let self, let component = self.component else { return nil }
                     // Theme an audio row to the editor's accent/text scheme (same `list.item*` sources as
                     // `mapEditorTheme` / the table); ignored for image/map media.
@@ -1143,14 +1143,14 @@ final class RichTextAttachmentScreenComponent: Component {
                 // (`list.itemCheckColors`), mirroring `instantPageChecklistMarkerTheme`. Reads `appliedTheme`
                 // (the live `PresentationTheme`) lazily; nil before the first theme apply (harmless — the editor
                 // falls back to its glyph marker until a checkbox is provided).
-                editor.registerChecklistMarkerViewProvider { [weak self] checked, _ in
+                editor.registerChecklistMarkerViewProvider { [weak self = self] checked, _ in
                     guard let self, let theme = self.appliedTheme else { return nil }
                     let c = theme.list.itemCheckColors
                     let nodeTheme = CheckNodeTheme(backgroundColor: c.fillColor, strokeColor: c.foregroundColor, borderColor: c.strokeColor, overlayBorder: false, hasInset: false, hasShadow: false)
                     return HostChecklistCheckboxView(theme: nodeTheme, checked: checked)
                 }
 
-                editor.onBecameFirstResponder = { [weak self] in
+                editor.onBecameFirstResponder = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1164,7 +1164,7 @@ final class RichTextAttachmentScreenComponent: Component {
                 // guard only defends the SYNCHRONOUS loop (update → editor.update → onChange → update);
                 // editor.update/performLayout don't fire onChange synchronously, so it can't loop. Async
                 // onChange (user edits/caret moves) skips the guard and correctly schedules a re-layout.
-                editor.onChange = { [weak self] in
+                editor.onChange = { [weak self = self] in
                     guard let self, !self.isUpdating else { return }
                     self.componentState?.updated(transition: .spring(duration: 0.4))
                 }
@@ -1178,7 +1178,7 @@ final class RichTextAttachmentScreenComponent: Component {
             let isSendRichFormattingLocked = self.isSendRichFormattingLocked
             if !self.didShowPremiumToast && isSendRichFormattingLocked {
                 self.didShowPremiumToast = true
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     self?.presentPremiumToast()
                 }
             }
@@ -1204,7 +1204,7 @@ final class RichTextAttachmentScreenComponent: Component {
                     preferClearGlass: false,
                     background: .panel,
                     items: [
-                        GlassControlGroupComponent.Item(id: 0, content: .icon("Navigation/Close"), action: { [weak self] in
+                        GlassControlGroupComponent.Item(id: 0, content: .icon("Navigation/Close"), action: { [weak self = self] in
                             guard let self, let controller = self.environment?.controller() as? RichTextAttachmentScreen else {
                                 return
                             }
@@ -1230,10 +1230,10 @@ final class RichTextAttachmentScreenComponent: Component {
                     preferClearGlass: false,
                     background: .panel,
                     items: [
-                        GlassControlGroupComponent.Item(id: 0, content: .icon("Media Editor/Undo"), action: editorState.canUndo ? { [weak self] in
+                        GlassControlGroupComponent.Item(id: 0, content: .icon("Media Editor/Undo"), action: editorState.canUndo ? { [weak self = self] in
                             self?.editor.undo()
                         } : nil),
-                        GlassControlGroupComponent.Item(id: 1, content: .icon("Media Editor/Redo"), action: editorState.canRedo ? { [weak self] in
+                        GlassControlGroupComponent.Item(id: 1, content: .icon("Media Editor/Redo"), action: editorState.canRedo ? { [weak self = self] in
                             self?.editor.redo()
                         } : nil)
                     ], minWidth: 44.0)
@@ -1298,32 +1298,32 @@ final class RichTextAttachmentScreenComponent: Component {
                 
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("bold"), icon: "RichText/ToolBold",
-                    action: { [weak self] _ in self?.editor.toggleBold() },
+                    action: { [weak self = self] _ in self?.editor.toggleBold() },
                     isSelected: editorState.bold
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("italic"), icon: "RichText/ToolItalic",
-                    action: { [weak self] _ in self?.editor.toggleItalic() },
+                    action: { [weak self = self] _ in self?.editor.toggleItalic() },
                     isSelected: editorState.italic
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("strike"), icon: "RichText/ToolStrike",
-                    action: { [weak self] _ in self?.editor.toggleStrikethrough() },
+                    action: { [weak self = self] _ in self?.editor.toggleStrikethrough() },
                     isSelected: editorState.strikethrough
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("underline"), icon: "RichText/ToolUnderline",
-                    action: { [weak self] _ in self?.editor.toggleUnderline() },
+                    action: { [weak self = self] _ in self?.editor.toggleUnderline() },
                     isSelected: editorState.underline
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("spoiler"), icon: "RichText/ToolSpoiler",
-                    action: { [weak self] _ in self?.editor.toggleSpoiler() },
+                    action: { [weak self = self] _ in self?.editor.toggleSpoiler() },
                     isSelected: editorState.spoiler
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("link"), icon: "RichText/ToolLink",
-                    action: editorState.hasSelection ? { [weak self] _ in self?.presentLinkPrompt() } : nil,
+                    action: editorState.hasSelection ? { [weak self = self] _ in self?.presentLinkPrompt() } : nil,
                     isSelected: editorState.link != nil
                 ))
                 // A list/quote/etc. marker can only apply to paragraph text, so offer it only when the selection
@@ -1331,14 +1331,14 @@ final class RichTextAttachmentScreenComponent: Component {
                 if editorState.selectionIsTextOnly {
                     barActions.append(RichTextActionBarComponent.Action(
                         id: AnyHashable("list"), icon: "RichText/ToolList",
-                        action: { [weak self] sourceView in self?.presentListMenu(from: sourceView) },
+                        action: { [weak self = self] sourceView in self?.presentListMenu(from: sourceView) },
                         isSelected: editorState.listMarker != nil,
                         showsPremiumBadge: !component.context.isPremium
                     ))
                     
                     barActions.append(RichTextActionBarComponent.Action(
                         id: AnyHashable("quote"), icon: "RichText/ToolQuote",
-                        action: { [weak self] sourceView in self?.presentAddMenu(from: sourceView) },
+                        action: { [weak self = self] sourceView in self?.presentAddMenu(from: sourceView) },
                         isSelected: editorState.listMarker != nil,
                         showsPremiumBadge: !component.context.isPremium
                     ))
@@ -1348,14 +1348,14 @@ final class RichTextAttachmentScreenComponent: Component {
                 
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("add"), icon: "Chat/Context Menu/Add",
-                    action: editorState.isInTable ? nil : { [weak self] sourceView in
+                    action: editorState.isInTable ? nil : { [weak self = self] sourceView in
                         self?.presentAddMenu(from: sourceView)
                     },
                     isSelected: false
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("list"), icon: "RichText/ToolList",
-                    action: editorState.isInTable ? nil : { [weak self] sourceView in
+                    action: editorState.isInTable ? nil : { [weak self = self] sourceView in
                         self?.presentListMenu(from: sourceView)
                     },
                     isSelected: false,
@@ -1363,19 +1363,19 @@ final class RichTextAttachmentScreenComponent: Component {
                 ))
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("table"), icon: "RichText/ToolTable",
-                    action: { [weak self] sourceView in
+                    action: { [weak self = self] sourceView in
                         guard let self, let environment = self.environment else { return }
                         var items: [ContextMenuItem] = []
                         if self.editor.currentState().isInTable {
-                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_Copy, icon: { _ in nil }, action: { [weak self] _, f in
+                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_Copy, icon: { _ in nil }, action: { [weak self = self] _, f in
                                 f(.default)
                                 self?.editor.copyCurrentTable()
                             })))
-                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_ConvertToText, icon: { _ in nil }, action: { [weak self] _, f in
+                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_ConvertToText, icon: { _ in nil }, action: { [weak self = self] _, f in
                                 f(.default)
                                 self?.editor.convertCurrentTableToText()
                             })))
-                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_Delete, textColor: .destructive, icon: { _ in nil }, action: { [weak self] _, f in
+                            items.append(.action(ContextMenuActionItem(text: environment.strings.RichText_Menu_Table_Delete, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] _, f in
                                 f(.default); self?.editor.deleteTable()
                             })))
                         } else {
@@ -1392,13 +1392,13 @@ final class RichTextAttachmentScreenComponent: Component {
                 if component.presentAttachmentMenu != nil {
                     barActions.append(RichTextActionBarComponent.Action(
                         id: AnyHashable("attach"), icon: "RichText/ToolAttach",
-                        action: editorState.isInTable ? nil : { [weak self] _ in self?.presentImagePicker() },
+                        action: editorState.isInTable ? nil : { [weak self = self] _ in self?.presentImagePicker() },
                         isSelected: false
                     ))
                 }
                 barActions.append(RichTextActionBarComponent.Action(
                     id: AnyHashable("emoji"), icon: "RichText/ToolEmoji",
-                    action: { [weak self] _ in self?.emojiKeyboard?.toggle() },
+                    action: { [weak self = self] _ in self?.emojiKeyboard?.toggle() },
                     isSelected: self.emojiKeyboard?.isEmojiMode ?? false
                 ))
             }
@@ -1419,7 +1419,7 @@ final class RichTextAttachmentScreenComponent: Component {
                     preferClearGlass: false,
                     background: .panel,
                     items: [
-                        GlassControlGroupComponent.Item(id: 0, content: .icon("Chat/Input/Text/InputAIIcon"), action: { [weak self] in
+                        GlassControlGroupComponent.Item(id: 0, content: .icon("Chat/Input/Text/InputAIIcon"), action: { [weak self = self] in
                             Task { @MainActor in
                                 guard let self, let component = self.component, let environment = self.environment else {
                                     return
@@ -1445,7 +1445,7 @@ final class RichTextAttachmentScreenComponent: Component {
                                             theme: environment.theme,
                                             mode: .edit(
                                                 saveRestoreStateId: nil,
-                                                completion: { [weak self] result in
+                                                completion: { [weak self = self] result in
                                                     guard let self else {
                                                         return
                                                     }
@@ -1487,7 +1487,7 @@ final class RichTextAttachmentScreenComponent: Component {
                                         context: component.context,
                                         theme: environment.theme,
                                         mode: .generate(
-                                            completion: { [weak self] result in
+                                            completion: { [weak self = self] result in
                                                 guard let self else {
                                                     return
                                                 }
@@ -1536,7 +1536,7 @@ final class RichTextAttachmentScreenComponent: Component {
                     theme: environment.theme,
                     isEnabled: isSendEnabled,
                     isLocked: isSendRichFormattingLocked,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let controller = self.environment?.controller() as? RichTextAttachmentScreen else {
                             return
                         }

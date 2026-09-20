@@ -362,7 +362,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
         }
         self.addSubview(self.webView)
         
-        self.webView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.webView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             if let self, self.webView.canGoBack {
                 return true
             } else {
@@ -370,7 +370,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
             }
         }
         
-        self.webView.interactiveTransitionGestureRecognizerTest = { [weak self] point in
+        self.webView.interactiveTransitionGestureRecognizerTest = { [weak self = self] point in
             if let self {
                 if let result = self.webView.hitTest(point, with: nil), let scrollView = findScrollView(view: result), scrollView.isDescendant(of: self.webView) {
                     if scrollView.contentSize.width > scrollView.frame.width, scrollView.contentOffset.x > -scrollView.contentInset.left {
@@ -381,13 +381,13 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
             return false
         }
         
-        handleScriptMessageImpl = { [weak self] message in
+        handleScriptMessageImpl = { [weak self = self] message in
             self?.handleScriptMessage(message)
         }
-        handleContentMessageImpl = { [weak self] message in
+        handleContentMessageImpl = { [weak self = self] message in
             self?.handleContentRequest(message)
         }
-        handleBlobMessageImpl = { [weak self] message in
+        handleBlobMessageImpl = { [weak self = self] message in
             self?.handleBlobRequest(message)
         }
     }
@@ -427,12 +427,12 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                 let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
                 let subject: MessageActionUrlSubject = .url(url: url, inAppOrigin: origin)
                 let _ = (self.context.engine.messages.requestMessageActionUrlAuth(subject: subject)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     guard let self, case .request = result else {
                         return
                     }
                     var dismissImpl: (() -> Void)?
-                    let controller = AuthConfirmationScreen(context: self.context, requestSubject: subject, subject: result, completion: { [weak self] accountContext, accountPeer, authResult, disposable in
+                    let controller = AuthConfirmationScreen(context: self.context, requestSubject: subject, subject: result, completion: { [weak self = self] accountContext, accountPeer, authResult, disposable in
                         guard let self else {
                             return
                         }
@@ -654,12 +654,12 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                 }
             }
         } else {
-            self.setupSearch { [weak self] in
+            self.setupSearch { [weak self = self] in
                 if let query, !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     let js = "uiWebview_HighlightAllOccurencesOfString('\(query)')"
-                    self?.webView.evaluateJavaScript(js, completionHandler: { [weak self] _, _ in
+                    self?.webView.evaluateJavaScript(js, completionHandler: { [weak self = self] _, _ in
                         let js = "uiWebview_SearchResultCount"
-                        self?.webView.evaluateJavaScript(js, completionHandler: { [weak self] result, _ in
+                        self?.webView.evaluateJavaScript(js, completionHandler: { [weak self = self] result, _ in
                             if let result = result as? NSNumber {
                                 self?.searchResultsCount = result.intValue
                                 completion?(result.intValue)
@@ -1026,7 +1026,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
         self.present(downloadController.0, nil)
         downloadController.1(download.progress.completedUnitCount, download.progress.totalUnitCount)
         
-        self.downloadProgressObserver = download.progress.observe(\.fractionCompleted) { [weak self] progress, _ in
+        self.downloadProgressObserver = download.progress.observe(\.fractionCompleted) { [weak self = self] progress, _ in
             if let (_, update) = self?.downloadController {
                 update(progress.completedUnitCount, progress.totalUnitCount)
             }
@@ -1156,7 +1156,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
             (self.isLoaded.get()
             |> filter { $0 }
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] _ in
+            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -1165,11 +1165,11 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                 }
                 
                 if #available(iOS 14.5, *) {
-                    self.webView.createWebArchiveData { [weak self] result in
+                    self.webView.createWebArchiveData { [weak self = self] result in
                         guard let self, case let .success(data) = result else {
                             return
                         }
-                        let readability = Readability(url: url, archiveData: data, completionHandler: { [weak self] result, error in
+                        let readability = Readability(url: url, archiveData: data, completionHandler: { [weak self = self] result, error in
                             guard let self else {
                                 return
                             }
@@ -1180,7 +1180,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                                 self.instantPage = webPage
                                 self.instantPageResources = resources
                                 let _ = (updatedRemoteWebpage(postbox: self.context.account.postbox, network: self.context.account.network, accountPeerId: self.context.account.peerId, webPage: WebpageReference(TelegramMediaWebpage(webpageId: EngineMedia.Id(namespace: 0, id: 0), content: .Loaded(TelegramMediaWebpageLoadedContent(url: self._state.url, displayUrl: "", hash: 0, type: nil, websiteName: nil, title: nil, text: nil, embedUrl: nil, embedType: nil, embedSize: nil, duration: nil, author: nil, isMediaLargeByDefault: nil, imageIsVideoCover: false, image: nil, file: nil, story: nil, attributes: [], instantPage: nil)))))
-                                |> deliverOnMainQueue).start(next: { [weak self] webPage in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] webPage in
                                     guard let self, let webPage, case let .Loaded(result) = webPage.content, let _ = result.instantPage else {
                                         return
                                     }
@@ -1207,7 +1207,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                 return
             }
             if #available(iOS 14.0, *), contentType == "text/html" {
-                self.webView.createWebArchiveData { [weak self] result in
+                self.webView.createWebArchiveData { [weak self = self] result in
                     guard let self, case let .success(data) = result else {
                         return
                     }
@@ -1498,22 +1498,22 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
             return
         }
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self = self] _ in
             return UIMenu(title: "", children: [
-                UIAction(title: presentationData.strings.Browser_ContextMenu_Open, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self] _ in
+                UIAction(title: presentationData.strings.Browser_ContextMenu_Open, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self = self] _ in
                     self?.open(url: url.absoluteString, new: false)
                 }),
-                UIAction(title: presentationData.strings.Browser_ContextMenu_OpenInNewTab, image: generateTintedImage(image: UIImage(bundleImageName: "Instant View/NewTab"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self] _ in
+                UIAction(title: presentationData.strings.Browser_ContextMenu_OpenInNewTab, image: generateTintedImage(image: UIImage(bundleImageName: "Instant View/NewTab"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self = self] _ in
                     self?.open(url: url.absoluteString, new: true)
                 }),
                 UIAction(title: presentationData.strings.Browser_ContextMenu_AddToReadingList, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReadingList"), color: presentationData.theme.contextMenu.primaryColor), handler: { _ in
                     let _ = try? SSReadingList.default()?.addItem(with: url, title: nil, previewText: nil)
                 }),
-                UIAction(title: presentationData.strings.Browser_ContextMenu_CopyLink, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self] _ in
+                UIAction(title: presentationData.strings.Browser_ContextMenu_CopyLink, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self = self] _ in
                     UIPasteboard.general.string = url.absoluteString
                     self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
                 }),
-                UIAction(title: presentationData.strings.Browser_ContextMenu_Share, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self] _ in
+                UIAction(title: presentationData.strings.Browser_ContextMenu_Share, image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: presentationData.theme.contextMenu.primaryColor), handler: { [weak self = self] _ in
                     self?.share(url: url.absoluteString)
                 })
             ])
@@ -1571,7 +1571,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
     
     private func share(url: String) {
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self] in
+        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self = self] in
             self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
         }))
         self.present(shareController, nil)
@@ -1616,7 +1616,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                 return favicons;
             })();
         """
-        self.webView.evaluateJavaScript(js, completionHandler: { [weak self] jsResult, _ in
+        self.webView.evaluateJavaScript(js, completionHandler: { [weak self = self] jsResult, _ in
             guard let self, let favicons = jsResult as? [Any] else {
                 return
             }
@@ -1661,7 +1661,7 @@ final class BrowserWebContent: UIView, BrowserContent, WKNavigationDelegate, WKU
                                                 
             if let favicon = largestIcon {
                 self.faviconDisposable.set((fetchFavicon(context: self.context, url: favicon.url, size: CGSize(width: 20.0, height: 20.0))
-                |> deliverOnMainQueue).startStrict(next: { [weak self] favicon in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] favicon in
                     guard let self else {
                         return
                     }

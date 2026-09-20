@@ -265,7 +265,7 @@ final class MediaEditorScreenComponent: Component {
                     return .complete()
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] playerState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] playerState in
                 if let self {
                     if self.playerState != playerState {
                         self.playerState = playerState
@@ -275,7 +275,7 @@ final class MediaEditorScreenComponent: Component {
             })
             
             self.isPremiumDisposable = (context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 if let self {
                     self.isPremium = peer?.isPremium ?? false
                     self.updated()
@@ -380,7 +380,7 @@ final class MediaEditorScreenComponent: Component {
             self.addSubview(self.fadeView)
             
             self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -430,7 +430,7 @@ final class MediaEditorScreenComponent: Component {
                     sendSticker: { _, _, _, _, _, _, _, _, _ in
                         return false
                     },
-                    sendEmoji: { [weak self] text, attribute, bool1 in
+                    sendEmoji: { [weak self = self] text, attribute, bool1 in
                         if let self {
                             let _ = self
                         }
@@ -444,42 +444,42 @@ final class MediaEditorScreenComponent: Component {
                     editGif: { _, _ in
                     },
                     updateChoosingSticker: { _ in },
-                    switchToTextInput: { [weak self] in
+                    switchToTextInput: { [weak self = self] in
                         if let self {
                             self.activateInput()
                         }
                     },
                     dismissTextInput: {
                     },
-                    insertText: { [weak self] text in
+                    insertText: { [weak self = self] text in
                         if let self {
                             self.inputPanelExternalState.insertText(text)
                         }
                     },
-                    backwardsDeleteText: { [weak self] in
+                    backwardsDeleteText: { [weak self = self] in
                         if let self {
                             self.inputPanelExternalState.deleteBackward()
                         }
                     },
                     openStickerEditor: {},
-                    presentController: { [weak self] c, a in
+                    presentController: { [weak self = self] c, a in
                         if let self {
                             self.environment?.controller()?.present(c, in: .window(.root), with: a)
                         }
                     },
-                    presentGlobalOverlayController: { [weak self] c, a in
+                    presentGlobalOverlayController: { [weak self = self] c, a in
                         if let self {
                             self.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                         }
                     },
-                    getNavigationController: { [weak self] in
+                    getNavigationController: { [weak self = self] in
                         if let self {
                             return self.environment?.controller()?.navigationController as? NavigationController
                         } else {
                             return nil
                         }
                     },
-                    requestLayout: { [weak self] transition in
+                    requestLayout: { [weak self = self] transition in
                         if let self {
                             (self.environment?.controller() as? MediaEditorScreenImpl)?.node.requestLayout(forceUpdate: true, transition: ComponentTransition(transition))
                         }
@@ -1464,7 +1464,7 @@ final class MediaEditorScreenComponent: Component {
                             }
                             controller.presentInGlobalOverlay(c)
                         },
-                        sendMessageAction: { [weak self] _ in
+                        sendMessageAction: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1496,7 +1496,7 @@ final class MediaEditorScreenComponent: Component {
                         myReaction: nil,
                         likeAction: nil,
                         likeOptionsAction: nil,
-                        inputModeAction: { [weak self] in
+                        inputModeAction: { [weak self = self] in
                             if let self {
                                 switch self.currentInputMode {
                                 case .text:
@@ -3328,7 +3328,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 self.previewContainerView.addSubview(stickerBackgroundView)
                 
                 let cropScrollView = CropScrollView(frame: .zero)
-                cropScrollView.updated = { [weak self] position, scale in
+                cropScrollView.updated = { [weak self = self] position, scale in
                     guard let self, let mediaEntityView = self.entitiesView.getView(where: { $0 is DrawingMediaEntityView }) as? DrawingMediaEntityView, let mediaEntity = mediaEntityView.entity as? DrawingMediaEntity, let (initialPosition, initialScale, _) = self.mediaEntityInitialValues else {
                         return
                     }
@@ -3378,7 +3378,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 }
                 |> take(1)
                 |> deliverOnMainQueue
-            ).start(next: { [weak self] subject in
+            ).start(next: { [weak self = self] subject in
                 if let self, let subject {
                     self.actualSubject = subject
                     
@@ -3458,7 +3458,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     stickerItems
                 ) |> map { emoji, stickers -> StickerPickerInput in
                     return StickerPickerInputData(emoji: emoji, stickers: stickers, gifs: nil)
-                } |> afterNext { [weak self] _ in
+                } |> afterNext { [weak self = self] _ in
                     if let self {
                         self.controller?.checkPostingAvailability()
                     }
@@ -3467,7 +3467,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 stickerPickerInputData.set(signal)
             })
             
-            self.entitiesView.edgePreviewUpdated = { [weak self] preview in
+            self.entitiesView.edgePreviewUpdated = { [weak self = self] preview in
                 if let self {
                     let transition = ContainedViewLayoutTransition.animated(duration: 0.2, curve: .easeInOut)
                     if let storyPreviewView = self.storyPreview.view {
@@ -3477,7 +3477,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
             
             self.appInForegroundDisposable = (controller.context.sharedContext.applicationBindings.applicationInForeground
-            |> deliverOnMainQueue).start(next: { [weak self] inForeground in
+            |> deliverOnMainQueue).start(next: { [weak self = self] inForeground in
                 if let self, let mediaEditor = self.mediaEditor {
                     if inForeground {
                         mediaEditor.maybeUnpauseVideo()
@@ -3487,26 +3487,26 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 }
             })
             
-            self.entitiesView.getAvailableReactions = { [weak self] in
+            self.entitiesView.getAvailableReactions = { [weak self = self] in
                 return self?.availableReactions ?? []
             }
-            self.entitiesView.present = { [weak self] c in
+            self.entitiesView.present = { [weak self = self] c in
                 if let self {
                     self.controller?.dismissAllTooltips()
                     self.controller?.present(c, in: .current)
                 }
             }
-            self.entitiesView.push = { [weak self] c in
+            self.entitiesView.push = { [weak self = self] c in
                 if let self {
                     self.controller?.push(c)
                 }
             }
-            self.entitiesView.externalEntityRemoved = { [weak self] entity in
+            self.entitiesView.externalEntityRemoved = { [weak self = self] entity in
                 if let self, let stickerEntity = entity as? DrawingStickerEntity, case let .dualVideoReference(isAdditional) = stickerEntity.content, isAdditional {
                     self.mediaEditor?.setAdditionalVideo(nil, positionChanges: [])
                 }
             }
-            self.entitiesView.canInteract = { [weak self] in
+            self.entitiesView.canInteract = { [weak self = self] in
                 if let self, let controller = self.controller {
                     if controller.node.recording.isActive {
                         return false
@@ -3518,7 +3518,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
             
             self.availableReactionsDisposable = (allowedStoryReactions(context: controller.context)
-            |> deliverOnMainQueue).start(next: { [weak self] reactions in
+            |> deliverOnMainQueue).start(next: { [weak self = self] reactions in
                 if let self {
                     self.availableReactions = reactions
                 }
@@ -3697,7 +3697,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     break
                 }
             }
-            mediaEditor.valuesUpdated = { [weak self] values in
+            mediaEditor.valuesUpdated = { [weak self = self] values in
                 if let self, let controller = self.controller, values.gradientColors != nil, controller.previousSavedValues != values {
                     if !isSavingAvailable && controller.previousSavedValues == nil {
                         controller.previousSavedValues = values
@@ -3711,14 +3711,14 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
             if case .stickerEditor = controller.mode {
                 self.stickerCutoutStatusDisposable = (mediaEditor.cutoutStatus
-                |> deliverOnMainQueue).start(next: { [weak self] cutoutStatus in
+                |> deliverOnMainQueue).start(next: { [weak self = self] cutoutStatus in
                     guard let self else {
                         return
                     }
                     self.stickerCutoutStatus = cutoutStatus
                     self.requestLayout(forceUpdate: true, transition: .easeInOut(duration: 0.25))
                 })
-                mediaEditor.maskUpdated = { [weak self] mask, apply in
+                mediaEditor.maskUpdated = { [weak self = self] mask, apply in
                     guard let self else {
                         return
                     }
@@ -3729,7 +3729,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         self.stickerMaskDrawingView?.setup(withDrawing: maskData, storeAsClear: true)
                     }
                 }
-                mediaEditor.classificationUpdated = { [weak self] classes in
+                mediaEditor.classificationUpdated = { [weak self = self] classes in
                     guard let  self else {
                         return
                     }
@@ -3819,7 +3819,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 
                 let isNightTheme = mediaEditor.values.nightTheme
                 let _ = (messages
-                |> deliverOnMainQueue).start(next: { [weak self] messages in
+                |> deliverOnMainQueue).start(next: { [weak self = self] messages in
                     guard let self else {
                         return
                     }
@@ -3856,7 +3856,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     }
                     
                     let _ = (wallpaperColors
-                    |> deliverOnMainQueue).start(next: { [weak self] wallpaperColors in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] wallpaperColors in
                         guard let self else {
                             return
                         }
@@ -3917,7 +3917,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 break
             }
                         
-            self.gradientColorsDisposable = mediaEditor.gradientColors.start(next: { [weak self] colors in
+            self.gradientColorsDisposable = mediaEditor.gradientColors.start(next: { [weak self = self] colors in
                 if let self, let colors {
                     let gradientImage = generateGradientImage(size: CGSize(width: 5.0, height: 640.0), colors: colors.array, locations: [0.0, 1.0])
                     Queue.mainQueue().async {
@@ -3956,7 +3956,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             self.mediaEditorPromise.set(.single(mediaEditor))
             
             if controller.isEmbeddedEditor {
-                mediaEditor.onFirstDisplay = { [weak self] in
+                mediaEditor.onFirstDisplay = { [weak self = self] in
                     if let self {
                         if let transitionInView = self.transitionInView  {
                             self.transitionInView = nil
@@ -3980,13 +3980,13 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 }
             } else {
                 if let caption {
-                    mediaEditor.onFirstDisplay = { [weak self] in
+                    mediaEditor.onFirstDisplay = { [weak self = self] in
                         self?.componentHostView?.setInputText(caption)
                     }
                 }
             }
             
-            mediaEditor.onPlaybackAction = { [weak self] action in
+            mediaEditor.onPlaybackAction = { [weak self = self] action in
                 if let self {
                     switch action {
                     case .play:
@@ -4015,7 +4015,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             let maskDrawingSize = scaledDimensions.aspectFilled(mediaEntitySize)
             
             let stickerMaskDrawingView = DrawingView(size: scaledDimensions, gestureView: self.previewContainerView)
-            stickerMaskDrawingView.stateUpdated = { [weak self] _ in
+            stickerMaskDrawingView.stateUpdated = { [weak self = self] _ in
                 if let self {
                     self.requestLayout(forceUpdate: true, transition: .easeInOut(duration: 0.25))
                 }
@@ -4096,12 +4096,12 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 selectionContainerView: self.selectionContainerView,
                 isVideo: false,
                 autoselectEntityOnPan: true,
-                updateSelectedEntity: { [weak self] _ in
+                updateSelectedEntity: { [weak self = self] _ in
                     if let self {
                         self.requestUpdate(transition: .easeInOut(duration: 0.2))
                     }
                 },
-                updateVideoPlayback: { [weak self] isPlaying in
+                updateVideoPlayback: { [weak self = self] isPlaying in
                     if let self, let mediaEditor = self.mediaEditor {
                         if isPlaying {
                             mediaEditor.play()
@@ -4110,7 +4110,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                     }
                 },
-                updateColor: { [weak self] color in
+                updateColor: { [weak self = self] color in
                     if let self, let selectedEntityView = self.entitiesView.selectedEntityView {
                         let selectedEntity = selectedEntityView.entity
                         if let textEntity = selectedEntity as? DrawingTextEntity, let textEntityView = selectedEntityView as? DrawingTextEntityView, textEntityView.isEditing {
@@ -4122,7 +4122,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                     }
                 },
-                onInteractionUpdated: { [weak self] isInteracting in
+                onInteractionUpdated: { [weak self = self] isInteracting in
                     if let self {
                         if let selectedEntityView = self.entitiesView.selectedEntityView as? DrawingStickerEntityView, let entity = selectedEntityView.entity as? DrawingStickerEntity, case .dualVideoReference = entity.content {
                             if isInteracting {
@@ -4145,7 +4145,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         self.requestUpdate(transition: .easeInOut(duration: 0.2))
                     }
                 },
-                onTextEditingEnded: { [weak self] reset in
+                onTextEditingEnded: { [weak self = self] reset in
                     if let self, !reset, let entity = self.entitiesView.selectedEntityView?.entity as? DrawingTextEntity, !entity.text.string.isEmpty {
                         let _ = updateMediaEditorStoredStateInteractively(engine: self.context.engine, { current in
                             let textSettings = MediaEditorStoredTextSettings(style: entity.style, font: entity.font, fontSize: entity.fontSize, alignment: entity.alignment)
@@ -4157,7 +4157,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }).start()
                     }
                 },
-                editEntity: { [weak self] entity in
+                editEntity: { [weak self = self] entity in
                     if let self {
                         if let location = entity as? DrawingLocationEntity {
                             self.presentLocationPicker(location)
@@ -4166,7 +4166,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                     }
                 },
-                shouldDeleteEntity: { [weak self] entity in
+                shouldDeleteEntity: { [weak self = self] entity in
                     if let self {
                         if let stickerEntity = entity as? DrawingStickerEntity, case .dualVideoReference(true) = stickerEntity.content {
                             self.presentVideoRemoveConfirmation()
@@ -4175,7 +4175,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     }
                     return true
                 },
-                getCurrentImage: { [weak self] in
+                getCurrentImage: { [weak self = self] in
                     guard let mediaEditor = self?.mediaEditor else {
                         return nil
                     }
@@ -4191,15 +4191,15 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     }
                     return nil
                 },
-                getControllerNode: { [weak self] in
+                getControllerNode: { [weak self = self] in
                     return self
                 },
-                present: { [weak self] c, i, a in
+                present: { [weak self = self] c, i, a in
                     if let self {
                         self.controller?.present(c, in: i, with: a)
                     }
                 },
-                addSubview: { [weak self] view in
+                addSubview: { [weak self = self] view in
                     if let self {
                         self.view.addSubview(view)
                     }
@@ -4507,7 +4507,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         private func insertTextEntity() {
             let _ = (mediaEditorStoredState(engine: self.context.engine)
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -4555,7 +4555,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             self.previewContainerView.addSubview(transitionInView)
             self.transitionInView = transitionInView
             
-            self.mediaEditor?.onFirstDisplay = { [weak self] in
+            self.mediaEditor?.onFirstDisplay = { [weak self = self] in
                 if let self, let transitionInView = self.transitionInView  {
                     self.transitionInView = nil
                     transitionInView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak transitionInView] _ in
@@ -4566,7 +4566,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         }
         
         func animateIn() {
-            let completion: () -> Void = { [weak self] in
+            let completion: () -> Void = { [weak self = self] in
                 Queue.mainQueue().after(0.1) {
                     self?.requestUpdate(hasAppeared: true, transition: .immediate)
                 }
@@ -4904,7 +4904,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             self.displayedSelectionTooltip = true
             
             let _ = (ApplicationSpecificNotice.getMultipleStoriesTooltip(accountManager: self.context.sharedContext.accountManager)
-            |> deliverOnMainQueue).start(next: { [weak self] count in
+            |> deliverOnMainQueue).start(next: { [weak self = self] count in
                 guard let self, count < 3 else {
                     return
                 }
@@ -4969,7 +4969,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 tooltipController.content = .progress(text, progress)
             } else {
                 let tooltipController = SaveProgressScreen(context: self.context, content: .progress(text, 0.0))
-                tooltipController.cancelled = { [weak self] in
+                tooltipController.cancelled = { [weak self = self] in
                     cancel()
                     if let self, let controller = self.controller {
                         controller.cancelVideoExport()
@@ -4997,7 +4997,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 tooltipController.content = .progress(text, progress)
             } else {
                 let tooltipController = SaveProgressScreen(context: self.context, content: .progress(text, 0.0))
-                tooltipController.cancelled = { [weak self] in
+                tooltipController.cancelled = { [weak self = self] in
                     if let self, let controller = self.controller {
                         controller.isSavingAvailable = true
                         controller.cancelVideoExport()
@@ -5014,7 +5014,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 return
             }
             let parentController = parentController ?? controller
-            let galleryController = self.context.sharedContext.makeMediaPickerScreen(context: self.context, hasSearch: true, completion: { [weak self] result in
+            let galleryController = self.context.sharedContext.makeMediaPickerScreen(context: self.context, hasSearch: true, completion: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -5037,7 +5037,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     return newImage
                 }
                 
-                let completeWithImage: (UIImage) -> Void = { [weak self] image in
+                let completeWithImage: (UIImage) -> Void = { [weak self = self] image in
                     let updatedImage = roundedImageWithTransparentCorners(image: image, cornerRadius: floor(image.size.width * 0.03))!
                     let entity = DrawingStickerEntity(content: .image(updatedImage, .rectangle))
                     entity.canCutOut = false
@@ -5101,12 +5101,12 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             let locationController = storyLocationPickerController(
                 context: self.context,
                 location: location,
-                dismissed: { [weak self] in
+                dismissed: { [weak self = self] in
                     if let self {
                         self.mediaEditor?.play()
                     }
                 },
-                completion: { [weak self] location, queryId, resultId, address, countryCode in
+                completion: { [weak self = self] location, queryId, resultId, address, countryCode in
                     if let self  {
                         let emojiFile: Signal<TelegramMediaFile?, NoError>
                         if let countryCode {
@@ -5142,7 +5142,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                         
                         let _ = (emojiFile
-                        |> deliverOnMainQueue).start(next: { [weak self] emojiFile in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] emojiFile in
                             guard let self else {
                                 return
                             }
@@ -5189,15 +5189,15 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             
             let audioController = storyAudioPickerController(
                 context: self.context,
-                selectFromFiles: { [weak self] in
+                selectFromFiles: { [weak self = self] in
                     self?.presentAudioFilePicker()
                 },
-                dismissed: { [weak self] in
+                dismissed: { [weak self = self] in
                     if let self {
                         self.mediaEditor?.play()
                     }
                 },
-                completion: { [weak self] file in
+                completion: { [weak self = self] file in
                     guard let self else {
                         return
                     }
@@ -5205,7 +5205,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         context: self.context,
                         userLocation: .other,
                         mediaReference: file
-                    ) |> deliverOnMainQueue).start(next: { [weak self] state, _ in
+                    ) |> deliverOnMainQueue).start(next: { [weak self = self] state, _ in
                         guard let self else {
                             return
                         }
@@ -5240,7 +5240,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         func presentAudioFilePicker() {
             var isSettingTrack = false
-            self.controller?.present(legacyICloudFilePicker(theme: self.presentationData.theme, mode: .import, documentTypes: ["public.mp3", "public.mpeg-4-audio", "public.aac-audio", "org.xiph.flac"], forceDarkTheme: true, dismissed: { [weak self] in
+            self.controller?.present(legacyICloudFilePicker(theme: self.presentationData.theme, mode: .import, documentTypes: ["public.mp3", "public.mpeg-4-audio", "public.aac-audio", "org.xiph.flac"], forceDarkTheme: true, dismissed: { [weak self = self] in
                 if let self {
                     Queue.mainQueue().after(0.1) {
                         if !isSettingTrack {
@@ -5248,7 +5248,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                     }
                 }
-            }, completion: { [weak self] urls in
+            }, completion: { [weak self = self] urls in
                 guard let self, !urls.isEmpty, let url = urls.first else {
                     return
                 }
@@ -5444,7 +5444,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             
             var items: [ContextMenuItem] = []
             items.append(
-                .custom(VolumeSliderContextItem(minValue: 0.0, maxValue: 1.5, value: value, valueChanged: { [weak self] value, _ in
+                .custom(VolumeSliderContextItem(minValue: 0.0, maxValue: 1.5, value: value, valueChanged: { [weak self = self] value, _ in
                     if let self, let mediaEditor = self.mediaEditor {
                         if trackId == 1000 {
                             mediaEditor.setAudioTrackVolume(value)
@@ -5467,7 +5467,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         ContextMenuActionItem(
                             text: actionTitle,
                             icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.primaryColor)},
-                            action: { [weak self] f in
+                            action: { [weak self = self] f in
                                 f.dismissWithResult(.default)
                                 if let self, let mediaEditor = self.mediaEditor {
                                     if trackId == 1 {
@@ -5522,7 +5522,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 )
             }
                         
-            let linkController = CreateLinkScreen(context: controller.context, link: link, snapshotImage: self.mediaEditor?.resultImage, completion: { [weak self] result in
+            let linkController = CreateLinkScreen(context: controller.context, link: link, snapshotImage: self.mediaEditor?.resultImage, completion: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -5612,11 +5612,11 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         }
         
         func presentLocationAccessAlert() {
-            DeviceAccess.authorizeAccess(to: .location(.weather), locationManager: self.locationManager, presentationData: self.presentationData, present: { [weak self] c, a in
+            DeviceAccess.authorizeAccess(to: .location(.weather), locationManager: self.locationManager, presentationData: self.presentationData, present: { [weak self = self] c, a in
                 self?.controller?.present(c, in: .window(.root), with: a)
-            }, openSettings: { [weak self] in
+            }, openSettings: { [weak self = self] in
                 self?.context.sharedContext.applicationBindings.openSettings()
-            }, { [weak self] authorized in
+            }, { [weak self = self] authorized in
                 guard let self, authorized else {
                     return
                 }
@@ -5625,7 +5625,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 self.weatherPromise = weatherPromise
                 
                 let _ = (weatherPromise.get()
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     if let self, case let .loaded(weather) = result {
                         self.addWeather(weather)
                     }
@@ -5691,7 +5691,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         values: mediaEditor.values,
                         time: .zero,
                         textScale: 2.0,
-                        completion: { [weak self] resultImage in
+                        completion: { [weak self = self] resultImage in
                             updatedCurrentItem.version += 1
                             updatedCurrentItem.thumbnail = resultImage
                             self?.items[currentItemIndex] = updatedCurrentItem
@@ -5766,7 +5766,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 portalView: portalView,
                 exclusive: exclusive
             )
-            coverController.dismissed = { [weak self] in
+            coverController.dismissed = { [weak self = self] in
                 if let self {
                     if exclusive {
                         self.controller?.requestDismiss(saveDraft: false, animated: true)
@@ -5776,7 +5776,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     }
                 }
             }
-            coverController.completed = { [weak self] position, image in
+            coverController.completed = { [weak self = self] position, image in
                 if let self {
                     self.controller?.currentCoverImage = image
                     if exclusive {
@@ -5966,7 +5966,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 theme: defaultDarkPresentationTheme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -5993,14 +5993,14 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         mediaEditor: self.mediaEditorPromise.get(),
                         privacy: controller.state.privacy,
                         selectedEntity: self.isDisplayingTool != nil ? nil : self.entitiesView.selectedEntityView?.entity,
-                        entityViewForEntity: { [weak self] entity in
+                        entityViewForEntity: { [weak self = self] entity in
                             if let self {
                                 return self.entitiesView.getView(for: entity.uuid)
                             } else {
                                 return nil
                             }
                         },
-                        openDrawing: { [weak self] mode in
+                        openDrawing: { [weak self = self] mode in
                             if let self, let mediaEditor = self.mediaEditor {
                                 if self.entitiesView.hasSelection {
                                     self.entitiesView.selectEntity(nil)
@@ -6037,7 +6037,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                     }
                                     
                                     let controller = StickerPickerScreen(context: self.context, inputData: self.stickerPickerInputData.get(), forceDark: true, defaultToEmoji: self.defaultToEmoji, hasGifs: true, hasInteractiveStickers: hasInteractiveStickers, weather: weatherSignal)
-                                    controller.completion = { [weak self] content in
+                                    controller.completion = { [weak self = self] content in
                                         guard let self else {
                                             return false
                                         }
@@ -6071,7 +6071,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                             self.updateModalTransitionFactor(transitionFactor, transition: transition)
                                         }
                                     }
-                                    controller.presentGallery = { [weak self] in
+                                    controller.presentGallery = { [weak self = self] in
                                         if let self {
                                             self.stickerScreen = nil
                                             self.presentGallery()
@@ -6111,7 +6111,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                         if let self {
                                             if let weatherPromise = self.weatherPromise {
                                                 let _ = (weatherPromise.get()
-                                                |> take(1)).start(next: { [weak self] result in
+                                                |> take(1)).start(next: { [weak self = self] result in
                                                     if let self {
                                                         switch result {
                                                         case let .loaded(weather):
@@ -6119,7 +6119,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                                         case .notPreloaded:
                                                             weatherPromise.set(getWeather(context: self.context, load: true))
                                                             let _ = (weatherPromise.get()
-                                                            |> take(1)).start(next: { [weak self] result in
+                                                            |> take(1)).start(next: { [weak self = self] result in
                                                                 if let self, case let .loaded(weather) = result {
                                                                     self.addWeather(weather)
                                                                 }
@@ -6137,7 +6137,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                             controller?.dismiss(animated: true)
                                         }
                                     }
-                                    controller.pushController = { [weak self] c in
+                                    controller.pushController = { [weak self = self] c in
                                         self?.controller?.push(c)
                                     }
                                     self.stickerScreen = controller
@@ -6168,15 +6168,15 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                         selectionContainerView: self.selectionContainerView,
                                         existingStickerPickerInputData: self.stickerPickerInputData
                                     )
-                                    controller.presentGallery = { [weak self] in
+                                    controller.presentGallery = { [weak self = self] in
                                         if let self {
                                             self.presentGallery()
                                         }
                                     }
-                                    controller.getCurrentImage = { [weak self] in
+                                    controller.getCurrentImage = { [weak self = self] in
                                         return self?.interaction?.getCurrentImage()
                                     }
-                                    controller.updateVideoPlayback = { [weak self] play in
+                                    controller.updateVideoPlayback = { [weak self = self] play in
                                         guard let self else {
                                             return
                                         }
@@ -6280,18 +6280,18 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                         overlayView: self.stickerMaskPreviewView,
                                         backgroundView: stickerBackgroundView
                                     )
-                                    cutoutController.completedWithCutout = { [weak self] in
+                                    cutoutController.completedWithCutout = { [weak self = self] in
                                         if let self {
                                             self.isCutout = true
                                             self.requestLayout(forceUpdate: true, transition: .immediate)
                                         }
                                     }
-                                    cutoutController.completed = { [weak self] in
+                                    cutoutController.completed = { [weak self = self] in
                                         if let self {
                                             self.requestLayout(forceUpdate: true, transition: .easeInOut(duration: 0.25))
                                         }
                                     }
-                                    cutoutController.dismissed = { [weak self] in
+                                    cutoutController.dismissed = { [weak self = self] in
                                         if let self {
                                             self.previewScrollView.setZoomScale(1.0, animated: true)
                                             self.previewScrollView.isScrollEnabled = false
@@ -6317,7 +6317,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                         hiddenTools.append(.vignette)
                                     }
                                     let controller = MediaToolsScreen(context: self.context, mediaEditor: mediaEditor, hiddenTools: hiddenTools)
-                                    controller.dismissed = { [weak self] in
+                                    controller.dismissed = { [weak self = self] in
                                         if let self {
                                             self.animateInFromTool()
                                         }
@@ -6329,7 +6329,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                 }
                             }
                         },
-                        cutoutUndo: { [weak self] in
+                        cutoutUndo: { [weak self = self] in
                             if let self, let mediaEditor = self.mediaEditor, let stickerMaskDrawingView = self.stickerMaskDrawingView {
                                 if self.entitiesView.hasSelection {
                                     self.entitiesView.selectEntity(nil)
@@ -6583,7 +6583,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             if isFirstTime {
                 self.isHidden = true
                 let _ = (self.readyValue.get()
-                |> take(1)).start(next: { [weak self] _ in
+                |> take(1)).start(next: { [weak self = self] _ in
                     if let self {
                         self.isHidden = false
                         self.animateIn()
@@ -6940,7 +6940,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 queue: Queue.mainQueue(),
                 mediaEditorStoredState(engine: self.context.engine),
                 self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-            ).start(next: { [weak self] state, peer in
+            ).start(next: { [weak self = self] state, peer in
                 if let self, var privacy = state?.privacy {
                     if case let .user(user) = peer, !user.isPremium && privacy.timeout != 86400 {
                         privacy = MediaEditorResultPrivacy(sendAsPeerId: nil, privacy: privacy.privacy, timeout: 86400, isForwardingDisabled: privacy.isForwardingDisabled, pin: privacy.pin, folderIds: privacy.folderIds)
@@ -6957,7 +6957,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         if case .stickerEditor = mode {
             self.myStickerPacksDisposable = (self.context.engine.stickers.getMyStickerSets()
-            |> deliverOnMainQueue).start(next: { [weak self] packs in
+            |> deliverOnMainQueue).start(next: { [weak self = self] packs in
                 guard let self else {
                     return
                 }
@@ -7016,7 +7016,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             return
         }
         self.postingAvailabilityDisposable = (self.postingAvailabilityPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] availability in
+        |> deliverOnMainQueue).start(next: { [weak self = self] availability in
             guard let self else {
                 return
             }
@@ -7038,15 +7038,15 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             
             let context = self.context
             var replaceImpl: ((ViewController) -> Void)?
-            let controller = self.context.sharedContext.makePremiumLimitController(context: self.context, subject: subject, count: 10, forceDark: true, cancel: { [weak self] in
+            let controller = self.context.sharedContext.makePremiumLimitController(context: self.context, subject: subject, count: 10, forceDark: true, cancel: { [weak self = self] in
                 self?.requestDismiss(saveDraft: false, animated: true)
-            }, action: { [weak self] in
-                let controller = context.sharedContext.makePremiumIntroController(context: context, source: .stories, forceDark: true, dismissed: { [weak self] in
+            }, action: { [weak self = self] in
+                let controller = context.sharedContext.makePremiumIntroController(context: context, source: .stories, forceDark: true, dismissed: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let self else {
                             return
                         }
@@ -7132,7 +7132,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             adminedChannels: self.adminedChannels.get(),
             blockedPeersContext: self.storiesBlockedPeers
         )
-        let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+        let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -7152,7 +7152,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 mentions: mentions,
                 coverImage: coverImage,
                 stateContext: stateContext,
-                completion: { [weak self] sendAsPeerId, privacy, allowScreenshots, pin, _, folders, completed in
+                completion: { [weak self = self] sendAsPeerId, privacy, allowScreenshots, pin, _, folders, completed in
                     guard let self else {
                         return
                     }
@@ -7168,11 +7168,11 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         completion()
                     }
                 },
-                editCategory: { [weak self] privacy, allowScreenshots, pin, folders in
+                editCategory: { [weak self = self] privacy, allowScreenshots, pin, folders in
                     guard let self else {
                         return
                     }
-                    self.openEditCategory(privacy: privacy, isForwardingDisabled: !allowScreenshots, pin: pin, blockedPeers: false, completion: { [weak self] privacy in
+                    self.openEditCategory(privacy: privacy, isForwardingDisabled: !allowScreenshots, pin: pin, blockedPeers: false, completion: { [weak self = self] privacy in
                         guard let self else {
                             return
                         }
@@ -7186,11 +7186,11 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         ), completion: completion)
                     })
                 },
-                editBlockedPeers: { [weak self] privacy, allowScreenshots, pin, folders in
+                editBlockedPeers: { [weak self = self] privacy, allowScreenshots, pin, folders in
                     guard let self else {
                         return
                     }
-                    self.openEditCategory(privacy: privacy, isForwardingDisabled: !allowScreenshots, pin: pin, blockedPeers: true, completion: { [weak self] privacy in
+                    self.openEditCategory(privacy: privacy, isForwardingDisabled: !allowScreenshots, pin: pin, blockedPeers: true, completion: { [weak self = self] privacy in
                         guard let self else {
                             return
                         }
@@ -7219,7 +7219,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
             self.push(controller)
             
-            editCoverImpl = { [weak self] in
+            editCoverImpl = { [weak self = self] in
                 if let self {
                     self.node.openCoverSelection(exclusive: false)
                 }
@@ -7243,7 +7243,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             initialPeerIds: Set(privacy.additionallyIncludePeers),
             blockedPeersContext: self.storiesBlockedPeers
         )
-        let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+        let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -7253,7 +7253,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 allowScreenshots: !isForwardingDisabled,
                 pin: pin,
                 stateContext: stateContext,
-                completion: { [weak self] _, result, isForwardingDisabled, pin, peers, folders, completed in
+                completion: { [weak self = self] _, result, isForwardingDisabled, pin, peers, folders, completed in
                     guard let self, completed else {
                         return
                     }
@@ -7293,7 +7293,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_Shortcut_Image, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Image"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, a in
+        }, action: { [weak self = self] _, a in
             a(.default)
             
             self?.node.presentGallery()
@@ -7301,7 +7301,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         if self.context.isPremium {
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_Shortcut_Link, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, a in
+            }, action: { [weak self = self] _, a in
                 a(.default)
                 
                 self?.node.addOrEditLink()
@@ -7309,21 +7309,21 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         }
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_Shortcut_Location, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/LocationSmall"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, a in
+        }, action: { [weak self = self] _, a in
             a(.default)
             
             self?.node.presentLocationPicker()
         })))
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_Shortcut_Reaction, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reactions"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, a in
+        }, action: { [weak self = self] _, a in
             a(.default)
             
             self?.node.addReaction()
         })))
         items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_Shortcut_Audio, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/AudioSmall"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, a in
+        }, action: { [weak self = self] _, a in
             a(.default)
             
             self?.node.presentAudioPicker()
@@ -7341,7 +7341,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let currentValue = self.state.privacy.timeout
         let emptyAction: ((ContextMenuActionItem.Action) -> Void)? = nil
         
-        let updateTimeout: (Int?) -> Void = { [weak self] timeout in
+        let updateTimeout: (Int?) -> Void = { [weak self = self] timeout in
             guard let self else {
                 return
             }
@@ -7393,7 +7393,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         return UIImage()
                     }
                 },
-                action: { [weak self] _, a in
+                action: { [weak self = self] _, a in
                     a(.default)
                     
                     if !option.requiresPremium || hasPremium {
@@ -7417,7 +7417,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
 
         let text = presentationData.strings.Story_Editor_TooltipPremiumExpiration
                 
-        let controller = UndoOverlayController(presentationData: presentationData, content: .autoDelete(isOn: true, title: nil, text: text, customUndoText: nil), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self] action in
+        let controller = UndoOverlayController(presentationData: presentationData, content: .autoDelete(isOn: true, title: nil, text: text, customUndoText: nil), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self = self] action in
             if case .info = action, let self {
                 let controller = context.sharedContext.makePremiumIntroController(context: context, source: .storiesExpirationDurations, forceDark: true, dismissed: nil)
                 self.push(controller)
@@ -7434,7 +7434,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         let context = self.context
         let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: true))
-        |> deliverOnMainQueue).start(next: { [weak self] premiumLimits in
+        |> deliverOnMainQueue).start(next: { [weak self = self] premiumLimits in
             guard let self else {
                 return
             }
@@ -7462,7 +7462,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 )
             }
                     
-            let controller = UndoOverlayController(presentationData: presentationData, content: content, elevatedLayout: true, position: .top, animateInAsReplacement: false, action: { [weak self] action in
+            let controller = UndoOverlayController(presentationData: presentationData, content: content, elevatedLayout: true, position: .top, animateInAsReplacement: false, action: { [weak self = self] action in
                 if case .info = action, let self {
                     if let stickerScreen = self.node.stickerScreen {
                         self.node.stickerScreen = nil
@@ -7485,7 +7485,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let context = self.context
         let presentationData = context.sharedContext.currentPresentationData.with { $0 }
         
-        let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: presentationData.strings.Story_Editor_TooltipPremiumReaction, undoText: nil, customAction: nil), elevatedLayout: true, position: .top, animateInAsReplacement: false, appearance: UndoOverlayController.Appearance(isBlurred: true), action: { [weak self] action in
+        let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: presentationData.strings.Story_Editor_TooltipPremiumReaction, undoText: nil, customAction: nil), elevatedLayout: true, position: .top, animateInAsReplacement: false, appearance: UndoOverlayController.Appearance(isBlurred: true), action: { [weak self = self] action in
             if case .info = action, let self {
                 let controller = context.sharedContext.makePremiumIntroController(context: context, source: .storiesExpirationDurations, forceDark: true, dismissed: nil)
                 self.push(controller)
@@ -7504,7 +7504,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let title = presentationData.strings.Story_Editor_TooltipPremiumCaptionLimitTitle
         let text =  presentationData.strings.Story_Editor_TooltipPremiumCaptionLimitText
                 
-        let controller = UndoOverlayController(presentationData: presentationData, content: .universal(animation: "anim_read", scale: 0.25, colors: [:], title: title, text: text, customUndoText: nil, timeout: nil), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self] action in
+        let controller = UndoOverlayController(presentationData: presentationData, content: .universal(animation: "anim_read", scale: 0.25, colors: [:], title: title, text: text, customUndoText: nil, timeout: nil), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self = self] action in
             if case .info = action, let self {
                 let controller = context.sharedContext.makePremiumIntroController(context: context, source: .stories, forceDark: true, dismissed: {
                     
@@ -7524,7 +7524,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
 
         let text = presentationData.strings.Story_Editor_TooltipPremiumCaptionEntities
                 
-        let controller = UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: text), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self] action in
+        let controller = UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: text), elevatedLayout: false, position: .top, animateInAsReplacement: false, action: { [weak self = self] action in
             if case .info = action, let self {
                 let controller = context.sharedContext.makePremiumIntroController(context: context, source: .storiesFormatting, forceDark: true, dismissed: nil)
                 self.push(controller)
@@ -7605,13 +7605,13 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         }
         
         var actions: [TextAlertAction] = []
-        actions.append(TextAlertAction(type: .destructiveAction, title: presentationData.strings.Story_Editor_DraftDiscard, action: { [weak self] in
+        actions.append(TextAlertAction(type: .destructiveAction, title: presentationData.strings.Story_Editor_DraftDiscard, action: { [weak self = self] in
             if let self {
                 self.requestDismiss(saveDraft: false, animated: true)
             }
         }))
         if let save {
-            actions.append(TextAlertAction(type: .genericAction, title: save, action: { [weak self] in
+            actions.append(TextAlertAction(type: .genericAction, title: save, action: { [weak self = self] in
                 if let self {
                     self.requestDismiss(saveDraft: true, animated: true)
                 }
@@ -7655,7 +7655,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         self.willDismiss()
         
-        self.node.animateOut(finished: false, saveDraft: saveDraft, completion: { [weak self] in
+        self.node.animateOut(finished: false, saveDraft: saveDraft, completion: { [weak self = self] in
             self?.dismiss()
             self?.dismissed()
         })
@@ -7665,7 +7665,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let caption = self.node.getCaption()
         if caption.length > self.context.userLimits.maxStoryCaptionLength {
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 if let self {
                     self.presentCaptionLimitPremiumSuggestion(isPremium: peer?.isPremium ?? false)
                 }
@@ -7715,7 +7715,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
     
         if let image = mediaEditor.resultImage {
             let values = mediaEditor.values.withUpdatedQualityPreset(.sticker)
-            makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: image, dimensions: storyDimensions, outputDimensions: CGSize(width: 512, height: 512), values: values, time: .zero, textScale: 2.0, completion: { [weak self] resultImage in
+            makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: image, dimensions: storyDimensions, outputDimensions: CGSize(width: 512, height: 512), values: values, time: .zero, textScale: 2.0, completion: { [weak self = self] resultImage in
                 if let self, let resultImage {
                     self.presentStickerPreview(image: resultImage)
                 }
@@ -7738,10 +7738,10 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         if let image = mediaEditor.resultImage {
             let values = mediaEditor.values.withUpdatedCoverDimensions(dimensions)
-            makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: image, dimensions: storyDimensions, outputDimensions: dimensions.aspectFitted(CGSize(width: 1080, height: 1080)), values: values, time: .zero, textScale: 2.0, completion: { [weak self] resultImage in
+            makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: image, dimensions: storyDimensions, outputDimensions: dimensions.aspectFitted(CGSize(width: 1080, height: 1080)), values: values, time: .zero, textScale: 2.0, completion: { [weak self = self] resultImage in
                 if let self, let resultImage {
-                    self.completion([MediaEditorScreenImpl.Result(media: .image(image: resultImage, dimensions: PixelDimensions(resultImage.size)))], { [weak self] finished in
-                        self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                    self.completion([MediaEditorScreenImpl.Result(media: .image(image: resultImage, dimensions: PixelDimensions(resultImage.size)))], { [weak self = self] finished in
+                        self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                             self?.dismiss()
                             Queue.mainQueue().justDispatch {
                                 finished()
@@ -7825,7 +7825,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             switch mode {
             case let .generic(canSend):
                 if canSend {
-                    menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.StickerPack_Send, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Resend"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                    menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.StickerPack_Send, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Resend"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                         guard let self else {
                             return
                         }
@@ -7841,7 +7841,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         let _ = (imagesReady.get()
                         |> filter { $0 }
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] _ in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -7857,8 +7857,8 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                                     stickers: [],
                                     music: nil,
                                     randomId: 0
-                                )], { [weak self] finished in
-                                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                                )], { [weak self = self] finished in
+                                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                                         self?.dismiss()
                                         Queue.mainQueue().justDispatch {
                                             finished()
@@ -7871,7 +7871,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         f(.default)
                     })))
                 }
-                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                     f(.default)
                     guard let self else {
                         return
@@ -7879,14 +7879,14 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     let _ = (imagesReady.get()
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
                         self.uploadSticker(file, action: .addToFavorites)
                     })
                 })))
-                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_AddToStickerPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_AddToStickerPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                     guard let self else {
                         return
                     }
@@ -7900,7 +7900,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     
                     contextItems.append(.separator)
                     
-                    contextItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_CreateNewPack, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddCircle"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self] _, f in
+                    contextItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_CreateNewPack, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddCircle"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self = self] _, f in
                         if let self {
                             self.presentCreateStickerPack(file: file, completion: {
                                 f(.default)
@@ -7908,7 +7908,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                         }
                     })))
                               
-                    contextItems.append(.custom(StickerPackListContextItem(context: self.context, packs: self.myStickerPacks, packSelected: { [weak self] pack in
+                    contextItems.append(.custom(StickerPackListContextItem(context: self.context, packs: self.myStickerPacks, packSelected: { [weak self = self] pack in
                         guard let self else {
                             return true
                         }
@@ -7923,7 +7923,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                             let _ = (imagesReady.get()
                             |> filter { $0 }
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] _ in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -7953,7 +7953,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     c?.pushItems(items: .single(items))
                 })))
             case .editing:
-                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_ReplaceSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_ReplaceSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                     guard let self else {
                         return
                     }
@@ -7967,7 +7967,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     let _ = (imagesReady.get()
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -7975,7 +7975,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     })
                 })))
             case .addingToPack:
-                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_AddToStickerPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_AddToStickerPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                     guard let self else {
                         return
                     }
@@ -7984,7 +7984,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     let _ = (imagesReady.get()
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -7993,7 +7993,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 })))
             case .businessIntro:
                 hasEmojiSelection = false
-                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_SetAsIntroSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_SetAsIntroSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                     guard let self else {
                         return
                     }
@@ -8002,7 +8002,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     let _ = (imagesReady.get()
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -8031,7 +8031,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 item: .portal(portalView),
                 isCreating: hasEmojiSelection,
                 selectedEmoji: self.stickerSelectedEmoji,
-                selectedEmojiUpdated: { [weak self] selectedEmoji in
+                selectedEmojiUpdated: { [weak self = self] selectedEmoji in
                     if let self {
                         self.stickerSelectedEmoji = selectedEmoji
                     }
@@ -8040,7 +8040,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 menu: menuItems,
                 openPremiumIntro: {}
             ), 
-            sourceView: { [weak self] in
+            sourceView: { [weak self = self] in
                 if let self {
                     let previewContainerFrame = self.node.previewContainerView.frame
                     let size = CGSize(width: floorToScreenPixels(previewContainerFrame.width * 0.97), height: floorToScreenPixels(previewContainerFrame.width * 0.97))
@@ -8051,7 +8051,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             },
             activateImmediately: true
         )
-        stickerResultController.appeared = { [weak self] in
+        stickerResultController.appeared = { [weak self = self] in
             if let self {
                 self.node.previewContentContainerView.alpha = 0.0
                 self.node.previewContentContainerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.25)
@@ -8060,7 +8060,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 self.node.previewContentContainerView.layer.animateSpring(from: 1.0 as NSNumber, to: scale as NSNumber, keyPath: "transform.scale", duration: 0.4, initialVelocity: 0.0, damping: 110.0)
             }
         }
-        stickerResultController.disappeared = { [weak self] in
+        stickerResultController.disappeared = { [weak self = self] in
             if let self {
                 self.node.previewContentContainerView.alpha = 1.0
                 self.node.previewContentContainerView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.25)
@@ -8086,7 +8086,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: defaultDarkColorPresentationTheme)
         
         var dismissImpl: (() -> Void)?
-        let controller = stickerPackEditTitleController(context: self.context, forceDark: true, title: presentationData.strings.MediaEditor_NewStickerPack_Title, text: presentationData.strings.MediaEditor_NewStickerPack_Text, placeholder: presentationData.strings.ImportStickerPack_NamePlaceholder, actionTitle: presentationData.strings.Common_Done, value: nil, maxLength: 64, apply: { [weak self] title in
+        let controller = stickerPackEditTitleController(context: self.context, forceDark: true, title: presentationData.strings.MediaEditor_NewStickerPack_Title, text: presentationData.strings.MediaEditor_NewStickerPack_Text, placeholder: presentationData.strings.ImportStickerPack_NamePlaceholder, actionTitle: presentationData.strings.Common_Done, value: nil, maxLength: 64, apply: { [weak self = self] title in
             guard let self else {
                 return
             }
@@ -8117,7 +8117,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             isUpdate = true
         }
         
-        self.updateEditProgress(0.0, cancel: { [weak self] in
+        self.updateEditProgress(0.0, cancel: { [weak self = self] in
             self?.stickerUploadDisposable.set(nil)
         })
         
@@ -8239,14 +8239,14 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
         }
         self.stickerUploadDisposable.set((signal
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] (status, packReferenceAndTitle) in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] (status, packReferenceAndTitle) in
             guard let self else {
                 return
             }
             
             switch status {
             case let .progress(progress):
-                self.updateEditProgress(progress, cancel: { [weak self] in
+                self.updateEditProgress(progress, cancel: { [weak self = self] in
                     self?.videoExport?.cancel()
                     self?.videoExport = nil
                     self?.exportDisposable.set(nil)
@@ -8267,8 +8267,8 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                     result = MediaEditorScreenImpl.Result()
                 }
 
-                self.completion([result], { [weak self] finished in
-                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                self.completion([result], { [weak self = self] finished in
+                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -8318,7 +8318,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         let context = self.context
         DeviceAccess.authorizeAccess(to: .mediaLibrary(.save), presentationData: context.sharedContext.currentPresentationData.with { $0 }, present: { c, a in
             context.sharedContext.presentGlobalController(c, a)
-        }, openSettings: context.sharedContext.applicationBindings.openSettings, { [weak self] authorized in
+        }, openSettings: context.sharedContext.applicationBindings.openSettings, { [weak self = self] authorized in
             if !authorized {
                 return
             }
@@ -8490,7 +8490,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
             }
             
             let _ = (exportSubject
-            |> deliverOnMainQueue).start(next: { [weak self] exportSubject in
+            |> deliverOnMainQueue).start(next: { [weak self = self] exportSubject in
                 guard let self else {
                     return
                 }
@@ -8515,7 +8515,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
                 |> then(videoExport.status)
             
                 self.exportDisposable.set((status
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     if let self {
                         switch status {
                         case .completed:
@@ -8627,7 +8627,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
     
     @available(iOSApplicationExtension 11.0, iOS 11.0, *)
     public func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        session.loadObjects(ofClass: UIImage.self) { [weak self] imageItems in
+        session.loadObjects(ofClass: UIImage.self) { [weak self = self] imageItems in
             guard let self else {
                 return
             }

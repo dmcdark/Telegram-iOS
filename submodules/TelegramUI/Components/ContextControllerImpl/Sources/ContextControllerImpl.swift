@@ -181,11 +181,11 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
         
         super.init()
         
-        feedbackTap = { [weak self] in
+        feedbackTap = { [weak self = self] in
             self?.hapticFeedback.tap()
         }
 
-        updateLayout = { [weak self] in
+        updateLayout = { [weak self = self] in
             self?.updateLayout()
         }
         
@@ -342,7 +342,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
         
         self.initializeContent()
         
-        self.dismissAccessibilityArea.activate = { [weak self] in
+        self.dismissAccessibilityArea.activate = { [weak self = self] in
             self?.dimNodeTapped()
             return true
         }
@@ -444,7 +444,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     }
                     
                     self.itemsDisposable.set((self.configuration.sources[0].items
-                    |> deliverOnMainQueue).start(next: { [weak self] items in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] items in
                         self?.setItems(items: items, minHeight: nil, previousActionsTransition: .scale)
                     }))
                     
@@ -458,7 +458,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     
                     let transitionInfo = source.transitionInfo()
                     if let transitionInfo = transitionInfo, let (sourceView, sourceNodeRect) = transitionInfo.sourceNode() {
-                        let contentParentNode = ContextControllerContentNode(sourceView: sourceView, controller: source.controller, tapped: { [weak self] in
+                        let contentParentNode = ContextControllerContentNode(sourceView: sourceView, controller: source.controller, tapped: { [weak self = self] in
                             self?.attemptTransitionControllerIntoNavigation()
                         })
                         self.contentContainerNode.contentNode = .controller(contentParentNode)
@@ -472,7 +472,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     }
                     
                     self.itemsDisposable.set((self.configuration.sources[0].items
-                    |> deliverOnMainQueue).start(next: { [weak self] items in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] items in
                         self?.setItems(items: items, minHeight: nil, previousActionsTransition: .scale)
                     }))
                     
@@ -550,9 +550,9 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
         
         if let _ = self.propertyAnimator {
             if #available(iOSApplicationExtension 10.0, iOS 10.0, *) {
-                self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self] value in
+                self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self = self] value in
                     (self?.propertyAnimator as? UIViewPropertyAnimator)?.fractionComplete = value
-                }, completion: { [weak self] in
+                }, completion: { [weak self = self] in
                     self?.didCompleteAnimationIn = true
                     self?.hapticFeedback.prepareTap()
                     self?.actionsContainerNode.animateIn()
@@ -561,7 +561,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
         } else {
             UIView.animate(withDuration: 0.2 * animationDurationFactor, animations: {
                 self.effectView.effect = makeCustomZoomBlurEffect(isLight: self.presentationData.theme.rootController.keyboardColor == .light)
-            }, completion: { [weak self] _ in
+            }, completion: { [weak self = self] _ in
                 self?.didCompleteAnimationIn = true
                 self?.actionsContainerNode.animateIn()
             })
@@ -583,7 +583,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     
                     self.actionsContainerNode.layer.animateSpring(from: NSValue(cgPoint: CGPoint(x: localSourceFrame.center.x - self.actionsContainerNode.position.x, y: localSourceFrame.center.y - self.actionsContainerNode.position.y)), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true)
                     let contentContainerOffset = CGPoint(x: localContentSourceFrame.center.x - self.contentContainerNode.frame.center.x, y: localContentSourceFrame.center.y - self.contentContainerNode.frame.center.y)
-                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self] _ in
+                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self = self] _ in
                         self?.animatedIn = true
                     })
                 }
@@ -621,7 +621,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     
                     self.actionsContainerNode.layer.animateSpring(from: NSValue(cgPoint: CGPoint(x: localSourceFrame.center.x - self.actionsContainerNode.position.x, y: localSourceFrame.center.y - self.actionsContainerNode.position.y + actionsOffset)), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: actionsDuration, initialVelocity: 0.0, damping: springDamping, additive: true)
                     let contentContainerOffset = CGPoint(x: localContentSourceFrame.center.x - self.contentContainerNode.frame.center.x - contentParentNode.contentRect.minX, y: localContentSourceFrame.center.y - self.contentContainerNode.frame.center.y - contentParentNode.contentRect.minY)
-                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: contentDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self] _ in
+                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: contentDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self = self] _ in
                         self?.clippingNode.view.mask = nil
                         self?.animatedIn = true
                     })
@@ -636,7 +636,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                 self.actionsContainerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2 * animationDurationFactor)
                 self.actionsContainerNode.layer.animateSpring(from: 0.1 as NSNumber, to: 1.0 as NSNumber, keyPath: "transform.scale", duration: springDuration, initialVelocity: 0.0, damping: springDamping)
                 self.contentContainerNode.allowsGroupOpacity = true
-                self.contentContainerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2 * animationDurationFactor, completion: { [weak self] _ in
+                self.contentContainerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2 * animationDurationFactor, completion: { [weak self = self] _ in
                     self?.contentContainerNode.allowsGroupOpacity = false
                 })
                 
@@ -667,7 +667,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                         }
                     }
                     self.actionsContainerNode.layer.animateSpring(from: NSValue(cgPoint: CGPoint(x: localSourceFrame.center.x - self.actionsContainerNode.position.x, y: localSourceFrame.center.y - self.actionsContainerNode.position.y)), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true)
-                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self] _ in
+                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self = self] _ in
                         self?.animatedIn = true
                     })
                 }
@@ -882,7 +882,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
             
             if let _ = self.propertyAnimator {
                 if #available(iOSApplicationExtension 10.0, iOS 10.0, *) {
-                    self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 0.999, update: { [weak self] value in
+                    self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 0.999, update: { [weak self = self] value in
                         (self?.propertyAnimator as? UIViewPropertyAnimator)?.fractionComplete = value
                     }, completion: {
                         completedEffect = true
@@ -1025,14 +1025,14 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                     let propertyAnimator = propertyAnimator as? UIViewPropertyAnimator
                     propertyAnimator?.stopAnimation(true)
                 }
-                self.propertyAnimator = UIViewPropertyAnimator(duration: transitionDuration * UIView.animationDurationFactor(), curve: .easeInOut, animations: { [weak self] in
+                self.propertyAnimator = UIViewPropertyAnimator(duration: transitionDuration * UIView.animationDurationFactor(), curve: .easeInOut, animations: { [weak self = self] in
                     self?.effectView.effect = nil
                 })
             }
             
             if let _ = self.propertyAnimator {
                 if #available(iOSApplicationExtension 10.0, iOS 10.0, *) {
-                    self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 0.999, update: { [weak self] value in
+                    self.displayLinkAnimator = DisplayLinkAnimator(duration: 0.2 * animationDurationFactor * UIView.animationDurationFactor(), from: 0.0, to: 0.999, update: { [weak self = self] value in
                         (self?.propertyAnimator as? UIViewPropertyAnimator)?.fractionComplete = value
                     }, completion: {
                         completedEffect = true
@@ -1080,7 +1080,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                 
                 self.actionsContainerNode.layer.animatePosition(from: CGPoint(), to: CGPoint(x: localSourceFrame.center.x - self.actionsContainerNode.position.x, y: localSourceFrame.center.y - self.actionsContainerNode.position.y), duration: transitionDuration * animationDurationFactor, timingFunction: transitionCurve.timingFunction, removeOnCompletion: false, additive: true)
                 let contentContainerOffset = CGPoint(x: localSourceFrame.center.x - self.contentContainerNode.frame.center.x, y: localSourceFrame.center.y - self.contentContainerNode.frame.center.y)
-                self.contentContainerNode.layer.animatePosition(from: CGPoint(), to: contentContainerOffset, duration: transitionDuration * animationDurationFactor, timingFunction: transitionCurve.timingFunction, removeOnCompletion: false, additive: true, completion: { [weak self] _ in
+                self.contentContainerNode.layer.animatePosition(from: CGPoint(), to: contentContainerOffset, duration: transitionDuration * animationDurationFactor, timingFunction: transitionCurve.timingFunction, removeOnCompletion: false, additive: true, completion: { [weak self = self] _ in
                     completedContentNode = true
                     if let strongSelf = self, let contentNode = strongSelf.contentContainerNode.contentNode, case let .controller(controller) = contentNode {
                         controller.sourceView.isHidden = false
@@ -1150,7 +1150,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
         } else {
             self.legacyItems = items
             self.itemsDisposable.set((items
-            |> deliverOnMainQueue).start(next: { [weak self] items in
+            |> deliverOnMainQueue).start(next: { [weak self = self] items in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1180,13 +1180,13 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
 
         let previousActionsContainerNode = self.actionsContainerNode
         let previousActionsContainerFrame = previousActionsContainerNode.view.convert(previousActionsContainerNode.bounds, to: self.view)
-        self.actionsContainerNode = ContextActionsContainerNode(presentationData: self.presentationData, items: items, getController: { [weak self] in
+        self.actionsContainerNode = ContextActionsContainerNode(presentationData: self.presentationData, items: items, getController: { [weak self = self] in
             return self?.getController()
-        }, actionSelected: { [weak self] result in
+        }, actionSelected: { [weak self = self] result in
             self?.beginDismiss(result)
-        }, requestLayout: { [weak self] in
+        }, requestLayout: { [weak self = self] in
             self?.updateLayout()
-        }, feedbackTap: { [weak self] in
+        }, feedbackTap: { [weak self = self] in
             self?.hapticFeedback.tap()
         }, blurBackground: self.blurBackground)
         self.scrollNode.insertSubnode(self.actionsContainerNode, aboveSubnode: previousActionsContainerNode)
@@ -1934,7 +1934,7 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
                 self.shouldBeDismissedDisposable = (locationSource.shouldBeDismissed
                 |> filter { $0 }
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1946,7 +1946,7 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
                 self.shouldBeDismissedDisposable = (referenceSource.shouldBeDismissed
                 |> filter { $0 }
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1961,7 +1961,7 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
                 self.shouldBeDismissedDisposable = (extractedSource.shouldBeDismissed
                 |> filter { $0 }
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1985,9 +1985,9 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = ContextControllerNode(controller: self, context: self.context, presentationData: self.presentationData, configuration: self.configuration, beginDismiss: { [weak self] result in
+        self.displayNode = ContextControllerNode(controller: self, context: self.context, presentationData: self.presentationData, configuration: self.configuration, beginDismiss: { [weak self = self] result in
             self?.dismiss(result: result, completion: nil)
-        }, recognizer: self.recognizer, gesture: self.gesture, beganAnimatingOut: { [weak self] in
+        }, recognizer: self.recognizer, gesture: self.gesture, beganAnimatingOut: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -2104,7 +2104,7 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
         if !self.wasDismissed {
             self.wasDismissed = true
             
-            self.controllerNode.animateOut(result: result, completion: { [weak self] in
+            self.controllerNode.animateOut(result: result, completion: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
                 completion?()
             })
@@ -2142,7 +2142,7 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
         
         if !self.wasDismissed {
             self.wasDismissed = true
-            self.controllerNode.animateOutToReaction(value: value, targetView: targetView, hideNode: hideNode, animateTargetContainer: animateTargetContainer, addStandaloneReactionAnimation: addStandaloneReactionAnimation, reducedCurve: reducedCurve, onHit: onHit, completion: { [weak self] in
+            self.controllerNode.animateOutToReaction(value: value, targetView: targetView, hideNode: hideNode, animateTargetContainer: animateTargetContainer, addStandaloneReactionAnimation: addStandaloneReactionAnimation, reducedCurve: reducedCurve, onHit: onHit, completion: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
                 completion?()
             })
@@ -2167,35 +2167,35 @@ public final class ContextControllerImpl: ViewController, ContextController, Sta
             KeyShortcut(
                 input: UIKeyCommand.inputEscape,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissWithoutContent()
                 }
             ),
             KeyShortcut(
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissWithoutContent()
                 }
             ),
             KeyShortcut(
                 input: "\r",
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.performHighlightedAction()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.decreaseHighlightedIndex()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputDownArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.increaseHighlightedIndex()
                 }
             )

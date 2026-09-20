@@ -589,7 +589,7 @@ final class NotificationExceptionsControllerNode: ViewControllerTracingNode {
             requestActivateSearch()
         }
         
-        let presentPeerSettings: (EnginePeer.Id, @escaping () -> Void) -> Void = { [weak self] peerId, completion in
+        let presentPeerSettings: (EnginePeer.Id, @escaping () -> Void) -> Void = { [weak self = self] peerId, completion in
             (self?.searchDisplayController?.contentNode as? NotificationExceptionsSearchContainerNode)?.listNode.clearHighlightAnimated(true)
             
             let _ = (context.engine.data.get(
@@ -783,11 +783,11 @@ final class NotificationExceptionsControllerNode: ViewControllerTracingNode {
         
         self.arguments = arguments
         
-        presentControllerImpl = { [weak self] c, a in
+        presentControllerImpl = { [weak self = self] c, a in
             self?.present(c, a)
         }
         
-        dismissInputImpl = { [weak self] in
+        dismissInputImpl = { [weak self = self] in
             self?.view.endEditing(true)
         }
         
@@ -795,7 +795,7 @@ final class NotificationExceptionsControllerNode: ViewControllerTracingNode {
 
         let previousEntriesHolder = Atomic<([NotificationExceptionEntry], PresentationTheme, PresentationStrings)?>(value: nil)
 
-        self.listDisposable = (combineLatest(context.sharedContext.presentationData, statePromise.get(), preferences, context.engine.peers.notificationSoundList()) |> deliverOnMainQueue).start(next: { [weak self] presentationData, state, prefs, notificationSoundList in
+        self.listDisposable = (combineLatest(context.sharedContext.presentationData, statePromise.get(), preferences, context.engine.peers.notificationSoundList()) |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, state, prefs, notificationSoundList in
             let entries = notificationsExceptionEntries(presentationData: presentationData, notificationSoundList: notificationSoundList, state: state)
             let previousEntriesAndPresentationData = previousEntriesHolder.swap((entries, presentationData.theme, presentationData.strings))
 
@@ -884,7 +884,7 @@ final class NotificationExceptionsControllerNode: ViewControllerTracingNode {
                     options.insert(.Synchronous)
                     options.insert(.AnimateInsertion)
                 }
-                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+                self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                     if let strongSelf = self {
                         if !strongSelf.didSetReady {
                             strongSelf.didSetReady = true
@@ -910,7 +910,7 @@ final class NotificationExceptionsControllerNode: ViewControllerTracingNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: NotificationExceptionsSearchContainerNode(context: self.context, mode: self.stateValue.modify {$0}.mode, arguments: self.arguments!), cancel: { [weak self] in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: NotificationExceptionsSearchContainerNode(context: self.context, mode: self.stateValue.modify {$0}.mode, arguments: self.arguments!), cancel: { [weak self = self] in
             self?.requestDeactivateSearch(true)
         }, fieldStyle: placeholderNode.fieldStyle)
         
@@ -1067,7 +1067,7 @@ private final class NotificationExceptionsSearchContainerNode: SearchDisplayCont
             return combineLatest(context.sharedContext.presentationData, context.engine.peers.notificationSoundList(), stateAndPeers, preferences, contactsSignal)
         }
         self.searchDisposable.set((searchSignal
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData, notificationSoundList, state, prefs, foundPeers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, notificationSoundList, state, prefs, foundPeers in
             let entries = notificationsExceptionEntries(presentationData: presentationData, notificationSoundList: notificationSoundList, state: state.0, query: state.1, foundPeers: foundPeers)
             let previousEntriesAndPresentationData = previousEntriesHolder.swap((entries, presentationData.theme, presentationData.strings))
             
@@ -1078,7 +1078,7 @@ private final class NotificationExceptionsSearchContainerNode: SearchDisplayCont
         
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -1092,7 +1092,7 @@ private final class NotificationExceptionsSearchContainerNode: SearchDisplayCont
             }
         })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -1140,7 +1140,7 @@ private final class NotificationExceptionsSearchContainerNode: SearchDisplayCont
             options.insert(.PreferSynchronousResourceLoading)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
                 self?.dimNode.isHidden = isSearching
             })

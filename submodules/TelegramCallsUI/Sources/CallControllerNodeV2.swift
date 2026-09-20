@@ -106,58 +106,58 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         self.view.addSubview(self.containerView)
         self.containerView.addSubview(self.callScreen)
         
-        self.callScreen.speakerAction = { [weak self] in
+        self.callScreen.speakerAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.beginAudioOuputSelection?(false)
         }
-        self.callScreen.videoAction = { [weak self] in
+        self.callScreen.videoAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.toggleVideo()
         }
-        self.callScreen.flipCameraAction = { [weak self] in
+        self.callScreen.flipCameraAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.call.switchVideoCamera()
         }
-        self.callScreen.microhoneMuteAction = { [weak self] in
+        self.callScreen.microhoneMuteAction = { [weak self = self] in
             guard let self else {
                 return
             }
             
             self.call.toggleIsMuted()
         }
-        self.callScreen.endCallAction = { [weak self] in
+        self.callScreen.endCallAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.endCall?()
         }
-        self.callScreen.backAction = { [weak self] in
+        self.callScreen.backAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.back?()
             self.callScreen.beginPictureInPictureIfPossible()
         }
-        self.callScreen.closeAction = { [weak self] in
+        self.callScreen.closeAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.dismissedInteractively?()
         }
-        self.callScreen.restoreUIForPictureInPicture = { [weak self] completion in
+        self.callScreen.restoreUIForPictureInPicture = { [weak self = self] completion in
             guard let self else {
                 completion(false)
                 return
             }
             self.restoreUIForPictureInPicture?(completion)
         }
-        self.callScreen.conferenceAddParticipant = { [weak self] in
+        self.callScreen.conferenceAddParticipant = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -188,7 +188,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         )
         
         self.isMicrophoneMutedDisposable = (call.isMuted
-        |> deliverOnMainQueue).startStrict(next: { [weak self] isMuted in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] isMuted in
             guard let self, var callScreenState = self.callScreenState else {
                 return
             }
@@ -201,7 +201,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         })
         
         self.audioLevelDisposable = (call.audioLevel
-        |> deliverOnMainQueue).start(next: { [weak self] audioLevel in
+        |> deliverOnMainQueue).start(next: { [weak self = self] audioLevel in
             guard let self else {
                 return
             }
@@ -210,7 +210,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         
         self.view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.panGesture(_:))))
         
-        self.signalQualityTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] _ in
+        self.signalQualityTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -228,22 +228,22 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         
         self.applicationInForegroundDisposable = (self.sharedContext.applicationBindings.applicationInForeground
         |> filter { $0 }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             guard let self else {
                 return
             }
             if self.callScreen.isPictureInPictureRequested {
-                Queue.mainQueue().after(0.5, { [weak self] in
+                Queue.mainQueue().after(0.5, { [weak self = self] in
                     guard let self else {
                         return
                     }
                     if self.callScreen.isPictureInPictureRequested && !self.callScreen.restoreFromPictureInPictureIfPossible() {
-                        Queue.mainQueue().after(0.2, { [weak self] in
+                        Queue.mainQueue().after(0.2, { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             if self.callScreen.isPictureInPictureRequested && !self.callScreen.restoreFromPictureInPictureIfPossible() {
-                                Queue.mainQueue().after(0.3, { [weak self] in
+                                Queue.mainQueue().after(0.3, { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -329,17 +329,17 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
                 let _ = isScreencast
                 self.call.disableVideo()
             default:
-                DeviceAccess.authorizeAccess(to: .camera(.videoCall), onlyCheck: true, presentationData: self.presentationData, present: { [weak self] c, a in
+                DeviceAccess.authorizeAccess(to: .camera(.videoCall), onlyCheck: true, presentationData: self.presentationData, present: { [weak self = self] c, a in
                     if let strongSelf = self {
                         strongSelf.present?(c)
                     }
-                }, openSettings: { [weak self] in
+                }, openSettings: { [weak self = self] in
                     self?.sharedContext.applicationBindings.openSettings()
-                }, _: { [weak self] ready in
+                }, _: { [weak self = self] ready in
                     guard let self, ready else {
                         return
                     }
-                    let proceed = { [weak self] in
+                    let proceed = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -353,7 +353,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
                         self.call.requestVideo()
                     }
                     
-                    self.call.makeOutgoingVideoView(completion: { [weak self] outgoingVideoView in
+                    self.call.makeOutgoingVideoView(completion: { [weak self = self] outgoingVideoView in
                         guard let self else {
                             return
                         }
@@ -364,17 +364,17 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
                             
                             var updateLayoutImpl: ((ContainerViewLayout, CGFloat) -> Void)?
                             
-                            let outgoingVideoNode = CallVideoNode(videoView: outgoingVideoView, displayPlaceholderUntilReady: true, disabledText: nil, assumeReadyAfterTimeout: true, isReadyUpdated: { [weak self] in
+                            let outgoingVideoNode = CallVideoNode(videoView: outgoingVideoView, displayPlaceholderUntilReady: true, disabledText: nil, assumeReadyAfterTimeout: true, isReadyUpdated: { [weak self = self] in
                                 guard let self, let (layout, navigationBarHeight) = self.validLayout else {
                                     return
                                 }
                                 updateLayoutImpl?(layout, navigationBarHeight)
-                            }, orientationUpdated: { [weak self] in
+                            }, orientationUpdated: { [weak self = self] in
                                 guard let self, let (layout, navigationBarHeight) = self.validLayout else {
                                     return
                                 }
                                 updateLayoutImpl?(layout, navigationBarHeight)
-                            }, isFlippedUpdated: { [weak self] _ in
+                            }, isFlippedUpdated: { [weak self = self] _ in
                                 guard let self, let (layout, navigationBarHeight) = self.validLayout else {
                                     return
                                 }
@@ -383,7 +383,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
                             
                             let controller = VoiceChatCameraPreviewController(sharedContext: self.sharedContext, cameraNode: outgoingVideoNode, shareCamera: { _, _ in
                                 proceed()
-                            }, switchCamera: { [weak self] in
+                            }, switchCamera: { [weak self = self] in
                                 Queue.mainQueue().after(0.1) {
                                     self?.call.switchVideoCamera()
                                 }
@@ -599,7 +599,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
             }
             
             if self.audioOutputCheckTimer == nil {
-                self.audioOutputCheckTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] _ in
+                self.audioOutputCheckTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -631,7 +631,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
             let size = CGSize(width: 128.0, height: 128.0)
             if let representation = peer.largeProfileImage, let signal = peerAvatarImage(account: self.call.context.account, peerReference: PeerReference(peer), authorOfMessage: nil, representation: representation, displayDimensions: size, synchronousLoad: self.callScreenState?.avatarImage == nil) {
                 self.peerAvatarDisposable = (signal
-                |> deliverOnMainQueue).startStrict(next: { [weak self] imageVersions in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] imageVersions in
                     guard let self else {
                         return
                     }
@@ -676,7 +676,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
             
             self.containerView.layer.animateScale(from: 1.04, to: 1.0, duration: 0.3)
             self.containerView.layer.allowsGroupOpacity = true
-            self.containerView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2, completion: { [weak self] _ in
+            self.containerView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -691,7 +691,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
         self.statusBar.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false)
         if self.containerView.alpha > 0.0 {
             self.containerView.layer.allowsGroupOpacity = true
-            self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+            self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
                 self?.containerView.layer.allowsGroupOpacity = false
             })
             self.containerView.layer.animateScale(from: 1.0, to: 1.04, duration: 0.3, removeOnCompletion: false, completion: { _ in
@@ -763,7 +763,7 @@ final class CallControllerNodeV2: ViewControllerTracingNode, CallControllerNodeP
             self.containerView.layer.cornerRadius = layout.deviceMetrics.screenCornerRadius
         }
         
-        transition.updateFrame(view: self.containerView, frame: CGRect(origin: CGPoint(x: 0.0, y: containerOffset), size: layout.size), completion: { [weak self] completed in
+        transition.updateFrame(view: self.containerView, frame: CGRect(origin: CGPoint(x: 0.0, y: containerOffset), size: layout.size), completion: { [weak self = self] completed in
             guard let self, completed else {
                 return
             }
@@ -941,7 +941,7 @@ final class AdaptedCallVideoSource: VideoSource {
         CVMetalTextureCacheCreate(nil, nil, MetalEngine.shared.device, nil, &self.textureCache)
         
         self.videoFrameDisposable = (videoStreamSignal
-        |> deliverOnMainQueue).start(next: { [weak self] videoFrameData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] videoFrameData in
             guard let self, let textureCache = self.textureCache else {
                 return
             }
@@ -1001,7 +1001,7 @@ final class AdaptedCallVideoSource: VideoSource {
                 }
             }
             
-            AdaptedCallVideoSource.queue.async { [weak self] in
+            AdaptedCallVideoSource.queue.async { [weak self = self] in
                 let output: Output
                 switch videoFrameData.buffer {
                 case let .native(nativeBuffer):
@@ -1108,7 +1108,7 @@ final class AdaptedCallVideoSource: VideoSource {
     func addOnUpdated(_ f: @escaping () -> Void) -> Disposable {
         let index = self.onUpdatedListeners.add(f)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             DispatchQueue.main.async {
                 guard let self else {
                     return

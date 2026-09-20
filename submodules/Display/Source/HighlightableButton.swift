@@ -6,7 +6,7 @@ open class HighlightableButton: HighlightTrackingButton {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.internalHighligthedChanged = { [weak self] highlighted in
+        self.internalHighligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.layer.removeAnimation(forKey: "opacity")
@@ -86,7 +86,7 @@ open class HighlightableButtonNode: HighlightTrackingButtonNode {
     override public init(pointerStyle: PointerStyle? = nil) {
         super.init(pointerStyle: pointerStyle)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self, !strongSelf.isImplicitlyDisabled {
                 if highlighted {
                     strongSelf.layer.removeAnimation(forKey: "opacity")

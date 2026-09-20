@@ -253,42 +253,42 @@ public class WallpaperGalleryController: ViewController {
 
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
-        self.interaction = WallpaperGalleryInteraction(editMedia: { [weak self] asset, image, cropRect, adjustments, referenceView, apply, fullSizeApply in
+        self.interaction = WallpaperGalleryInteraction(editMedia: { [weak self = self] asset, image, cropRect, adjustments, referenceView, apply, fullSizeApply in
             guard let self else {
                 return
             }
             let item = LegacyWallpaperItem(asset: asset, screenImage: image, dimensions: CGSize(width: asset.pixelWidth, height: asset.pixelHeight))
-            legacyWallpaperEditor(context: context, item: item, cropRect: cropRect, adjustments: adjustments, referenceView: referenceView, beginTransitionOut: { [weak self] saving in
+            legacyWallpaperEditor(context: context, item: item, cropRect: cropRect, adjustments: adjustments, referenceView: referenceView, beginTransitionOut: { [weak self = self] saving in
                 self?.interaction?.beginTransitionFromEditor(saving)
-            }, finishTransitionOut: { [weak self] in
+            }, finishTransitionOut: { [weak self = self] in
                 self?.interaction?.finishTransitionFromEditor()
             }, completion: { image, adjustments in
                 apply(image, adjustments)
             }, fullSizeCompletion: { image in
                 fullSizeApply(image)
-            }, present: { [weak self] c, a in
+            }, present: { [weak self = self] c, a in
                 if let self {
                     self.present(c, in: .window(.root))
                 }
             })
         }, beginTransitionToEditor: {
-        }, beginTransitionFromEditor: { [weak self] saving in
+        }, beginTransitionFromEditor: { [weak self = self] saving in
             guard let self else {
                 return
             }
             if let centralItemNode = self.galleryNode.pager.centralItemNode() as? WallpaperGalleryItemNode {
                 centralItemNode.beginTransitionFromEditor(saving: saving)
             }
-        }, finishTransitionFromEditor: { [weak self] in
+        }, finishTransitionFromEditor: { [weak self = self] in
             guard let self else {
                 return
             }
             if let centralItemNode = self.galleryNode.pager.centralItemNode() as? WallpaperGalleryItemNode {
                 centralItemNode.finishTransitionFromEditor()
             }
-        }, toolbarCancel: { [weak self] in
+        }, toolbarCancel: { [weak self = self] in
             self?.dismiss(forceAway: true)
-        }, toolbarDone: { [weak self] forBoth in
+        }, toolbarDone: { [weak self = self] forBoth in
             self?.toolbarDonePressed(forBoth: forBoth)
         })
         
@@ -331,7 +331,7 @@ public class WallpaperGalleryController: ViewController {
         self.centralEntryIndex = centralEntryIndex
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -343,7 +343,7 @@ public class WallpaperGalleryController: ViewController {
             }
         })
        
-        self.centralItemAttributesDisposable.add(self.centralItemSubtitle.get().start(next: { [weak self] subtitle in
+        self.centralItemAttributesDisposable.add(self.centralItemSubtitle.get().start(next: { [weak self = self] subtitle in
             if let strongSelf = self {
                 if let subtitle = subtitle {
                     let titleView = CounterControllerTitleView(theme: strongSelf.presentationData.theme)
@@ -357,7 +357,7 @@ public class WallpaperGalleryController: ViewController {
             }
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemAction.get().start(next: { [weak self] barButton in
+        self.centralItemAttributesDisposable.add(self.centralItemAction.get().start(next: { [weak self = self] barButton in
             if let strongSelf = self {
                 strongSelf.navigationItem.rightBarButtonItem = barButton
             }
@@ -387,7 +387,7 @@ public class WallpaperGalleryController: ViewController {
     }
     
     public func dismiss(forceAway: Bool) {
-//        let completion: () -> Void = { [weak self] in
+//        let completion: () -> Void = { [weak self = self] in
 //            self?.presentingViewController?.dismiss(animated: false, completion: nil)
 //        }
         self.presentingViewController?.dismiss(animated: true, completion: nil)
@@ -704,18 +704,18 @@ public class WallpaperGalleryController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self] controller, arguments in
+        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self = self] controller, arguments in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root), with: arguments, blockInteraction: true)
             }
         }, pushController: { _ in
-        }, dismissController: { [weak self] in
+        }, dismissController: { [weak self = self] in
                 self?.dismiss(forceAway: true)
         }, replaceRootController: { controller, ready in
         }, editMedia: { _ in
-        }, controller: { [weak self] in
+        }, controller: { [weak self = self] in
             return self
-        }, currentItemNode: { [weak self] in
+        }, currentItemNode: { [weak self = self] in
             return self?.galleryNode.pager.centralItemNode()
         })
         self.displayNode = WallpaperGalleryControllerNode(context: self.context, controllerInteraction: controllerInteraction, titleView: nil, pageGap: 0.0, disableTapNavigation: true)
@@ -723,16 +723,16 @@ public class WallpaperGalleryController: ViewController {
 
         (self.displayNode as? WallpaperGalleryControllerNode)?.nativeStatusBar = self.statusBar
         
-        self.galleryNode.galleryController = { [weak self] in
+        self.galleryNode.galleryController = { [weak self = self] in
             return self
         }
         self.galleryNode.navigationBar = self.navigationBar
-        self.galleryNode.dismiss = { [weak self] in
+        self.galleryNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
 
         var currentCentralItemIndex: Int?
-        self.galleryNode.pager.centralItemIndexUpdated = { [weak self] index in
+        self.galleryNode.pager.centralItemIndexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 let updated = currentCentralItemIndex != index
                 currentCentralItemIndex = index
@@ -782,11 +782,11 @@ public class WallpaperGalleryController: ViewController {
         if let node = self.galleryNode.pager.centralItemNode() as? WallpaperGalleryItemNode {
             self.centralItemSubtitle.set(node.subtitle.get())
             self.centralItemAction.set(node.actionButton.get())
-            node.action = { [weak self] in
+            node.action = { [weak self = self] in
                 self?.actionPressed()
             }
             self.updateVisibleItemToolbars(layout: self.validLayout?.0, transition: .immediate)
-            node.requestPatternPanel = { [weak self] enabled, initialWallpaper in
+            node.requestPatternPanel = { [weak self = self] enabled, initialWallpaper in
                 if let strongSelf = self, let (layout, _) = strongSelf.validLayout {
                     strongSelf.colorsPanelEnabled = false
                     strongSelf.colorsPanelNode?.view.endEditing(true)
@@ -832,7 +832,7 @@ public class WallpaperGalleryController: ViewController {
                 }
             }
 
-            node.toggleColorsPanel = { [weak self] colors in
+            node.toggleColorsPanel = { [weak self = self] colors in
                 if let strongSelf = self, let (layout, _) = strongSelf.validLayout, let colors = colors, let itemNode = strongSelf.galleryNode.pager.centralItemNode() as? WallpaperGalleryItemNode {
                     strongSelf.patternPanelEnabled = false
                     strongSelf.colorsPanelEnabled = !strongSelf.colorsPanelEnabled
@@ -860,7 +860,7 @@ public class WallpaperGalleryController: ViewController {
                 }
             }
 
-            node.requestRotateGradient = { [weak self] angle in
+            node.requestRotateGradient = { [weak self = self] angle in
                 guard let strongSelf = self, let _ = strongSelf.validLayout, let entry = strongSelf.currentEntry(), case let .wallpaper(wallpaper, _) = entry else {
                     return
                 }
@@ -883,7 +883,7 @@ public class WallpaperGalleryController: ViewController {
             if !self.didBeginSettingReady {
                 self.didBeginSettingReady = true
 
-                let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self] _ in
+                let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self = self] _ in
                     self?.didSetReady = true
                 }
                 self._ready.set(ready |> map { true })
@@ -996,7 +996,7 @@ public class WallpaperGalleryController: ViewController {
             currentPatternPanelNode = patternPanelNode
         } else {
             let patternPanelNode = WallpaperPatternPanelNode(context: self.context, theme: presentationData.theme, strings: presentationData.strings)
-            patternPanelNode.patternChanged = { [weak self] pattern, intensity, preview in
+            patternPanelNode.patternChanged = { [weak self = self] pattern, intensity, preview in
                 if let strongSelf = self, strongSelf.validLayout != nil, let patternInitialWallpaper = strongSelf.patternInitialWallpaper {
                     var colors: [UInt32] = []
                     var rotation: Int32?
@@ -1044,7 +1044,7 @@ public class WallpaperGalleryController: ViewController {
             currentColorsPanelNode = colorsPanelNode
             self.overlayNode?.addSubnode(colorsPanelNode)
 
-            colorsPanelNode.colorsChanged = { [weak self] colors, _, _ in
+            colorsPanelNode.colorsChanged = { [weak self = self] colors, _, _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1115,7 +1115,7 @@ public class WallpaperGalleryController: ViewController {
         }
 
         let context = self.context
-        let actionCompleted: () -> Void = { [weak self] in
+        let actionCompleted: () -> Void = { [weak self = self] in
             let presentationData = context.sharedContext.currentPresentationData.with { $0 }
             self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
         }
@@ -1126,7 +1126,7 @@ public class WallpaperGalleryController: ViewController {
                 |> take(1)
                 |> filter { status -> Bool in
                     return status.wallpaper == wallpaper
-                }).start(next: { [weak self] status in
+                }).start(next: { [weak self = self] status in
                     if case let .uploaded(uploadedWallpaper, resultWallpaper) = status, uploadedWallpaper == wallpaper, case let .file(file) = resultWallpaper {
                         var optionsString = ""
                         if !options.isEmpty {

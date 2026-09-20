@@ -250,7 +250,7 @@ public final class GalleryTitleView: UIView, NavigationBarTitleView {
             }
         } else {
             self.interactionTimer?.invalidate()
-            self.interactionTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self] _ in
+            self.interactionTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self = self] _ in
                 guard let self else {
                     return
                 }

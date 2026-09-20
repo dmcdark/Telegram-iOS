@@ -127,7 +127,7 @@ public final class FileVideoSource: VideoSource {
         
         self.queuePlayer.play()
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(60), { [weak self] _ in
+        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(60), { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -142,7 +142,7 @@ public final class FileVideoSource: VideoSource {
     public func addOnUpdated(_ f: @escaping () -> Void) -> Disposable {
         let index = self.onUpdatedListeners.add(f)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             DispatchQueue.main.async {
                 guard let self else {
                     return

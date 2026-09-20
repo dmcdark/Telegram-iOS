@@ -284,7 +284,7 @@ public final class MediaEditorVideoExport {
         }
         self.setup()
         
-        let _ = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        let _ = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -297,7 +297,7 @@ public final class MediaEditorVideoExport {
             }*/
             self.resume()
         })
-        let _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        let _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -545,7 +545,7 @@ public final class MediaEditorVideoExport {
         }
         
         let _ = (combineLatest(signals)
-        |> deliverOn(self.queue)).start(next: { [weak self] additionalInputs in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] additionalInputs in
             guard let self else {
                 return
             }

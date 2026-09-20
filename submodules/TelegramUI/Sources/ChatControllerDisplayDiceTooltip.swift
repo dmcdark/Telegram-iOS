@@ -13,18 +13,18 @@ import TelegramStringFormatting
 extension ChatControllerImpl {
     func presentEmojiGameStake() {
         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Configuration.EmojiGame())
-        |> deliverOnMainQueue).start(next: { [weak self] gameInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] gameInfo in
             guard let self, case let .available(info) = gameInfo else {
                 return
             }
             let controller = EmojiGameStakeScreen(
                 context: self.context,
                 gameInfo: info,
-                completion: { [weak self] stake in
+                completion: { [weak self = self] stake in
                     guard let self else {
                         return
                     }
-                    self.presentPaidMessageAlertIfNeeded(completion: { [weak self] postpone in
+                    self.presentPaidMessageAlertIfNeeded(completion: { [weak self = self] postpone in
                         guard let self else {
                             return
                         }
@@ -56,7 +56,7 @@ extension ChatControllerImpl {
         
         
         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Configuration.EmojiGame())
-        |> deliverOnMainQueue).start(next: { [weak self] gameInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] gameInfo in
             guard let self else {
                 return
             }
@@ -97,11 +97,11 @@ extension ChatControllerImpl {
                 }
             }
             if let value = value {
-                self.present(UndoOverlayController(presentationData: self.presentationData, content: .dice(dice: dice, context: self.context, text: value, action: canSendMessages ? self.presentationData.strings.Conversation_SendDice : nil, changeAction: changeAction), elevatedLayout: false, action: { [weak self] action in
+                self.present(UndoOverlayController(presentationData: self.presentationData, content: .dice(dice: dice, context: self.context, text: value, action: canSendMessages ? self.presentationData.strings.Conversation_SendDice : nil, changeAction: changeAction), elevatedLayout: false, action: { [weak self = self] action in
                     if let self, canSendMessagesToChat(self.presentationInterfaceState) {
                         switch action {
                         case .undo:
-                            self.presentPaidMessageAlertIfNeeded(completion: { [weak self] postpone in
+                            self.presentPaidMessageAlertIfNeeded(completion: { [weak self = self] postpone in
                                 guard let self else {
                                     return
                                 }

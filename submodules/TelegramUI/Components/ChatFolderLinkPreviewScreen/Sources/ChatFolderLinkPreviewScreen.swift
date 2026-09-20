@@ -868,7 +868,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
 
             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextCopy, icon: { theme in
                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
 
                 UIPasteboard.general.string = link.link
@@ -881,7 +881,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
 
             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextGetQRCode, icon: { theme in
                 generateTintedImage(image: UIImage(bundleImageName: "Settings/QrIcon"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
 
                 if let self, let component = self.component, let controller = self.environment?.controller() {
@@ -891,7 +891,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
 
             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextRevoke, textColor: .destructive, icon: { theme in
                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
 
                 guard let self, let component = self.component, let state = self.state else {
@@ -1058,7 +1058,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
             state.updated(transition: .immediate)
 
             state.joinDisposable = (joinSignal
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let self, let component = self.component, let controller = self.environment?.controller() else {
                     return
                 }
@@ -1143,7 +1143,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                 }
 
                 controller.dismiss()
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let self, let component = self.component, let controller = self.environment?.controller() else {
                     return
                 }
@@ -1206,7 +1206,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
             }
 
             let _ = (component.context.engine.peers.currentChatListFilters()
-            |> deliverOnMainQueue).start(next: { [weak self] filters in
+            |> deliverOnMainQueue).start(next: { [weak self = self] filters in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -1221,7 +1221,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                 let _ = (component.context.engine.data.get(
                     EngineDataList(peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] peers in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peers in
                     guard let self, let component = self.component, let controller = self.environment?.controller() else {
                         return
                     }
@@ -1255,7 +1255,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
             }
 
             let _ = (component.context.engine.peers.currentChatListFilters()
-            |> deliverOnMainQueue).start(next: { [weak self] filters in
+            |> deliverOnMainQueue).start(next: { [weak self = self] filters in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -1270,7 +1270,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                 let _ = (component.context.engine.data.get(
                     EngineDataList(peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] peers in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peers in
                     guard let self, let component = self.component, let controller = self.environment?.controller() else {
                         return
                     }
@@ -1298,7 +1298,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                         }
 
                         let _ = (component.context.engine.peers.exportChatFolder(filterId: folderId, title: "", peerIds: enabledPeerIds)
-                        |> deliverOnMainQueue).start(next: { [weak self] link in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] link in
                             guard let self, let component = self.component, let state = self.state, let controller = self.environment?.controller() else {
                                 return
                             }
@@ -1307,7 +1307,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                             state.updated(transition: ComponentTransition(animation: .curve(duration: 0.3, curve: .easeInOut)))
 
                             let navigationController = controller.navigationController
-                            controller.push(folderInviteLinkListController(context: component.context, filterId: folderId, title: title, allPeerIds: peers.map(\.id), currentInvitation: link, linkUpdated: { [weak self] updatedLink in
+                            controller.push(folderInviteLinkListController(context: component.context, filterId: folderId, title: title, allPeerIds: peers.map(\.id), currentInvitation: link, linkUpdated: { [weak self = self] updatedLink in
                                 guard let self, let state = self.state else {
                                     return
                                 }
@@ -1326,7 +1326,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                             }))
 
                             controller.dismiss()
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             guard let self, let component = self.component, let controller = self.environment?.controller() else {
                                 return
                             }
@@ -1403,7 +1403,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
             let controller = environmentValue.controller
             let theme = environmentValue.theme.withModalBlocksBackground()
 
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 self?.dismiss(controller: controller, animated: animated)
             }
 
@@ -1436,7 +1436,7 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                     ),
                     isEnabled: resolvedData.actionButtonEnabled,
                     displaysProgress: state.inProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.performMainAction()
                     }
                 ))
@@ -1455,19 +1455,19 @@ private final class ChatFolderLinkPreviewScreenComponent: Component {
                         resolvedData: resolvedData,
                         selectedItems: state.selectedItems,
                         linkListItems: state.linkListItems,
-                        peerAction: { [weak self] peer in
+                        peerAction: { [weak self = self] peer in
                             self?.peerAction(peer: peer)
                         },
-                        toggleAllSelection: { [weak self] in
+                        toggleAllSelection: { [weak self = self] in
                             self?.toggleAllSelection()
                         },
-                        openCreateLink: { [weak self] in
+                        openCreateLink: { [weak self = self] in
                             self?.openCreateLink()
                         },
-                        openLink: { [weak self] link in
+                        openLink: { [weak self = self] link in
                             self?.openLink(link: link)
                         },
-                        openLinkContextAction: { [weak self] link, sourceView, gesture in
+                        openLinkContextAction: { [weak self = self] link, sourceView, gesture in
                             self?.presentLinkContextAction(link: link, sourceView: sourceView, gesture: gesture)
                         }
                     )),

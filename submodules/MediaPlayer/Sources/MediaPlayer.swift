@@ -182,7 +182,7 @@ private final class MediaPlayerContext {
         
         self.videoRenderer = VideoPlayerProxy(queue: queue)
         
-        self.videoRenderer.visibilityUpdated = { [weak self] value in
+        self.videoRenderer.visibilityUpdated = { [weak self = self] value in
             assert(queue.isCurrent())
             
             if let strongSelf = self, !strongSelf.enableSound || strongSelf.continuePlayingWithoutSoundOnLostAudioSession {
@@ -214,7 +214,7 @@ private final class MediaPlayerContext {
             }
         }
         
-        self.videoRenderer.takeFrameAndQueue = (queue, { [weak self] in
+        self.videoRenderer.takeFrameAndQueue = (queue, { [weak self = self] in
             assert(queue.isCurrent())
             
             if let strongSelf = self {
@@ -357,7 +357,7 @@ private final class MediaPlayerContext {
         let seekResult = frameSource.seek(timestamp: timestamp)
         |> deliverOn(self.queue)
         
-        disposable.set(seekResult.start(next: { [weak self] seekResult in
+        disposable.set(seekResult.start(next: { [weak self = self] seekResult in
             if let strongSelf = self {
                 var result: MediaFrameSourceSeekResult?
                 seekResult.with { object in
@@ -391,10 +391,10 @@ private final class MediaPlayerContext {
             buffers = MediaPlaybackBuffers(audioBuffer: nil, videoBuffer: buffers.videoBuffer)
         }
         
-        buffers.audioBuffer?.statusUpdated = { [weak self] in
+        buffers.audioBuffer?.statusUpdated = { [weak self = self] in
             self?.tick()
         }
-        buffers.videoBuffer?.statusUpdated = { [weak self] in
+        buffers.videoBuffer?.statusUpdated = { [weak self = self] in
             self?.tick()
         }
         let controlTimebase: MediaPlayerControlTimebase
@@ -408,13 +408,13 @@ private final class MediaPlayerContext {
                 self.audioRenderer = nil
                 
                 let queue = self.queue
-                renderer = MediaPlayerAudioRenderer(audioSession: .manager(self.audioSessionManager), forAudioVideoMessage: self.isAudioVideoMessage, playAndRecord: self.playAndRecord, soundMuted: self.soundMuted, ambient: self.ambient, mixWithOthers: self.mixWithOthers, forceAudioToSpeaker: self.forceAudioToSpeaker, baseRate: self.baseRate, audioLevelPipe: self.audioLevelPipe, updatedRate: { [weak self] in
+                renderer = MediaPlayerAudioRenderer(audioSession: .manager(self.audioSessionManager), forAudioVideoMessage: self.isAudioVideoMessage, playAndRecord: self.playAndRecord, soundMuted: self.soundMuted, ambient: self.ambient, mixWithOthers: self.mixWithOthers, forceAudioToSpeaker: self.forceAudioToSpeaker, baseRate: self.baseRate, audioLevelPipe: self.audioLevelPipe, updatedRate: { [weak self = self] in
                     queue.async {
                         if let strongSelf = self {
                             strongSelf.tick()
                         }
                     }
-                }, audioPaused: { [weak self] in
+                }, audioPaused: { [weak self = self] in
                     queue.async {
                         if let strongSelf = self {
                             if strongSelf.enableSound {
@@ -453,8 +453,8 @@ private final class MediaPlayerContext {
         
         if let audioRenderer = self.audioRenderer?.renderer {
             let queue = self.queue
-            audioRenderer.flushBuffers(at: seekResult.timestamp, completion: { [weak self] in
-                queue.async { [weak self] in
+            audioRenderer.flushBuffers(at: seekResult.timestamp, completion: { [weak self = self] in
+                queue.async { [weak self = self] in
                     if let strongSelf = self {
                         switch action {
                             case .play:
@@ -491,13 +491,13 @@ private final class MediaPlayerContext {
                 self.lastStatusUpdateTimestamp = nil
                 if self.enableSound {
                     let queue = self.queue
-                    let renderer = MediaPlayerAudioRenderer(audioSession: .manager(self.audioSessionManager), forAudioVideoMessage: self.isAudioVideoMessage, playAndRecord: self.playAndRecord, soundMuted: self.soundMuted, ambient: self.ambient, mixWithOthers: self.mixWithOthers, forceAudioToSpeaker: self.forceAudioToSpeaker, baseRate: self.baseRate, audioLevelPipe: self.audioLevelPipe, updatedRate: { [weak self] in
+                    let renderer = MediaPlayerAudioRenderer(audioSession: .manager(self.audioSessionManager), forAudioVideoMessage: self.isAudioVideoMessage, playAndRecord: self.playAndRecord, soundMuted: self.soundMuted, ambient: self.ambient, mixWithOthers: self.mixWithOthers, forceAudioToSpeaker: self.forceAudioToSpeaker, baseRate: self.baseRate, audioLevelPipe: self.audioLevelPipe, updatedRate: { [weak self = self] in
                         queue.async {
                             if let strongSelf = self {
                                 strongSelf.tick()
                             }
                         }
-                    }, audioPaused: { [weak self] in
+                    }, audioPaused: { [weak self = self] in
                         queue.async {
                             if let strongSelf = self {
                                 if strongSelf.enableSound {
@@ -525,7 +525,7 @@ private final class MediaPlayerContext {
                     self.fadeTimer?.invalidate()
                     
                     var volume: Double = 0.0
-                    let fadeTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: true, completion: { [weak self] in
+                    let fadeTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: true, completion: { [weak self = self] in
                         if let strongSelf = self {
                             volume += 0.1
                             if volume < 1.0 {
@@ -742,7 +742,7 @@ private final class MediaPlayerContext {
                     self.fadeTimer?.invalidate()
                     
                     var volume: Double = 1.0
-                    let fadeTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: true, completion: { [weak self] in
+                    let fadeTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: true, completion: { [weak self = self] in
                         if let strongSelf = self {
                             volume -= 0.1
                             if volume > 0 {
@@ -904,7 +904,7 @@ private final class MediaPlayerContext {
                 rate = self.baseRate
                 
                 let nextTickDelay = max(0.0, fullUntil - timestamp) / self.baseRate
-                let tickTimer = SwiftSignalKit.Timer(timeout: nextTickDelay, repeat: false, completion: { [weak self] in
+                let tickTimer = SwiftSignalKit.Timer(timeout: nextTickDelay, repeat: false, completion: { [weak self = self] in
                     self?.tick()
                 }, queue: self.queue)
                 self.tickTimer = tickTimer
@@ -927,7 +927,7 @@ private final class MediaPlayerContext {
                 if playing {
                     rate = self.baseRate
                     
-                    let tickTimer = SwiftSignalKit.Timer(timeout: nextTickDelay, repeat: false, completion: { [weak self] in
+                    let tickTimer = SwiftSignalKit.Timer(timeout: nextTickDelay, repeat: false, completion: { [weak self = self] in
                         self?.tick()
                     }, queue: self.queue)
                     self.tickTimer = tickTimer
@@ -941,7 +941,7 @@ private final class MediaPlayerContext {
             rate = 0.0
             //print("bufferingProgress = \(progress)")
             
-            let tickTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self] in
+            let tickTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self = self] in
                 self?.tick()
             }, queue: self.queue)
             self.tickTimer = tickTimer

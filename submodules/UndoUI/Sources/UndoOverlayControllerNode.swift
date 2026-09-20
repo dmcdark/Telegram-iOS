@@ -1652,7 +1652,7 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
         self.addSubnode(self.panelNode)
         self.addSubnode(self.panelWrapperNode)
         
-        self.undoButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.undoButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.undoButtonTextNode.layer.removeAnimation(forKey: "opacity")
@@ -1666,12 +1666,12 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         self.undoButtonNode.addTarget(self, action: #selector(self.undoButtonPressed), forControlEvents: .touchUpInside)
         
-        self.animatedStickerNode?.started = { [weak self] in
+        self.animatedStickerNode?.started = { [weak self = self] in
             self?.stillStickerNode?.isHidden = true
         }
         
         if let additionalView = self.additionalView {
-            additionalView.interaction = UndoOverlayControllerAdditionalViewInteraction(disableTimeout: { [weak self] in
+            additionalView.interaction = UndoOverlayControllerAdditionalViewInteraction(disableTimeout: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1679,7 +1679,7 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                 self.timer?.invalidate()
                 self.remainingSeconds = self.originalRemainingSeconds
                 self.checkTimer()
-            }, dismiss: { [weak self] in
+            }, dismiss: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1778,7 +1778,7 @@ final class UndoOverlayControllerNode: ViewControllerTracingNode {
                 }
             }
             if !self.isTimeoutDisabled {
-                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: false, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: false, completion: { [weak self = self] in
                     self?.checkTimer()
                 }, queue: .mainQueue())
                 self.timer = timer

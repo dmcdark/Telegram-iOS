@@ -165,7 +165,7 @@ final class LegacyCallControllerButtonsNode: ASDisplayNode {
                             self.endButton.layer.animatePosition(from: self.acceptButton.position, to: self.endButton.position, duration: 0.3, timingFunction: kCAMediaTimingFunctionSpring)
                             self.acceptButton.animateRollTransition()
                             self.endButton.layer.animate(from: (CGFloat.pi * 5 / 4) as NSNumber, to: 0.0 as NSNumber, keyPath: "transform.rotation.z", timingFunction: kCAMediaTimingFunctionSpring, duration: 0.3)
-                            self.acceptButton.layer.animatePosition(from: self.acceptButton.position, to: self.endButton.position, duration: 0.3, timingFunction: kCAMediaTimingFunctionSpring, removeOnCompletion: false, completion: { [weak self] _ in
+                            self.acceptButton.layer.animatePosition(from: self.acceptButton.position, to: self.endButton.position, duration: 0.3, timingFunction: kCAMediaTimingFunctionSpring, removeOnCompletion: false, completion: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.acceptButton.alpha = 0.0
                                     strongSelf.acceptButton.layer.removeAnimation(forKey: "position")

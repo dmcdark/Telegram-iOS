@@ -382,7 +382,7 @@ private final class GiftAuctionAcquiredScreenComponent: Component {
                                 peer: gift.peer
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -477,7 +477,7 @@ private final class GiftAuctionAcquiredScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -543,7 +543,7 @@ private final class GiftAuctionAcquiredScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -696,7 +696,7 @@ public class GiftAuctionAcquiredScreen: ViewControllerComponentContainer {
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? GiftAuctionAcquiredScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

@@ -96,7 +96,7 @@ final class UniversalTextureSource: TextureSource {
         let needsDisplayLink = (self.mainInputContext?.needsDisplayLink ?? false) || additionalsNeedDisplayLink
         if needsDisplayLink {
             if self.displayLink == nil {
-                let displayLink = CADisplayLink(target: DisplayLinkTarget({ [weak self] in
+                let displayLink = CADisplayLink(target: DisplayLinkTarget({ [weak self = self] in
                     if let self {
                         self.update(forced: self.forceUpdates)
                     }
@@ -121,7 +121,7 @@ final class UniversalTextureSource: TextureSource {
                 return
             }
             let _ = self.readyForMoreData.swap(false)
-            mainInputContext.asyncOutput(time: time, completion: { [weak self] main in
+            mainInputContext.asyncOutput(time: time, completion: { [weak self = self] main in
                 guard let self else {
                     return
                 }

@@ -301,7 +301,7 @@ private final class CommunityAdminApprovalScreenComponent: Component {
                 text: "You'll lose access to community admin tools, but keep your group admin rights.",
                 actions: [
                     TextAlertAction(type: .genericAction, title: "Cancel", action: {}),
-                    TextAlertAction(type: .defaultAction, title: "OK", action: { [weak self] in
+                    TextAlertAction(type: .defaultAction, title: "OK", action: { [weak self = self] in
                         self?.dismiss(animated: true)
                     })
                 ]
@@ -320,10 +320,10 @@ private final class CommunityAdminApprovalScreenComponent: Component {
                     content: AnyComponent<EnvironmentType>(CommunityAdminApprovalContentComponent(
                         context: component.context,
                         community: component.community,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss(animated: true)
                         },
-                        noThanks: { [weak self] in
+                        noThanks: { [weak self = self] in
                             self?.presentNoThanksAlert()
                         }
                     )),
@@ -342,7 +342,7 @@ private final class CommunityAdminApprovalScreenComponent: Component {
                         isCentered: environment.metrics.widthClass == .regular,
                         hasInputHeight: !environment.inputHeight.isZero,
                         regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                        dismiss: { [weak self] animated in
+                        dismiss: { [weak self = self] animated in
                             self?.dismiss(animated: animated)
                         }
                     )

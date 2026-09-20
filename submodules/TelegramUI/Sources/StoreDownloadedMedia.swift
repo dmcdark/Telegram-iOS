@@ -297,7 +297,7 @@ final class DownloadedMediaStoreManagerImpl: DownloadedMediaStoreManager {
         let _ = (self.postbox.transaction({ transaction -> [(index: Int32, message: Message, mediaId: MediaId)] in
             return _internal_getSynchronizeAutosaveItemOperations(transaction: transaction)
         })
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] items in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] items in
             guard let self else {
                 return
             }

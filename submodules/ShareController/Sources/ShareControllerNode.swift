@@ -250,7 +250,7 @@ private final class ShareContentInfoView: UIView {
                         return nil
                     }
                 },
-                tapAction: { [weak self] _, _ in
+                tapAction: { [weak self = self] _, _ in
                     guard let self, let params = self.currentLayout?.params else {
                         return
                     }
@@ -518,7 +518,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         
         self.isHidden = true
         
-        self.startAtTimestampNode?.updated = { [weak self] in
+        self.startAtTimestampNode?.updated = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -527,14 +527,14 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             }
         }
                 
-        self.actionButtonNode.shouldBegin = { [weak self] in
+        self.actionButtonNode.shouldBegin = { [weak self = self] in
             if let strongSelf = self {
                 return !strongSelf.controllerInteraction!.selectedPeers.isEmpty
             } else {
                 return false
             }
         }
-        self.actionButtonNode.contextAction = { [weak self] node, gesture in
+        self.actionButtonNode.contextAction = { [weak self = self] node, gesture in
             if let strongSelf = self, let node = node as? ContextReferenceContentNode {
                 let presentationData = strongSelf.presentationData
                 let fromForeignApp = strongSelf.fromForeignApp
@@ -599,7 +599,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             }
         }
                 
-        self.controllerInteraction = ShareControllerInteraction(togglePeer: { [weak self] peer, search in
+        self.controllerInteraction = ShareControllerInteraction(togglePeer: { [weak self = self] peer, search in
             if let strongSelf = self {
                 var added = false
                 var openedTopicList = false
@@ -659,7 +659,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                     }
                 }
             }
-        }, selectTopic: { [weak self] peer, threadId, threadData in
+        }, selectTopic: { [weak self = self] peer, threadId, threadData in
             if let strongSelf = self {
                 strongSelf.controllerInteraction?.selectedPeers.append(peer)
                 strongSelf.controllerInteraction?.selectedPeerIds.insert(peer.peerId)
@@ -681,13 +681,13 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 })
             }
         }, shareStory: shareStory.flatMap { shareStory in
-            return { [weak self] in
-                self?.animateOut(shared: false, completion: { [weak self] in
+            return { [weak self = self] in
+                self?.animateOut(shared: false, completion: { [weak self = self] in
                     self?.dismiss?(false)
                 })
                 shareStory()
             }
-        }, disabledPeerSelected: { [weak self] peer in
+        }, disabledPeerSelected: { [weak self = self] peer in
             guard let self else {
                 return
             }
@@ -727,14 +727,14 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             self.contentContainerNode.addSubnode(startAtTimestampNode)
         }
         
-        self.inputFieldNode.updateHeight = { [weak self] in
+        self.inputFieldNode.updateHeight = { [weak self = self] in
             if let strongSelf = self {
                 if let (layout, navigationBarHeight, _) = strongSelf.containerLayout {
                     strongSelf.containerLayoutUpdated(layout, navigationBarHeight: navigationBarHeight, transition: .animated(duration: 0.15, curve: .spring))
                 }
             }
         }
-        self.inputFieldNode.onInputCopyText = { [weak self] in
+        self.inputFieldNode.onInputCopyText = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -818,14 +818,14 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             topics: threads,
             controllerInteraction: controllerInteraction
         )
-        topicsContentNode.backPressed = { [weak self] in
+        topicsContentNode.backPressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.closePeerTopics(peer.peerId, selected: false)
             }
         }
         self.topicsContentNode = topicsContentNode
         
-        presentImpl = { [weak self] in
+        presentImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -852,10 +852,10 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 }
             }
             
-            topicsContentNode.setDidBeginDragging({ [weak self] in
+            topicsContentNode.setDidBeginDragging({ [weak self = self] in
                 self?.contentNodeDidBeginDragging()
             })
-            topicsContentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+            topicsContentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                 self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
             })
             strongSelf.contentNodeOffsetUpdated(topicsContentNode.contentGridNode.scrollView.contentOffset.y, transition: .animated(duration: 0.4, curve: .spring))
@@ -882,17 +882,17 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         }
 
         if let searchContentNode = self.contentNode as? ShareSearchContainerNode {
-            searchContentNode.setDidBeginDragging({ [weak self] in
+            searchContentNode.setDidBeginDragging({ [weak self = self] in
                 self?.contentNodeDidBeginDragging()
             })
-            searchContentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+            searchContentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                 self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
             })
             self.contentNodeOffsetUpdated(searchContentNode.effectiveGridNode.scrollView.contentOffset.y, transition: .animated(duration: 0.4, curve: .spring))
             
             let scrollDelta = topicsContentNode.contentGridNode.scrollView.contentOffset.y - searchContentNode.effectiveGridNode.scrollView.contentOffset.y
             if let targetFrame = searchContentNode.animateIn(peerId: peerId, scrollDelta: scrollDelta) {
-                topicsContentNode.animateOut(targetFrame: targetFrame, scrollDelta: scrollDelta, completion: { [weak self] in
+                topicsContentNode.animateOut(targetFrame: targetFrame, scrollDelta: scrollDelta, completion: { [weak self = self] in
                     if let topicsContentNode = self?.topicsContentNode {
                         topicsContentNode.removeFromSupernode()
                         self?.topicsContentNode = nil
@@ -900,17 +900,17 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 })
             }
         } else if let peersContentNode = self.peersContentNode {
-            peersContentNode.setDidBeginDragging({ [weak self] in
+            peersContentNode.setDidBeginDragging({ [weak self = self] in
                 self?.contentNodeDidBeginDragging()
             })
-            peersContentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+            peersContentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                 self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
             })
             self.contentNodeOffsetUpdated(peersContentNode.contentGridNode.scrollView.contentOffset.y, transition: .animated(duration: 0.4, curve: .spring))
             
             let scrollDelta = topicsContentNode.contentGridNode.scrollView.contentOffset.y - peersContentNode.contentGridNode.scrollView.contentOffset.y
             if let targetFrame = peersContentNode.animateIn(peerId: peerId, scrollDelta: scrollDelta) {
-                topicsContentNode.animateOut(targetFrame: targetFrame, scrollDelta: scrollDelta, completion: { [weak self] in
+                topicsContentNode.animateOut(targetFrame: targetFrame, scrollDelta: scrollDelta, completion: { [weak self = self] in
                     if let topicsContentNode = self?.topicsContentNode {
                         topicsContentNode.removeFromSupernode()
                         self?.topicsContentNode = nil
@@ -1034,10 +1034,10 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                     contentNode.frame = previous.frame
                     contentNode.updateLayout(size: previous.bounds.size, isLandscape: layout.size.width > layout.size.height, bottomInset: bottomGridInset, transition: .immediate)
                     
-                    contentNode.setDidBeginDragging({ [weak self] in
+                    contentNode.setDidBeginDragging({ [weak self = self] in
                         self?.contentNodeDidBeginDragging()
                     })
-                    contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                    contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                         self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                     })
                     self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -1065,10 +1065,10 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                     }
                 } else {
                     if let contentNode = self.contentNode {
-                        contentNode.setDidBeginDragging({ [weak self] in
+                        contentNode.setDidBeginDragging({ [weak self = self] in
                             self?.contentNodeDidBeginDragging()
                         })
-                        contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                        contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                             self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                         })
                         self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -1077,7 +1077,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                     self.containerLayoutUpdated(layout, navigationBarHeight: navigationBarHeight, transition: transition)
                 }
             } else if let contentNode = contentNode {
-                contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                     self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                 })
                 self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -1295,7 +1295,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             }
         } else {
             let _ = (self.showNames.get()
-            |> take(1)).start(next: { [weak self] showNames in
+            |> take(1)).start(next: { [weak self = self] showNames in
                 self?.send(showNames: showNames)
             })
         }
@@ -1339,7 +1339,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 }
                 return (result, requiresStars)
             }
-            |> deliverOnMainQueue).start(next: { [weak self] peers, requiresStars in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peers, requiresStars in
                 guard let self else {
                     return
                 }
@@ -1355,7 +1355,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                     return
                 }
 
-                self.presentPaidMessageAlertIfNeeded(peers: mappedPeers, requiresStars: requiresStars, completion: { [weak self] in
+                self.presentPaidMessageAlertIfNeeded(peers: mappedPeers, requiresStars: requiresStars, completion: { [weak self = self] in
                     self?.commitSend(peerId: peerId, showNames: showNames, silently: silently)
                 })
                 
@@ -1440,7 +1440,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         if let signal = self.share?(self.inputFieldNode.text, peerIds, topicIds, showNames, silently) {
             var wasDone = false
             let timestamp = CACurrentMediaTime()
-            let doneImpl: (Bool) -> Void = { [weak self] shouldDelay in
+            let doneImpl: (Bool) -> Void = { [weak self = self] shouldDelay in
                 let minDelay: Double = shouldDelay ? 0.9 : 0.6
                 let delay: Double
                 let hapticDelay: Double
@@ -1490,7 +1490,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             var transitioned = false
             let fromForeignApp = self.fromForeignApp
             self.shareDisposable.set((signal
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1577,7 +1577,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             var dimCompleted = false
             var offsetCompleted = false
             
-            let internalCompletion: () -> Void = { [weak self] in
+            let internalCompletion: () -> Void = { [weak self = self] in
                 if dimCompleted && offsetCompleted {
                     if let strongSelf = self {
                         strongSelf.animatingOut = false
@@ -1644,7 +1644,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
 
                 return EngineRenderedPeer(peerId: peerId, peers: peers, associatedMedia: view.media)
             }
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 if let strongSelf = self, let peer = peer {
                     strongSelf.controllerInteraction?.togglePeer(peer, peer.peerId != context.accountPeerId)
                 }
@@ -1652,13 +1652,13 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         }
         
         let animated = self.peersContentNode == nil
-        let peersContentNode = SharePeersContainerNode(environment: self.environment, context: context, switchableAccounts: switchableAccounts, theme: self.presentationData.theme, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, peers: peers, accountPeer: accountPeer, controllerInteraction: self.controllerInteraction!, externalShare: self.externalShare, isMainApp: self.environment.isMainApp, switchToAnotherAccount: { [weak self] in
+        let peersContentNode = SharePeersContainerNode(environment: self.environment, context: context, switchableAccounts: switchableAccounts, theme: self.presentationData.theme, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, peers: peers, accountPeer: accountPeer, controllerInteraction: self.controllerInteraction!, externalShare: self.externalShare, isMainApp: self.environment.isMainApp, switchToAnotherAccount: { [weak self = self] in
             self?.switchToAnotherAccount?()
-        }, debugAction: { [weak self] in
+        }, debugAction: { [weak self = self] in
             self?.debugAction?()
         }, extendedInitialReveal: self.presetText != nil, segmentedValues: self.segmentedValues, fromPublicChannel: self.fromPublicChannel)
         self.peersContentNode = peersContentNode
-        peersContentNode.openSearch = { [weak self] in
+        peersContentNode.openSearch = { [weak self = self] in
             let signal: Signal<([RecentlySearchedPeer], [EnginePeer.Id: Bool]), NoError> = _internal_recentlySearchedPeers(postbox: context.stateManager.postbox)
             |> take(1)
             |> mapToSignal { peers -> Signal<([RecentlySearchedPeer], [EnginePeer.Id: Bool]), NoError> in
@@ -1700,7 +1700,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 }
             })
         }
-        let openShare: (Bool) -> Void = { [weak self] reportReady in
+        let openShare: (Bool) -> Void = { [weak self = self] reportReady in
             guard let strongSelf = self, let shareExternal = strongSelf.shareExternal else {
                 return
             }
@@ -1761,7 +1761,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         peersContentNode.openShare = { node, gesture in
             openShare(false)
         }
-        peersContentNode.segmentedSelectedIndexUpdated = { [weak self] index in
+        peersContentNode.segmentedSelectedIndexUpdated = { [weak self = self] index in
             if let strongSelf = self, let _ = strongSelf.segmentedValues {
                 strongSelf.selectedSegmentedIndex = index
                 strongSelf.updateButton()
@@ -1824,7 +1824,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -1883,7 +1883,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
         
         self.transitionToContentNode(ShareProlongedLoadingContainerNode(theme: self.presentationData.theme, strings: self.presentationData.strings, forceNativeAppearance: true, environment: self.environment), fastOut: true)
         let timestamp = CACurrentMediaTime()
-        self.shareDisposable.set(signal.start(completed: { [weak self] in
+        self.shareDisposable.set(signal.start(completed: { [weak self = self] in
             let minDelay = 0.6
             let delay = max(0.0, (timestamp + minDelay) - CACurrentMediaTime())
             Queue.mainQueue().after(delay, {
@@ -1905,7 +1905,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             self.shareDisposable.set((signal
             |> deliverOnMainQueue).start(next: { _ in
 
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.dismiss?(true)
                 }
@@ -1926,7 +1926,7 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
             
             let timestamp = CACurrentMediaTime()
             var wasDone = false
-            let doneImpl: (Bool) -> Void = { [weak self] shouldDelay in
+            let doneImpl: (Bool) -> Void = { [weak self = self] shouldDelay in
                 let minDelay: Double = shouldDelay ? 0.9 : 0.6
                 let delay = max(minDelay, (timestamp + minDelay) - CACurrentMediaTime())
                 Queue.mainQueue().after(delay, {
@@ -1938,14 +1938,14 @@ final class ShareControllerNode: ViewControllerTracingNode, ASScrollViewDelegate
                 })
             }
             self.shareDisposable.set((signal
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 guard let strongSelf = self, let contentNode = strongSelf.contentNode as? ShareLoadingContainer else {
                     return
                 }
                 if let status = status {
                     contentNode.state = .progress(status)
                 }
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 completion()
                 
                 guard let strongSelf = self, let contentNode = strongSelf.contentNode as? ShareLoadingContainer else {

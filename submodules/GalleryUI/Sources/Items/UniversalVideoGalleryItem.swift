@@ -252,7 +252,7 @@ private final class UniversalVideoGalleryItemOverlayNode: GalleryOverlayContentN
         let adContext = context.engine.messages.adMessages(peerId: message.id.peerId, messageId: message.id)
         self.adContext = adContext
         self.adDisposable.set((adContext.state
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let self else {
                 return
             }
@@ -319,7 +319,7 @@ private final class UniversalVideoGalleryItemOverlayNode: GalleryOverlayContentN
         self.validLayout = (size, metrics, insets, isHidden)
         
         if self.timer == nil && self.adState != nil {
-            self.timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] progress in
+            self.timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] progress in
                 guard let self else {
                     return
                 }
@@ -372,7 +372,7 @@ private final class UniversalVideoGalleryItemOverlayNode: GalleryOverlayContentN
                         strings: presentationData.strings,
                         message: EngineMessage(adMessage),
                         initialTimestamp: initialTimestamp,
-                        action: { [weak self] available in
+                        action: { [weak self = self] available in
                             guard let self else {
                                 return
                             }
@@ -385,7 +385,7 @@ private final class UniversalVideoGalleryItemOverlayNode: GalleryOverlayContentN
                                 self.presentPremiumDemo?()
                             }
                         },
-                        adAction: { [weak self] in
+                        adAction: { [weak self = self] in
                             if let self, let ad = adMessage.adAttribute {
                                 self.hiddenMessages.insert(adMessage.id)
                                 if let validLayout = self.validLayout {
@@ -395,7 +395,7 @@ private final class UniversalVideoGalleryItemOverlayNode: GalleryOverlayContentN
                                 self.performAction?(.url(url: ad.url, concealed: false, forceExternal: true, dismiss: false))
                             }
                         },
-                        moreAction: { [weak self] sourceNode in
+                        moreAction: { [weak self = self] sourceNode in
                             if let self {
                                 self.openMoreMenu?(sourceNode.view, adMessage)
                             }
@@ -552,13 +552,13 @@ final class MoreHeaderButton: HighlightableButtonNode {
         self.referenceNode.addSubnode(self.iconNode)
         self.addSubnode(self.containerNode)
 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.contextAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -659,7 +659,7 @@ private final class NativePictureInPictureContentImpl: NSObject, AVPictureInPict
 
             var invalidatedStateOnce = false
             self.statusDisposable = (self.node.status
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 guard let strongSelf = self else {
                     return
                 }
@@ -788,7 +788,7 @@ private final class NativePictureInPictureContentImpl: NSObject, AVPictureInPict
                     return false
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -887,7 +887,7 @@ private final class NativePictureInPictureContentImpl: NSObject, AVPictureInPict
     }
 
     public func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
-        self.expand { [weak self] in
+        self.expand { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1036,7 +1036,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
 
         self.clipsToBounds = true
         
-        self.footerContentNode.shareMediaParameters = { [weak self] in
+        self.footerContentNode.shareMediaParameters = { [weak self = self] in
             guard let self, let playerStatusValue = self.playerStatusValue else {
                 return nil
             }
@@ -1062,14 +1062,14 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         
         self.moreBarButton.addTarget(self, action: #selector(self.moreButtonPressed), forControlEvents: .touchUpInside)
         
-        self.footerContentNode.interacting = { [weak self] value in
+        self.footerContentNode.interacting = { [weak self = self] value in
             self?.isInteractingPromise.set(value)
         }
                 
         self.statusButtonNode.addSubnode(self.statusNode)
         self.statusButtonNode.addTarget(self, action: #selector(self.statusButtonPressed), forControlEvents: .touchUpInside)
         
-        self.footerContentNode.playbackControl = { [weak self] in
+        self.footerContentNode.playbackControl = { [weak self = self] in
             if let strongSelf = self {
                 if !strongSelf.isPaused {
                     strongSelf.didPause = true
@@ -1077,7 +1077,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 strongSelf.videoNode?.togglePlayPause()
             }
         }
-        self.footerContentNode.seekBackward = { [weak self] delta in
+        self.footerContentNode.seekBackward = { [weak self = self] delta in
             if let strongSelf = self, let videoNode = strongSelf.videoNode {
                 let _ = (videoNode.status |> take(1)).start(next: { [weak videoNode] status in
                     if let strongVideoNode = videoNode, let timestamp = status?.timestamp {
@@ -1086,7 +1086,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 })
             }
         }
-        self.footerContentNode.seekForward = { [weak self] delta in
+        self.footerContentNode.seekForward = { [weak self = self] delta in
             if let strongSelf = self, let videoNode = strongSelf.videoNode {
                 let _ = (videoNode.status |> take(1)).start(next: { [weak videoNode] status in
                     if let strongVideoNode = videoNode, let timestamp = status?.timestamp, let duration = status?.duration {
@@ -1102,7 +1102,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }
         
-        self.footerContentNode.setPlayRate = { [weak self] rate in
+        self.footerContentNode.setPlayRate = { [weak self = self] rate in
             if let strongSelf = self, let videoNode = strongSelf.videoNode {
                 videoNode.setBaseRate(rate)
 
@@ -1112,7 +1112,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }
         
-        self.footerContentNode.fetchControl = { [weak self] in
+        self.footerContentNode.fetchControl = { [weak self = self] in
             guard let strongSelf = self, let fetchStatus = strongSelf.fetchStatus, let fetchControls = strongSelf.fetchControls else {
                 return
             }
@@ -1126,7 +1126,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }
 
-        self.footerContentNode.toggleFullscreen = { [weak self] in
+        self.footerContentNode.toggleFullscreen = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1140,7 +1140,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         }
         
         self.scrubbingFrameDisposable = (self.scrubbingFrame.get()
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -1156,7 +1156,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }).strict()
         
-        self.alternativeDismiss = { [weak self] in
+        self.alternativeDismiss = { [weak self = self] in
             guard let strongSelf = self, strongSelf.hasPictureInPicture else {
                 return false
             }
@@ -1164,7 +1164,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             return true
         }
 
-        self.moreBarButton.contextAction = { [weak self] sourceNode, gesture in
+        self.moreBarButton.contextAction = { [weak self = self] sourceNode, gesture in
             guard let self else {
                 return
             }
@@ -1189,7 +1189,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         }
 
         self.hideControlsDisposable = (shouldHideControlsSignal
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             if let strongSelf = self, !strongSelf.isAnimatingOut {
                 strongSelf.updateControlsVisibility(false)
             }
@@ -1289,13 +1289,13 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 isVisible: playbackControlsIsVisible,
                 isPlaying: playbackControlsIsPlaying,
                 displaySeekControls: playbackControlsIsSeekable,
-                togglePlayback: { [weak self] in
+                togglePlayback: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.footerContentNode.playbackControlPressed()
                 },
-                seek: { [weak self] isForward in
+                seek: { [weak self = self] isForward in
                     guard let self else {
                         return
                     }
@@ -1381,10 +1381,10 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
             let scrubberView = ChatVideoGalleryItemScrubberView(chapters: chapters)
             self.scrubberView = scrubberView
-            scrubberView.seek = { [weak self] timecode in
+            scrubberView.seek = { [weak self = self] timecode in
                 self?.videoNode?.seek(timecode)
             }
-            scrubberView.updateScrubbing = { [weak self] timecode in
+            scrubberView.updateScrubbing = { [weak self = self] timecode in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1532,7 +1532,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             let videoSize = CGSize(width: item.content.dimensions.width * videoScale, height: item.content.dimensions.height * videoScale)
             let actualVideoSize = CGSize(width: item.content.dimensions.width, height: item.content.dimensions.height)
             videoNode.updateLayout(size: videoSize, actualSize: actualVideoSize, transition: .immediate)
-            videoNode.ownsContentNodeUpdated = { [weak self] value in
+            videoNode.ownsContentNodeUpdated = { [weak self = self] value in
                 if let strongSelf = self {
                     strongSelf.updateDisplayPlaceholder(!value)
                     
@@ -1622,7 +1622,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     }
                     
                     self.mediaPlaybackStateDisposable.set((throttledSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] status in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] status in
                         guard let self else {
                             return
                         }
@@ -1659,7 +1659,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     
                     self.requiresDownload = !isMediaStreamable(message: EngineMessage(message), media: file)
                     mediaFileStatus = status |> map(Optional.init)
-                    self.fetchControls = FetchControls(fetch: { [weak self] in
+                    self.fetchControls = FetchControls(fetch: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.fetchDisposable.set(messageMediaFileInteractiveFetched(context: item.context, message: message, file: file, userInitiated: true).start())
                         }
@@ -1672,7 +1672,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             self.moreButtonStateDisposable.set(combineLatest(queue: .mainQueue(),
                 self.playbackRatePromise.get(),
                 self.videoQualityPromise.get()
-            ).start(next: { [weak self] playbackRate, videoQuality in
+            ).start(next: { [weak self = self] playbackRate, videoQuality in
                 guard let self else {
                     return
                 }
@@ -1725,7 +1725,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }))
             
             self.statusDisposable.set((combineLatest(queue: .mainQueue(), videoNode.status, mediaFileStatus)
-            |> deliverOnMainQueue).start(next: { [weak self] value, fetchStatus in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value, fetchStatus in
                 if let strongSelf = self {
                     strongSelf.playerStatusValue = value
                     
@@ -2060,7 +2060,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         self.footerContentNode.setup(origin: item.originData, caption: item.caption, isAd: isAd)
         
         if let contentInfo = item.contentInfo, case let .message(message, _) = contentInfo {
-            self.overlayContentNode.performAction = { [weak self] action in
+            self.overlayContentNode.performAction = { [weak self = self] action in
                 guard let self, let item = self.item else {
                     return
                 }
@@ -2073,10 +2073,10 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     item.performAction(action)
                 }
             }
-            self.overlayContentNode.presentPremiumDemo = { [weak self] in
+            self.overlayContentNode.presentPremiumDemo = { [weak self = self] in
                 self?.presentPremiumDemo()
             }
-            self.overlayContentNode.openMoreMenu = { [weak self] sourceView, adMessage in
+            self.overlayContentNode.openMoreMenu = { [weak self = self] sourceView, adMessage in
                 self?.openMoreMenu(sourceView: sourceView, gesture: nil, adMessage: adMessage, isSettings: false, actionsOnTop: true)
             }
             self.overlayContentNode.setMessage(context: item.context, message: message)
@@ -2090,7 +2090,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         }
         
         if case let .message(message, _) = item.contentInfo {
-            self._titleContent.set(.single(GalleryTitleView.Content(message: EngineMessage(message), title: title, action: message.adAttribute == nil ? { [weak self] in
+            self._titleContent.set(.single(GalleryTitleView.Content(message: EngineMessage(message), title: title, action: message.adAttribute == nil ? { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -2222,7 +2222,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
     }
     
     private func updateLivePhotoButton() {
-        self.overlayContentNode.setLivePhotoButton(context: self.context, isVisible: self.isLivePhoto, isPlaying: self.isLivePhotoPlaybackActive, pressed: { [weak self] in
+        self.overlayContentNode.setLivePhotoButton(context: self.context, isVisible: self.isLivePhoto, isPlaying: self.isLivePhotoPlaybackActive, pressed: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -3089,7 +3089,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             if customUnembedWhenPortrait(overlayNode) {
                 self.beginCustomDismiss(.default)
                 self.statusNode.isHidden = true
-                self.animateOut(toOverlay: overlayNode, completion: { [weak self] in
+                self.animateOut(toOverlay: overlayNode, completion: { [weak self = self] in
                     self?.completeCustomDismiss(false)
                 })
             }
@@ -3147,7 +3147,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         
         if #available(iOS 15.0, *) {
             var didExpand = false
-            let content = NativePictureInPictureContentImpl(context: self.context, mediaManager: self.context.sharedContext.mediaManager, accountId: self.context.account.id, hiddenMedia: hiddenMedia, videoNode: videoNode, canSkip: true, willBegin: { [weak self] content in
+            let content = NativePictureInPictureContentImpl(context: self.context, mediaManager: self.context.sharedContext.mediaManager, accountId: self.context.account.id, hiddenMedia: hiddenMedia, videoNode: videoNode, canSkip: true, willBegin: { [weak self = self] content in
                 guard let self, let controller = self.galleryController(), let navigationController = self.baseNavigationController() else {
                     return
                 }
@@ -3158,19 +3158,19 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 
                 self.beginCustomDismiss(.pip)
                 controller.view.alpha = 0.0
-                controller.view.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+                controller.view.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                     self?.completeCustomDismiss(true)
                 })
                 if let videoNode = self.videoNode {
                     videoNode.setNativePictureInPictureIsActive(false)
                 }
                 didExpand = false
-            }, didBegin: { [weak self] _ in
+            }, didBegin: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 let _ = self
-            }, didEnd: { [weak self] _ in
+            }, didEnd: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -3189,7 +3189,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     
                     self.context.engine.accountData.addAppLogEvent(type: "pip_close_btn")
                 }
-            }, expand: { [weak self] completion in
+            }, expand: { [weak self = self] completion in
                 didExpand = true
                 
                 guard let self, let activePictureInPictureController = self.activePictureInPictureController, let activePictureInPictureNavigationController = self.activePictureInPictureNavigationController else {
@@ -3223,7 +3223,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             self.setupNativePictureInPicture()
         }
         
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let self else {
                 return
             }
@@ -3368,7 +3368,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         dismissImpl = { [weak contextController] in
             contextController?.dismiss()
         }
-        contextController.dismissed = { [weak self] in
+        contextController.dismissed = { [weak self = self] in
             Queue.mainQueue().after(isSettings ? 0.0 : 0.1, {
                 guard let self else {
                     return
@@ -3424,7 +3424,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         if adAttribute.canReport {
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_AboutAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
                 if let navigationController = self?.baseNavigationController() as? NavigationController {
                     navigationController.pushViewController(AdsInfoScreen(context: context, mode: .channel, forceDark: true))
@@ -3433,11 +3433,11 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_ReportAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.default)
                 
                 let _ = (context.engine.messages.reportAdMessage(opaqueId: adAttribute.opaqueId, option: nil)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     if case let .options(title, options) = result {
                         if let navigationController = self?.baseNavigationController() as? NavigationController {
                             navigationController.pushViewController(
@@ -3463,7 +3463,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                            
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_RemoveAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] c, _ in
+            }, iconSource: nil, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: {
                     var replaceImpl: ((ViewController) -> Void)?
                     let controller = context.sharedContext.makePremiumDemoController(context: context, subject: .noAds, forceDark: true, action: {
@@ -3481,7 +3481,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
         } else {
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.SponsoredMessageMenu_Info, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
                 if let navigationController = self?.baseNavigationController() as? NavigationController {
                     navigationController.pushViewController(AdInfoScreen(context: context, forceDark: true))
@@ -3492,8 +3492,8 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             if !context.isPremium && !premiumConfiguration.isPremiumDisabled {
                 actions.append(.action(ContextMenuActionItem(text: presentationData.strings.SponsoredMessageMenu_Hide, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
-                }, iconSource: nil, action: { [weak self] c, _ in
-                    c?.dismiss(completion: { [weak self] in
+                }, iconSource: nil, action: { [weak self = self] c, _ in
+                    c?.dismiss(completion: { [weak self = self] in
                         self?.presentPremiumDemo()
                     })
                 })))
@@ -3503,7 +3503,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 actions.append(.separator)
                 actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     var messageEntities: [MessageTextEntity]?
                     for attribute in message.attributes {
                         if let attribute = attribute as? TextEntitiesMessageAttribute {
@@ -3546,7 +3546,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             peer,
             videoNode.videoQualityStateSignal()
         )
-        |> map { [weak self] status, peer, videoQualityState -> (items: [ContextMenuItem], topItems: [ContextMenuItem]) in
+        |> map { [weak self = self] status, peer, videoQualityState -> (items: [ContextMenuItem], topItems: [ContextMenuItem]) in
             guard let status = status, let strongSelf = self else {
                 return ([], [])
             }
@@ -3556,7 +3556,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             
             if isSettings {
                 let sliderValuePromise = ValuePromise<Double?>(nil)
-                topItems.append(.custom(SliderContextItem(title: strongSelf.presentationData.strings.Gallery_VideoSettings_SpeedControlTitle, minValue: 0.2, maxValue: 2.5, value: status.baseRate, valueChanged: { [weak self] newValue, _ in
+                topItems.append(.custom(SliderContextItem(title: strongSelf.presentationData.strings.Gallery_VideoSettings_SpeedControlTitle, minValue: 0.2, maxValue: 2.5, value: status.baseRate, valueChanged: { [weak self = self] newValue, _ in
                     guard let strongSelf = self, let videoNode = strongSelf.videoNode else {
                         return
                     }
@@ -3667,7 +3667,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                                 } else {
                                     return UIImage()
                                 }
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.default)
                                 
                                 guard let self, let videoNode = self.videoNode else {
@@ -3747,7 +3747,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                                     
                                     items.append(.action(ContextMenuActionItem(text: title, textLayout: .secondLineWithValue(fileSizeString), icon: { _ in
                                         return nil
-                                    }, action: { [weak self] c, _ in
+                                    }, action: { [weak self = self] c, _ in
                                         c?.dismiss(result: .default, completion: nil)
                                         
                                         guard let self else {
@@ -3811,7 +3811,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                             switch self.fetchStatus {
                             case .Local:
                                 let _ = (SaveToCameraRoll.saveToCameraRoll(context: self.context, userLocation: .peer(message.id.peerId), mediaReference: .message(message: MessageReference(message), media: file))
-                                |> deliverOnMainQueue).start(completed: { [weak self] in
+                                |> deliverOnMainQueue).start(completed: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -3836,7 +3836,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 }
                 if let (message, _, _) = strongSelf.contentInfo() {
                     let context = strongSelf.context
-                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor)}, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor)}, action: { [weak self = self] _, f in
                         guard let strongSelf = self, let peer = peer else {
                             return
                         }
@@ -3864,11 +3864,11 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     if let video = image.video {
                         videoReference = .message(message: MessageReference(message), media: video)
                     }
-                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Gallery_SaveImage, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Download"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Gallery_SaveImage, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Download"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self = self] _, f in
                         f(.default)
                         
                         let _ = (SaveToCameraRoll.saveToCameraRoll(context: context, userLocation: .peer(message.id.peerId), mediaReference: .message(message: MessageReference(message), media: image), video: videoReference)
-                        |> deliverOnMainQueue).start(completed: { [weak self] in
+                        |> deliverOnMainQueue).start(completed: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -3895,7 +3895,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                                     if !presentationData.theme.overallDarkAppearance {
                                         presentationData = presentationData.withUpdated(theme: defaultDarkColorPresentationTheme)
                                     }
-                                    let actionSheet = OpenInOptionsScreen(context: strongSelf.context, forceTheme: presentationData.theme, item: item, openUrl: { [weak self] url in
+                                    let actionSheet = OpenInOptionsScreen(context: strongSelf.context, forceTheme: presentationData.theme, item: item, openUrl: { [weak self = self] url in
                                         if let strongSelf = self {
                                             strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: true, presentationData: presentationData, navigationController: strongSelf.baseNavigationController(), dismissInput: {})
                                         }
@@ -3909,7 +3909,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 }
                 
                 if let peer, let (message, _, _) = strongSelf.contentInfo(), canSendMessagesToPeer(peer) {
-                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Conversation_ContextMenuReply, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.contextMenu.primaryColor)}, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Conversation_ContextMenuReply, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.contextMenu.primaryColor)}, action: { [weak self = self] _, f in
                         if let self, let navigationController = self.baseNavigationController() {
                             self.beginCustomDismiss(.simpleAnimation)
                             
@@ -3974,7 +3974,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }
         let _ = (signal
-        |> deliverOnMainQueue).start(next: { [weak self] packs in
+        |> deliverOnMainQueue).start(next: { [weak self = self] packs in
             guard let strongSelf = self, !packs.isEmpty else {
                 return
             }
@@ -3997,7 +3997,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                         }), in: .window(.root))
                     }
                 }
-            }, dismissed: { [weak self] in
+            }, dismissed: { [weak self = self] in
                 self?.isInteractingPromise.set(false)
             })
             (baseNavigationController?.topViewController as? ViewController)?.present(controller, in: .window(.root), with: nil)
@@ -4049,7 +4049,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 title: self.isPlaying ? strings.KeyCommand_Pause : strings.KeyCommand_Play,
                 input: " ",
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.footerContentNode.playbackControl?()
                 }
             )
@@ -4060,7 +4060,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 title: strings.KeyCommand_SeekBackward,
                 input: UIKeyCommand.inputLeftArrow,
                 modifiers: [.shift],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.footerContentNode.seekBackward?(5)
                 }
             )
@@ -4070,7 +4070,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 title: strings.KeyCommand_SeekForward,
                 input: UIKeyCommand.inputRightArrow,
                 modifiers: [.shift],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.footerContentNode.seekForward?(5)
                 }
             )
@@ -4081,7 +4081,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 title: strings.KeyCommand_Share,
                 input: "S",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.footerContentNode.actionButtonPressed()
                 }
             )
@@ -4092,7 +4092,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                     title: strings.KeyCommand_SwitchToPIP,
                     input: "P",
                     modifiers: [.command],
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.pictureInPictureButtonPressed()
                     }
                 )
@@ -4103,7 +4103,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
                 KeyShortcut(
                     input: "\u{8}",
                     modifiers: [],
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.footerContentNode.deleteButtonPressed()
                     }
                 )

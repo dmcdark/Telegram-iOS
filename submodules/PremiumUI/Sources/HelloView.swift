@@ -164,7 +164,7 @@ final class HelloView: UIView, PhoneDemoDecorationView {
         }
         
         let transition = ContainedViewLayoutTransition.animated(duration: 0.3, curve: .linear)
-        transition.updateAlpha(layer: self.containerView.layer, alpha: visible ? 1.0 : 0.0, completion: { [weak self] finished in
+        transition.updateAlpha(layer: self.containerView.layer, alpha: visible ? 1.0 : 0.0, completion: { [weak self = self] finished in
             if let strongSelf = self, finished && !visible && !strongSelf.visible {
                 for view in strongSelf.containerView.subviews {
                     view.removeFromSuperview()

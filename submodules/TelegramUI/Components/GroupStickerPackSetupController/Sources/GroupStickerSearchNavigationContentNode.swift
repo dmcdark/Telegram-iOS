@@ -96,16 +96,16 @@ final class GroupStickerSearchNavigationContentNode: NavigationBarContentNode, I
         self.backgroundContainer.contentView.addSubview(self.close.background)
         self.close.background.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onCloseTapGesture(_:))))
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.queryUpdated?(query)
         }
         
-        updateActivity({ [weak self] value in
+        updateActivity({ [weak self = self] value in
             guard let self else {
                 return
             }

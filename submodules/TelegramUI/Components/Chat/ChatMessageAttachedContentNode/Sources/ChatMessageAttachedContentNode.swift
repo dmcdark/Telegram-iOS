@@ -174,7 +174,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
         self.currentProgressDisposable?.dispose()
         self.currentProgressDisposable = (progress.get()
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
             guard let self else {
                 return
             }
@@ -193,7 +193,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
         let makeActionButtonLayout = ChatMessageAttachedContentButtonNode.asyncLayout(self.actionButton)
         let makeStatusLayout = ChatMessageDateAndStatusNode.asyncLayout(self.statusNode)
         
-        return { [weak self] presentationData, automaticDownloadSettings, associatedData, attributes, context, controllerInteraction, message, messageRead, chatLocation, title, titleBadge, subtitle, text, entities, mediaAndFlags, mediaBadge, actionIcon, actionTitle, displayLine, layoutConstants, preparePosition, constrainedSize, animationCache, animationRenderer in
+        return { [weak self = self] presentationData, automaticDownloadSettings, associatedData, attributes, context, controllerInteraction, message, messageRead, chatLocation, title, titleBadge, subtitle, text, entities, mediaAndFlags, mediaBadge, actionIcon, actionTitle, displayLine, layoutConstants, preparePosition, constrainedSize, animationCache, animationRenderer in
             let isPreview = presentationData.isPreview
             let fontSize: CGFloat
             if message.adAttribute != nil {
@@ -1389,7 +1389,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
                                     }
                                     controllerInteraction.playMessageEffect(message)
                                 }
-                                contentMedia.activateLocalContent = { [weak self] mode in
+                                contentMedia.activateLocalContent = { [weak self = self] mode in
                                     guard let self else {
                                         return
                                     }
@@ -1432,7 +1432,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
                                 self.contentFile?.removeFromSupernode()
                                 self.contentFile = contentFile
                                 
-                                contentFile.activateLocalContent = { [weak self] in
+                                contentFile.activateLocalContent = { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1472,7 +1472,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
                                 self.transformContainer.addSubnode(actionButton)
                                 actionButton.frame = actionButtonFrame
                                 
-                                actionButton.pressed = { [weak self] in
+                                actionButton.pressed = { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1517,14 +1517,14 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
                                 self.statusNode = statusNode
                                 self.addSubnode(statusNode)
                                 
-                                statusNode.reactionSelected = { [weak self] _, value, sourceView in
+                                statusNode.reactionSelected = { [weak self = self] _, value, sourceView in
                                     guard let self, let message = self.message else {
                                         return
                                     }
                                     controllerInteraction.updateMessageReaction(message, .reaction(value), false, sourceView)
                                 }
                                 
-                                statusNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+                                statusNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
                                     guard let self, let message = self.message else {
                                         gesture?.cancel()
                                         return
@@ -1750,7 +1750,7 @@ public final class ChatMessageAttachedContentNode: ASDisplayNode {
             self.isHighlighted = isHighlighted
             
             if isHighlighted {
-                /*self.highlightTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false, block: { [weak self] timer in
+                /*self.highlightTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.05, repeats: false, block: { [weak self = self] timer in
                     guard let self else {
                         return
                     }

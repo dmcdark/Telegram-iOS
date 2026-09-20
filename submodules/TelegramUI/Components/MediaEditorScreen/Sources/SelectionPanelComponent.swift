@@ -67,7 +67,7 @@ final class SelectionPanelComponent: Component {
                 self.addSubview(self.imageNode.view)
                 self.addSubview(self.checkNode.view)
                 
-                self.checkNode.valueChanged = { [weak self] value in
+                self.checkNode.valueChanged = { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -98,7 +98,7 @@ final class SelectionPanelComponent: Component {
                         case let .asset(asset):
                             imageSignal = assetImage(asset: asset, targetSize:CGSize(width: 128.0 * UIScreenScale, height: 128.0 * UIScreenScale), exact: false, synchronous: true)
                         }
-                        self.imageNode.contentUpdated = { [weak self] image in
+                        self.imageNode.contentUpdated = { [weak self = self] image in
                             if let self {
                                 if self.backgroundNode.image == nil {
                                     if let image, image.size.width > image.size.height {
@@ -197,7 +197,7 @@ final class SelectionPanelComponent: Component {
             self.backgroundView.mask = self.backgroundMaskView
             
             let reorderRecognizer = ReorderGestureRecognizer(
-                shouldBegin: { [weak self] point in
+                shouldBegin: { [weak self = self] point in
                     guard let self, let item = self.item(at: point) else {
                         return (allowed: false, requiresLongPress: false, item: nil)
                     }
@@ -206,19 +206,19 @@ final class SelectionPanelComponent: Component {
                 },
                 willBegin: { point in
                 },
-                began: { [weak self] item in
+                began: { [weak self = self] item in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: item)
                 },
-                ended: { [weak self] in
+                ended: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: nil)
                 },
-                moved: { [weak self] distance in
+                moved: { [weak self = self] distance in
                     guard let self else {
                         return
                     }
@@ -499,7 +499,7 @@ final class SelectionPanelComponent: Component {
                     
                     itemTransition = .immediate
                 }
-                itemView.toggleSelection = { [weak self] in
+                itemView.toggleSelection = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -585,7 +585,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -600,7 +600,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

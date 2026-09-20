@@ -366,7 +366,7 @@ public final class ChatControllerInteraction: ChatControllerInteractionProtocol 
             
             if let isOpeningMediaSignal = self.isOpeningMediaSignal {
                 self.isOpeningMediaValue = true
-                self.isOpeningMediaDisposable = (isOpeningMediaSignal |> filter { !$0 } |> take(1) |> timeout(1.0, queue: .mainQueue(), alternate: .single(false)) |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                self.isOpeningMediaDisposable = (isOpeningMediaSignal |> filter { !$0 } |> take(1) |> timeout(1.0, queue: .mainQueue(), alternate: .single(false)) |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }

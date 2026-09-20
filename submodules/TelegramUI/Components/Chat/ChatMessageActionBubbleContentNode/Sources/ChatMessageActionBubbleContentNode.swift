@@ -109,7 +109,7 @@ public class ChatMessageActionBubbleContentNode: ChatMessageBubbleContentNode {
     
     override public func transitionNode(messageId: EngineMessage.Id, media: EngineRawMedia, adjustRect: Bool) -> (ASDisplayNode, CGRect, () -> (UIView?, UIView?))? {
         if let imageNode = self.imageNode, self.item?.message.id == messageId {
-            return (imageNode, imageNode.bounds, { [weak self] in
+            return (imageNode, imageNode.bounds, { [weak self = self] in
                 guard let strongSelf = self, let imageNode = strongSelf.imageNode else {
                     return (nil, nil)
                 }
@@ -512,7 +512,7 @@ public class ChatMessageActionBubbleContentNode: ChatMessageBubbleContentNode {
                 }
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (CGSize(width: boundingWidth, height: backgroundSize.height + contentOuterInsets.top + contentOuterInsets.bottom), { [weak self] animation, synchronousLoads, _ in
+                    return (CGSize(width: boundingWidth, height: backgroundSize.height + contentOuterInsets.top + contentOuterInsets.bottom), { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             
@@ -557,7 +557,7 @@ public class ChatMessageActionBubbleContentNode: ChatMessageBubbleContentNode {
                                     let mediaManager = item.context.sharedContext.mediaManager
                                     let videoNode = UniversalVideoNode(context: item.context, postbox: item.context.account.postbox, audioSession: mediaManager.audioSession, manager: mediaManager.universalVideoManager, decoration: GalleryVideoDecoration(), content: videoContent, priority: .secondaryOverlay)
                                     videoNode.isUserInteractionEnabled = false
-                                    videoNode.ownsContentNodeUpdated = { [weak self] owns in
+                                    videoNode.ownsContentNodeUpdated = { [weak self = self] owns in
                                         if let strongSelf = self {
                                             strongSelf.videoNode?.isHidden = !owns
                                         }

@@ -136,7 +136,7 @@ public final class SharedWakeupManager {
             }
         }
         |> deliverOnMainQueue
-        |> distinctUntilChanged).startStrict(next: { [weak self] isEnabled in
+        |> distinctUntilChanged).startStrict(next: { [weak self = self] isEnabled in
             guard let self else {
                 return
             }
@@ -144,7 +144,7 @@ public final class SharedWakeupManager {
         })
         
         self.inForegroundDisposable = (inForeground
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -169,7 +169,7 @@ public final class SharedWakeupManager {
         })
         
         self.hasActiveAudioSessionDisposable = (hasActiveAudioSession
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -264,7 +264,7 @@ public final class SharedWakeupManager {
             }
             return combineLatest(signals)
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] accountsAndTasks in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] accountsAndTasks in
             guard let strongSelf = self else {
                 return
             }
@@ -301,7 +301,7 @@ public final class SharedWakeupManager {
             }
         }
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] pendingMediaUploadsByKey in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] pendingMediaUploadsByKey in
             guard let strongSelf = self else {
                 return
             }
@@ -338,7 +338,7 @@ public final class SharedWakeupManager {
             }
         }
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] pendingStoryUploadStatusesByKey in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] pendingStoryUploadStatusesByKey in
             guard let strongSelf = self else {
                 return
             }
@@ -381,7 +381,7 @@ public final class SharedWakeupManager {
 
         if shouldHaveTask {
             if !hadTask && self.pendingBackgroundProcessingTaskTimer == nil {
-                let timer = SwiftSignalKit.Timer(timeout: backgroundTaskSubmissionDelay, repeat: false, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: backgroundTaskSubmissionDelay, repeat: false, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -422,7 +422,7 @@ public final class SharedWakeupManager {
 
         if shouldHaveTask {
             if !hadTask && self.pendingBackgroundStoryProcessingTaskTimer == nil {
-                let timer = SwiftSignalKit.Timer(timeout: backgroundTaskSubmissionDelay, repeat: false, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: backgroundTaskSubmissionDelay, repeat: false, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -540,7 +540,7 @@ public final class SharedWakeupManager {
         self.backgroundProcessingTaskLaunched = false
         self.backgroundProcessingTaskCancellationRequestedByApp = false
         
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: uploadTaskId, using: nil, launchHandler: { [weak self] task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: uploadTaskId, using: nil, launchHandler: { [weak self = self] task in
             guard let task = task as? BGContinuedProcessingTask else {
                 return
             }
@@ -550,7 +550,7 @@ public final class SharedWakeupManager {
                 return
             }
             
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -561,7 +561,7 @@ public final class SharedWakeupManager {
             
             var wasExpired = false
             
-            task.expirationHandler = { [weak self] in
+            task.expirationHandler = { [weak self = self] in
                 wasExpired = true
                 
                 Queue.mainQueue().async {
@@ -591,7 +591,7 @@ public final class SharedWakeupManager {
                 }
             }
             
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     task.updateTitle(task.title, subtitle: presentationData.strings.BackgroundTasks_MediaFinished)
                     task.setTaskCompleted(success: true)
@@ -716,7 +716,7 @@ public final class SharedWakeupManager {
         self.backgroundStoryProcessingTaskLaunched = false
         self.backgroundStoryProcessingTaskCancellationRequestedByApp = false
         
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: uploadTaskId, using: nil, launchHandler: { [weak self] task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: uploadTaskId, using: nil, launchHandler: { [weak self = self] task in
             guard let task = task as? BGContinuedProcessingTask else {
                 return
             }
@@ -726,7 +726,7 @@ public final class SharedWakeupManager {
                 return
             }
             
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -737,7 +737,7 @@ public final class SharedWakeupManager {
             
             var wasExpired = false
             
-            task.expirationHandler = { [weak self] in
+            task.expirationHandler = { [weak self = self] in
                 wasExpired = true
                 
                 Queue.mainQueue().async {
@@ -767,7 +767,7 @@ public final class SharedWakeupManager {
                 }
             }
             
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     task.updateTitle(task.title, subtitle: presentationData.strings.BackgroundTasks_StoryFinished)
                     task.setTaskCompleted(success: true)
@@ -895,7 +895,7 @@ public final class SharedWakeupManager {
         self.allowBackgroundTimeExtensionDeadline = CFAbsoluteTimeGetCurrent() + timeout
         
         self.allowBackgroundTimeExtensionDeadlineTimer?.invalidate()
-        self.allowBackgroundTimeExtensionDeadlineTimer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self] in
+        self.allowBackgroundTimeExtensionDeadlineTimer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -907,7 +907,7 @@ public final class SharedWakeupManager {
         
         if extendNow {
             if self.activeExplicitExtensionTimer == nil {
-                let activeExplicitExtensionTimer = SwiftSignalKit.Timer(timeout: 20.0, repeat: false, completion: { [weak self] in
+                let activeExplicitExtensionTimer = SwiftSignalKit.Timer(timeout: 20.0, repeat: false, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -949,7 +949,7 @@ public final class SharedWakeupManager {
             timer.invalidate()
             self.currentExternalCompletion = nil
         }
-        let timer = SwiftSignalKit.Timer(timeout: timeout - 5.0, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: timeout - 5.0, repeat: false, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -966,7 +966,7 @@ public final class SharedWakeupManager {
         timer.start()
         
         self.currentExternalCompletionValidationTimer?.invalidate()
-        let validationTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+        let validationTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1042,7 +1042,7 @@ public final class SharedWakeupManager {
                     
                     if self.currentTask == nil {
                         var actualTaskId: UIBackgroundTaskIdentifier?
-                        let handleExpiration: () -> Void = { [weak self] in
+                        let handleExpiration: () -> Void = { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }

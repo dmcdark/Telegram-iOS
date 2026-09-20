@@ -311,7 +311,7 @@ final class ChatSendMessageContextScreenComponent: Component {
             let environment = environment[EnvironmentType.self].value
             
             if let previousEnvironment = self.environment, previousEnvironment.inputHeight != 0.0, environment.inputHeight == 0.0 {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -360,7 +360,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                     self.mediaCaptionIsAbove = editMessage.mediaCaptionIsAbove?.0 ?? false
                 }
                 
-                component.gesture?.externalUpdated = { [weak self] view, location in
+                component.gesture?.externalUpdated = { [weak self = self] view, location in
                     guard let self, let actionsStackNode = self.actionsStackNode else {
                         return
                     }
@@ -375,7 +375,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                     }
                     actionsStackNode.highlightGestureMoved(location: self.convert(localPoint, to: actionsStackNode.view))
                 }
-                component.gesture?.externalEnded = { [weak self] viewAndLocation in
+                component.gesture?.externalEnded = { [weak self = self] viewAndLocation in
                     guard let self, let actionsStackNode = self.actionsStackNode else {
                         return
                     }
@@ -532,7 +532,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                         return nil
                     }, iconAnimation: ContextMenuActionItem.IconAnimation(
                         name: !mediaCaptionIsAbove ? "message_preview_sort_above" : "message_preview_sort_below"
-                    ), action: { [weak self] _, _ in
+                    ), action: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -559,7 +559,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                         text: environment.strings.Conversation_SendMessage_SendSilently,
                         icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Menu/SilentIcon"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, _ in
+                        }, action: { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -581,7 +581,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                             text: environment.strings.Conversation_SendMessage_SendWhenOnline,
                             icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Menu/WhenOnlineIcon"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, _ in
+                            }, action: { [weak self = self] _, _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -604,7 +604,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                         text: reminders ? environment.strings.Conversation_SendMessage_SetReminder: environment.strings.Conversation_SendMessage_ScheduleMessage,
                         icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Menu/ScheduleIcon"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, _ in
+                        }, action: { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -636,7 +636,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                         textLayout: titleLayout,
                         icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Media Grid/Paid"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, _ in
+                        }, action: { [weak self = self] _, _ in
                             guard let self, let component = self.component, case let .sendMessage(params) = component.params else {
                                 return
                             }
@@ -658,7 +658,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                     text: environment.strings.Chat_SendMessageMenu_EditMessage,
                     icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, _ in
+                    }, action: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -700,7 +700,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                     },
                     requestDismiss: { _ in
                     },
-                    requestUpdate: { [weak self] transition in
+                    requestUpdate: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -880,7 +880,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                                 hideBackground: false
                             )
                         },
-                        isExpandedUpdated: { [weak self] transition in
+                        isExpandedUpdated: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
@@ -888,7 +888,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                                 self.state?.updated(transition: ComponentTransition(transition))
                             }
                         },
-                        requestLayout: { [weak self] transition in
+                        requestLayout: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
@@ -896,14 +896,14 @@ final class ChatSendMessageContextScreenComponent: Component {
                                 self.state?.updated(transition: ComponentTransition(transition))
                             }
                         },
-                        requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                        requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                             guard let self else {
                                 return
                             }
                             self.requestUpdateOverlayWantsToBeBelowKeyboard(transition: transition)
                         }
                     )
-                    reactionContextNode.reactionSelected = { [weak self] updateReaction, _ in
+                    reactionContextNode.reactionSelected = { [weak self = self] updateReaction, _ in
                         guard let self, let component = self.component, let reactionContextNode = self.reactionContextNode else {
                             return
                         }
@@ -928,7 +928,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                         }
                         
                         self.messageEffectDisposable.set((messageEffect
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] messageEffect in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageEffect in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -998,7 +998,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                             
                             self.loadEffectAnimationDisposable?.dispose()
                             self.isLoadingEffectAnimationTimerDisposable?.dispose()
-                            self.isLoadingEffectAnimationTimerDisposable = (Signal<Never, NoError>.complete() |> delay(0.2, queue: .mainQueue()) |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+                            self.isLoadingEffectAnimationTimerDisposable = (Signal<Never, NoError>.complete() |> delay(0.2, queue: .mainQueue()) |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1055,7 +1055,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                             #endif*/
                             
                             self.loadEffectAnimationDisposable = (loadEffectAnimationSignal
-                            |> deliverOnMainQueue).start(completed: { [weak self] in
+                            |> deliverOnMainQueue).start(completed: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1120,7 +1120,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                             })
                         }))
                     }
-                    reactionContextNode.premiumReactionsSelected = { [weak self] _ in
+                    reactionContextNode.premiumReactionsSelected = { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1145,7 +1145,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                                 linkAction: nil
                             ),
                             elevatedLayout: false,
-                            action: { [weak self] action in
+                            action: { [weak self = self] action in
                                 guard let self, let component = self.component else {
                                     return false
                                 }
@@ -1397,7 +1397,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                 if previousAnimationState.key == .initial {
                     if environment.inputHeight != 0.0 {
                         if self.initializationDisplayLink == nil {
-                            self.initializationDisplayLink = SharedDisplayLinkDriver.shared.add({ [weak self] _ in
+                            self.initializationDisplayLink = SharedDisplayLinkDriver.shared.add({ [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1441,7 +1441,7 @@ final class ChatSendMessageContextScreenComponent: Component {
                 backgroundAlpha = 0.0
             }
             
-            transition.setAlpha(view: self.backgroundView, alpha: backgroundAlpha, completion: { [weak self] _ in
+            transition.setAlpha(view: self.backgroundView, alpha: backgroundAlpha, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -1556,7 +1556,7 @@ public class ChatSendMessageContextScreen: ViewControllerComponentContainer, Cha
         self.isActiveDisposable = (context.sharedContext.applicationBindings.applicationInForeground
         |> filter { !$0 }
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1596,7 +1596,7 @@ public class ChatSendMessageContextScreen: ViewControllerComponentContainer, Cha
             self.processedDidDisappear = true
             
             if let componentView = self.node.hostView.componentView as? ChatSendMessageContextScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     if let self {
                         self.superDismiss()
                     }

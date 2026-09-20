@@ -70,7 +70,7 @@ public final class DrawingTextEntityView: DrawingEntityView, UITextViewDelegate 
             return EmojiTextAttachmentView(context: context, userLocation: .other, emoji: emoji, file: emoji.file, cache: context.animationCache, renderer: context.animationRenderer, placeholderColor: UIColor.white.withAlphaComponent(0.12), pointSize: CGSize(width: pointSize, height: pointSize))
         }
         
-        self.textView.onPaste = { [weak self] in
+        self.textView.onPaste = { [weak self = self] in
             return self?.onPaste() ?? false
         }
         
@@ -203,7 +203,7 @@ public final class DrawingTextEntityView: DrawingEntityView, UITextViewDelegate 
             if let current = self.customEmojiContainerView {
                 customEmojiContainerView = current
             } else {
-                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self] emoji in
+                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self = self] emoji in
                     guard let strongSelf = self, let emojiViewProvider = strongSelf.emojiViewProvider else {
                         return nil
                     }
@@ -581,7 +581,7 @@ public final class DrawingTextEntityView: DrawingEntityView, UITextViewDelegate 
             self.updateEditingPosition(animated: animated)
         }
         
-        self.textView.onLayoutUpdate = { [weak self] in
+        self.textView.onLayoutUpdate = { [weak self = self] in
             self?.updateEntities()
         }
         
@@ -701,7 +701,7 @@ final class DrawingTextEntitySelectionView: DrawingEntitySelectionView {
             self.layer.addSublayer(handle)
         }
                 
-        self.snapTool.onSnapUpdated = { [weak self] type, snapped in
+        self.snapTool.onSnapUpdated = { [weak self = self] type, snapped in
             if let self, let entityView = self.entityView {
                 entityView.onSnapUpdated(type, snapped)
             }

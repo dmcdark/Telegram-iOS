@@ -130,11 +130,11 @@ final class CallBackgroundLayer: MetalEngineSubjectLayer, MetalEngineSubject {
         
         self.blurredLayer.cloneLayers.append(self.externalBlurredLayer)
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
-            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(30), { [weak self] timeDelta in
+            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(30), { [weak self = self] timeDelta in
                 guard let self else {
                     return
                 }
@@ -149,7 +149,7 @@ final class CallBackgroundLayer: MetalEngineSubjectLayer, MetalEngineSubject {
                 self.setNeedsUpdate()
             })
         }
-        self.didExitHierarchy = { [weak self] in
+        self.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }

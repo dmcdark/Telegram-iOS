@@ -109,7 +109,7 @@ final class StoryInteractionGuideComponent: Component {
                             text: strings.Story_Guide_ForwardDescription,
                             animationName: "story_forward",
                             isPlaying: self.currentIndex == 0,
-                            playbackCompleted: { [weak self] in
+                            playbackCompleted: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -128,7 +128,7 @@ final class StoryInteractionGuideComponent: Component {
                             text: strings.Story_Guide_PauseDescription,
                             animationName: "story_pause",
                             isPlaying: self.currentIndex == 1,
-                            playbackCompleted: { [weak self] in
+                            playbackCompleted: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -147,7 +147,7 @@ final class StoryInteractionGuideComponent: Component {
                             text: strings.Story_Guide_BackDescription,
                             animationName: "story_back",
                             isPlaying: self.currentIndex == 2,
-                            playbackCompleted: { [weak self] in
+                            playbackCompleted: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -166,7 +166,7 @@ final class StoryInteractionGuideComponent: Component {
                             text: strings.Story_Guide_MoveDescription,
                             animationName: "story_move",
                             isPlaying: self.currentIndex == 3,
-                            playbackCompleted: { [weak self] in
+                            playbackCompleted: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -206,7 +206,7 @@ final class StoryInteractionGuideComponent: Component {
                 transition: .immediate,
                 component: AnyComponent(Button(
                     content: AnyComponent(MultilineTextComponent(text: .plain(NSAttributedString(string: strings.Story_Guide_Proceed, font: Font.semibold(17.0), textColor: .white, paragraphAlignment: .center)))),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.handleTap()
                     }
                 )),
@@ -369,7 +369,7 @@ private final class GuideItemComponent: Component {
                 if component.isPlaying && !self.isPlaying {
                     self.isPlaying = true
                     Queue.mainQueue().justDispatch {
-                        let completionBlock = { [weak self] in
+                        let completionBlock = { [weak self = self] in
                             guard let self else {
                                 return
                             }

@@ -74,7 +74,7 @@ final class ChatListStore {
         self.userNames = userNames ?? UserNamesStore()
         self.coalesceUpdates = coalesceUpdates
         let mainList: ChatList = .chatListMain
-        loadTasks[.main] = Task { [weak self] in
+        loadTasks[.main] = Task { [weak self = self] in
             await self?.loadOnePage(for: mainList)
         }
     }
@@ -84,7 +84,7 @@ final class ChatListStore {
         guard case .failed = loadStates[key] ?? .notStarted else { return }
         let list = currentFolder
         loadTasks[key]?.cancel()
-        loadTasks[key] = Task { [weak self] in
+        loadTasks[key] = Task { [weak self = self] in
             await self?.loadOnePage(for: list)
         }
     }
@@ -113,7 +113,7 @@ final class ChatListStore {
         displayLimits[key] = currentLimit + displayPageSize
         let list = currentFolder
         loadTasks[key]?.cancel()
-        loadTasks[key] = Task { [weak self] in
+        loadTasks[key] = Task { [weak self = self] in
             await self?.loadOnePage(for: list)
         }
     }
@@ -166,7 +166,7 @@ final class ChatListStore {
         let state = loadStates[key] ?? .notStarted
         if case .notStarted = state {
             loadStates[key] = .loadingFirstPage
-            loadTasks[key] = Task { [weak self] in
+            loadTasks[key] = Task { [weak self = self] in
                 await self?.loadOnePage(for: list)
             }
         }
@@ -287,7 +287,7 @@ final class ChatListStore {
         }
         guard !reprojectPending else { return }
         reprojectPending = true
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let self else { return }
             guard self.reprojectPending else { return }
             self.reproject()

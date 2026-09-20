@@ -48,7 +48,7 @@ final class TrendingTopItemNode: ASDisplayNode {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -138,7 +138,7 @@ final class TrendingTopItemNode: ASDisplayNode {
             } else {
                 self.imageNode.setSignal(chatMessageAnimatedSticker(postbox: account.postbox, userLocation: .other, file: file, small: false, size: fittedDimensions, synchronousLoad: synchronousLoads), attemptSynchronously: synchronousLoads)
             }
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 self?.imageNode.alpha = 0.0
             }
             animationNode.setup(source: AnimatedStickerResourceSource(account: account, resource: file.resource, isVideo: file.isVideoSticker), width: Int(fittedDimensions.width), height: Int(fittedDimensions.height), playbackMode: .loop, mode: .cached)

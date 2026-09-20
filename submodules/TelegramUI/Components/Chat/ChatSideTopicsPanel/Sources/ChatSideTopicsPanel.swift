@@ -231,14 +231,14 @@ public final class ChatSideTopicsPanel: Component {
                 self.containerButton.addGestureRecognizer(tapRecognizer)
                 tapRecognizer.isEnabled = false
                 
-                self.containerNode.activated = { [weak self] gesture, _ in
+                self.containerNode.activated = { [weak self = self] gesture, _ in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.contextGesture?(gesture, self.extractedContainerNode)
                 }
                 
-                self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+                self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -373,7 +373,7 @@ public final class ChatSideTopicsPanel: Component {
                 self.tapRecognizer?.isEnabled = component.action != nil
                 
                 self.containerNode.isGestureEnabled = component.contextGesture != nil
-                self.containerNode.activated = { [weak self] gesture, _ in
+                self.containerNode.activated = { [weak self = self] gesture, _ in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -670,14 +670,14 @@ public final class ChatSideTopicsPanel: Component {
                 self.containerButton.addGestureRecognizer(tapRecognizer)
                 tapRecognizer.isEnabled = false
                 
-                self.containerNode.activated = { [weak self] gesture, _ in
+                self.containerNode.activated = { [weak self = self] gesture, _ in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.contextGesture?(gesture, self.extractedContainerNode)
                 }
                 
-                self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+                self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -811,7 +811,7 @@ public final class ChatSideTopicsPanel: Component {
                 self.tapRecognizer?.isEnabled = component.action != nil
                 
                 self.containerNode.isGestureEnabled = component.contextGesture != nil
-                self.containerNode.activated = { [weak self] gesture, _ in
+                self.containerNode.activated = { [weak self = self] gesture, _ in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -1049,7 +1049,7 @@ public final class ChatSideTopicsPanel: Component {
             self.addSubview(self.containerNode.view)
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let topScale: CGFloat = (self.bounds.width - 1.0) / self.bounds.width
                     let maxScale: CGFloat = (self.bounds.width + 1.0) / self.bounds.width
@@ -1063,7 +1063,7 @@ public final class ChatSideTopicsPanel: Component {
                         let transition: ContainedViewLayoutTransition = .immediate
                         transition.updateTransformScale(layer: self.layer, scale: 1.0)
                         
-                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1725,7 +1725,7 @@ public final class ChatSideTopicsPanel: Component {
                 }
                 
                 self.itemsDisposable = (threadListSignal
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerId, chatList in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerId, chatList in
                     guard let self, let _ = self.component else {
                         return
                     }
@@ -1850,7 +1850,7 @@ public final class ChatSideTopicsPanel: Component {
                 } else {
                     itemTransition = .immediate
                     animateIn = true
-                    itemView = TabItemView(context: component.context, action: { [weak self] in
+                    itemView = TabItemView(context: component.context, action: { [weak self = self] in
                         guard let self, let peerId = self.peerId, let component = self.component else {
                             return
                         }
@@ -1952,7 +1952,7 @@ public final class ChatSideTopicsPanel: Component {
                         kind: component.kind,
                         theme: component.theme,
                         strings: component.strings,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1968,7 +1968,7 @@ public final class ChatSideTopicsPanel: Component {
                         kind: component.kind,
                         theme: component.theme,
                         strings: component.strings,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1994,7 +1994,7 @@ public final class ChatSideTopicsPanel: Component {
                 }
                 scrollId = .topic(topicId)
                 
-                let itemAction: (() -> Void)? = self.isReordering ? nil : { [weak self] in
+                let itemAction: (() -> Void)? = self.isReordering ? nil : { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -2009,7 +2009,7 @@ public final class ChatSideTopicsPanel: Component {
                 }
                 var itemContextGesture: ((ContextGesture, ContextExtractedContentContainingNode) -> Void)?
                 if !self.isReordering, case .monoforum = component.kind {
-                    itemContextGesture = { [weak self] gesture, sourceNode in
+                    itemContextGesture = { [weak self = self] gesture, sourceNode in
                         Task { @MainActor in
                             guard let self, let peerId = self.peerId, let component = self.component else {
                                 return
@@ -2039,7 +2039,7 @@ public final class ChatSideTopicsPanel: Component {
                             ).get()
                             
                             if let threadInfo, threadInfo.isMessageFeeRemoved {
-                                items.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ReinstatePaidMessages, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Rate"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                                items.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ReinstatePaidMessages, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Rate"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                                     guard let self, let peerId = self.peerId, let component = self.component else {
                                         return
                                     }
@@ -2053,12 +2053,12 @@ public final class ChatSideTopicsPanel: Component {
                             if !items.isEmpty {
                                 items.append(.separator)
                             }
-                            items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChatList_Context_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, _ in
+                            items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChatList_Context_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, _ in
                                 guard let self else {
                                     return
                                 }
                                 
-                                c?.dismiss(completion: { [weak self] in
+                                c?.dismiss(completion: { [weak self = self] in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -2081,7 +2081,7 @@ public final class ChatSideTopicsPanel: Component {
                         }
                     }
                 } else if !self.isReordering {
-                    itemContextGesture = { [weak self] gesture, sourceNode in
+                    itemContextGesture = { [weak self = self] gesture, sourceNode in
                         guard let self, let peerId = self.peerId, let component = self.component else {
                             return
                         }
@@ -2121,7 +2121,7 @@ public final class ChatSideTopicsPanel: Component {
                             chatListController: controller,
                             joined: true,
                             canSelect: false,
-                            customEdit: { [weak self] contextController in
+                            customEdit: { [weak self = self] contextController in
                                 contextController.dismiss(completion: {
                                     guard let self, let peerId = self.peerId, let component = self.component, let threadData else {
                                         return
@@ -2136,7 +2136,7 @@ public final class ChatSideTopicsPanel: Component {
                                     component.controller()?.push(editController)
                                 })
                             },
-                            customPinUnpin: { [weak self] contextController in
+                            customPinUnpin: { [weak self = self] contextController in
                                 guard let self, let peerId = self.peerId, let component = self.component else {
                                     contextController.dismiss(completion: {})
                                     return
@@ -2154,7 +2154,7 @@ public final class ChatSideTopicsPanel: Component {
                                     
                                     switch error {
                                     case let .limitReached(count):
-                                        contextController?.dismiss(completion: { [weak self] in
+                                        contextController?.dismiss(completion: { [weak self = self] in
                                             guard let self, let component = self.component else {
                                                 return
                                             }
@@ -2169,13 +2169,13 @@ public final class ChatSideTopicsPanel: Component {
                                     }
                                 })
                             },
-                            reorder: { [weak self] in
+                            reorder: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
                                 self.updateIsReordering(isReordering: true)
                             },
-                            onDeleted: { [weak self] in
+                            onDeleted: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -2250,7 +2250,7 @@ public final class ChatSideTopicsPanel: Component {
                     itemSetId: AnyHashable(self.itemsContentVersion),
                     direction: component.location == .side ? .vertical : .horizontal,
                     insets: listContentInsets,
-                    reorderItems: { [weak self] fromIndex, toIndex in
+                    reorderItems: { [weak self = self] fromIndex, toIndex in
                         guard let self else {
                             return false
                         }
@@ -2293,7 +2293,7 @@ public final class ChatSideTopicsPanel: Component {
                         
                         return true
                     },
-                    onVisibleItemsUpdated: { [weak self] visibleItems, transition in
+                    onVisibleItemsUpdated: { [weak self = self] visibleItems, transition in
                         guard let self else {
                             return
                         }

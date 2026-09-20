@@ -147,7 +147,7 @@ final class GiftsListView: UIView {
             queue: Queue.mainQueue(),
             profileGifts.state,
             self.reorderedReferencesPromise.get()
-        ).startStrict(next: { [weak self] state, reorderedReferences in
+        ).startStrict(next: { [weak self = self] state, reorderedReferences in
             guard let self else {
                 return
             }
@@ -210,7 +210,7 @@ final class GiftsListView: UIView {
         self.addSubview(self.emptyResultsClippingView)
         
         let reorderRecognizer = ReorderGestureRecognizer(
-            shouldBegin: { [weak self] point in
+            shouldBegin: { [weak self = self] point in
                 guard let self, let (id, item) = self.item(at: point) else {
                     return (allowed: false, requiresLongPress: false, id: nil, item: nil)
                 }
@@ -218,19 +218,19 @@ final class GiftsListView: UIView {
             },
             willBegin: { point in
             },
-            began: { [weak self] item in
+            began: { [weak self = self] item in
                 guard let self else {
                     return
                 }
                 self.setReorderingItem(item: item)
             },
-            ended: { [weak self] in
+            ended: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.setReorderingItem(item: nil)
             },
-            moved: { [weak self] distance in
+            moved: { [weak self = self] distance in
                 guard let self else {
                     return
                 }
@@ -547,7 +547,7 @@ final class GiftsListView: UIView {
                             isPinned: !self.canSelect && product.pinnedToTop,
                             isEditing: self.isReordering && !self.isCollection,
                             mode: self.canSelect && !isAdded ? .select : .profile,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, !isAdded, let presentationData = self.currentParams?.presentationData else {
                                     return
                                 }
@@ -602,49 +602,49 @@ final class GiftsListView: UIView {
                                         allSubjects: allSubjects,
                                         index: index,
                                         profileGiftsContext: self.profileGifts,
-                                        updateSavedToProfile: { [weak self] reference, added in
+                                        updateSavedToProfile: { [weak self = self] reference, added in
                                             guard let self else {
                                                 return
                                             }
                                             self.profileGifts.updateStarGiftAddedToProfile(reference: reference, added: added)
                                         },
-                                        convertToStars: { [weak self] reference in
+                                        convertToStars: { [weak self = self] reference in
                                             guard let self else {
                                                 return
                                             }
                                             self.profileGifts.convertStarGift(reference: reference)
                                         },
-                                        dropOriginalDetails: { [weak self] reference in
+                                        dropOriginalDetails: { [weak self = self] reference in
                                             guard let self else {
                                                 return .complete()
                                             }
                                             return self.profileGifts.dropOriginalDetails(reference: reference)
                                         },
-                                        transferGift: { [weak self] prepaid, reference, peerId in
+                                        transferGift: { [weak self = self] prepaid, reference, peerId in
                                             guard let self else {
                                                 return .complete()
                                             }
                                             return self.profileGifts.transferStarGift(prepaid: prepaid, reference: reference, peerId: peerId)
                                         },
-                                        upgradeGift: { [weak self] formId, reference, keepOriginalInfo in
+                                        upgradeGift: { [weak self = self] formId, reference, keepOriginalInfo in
                                             guard let self else {
                                                 return .never()
                                             }
                                             return self.profileGifts.upgradeStarGift(formId: formId, reference: reference, keepOriginalInfo: keepOriginalInfo)
                                         },
-                                        buyGift: { [weak self] slug, peerId, price in
+                                        buyGift: { [weak self = self] slug, peerId, price in
                                             guard let self else {
                                                 return .never()
                                             }
                                             return self.profileGifts.buyStarGift(slug: slug, peerId: peerId, price: price)
                                         },
-                                        updateResellStars: { [weak self] reference, price in
+                                        updateResellStars: { [weak self = self] reference, price in
                                             guard let self else {
                                                 return .never()
                                             }
                                             return self.profileGifts.updateStarGiftResellPrice(reference: reference, price: price)
                                         },
-                                        togglePinnedToTop: { [weak self] reference, pinnedToTop in
+                                        togglePinnedToTop: { [weak self = self] reference, pinnedToTop in
                                             guard let self else {
                                                 return false
                                             }
@@ -670,7 +670,7 @@ final class GiftsListView: UIView {
                                             }
                                             return true
                                         },
-                                        shareStory: { [weak self] uniqueGift in
+                                        shareStory: { [weak self = self] uniqueGift in
                                             guard let self, let parentController = self.parentController else {
                                                 return
                                             }
@@ -686,7 +686,7 @@ final class GiftsListView: UIView {
                                     self.parentController?.push(controller)
                                 }
                             },
-                            contextAction: self.isReordering || self.canSelect ? nil : { [weak self] view, gesture in
+                            contextAction: self.isReordering || self.canSelect ? nil : { [weak self = self] view, gesture in
                                 guard let self else {
                                     return
                                 }
@@ -835,7 +835,7 @@ final class GiftsListView: UIView {
                             component: AnyComponent(MultilineTextComponent(text: .plain(buttonAttributedString)))
                         ),
                         isEnabled: true,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.addToCollection?()
                         }
                     )
@@ -914,7 +914,7 @@ final class GiftsListView: UIView {
                             )
                         ),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1093,7 +1093,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -1108,7 +1108,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

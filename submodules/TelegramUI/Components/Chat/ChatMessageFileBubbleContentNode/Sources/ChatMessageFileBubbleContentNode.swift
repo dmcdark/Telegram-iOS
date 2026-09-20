@@ -39,38 +39,38 @@ public class ChatMessageFileBubbleContentNode: ChatMessageBubbleContentNode {
         
         self.addSubnode(self.interactiveFileNode)
         
-        self.interactiveFileNode.toggleSelection = { [weak self] value in
+        self.interactiveFileNode.toggleSelection = { [weak self = self] value in
             if let strongSelf = self, let item = strongSelf.item {
                 item.controllerInteraction.toggleMessagesSelection([item.message.id], value)
             }
         }
         
-        self.interactiveFileNode.activateLocalContent = { [weak self] in
+        self.interactiveFileNode.activateLocalContent = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.openMessage(item.message, OpenMessageParams(mode: .default))
             }
         }
         
-        self.interactiveFileNode.requestUpdateLayout = { [weak self] _ in
+        self.interactiveFileNode.requestUpdateLayout = { [weak self = self] _ in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
             }
         }
         
-        self.interactiveFileNode.displayImportedTooltip = { [weak self] sourceNode in
+        self.interactiveFileNode.displayImportedTooltip = { [weak self = self] sourceNode in
             if let strongSelf = self, let item = strongSelf.item {
                 let _ = item.controllerInteraction.displayImportedMessageTooltip(sourceNode)
             }
         }
         
-        self.interactiveFileNode.dateAndStatusNode.reactionSelected = { [weak self] _, value, sourceView in
+        self.interactiveFileNode.dateAndStatusNode.reactionSelected = { [weak self = self] _, value, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
         }
         
-        self.interactiveFileNode.dateAndStatusNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+        self.interactiveFileNode.dateAndStatusNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture?.cancel()
                 return
@@ -79,7 +79,7 @@ public class ChatMessageFileBubbleContentNode: ChatMessageBubbleContentNode {
             item.controllerInteraction.openMessageReactionContextMenu(item.topMessage, sourceNode, gesture, value)
         }
         
-        self.interactiveFileNode.updateIsTextSelectionActive = { [weak self] value in
+        self.interactiveFileNode.updateIsTextSelectionActive = { [weak self = self] value in
             self?.updateIsTextSelectionActive?(value)
         }
     }
@@ -186,7 +186,7 @@ public class ChatMessageFileBubbleContentNode: ChatMessageBubbleContentNode {
                         }
                     }
                     
-                    return (CGSize(width: fileSize.width + layoutConstants.file.bubbleInsets.left + layoutConstants.file.bubbleInsets.right, height: fileSize.height + layoutConstants.file.bubbleInsets.top + bottomInset), { [weak self] animation, synchronousLoads, applyInfo in
+                    return (CGSize(width: fileSize.width + layoutConstants.file.bubbleInsets.left + layoutConstants.file.bubbleInsets.right, height: fileSize.height + layoutConstants.file.bubbleInsets.top + bottomInset), { [weak self = self] animation, synchronousLoads, applyInfo in
                         if let strongSelf = self {
                             strongSelf.item = item
                             

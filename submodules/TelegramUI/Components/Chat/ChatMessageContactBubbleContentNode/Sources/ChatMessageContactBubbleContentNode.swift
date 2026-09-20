@@ -54,14 +54,14 @@ public class ChatMessageContactBubbleContentNode: ChatMessageBubbleContentNode {
         self.addButtonNode.addTarget(self, action: #selector(self.addButtonPressed), forControlEvents: .touchUpInside)
         self.messageButtonNode.addTarget(self, action: #selector(self.messageButtonPressed), forControlEvents: .touchUpInside)
         
-        self.dateAndStatusNode.reactionSelected = { [weak self] _, value, sourceView in
+        self.dateAndStatusNode.reactionSelected = { [weak self = self] _, value, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
         }
         
-        self.dateAndStatusNode.openReactionPreview = { [weak self] gesture, sourceView, value in
+        self.dateAndStatusNode.openReactionPreview = { [weak self = self] gesture, sourceView, value in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture?.cancel()
                 return
@@ -402,7 +402,7 @@ public class ChatMessageContactBubbleContentNode: ChatMessageBubbleContentNode {
                         }
                     }
                     
-                    return (layoutSize, { [weak self] animation, synchronousLoads, _ in
+                    return (layoutSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.contact = selectedContact

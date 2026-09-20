@@ -23,7 +23,7 @@ public final class DrawingMediaEntityView: DrawingEntityView, DrawingEntityMedia
         
         self.backgroundColor = UIColor.clear
         
-        self.snapTool.onSnapUpdated = { [weak self] type, snapped in
+        self.snapTool.onSnapUpdated = { [weak self = self] type, snapped in
             if let self {
                 self.onSnapUpdated(type, snapped)
             }

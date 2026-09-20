@@ -179,7 +179,7 @@ class DrawingEntitySnapTool {
             snapDelta: snapDelta,
             snapSkipTranslation: snapSkipTranslation,
             previousSnapTimestamp: self.previousXSnapTimestamp,
-            onSnapUpdated: { [weak self] snapped in
+            onSnapUpdated: { [weak self = self] snapped in
                 self?.onSnapUpdated(.centerX, snapped)
             }
         )
@@ -196,7 +196,7 @@ class DrawingEntitySnapTool {
             snapDelta: snapDelta,
             snapSkipTranslation: snapSkipTranslation,
             previousSnapTimestamp: self.previousYSnapTimestamp,
-            onSnapUpdated: { [weak self] snapped in
+            onSnapUpdated: { [weak self = self] snapped in
                 self?.onSnapUpdated(.centerY, snapped)
             }
         )
@@ -215,7 +215,7 @@ class DrawingEntitySnapTool {
                     snapDelta: snapDelta,
                     snapSkipTranslation: snapSkipTranslation,
                     previousSnapTimestamp: self.previousLeftEdgeSnapTimestamp,
-                    onSnapUpdated: { [weak self] snapped in
+                    onSnapUpdated: { [weak self = self] snapped in
                         self?.onSnapUpdated(.left, snapped)
                     }
                 )
@@ -238,7 +238,7 @@ class DrawingEntitySnapTool {
                         snapDelta: snapDelta,
                         snapSkipTranslation: snapSkipTranslation,
                         previousSnapTimestamp: self.previousRightEdgeSnapTimestamp,
-                        onSnapUpdated: { [weak self] snapped in
+                        onSnapUpdated: { [weak self = self] snapped in
                             self?.onSnapUpdated(.right, snapped)
                         }
                     )
@@ -262,7 +262,7 @@ class DrawingEntitySnapTool {
                     snapDelta: snapDelta,
                     snapSkipTranslation: snapSkipTranslation,
                     previousSnapTimestamp: self.previousTopEdgeSnapTimestamp,
-                    onSnapUpdated: { [weak self] snapped in
+                    onSnapUpdated: { [weak self = self] snapped in
                         self?.onSnapUpdated(.top, snapped)
                     }
                 )
@@ -285,7 +285,7 @@ class DrawingEntitySnapTool {
                         snapDelta: snapDelta,
                         snapSkipTranslation: snapSkipTranslation,
                         previousSnapTimestamp: self.previousBottomEdgeSnapTimestamp,
-                        onSnapUpdated: { [weak self] snapped in
+                        onSnapUpdated: { [weak self = self] snapped in
                             self?.onSnapUpdated(.bottom, snapped)
                         }
                     )

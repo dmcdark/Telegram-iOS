@@ -162,7 +162,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
         }
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -172,7 +172,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
         }
         
         self.presentationDataDisposable = ((params.updatedPresentationData?.signal ?? self.context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -185,7 +185,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
             }
         })
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
@@ -204,7 +204,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
             self.tabContainerNode = ChatListFilterTabContainerNode(context: self.context)
             self.reloadFilters()
             
-            self.peerSelectionNode.mainContainerNode?.currentItemFilterUpdated = { [weak self] filter, fraction, transition, force in
+            self.peerSelectionNode.mainContainerNode?.currentItemFilterUpdated = { [weak self = self] filter, fraction, transition, force in
                 guard let strongSelf = self else {
                     return
                 }
@@ -222,7 +222,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
                 }
             }
             
-            self.tabContainerNode?.tabSelected = { [weak self] id, isDisabled in
+            self.tabContainerNode?.tabSelected = { [weak self = self] id, isDisabled in
                 guard let strongSelf = self else {
                     return
                 }
@@ -275,10 +275,10 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
                 filter: self.filter,
                 requestPeerType: self.requestPeerType,
                 excludedPeerIds: self.excludedPeerIds,
-                selectPeer: { [weak self] selectedPeer in
+                selectPeer: { [weak self = self] selectedPeer in
                     self?.openPeerForSelection(selectedPeer, threadId: nil)
                 },
-                selectDisabledPeer: { [weak self] selectedPeer, reason in
+                selectDisabledPeer: { [weak self = self] selectedPeer, reason in
                     self?.attemptSelection?(selectedPeer, nil, reason)
                 }
             )
@@ -302,7 +302,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
                 mainPeer = .single(EnginePeer.channel(peer))
             }
 
-            let _ = (mainPeer |> deliverOnMainQueue).startStandalone(next: { [weak self] mainPeer in
+            let _ = (mainPeer |> deliverOnMainQueue).startStandalone(next: { [weak self = self] mainPeer in
                 guard let self else {
                     return
                 }
@@ -371,45 +371,45 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
             createNewGroup: self.createNewGroup,
             suggestedPeers: self.suggestedPeers,
             excludedPeerIds: self.excludedPeerIds,
-            present: { [weak self] c, a in
+            present: { [weak self = self] c, a in
                 self?.present(c, in: .window(.root), with: a)
             },
-            presentInGlobalOverlay: { [weak self] c, a in
+            presentInGlobalOverlay: { [weak self = self] c, a in
                 self?.presentInGlobalOverlay(c, with: a)
             },
-            dismiss: { [weak self] in
+            dismiss: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
             }
         )
         
         self.peerSelectionNode.navigationBar = self.navigationBar
         
-        self.peerSelectionNode.requestSend = { [weak self] peers, peerMap, text, mode, forwardOptionsState, messageEffect in
+        self.peerSelectionNode.requestSend = { [weak self = self] peers, peerMap, text, mode, forwardOptionsState, messageEffect in
             self?.multiplePeersSelected?(peers, peerMap, text, mode, forwardOptionsState, messageEffect)
         }
         
-        self.peerSelectionNode.requestDeactivateSearch = { [weak self] in
+        self.peerSelectionNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch()
         }
         
-        self.peerSelectionNode.requestActivateSearch = { [weak self] in
+        self.peerSelectionNode.requestActivateSearch = { [weak self = self] in
             self?.activateSearch()
         }
         
-        self.peerSelectionNode.requestOpenPeer = { [weak self] peer, threadId in
+        self.peerSelectionNode.requestOpenPeer = { [weak self = self] peer, threadId in
             guard let self else {
                 return
             }
             self.openPeerForSelection(peer, threadId: threadId)
         }
         
-        self.peerSelectionNode.requestOpenDisabledPeer = { [weak self] peer, threadId, reason in
+        self.peerSelectionNode.requestOpenDisabledPeer = { [weak self = self] peer, threadId, reason in
             if let strongSelf = self {
                 strongSelf.attemptSelection?(peer, threadId, reason)
             }
         }
         
-        self.peerSelectionNode.requestOpenPeerFromSearch = { [weak self] peer, threadId in
+        self.peerSelectionNode.requestOpenPeerFromSearch = { [weak self = self] peer, threadId in
             if let strongSelf = self {
                 strongSelf.openMessageFromSearchDisposable.set((_internal_storedMessageFromSearchPeer(postbox: strongSelf.context.account.postbox, peer: peer)
                 |> deliverOnMainQueue).start(completed: { [weak strongSelf] in
@@ -421,7 +421,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
         }
         
         var isProcessingContentOffsetChanged = false
-        self.peerSelectionNode.contentOffsetChanged = { [weak self] offset in
+        self.peerSelectionNode.contentOffsetChanged = { [weak self = self] offset in
             if isProcessingContentOffsetChanged {
                 return
             }
@@ -432,7 +432,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
             }
         }
         
-        self.peerSelectionNode.contentScrollingEnded = { [weak self] listView in
+        self.peerSelectionNode.contentScrollingEnded = { [weak self = self] listView in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 return fixNavigationSearchableListNodeScrolling(listView, searchNode: searchContentNode)
             } else {
@@ -512,7 +512,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
             self.context.account.postbox.peerView(id: self.context.account.peerId),
             self.context.engine.data.get(TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: false))
         )
-        |> deliverOnMainQueue).start(next: { [weak self] countAndFilterItems, peerView, limits in
+        |> deliverOnMainQueue).start(next: { [weak self = self] countAndFilterItems, peerView, limits in
             guard let strongSelf = self else {
                 return
             }
@@ -593,7 +593,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
                     strongSelf.ready.set(mainContainerNode.currentItemNode.ready)
                 } else if !strongSelf.initializedFilters {
                     if selectedEntryId != mainContainerNode.currentItemFilter {
-                        mainContainerNode.switchToFilter(id: selectedEntryId, animated: false, completion: { [weak self] in
+                        mainContainerNode.switchToFilter(id: selectedEntryId, animated: false, completion: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.ready.set(mainContainerNode.currentItemNode.ready)
                             }
@@ -633,7 +633,7 @@ public final class PeerSelectionControllerImpl: ViewController, PeerSelectionCon
     
     private func selectTab(id: ChatListFilterTabEntryId) {
         let _ = (self.context.engine.peers.currentChatListFilters()
-        |> deliverOnMainQueue).start(next: { [weak self] filters in
+        |> deliverOnMainQueue).start(next: { [weak self = self] filters in
             guard let strongSelf = self else {
                 return
             }

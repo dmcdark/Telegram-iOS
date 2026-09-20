@@ -131,7 +131,7 @@ private final class PhoneAndCountryNode: ASDisplayNode {
         
         self.countryButton.addTarget(self, action: #selector(self.countryPressed), forControlEvents: .touchUpInside)
                 
-        self.phoneInputNode.numberTextUpdated = { [weak self] number in
+        self.phoneInputNode.numberTextUpdated = { [weak self = self] number in
             if let strongSelf = self {
                 let _ = strongSelf.processNumberChange(number: strongSelf.phoneInputNode.number)
                                 
@@ -144,7 +144,7 @@ private final class PhoneAndCountryNode: ASDisplayNode {
             }
         }
         
-        self.phoneInputNode.countryCodeUpdated = { [weak self] code, name in
+        self.phoneInputNode.countryCodeUpdated = { [weak self = self] code, name in
             if let strongSelf = self {
                 if let name = name {
                     strongSelf.preferredCountryIdForCode[code] = name
@@ -202,11 +202,11 @@ private final class PhoneAndCountryNode: ASDisplayNode {
         }
         
         self.phoneInputNode.number = "+1"
-        self.phoneInputNode.returnAction = { [weak self] in
+        self.phoneInputNode.returnAction = { [weak self = self] in
             self?.checkPhone?()
         }
         
-        self.phoneInputNode.keyPressed = { [weak self] num in
+        self.phoneInputNode.keyPressed = { [weak self = self] num in
             self?.keyPressed?(num)
         }
     }
@@ -455,7 +455,7 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
                 return nil
             }
         }
-        self.noticeNode.tapAttributeAction = { [weak self] attributes, _ in
+        self.noticeNode.tapAttributeAction = { [weak self = self] attributes, _ in
             guard let self else {
                 return
             }
@@ -465,16 +465,16 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
         }
         self.noticeNode.linkHighlightColor = theme.list.itemAccentColor.withAlphaComponent(0.2)
         
-        self.phoneAndCountryNode.selectCountryCode = { [weak self] in
+        self.phoneAndCountryNode.selectCountryCode = { [weak self = self] in
             self?.selectCountryCode?()
         }
-        self.phoneAndCountryNode.checkPhone = { [weak self] in
+        self.phoneAndCountryNode.checkPhone = { [weak self = self] in
             self?.checkPhone?()
         }
-        self.phoneAndCountryNode.hasNumberUpdated = { [weak self] hasNumber in
+        self.phoneAndCountryNode.hasNumberUpdated = { [weak self = self] hasNumber in
             self?.proceedNode.isEnabled = hasNumber
         }
-        self.phoneAndCountryNode.keyPressed = { [weak self] num in
+        self.phoneAndCountryNode.keyPressed = { [weak self = self] num in
             if let strongSelf = self, !strongSelf.managedAnimationNode.isHidden {
                 strongSelf.managedAnimationNode.animate(num: num)
             }
@@ -482,16 +482,16 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
         
         if let account = account {
             self.tokenEventsDisposable.set((account.updateLoginTokenEvents
-            |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                 self?.refreshQrToken()
             }))
         }
         
-        self.proceedNode.pressed = { [weak self] in
+        self.proceedNode.pressed = { [weak self = self] in
             self?.checkPhone?()
         }
         
-        self.animationNode.completed = { [weak self] _ in
+        self.animationNode.completed = { [weak self = self] _ in
             self?.animationNode.removeFromSupernode()
             self?.managedAnimationNode.isHidden = false
         }
@@ -543,14 +543,14 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
     func animateIn(buttonFrame: CGRect, buttonTitle: String, animationSnapshot: UIView, textSnapshot: UIView) {
         self.proceedNode.animateTitle(to: self.strings.Login_Continue)
                 
-        self.animationSnapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+        self.animationSnapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.animationSnapshotView?.removeFromSuperview()
             self?.animationSnapshotView = nil
         })
         self.animationSnapshotView?.layer.animatePosition(from: CGPoint(), to: CGPoint(x: 0.0, y: -100.0), duration: 0.3, timingFunction: kCAMediaTimingFunctionSpring, removeOnCompletion: false, additive: true)
         self.animationSnapshotView?.layer.animateScale(from: 1.0, to: 0.3, duration: 0.4)
        
-        self.textSnapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+        self.textSnapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.textSnapshotView?.removeFromSuperview()
             self?.textSnapshotView = nil
         })
@@ -731,7 +731,7 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
         }
         
         self.exportTokenDisposable.set((tokenSignal
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -914,7 +914,7 @@ final class PhoneConfirmationController: ViewController {
             self.addSubnode(self.proceedNode)
             
             self.cancelButton.addTarget(self, action: #selector(self.cancelPressed), forControlEvents: .touchUpInside)
-            self.proceedNode.pressed = { [weak self] in
+            self.proceedNode.pressed = { [weak self = self] in
                 self?.proceed()
             }
         }
@@ -1145,12 +1145,12 @@ final class PhoneConfirmationController: ViewController {
         self.displayNode = Node(theme: self.theme, strings: self.strings, code: self.code, number: self.number)
         self.displayNodeDidLoad()
         
-        self.controllerNode.proceed = { [weak self] in
+        self.controllerNode.proceed = { [weak self = self] in
             self?.proceed()
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             if let strongSelf = self, let sourceController = strongSelf.sourceController {
-                strongSelf.controllerNode.animateOut(codeNode: sourceController.codeNode, numberNode: sourceController.numberNode, buttonNode: sourceController.buttonNode, completion: { [weak self] in
+                strongSelf.controllerNode.animateOut(codeNode: sourceController.codeNode, numberNode: sourceController.numberNode, buttonNode: sourceController.buttonNode, completion: { [weak self = self] in
                     self?.dismiss()
                 })
             }
@@ -1223,7 +1223,7 @@ private final class PhoneKeyNode: ASDisplayNode {
         self.addSubnode(highlightedNode)
         self.highlightedNode = highlightedNode
         
-        highlightedNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.16, removeOnCompletion: false, completion: { [weak self] _ in
+        highlightedNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.16, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.highlightedNode?.removeFromSupernode()
             self?.highlightedNode = nil
         })

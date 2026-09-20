@@ -259,12 +259,12 @@ public final class WallpaperGalleryToolbarNode: ASDisplayNode, WallpaperGalleryT
 
         self.updateThemeAndStrings(theme: theme, strings: strings)
 
-        self.applyButton.action = { [weak self] in
+        self.applyButton.action = { [weak self = self] in
             if let self {
                 self.done?(false)
             }
         }
-        self.applyForBothButton.action = { [weak self] in
+        self.applyForBothButton.action = { [weak self = self] in
             if let self {
                 self.done?(true)
             }
@@ -444,7 +444,7 @@ public final class WallpaperGalleryOldToolbarNode: ASDisplayNode, WallpaperGalle
                     id: AnyHashable(self.cancelTitle),
                     component: AnyComponent(Text(text: self.cancelTitle, font: Font.semibold(17.0), color: foregroundColor))
                 ),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.cancel?()
                 }
             )),
@@ -475,7 +475,7 @@ public final class WallpaperGalleryOldToolbarNode: ASDisplayNode, WallpaperGalle
                 ),
                 isEnabled: self.doneEnabled && doneIsVisible,
                 tintWhenDisabled: false,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.done?(false)
                 }
             )),

@@ -71,7 +71,7 @@ final class PeerInfoAvatarTransformContainerNode: ASDisplayNode {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
         self.avatarNode.view.addGestureRecognizer(tapGestureRecognizer)
        
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -80,7 +80,7 @@ final class PeerInfoAvatarTransformContainerNode: ASDisplayNode {
             strongSelf.contextAction?(strongSelf.containerNode, gesture)
         }
 
-        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] value in
+        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -426,7 +426,7 @@ final class PeerInfoAvatarTransformContainerNode: ASDisplayNode {
                                     return playing
                                 }
                                 |> take(1)
-                                |> deliverOnMainQueue).start(completed: { [weak self] in
+                                |> deliverOnMainQueue).start(completed: { [weak self = self] in
                                     if let strongSelf = self {
                                         Queue.mainQueue().after(0.15) {
                                             strongSelf.videoNode?.isHidden = false

@@ -35,13 +35,13 @@ public final class TitleActivityIndicatorComponent: Component {
             super.init(frame: frame)
             
             self.layer.addSublayer(self.hierarchyTrackingLayer)
-            self.hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.refreshAnimation()
             }
-            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -66,7 +66,7 @@ public final class TitleActivityIndicatorComponent: Component {
             if self.hierarchyTrackingLayer.isInHierarchy {
                 if self.animator == nil {
                     let animationStartTime = CACurrentMediaTime()
-                    self.animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                    self.animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                         guard let self else {
                             return
                         }

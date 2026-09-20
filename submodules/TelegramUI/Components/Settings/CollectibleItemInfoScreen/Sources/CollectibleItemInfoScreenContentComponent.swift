@@ -199,7 +199,7 @@ import TelegramCore
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }

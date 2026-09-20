@@ -988,7 +988,7 @@ public final class SparseItemGrid: ASDisplayNode {
             let decelerationRate: CGFloat = 0.998
             self.scrollView.forceDecelerating = true
             self.scrollViewDidEndDragging(self.scrollView, willDecelerate: true)
-            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+            self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1339,7 +1339,7 @@ public final class SparseItemGrid: ASDisplayNode {
             self.scrollingArea = scrollingArea
 
             if let scrollingArea = self.scrollingArea {
-                scrollingArea.beginScrolling = { [weak self] in
+                scrollingArea.beginScrolling = { [weak self = self] in
                     guard let strongSelf = self else {
                         return nil
                     }
@@ -1351,7 +1351,7 @@ public final class SparseItemGrid: ASDisplayNode {
                     strongSelf.items?.itemBinding.onBeginFastScrolling()
                     return strongSelf.scrollView
                 }
-                scrollingArea.setContentOffset = { [weak self] offset in
+                scrollingArea.setContentOffset = { [weak self = self] offset in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1702,7 +1702,7 @@ public final class SparseItemGrid: ASDisplayNode {
         self.view.addGestureRecognizer(pinchRecognizer)
         
         let reorderRecognizer = ReorderGestureRecognizer(
-            shouldBegin: { [weak self] point in
+            shouldBegin: { [weak self = self] point in
                 guard let self, let item = self.item(at: point) else {
                     return (allowed: false, requiresLongPress: false, item: nil)
                 }
@@ -1711,19 +1711,19 @@ public final class SparseItemGrid: ASDisplayNode {
             },
             willBegin: { point in
             },
-            began: { [weak self] item in
+            began: { [weak self = self] item in
                 guard let self, let currentViewport = self.currentViewport else {
                     return
                 }
                 currentViewport.setReorderingItem(item: item)
             },
-            ended: { [weak self] in
+            ended: { [weak self = self] in
                 guard let self, let currentViewport = self.currentViewport else {
                     return
                 }
                 currentViewport.setReorderingItem(item: nil)
             },
-            moved: { [weak self] distance in
+            moved: { [weak self = self] distance in
                 guard let self, let currentViewport = self.currentViewport else {
                     return
                 }
@@ -1737,13 +1737,13 @@ public final class SparseItemGrid: ASDisplayNode {
         reorderRecognizer.isEnabled = false
 
         self.addSubnode(self.scrollingArea)
-        self.scrollingArea.openCurrentDate = { [weak self] in
+        self.scrollingArea.openCurrentDate = { [weak self = self] in
             guard let strongSelf = self, let items = strongSelf.items else {
                 return
             }
             items.itemBinding.onTagTap()
         }
-        self.scrollingArea.isDecelerating = { [weak self] in
+        self.scrollingArea.isDecelerating = { [weak self = self] in
             guard let self else {
                 return false
             }
@@ -1824,14 +1824,14 @@ public final class SparseItemGrid: ASDisplayNode {
 
                         let restoreScrollPosition: (y: CGFloat, index: Int)? = (anchorItemFrame.minY, nextAnchorItemIndex)
 
-                        let nextViewport = Viewport(theme: self.theme, zoomLevel: nextZoomLevel, maybeLoadHoleAnchor: { [weak self] holeAnchor, location in
+                        let nextViewport = Viewport(theme: self.theme, zoomLevel: nextZoomLevel, maybeLoadHoleAnchor: { [weak self = self] holeAnchor, location in
                             guard let strongSelf = self else {
                                 return
                             }
                             strongSelf.maybeLoadHoleAnchor(holeAnchor: holeAnchor, location: location)
-                        }, coveringOffsetUpdated: { [weak self] viewport, transition in
+                        }, coveringOffsetUpdated: { [weak self = self] viewport, transition in
                             self?.coveringOffsetUpdated(viewport: viewport, transition: transition)
-                        }, offsetUpdated: { [weak self] viewport, transition in
+                        }, offsetUpdated: { [weak self = self] viewport, transition in
                             self?.offsetUpdated(viewport: viewport, transition: transition)
                         })
 
@@ -1841,9 +1841,9 @@ public final class SparseItemGrid: ASDisplayNode {
                         self.currentViewportTransition?.removeFromSupernode()
 
                         let nextInteractiveState = ViewportTransition.InteractiveState(anchorLocation: anchorLocation, initialScale: startScale, targetScale: nextScale)
-                        let currentViewportTransition = ViewportTransition(interactiveState: nextInteractiveState, layout: containerLayout, anchorItemIndex: currentViewportTransition.anchorItemIndex, transitionAnchorPoint: currentViewportTransition.transitionAnchorPoint, from: boundaryViewport, to: nextViewport, coveringOffsetUpdated: { [weak self] transition in
+                        let currentViewportTransition = ViewportTransition(interactiveState: nextInteractiveState, layout: containerLayout, anchorItemIndex: currentViewportTransition.anchorItemIndex, transitionAnchorPoint: currentViewportTransition.transitionAnchorPoint, from: boundaryViewport, to: nextViewport, coveringOffsetUpdated: { [weak self = self] transition in
                             self?.transitionCoveringOffsetUpdated(transition: transition)
-                        }, offsetUpdated: { [weak self] transition in
+                        }, offsetUpdated: { [weak self = self] transition in
                             self?.transitionOffsetUpdated(transition: transition)
                         })
                         currentViewportTransition.frame = CGRect(origin: CGPoint(), size: containerLayout.size)
@@ -1878,23 +1878,23 @@ public final class SparseItemGrid: ASDisplayNode {
                         let restoreScrollPosition: (y: CGFloat, index: Int)? = (anchorItemFrame.minY, anchorItem.0.index)
                         let anchorItemIndex = anchorItem.0.index
 
-                        let nextViewport = Viewport(theme: self.theme, zoomLevel: nextZoomLevel, maybeLoadHoleAnchor: { [weak self] holeAnchor, location in
+                        let nextViewport = Viewport(theme: self.theme, zoomLevel: nextZoomLevel, maybeLoadHoleAnchor: { [weak self = self] holeAnchor, location in
                             guard let strongSelf = self else {
                                 return
                             }
                             strongSelf.maybeLoadHoleAnchor(holeAnchor: holeAnchor, location: location)
-                        }, coveringOffsetUpdated: { [weak self] viewport, transition in
+                        }, coveringOffsetUpdated: { [weak self = self] viewport, transition in
                             self?.coveringOffsetUpdated(viewport: viewport, transition: transition)
-                        }, offsetUpdated: { [weak self] viewport, transition in
+                        }, offsetUpdated: { [weak self = self] viewport, transition in
                             self?.offsetUpdated(viewport: viewport, transition: transition)
                         })
 
                         nextViewport.frame = CGRect(origin: CGPoint(), size: containerLayout.size)
                         nextViewport.update(containerLayout: containerLayout, items: items, restoreScrollPosition: restoreScrollPosition, synchronous: .semi, transition: .immediate)
 
-                        let currentViewportTransition = ViewportTransition(interactiveState: interactiveState, layout: containerLayout, anchorItemIndex: anchorItemIndex, transitionAnchorPoint: anchorLocation, from: previousViewport, to: nextViewport, coveringOffsetUpdated: { [weak self] transition in
+                        let currentViewportTransition = ViewportTransition(interactiveState: interactiveState, layout: containerLayout, anchorItemIndex: anchorItemIndex, transitionAnchorPoint: anchorLocation, from: previousViewport, to: nextViewport, coveringOffsetUpdated: { [weak self = self] transition in
                             self?.transitionCoveringOffsetUpdated(transition: transition)
-                        }, offsetUpdated: { [weak self] transition in
+                        }, offsetUpdated: { [weak self = self] transition in
                             self?.transitionOffsetUpdated(transition: transition)
                         })
                         currentViewportTransition.frame = CGRect(origin: CGPoint(), size: containerLayout.size)
@@ -2000,14 +2000,14 @@ public final class SparseItemGrid: ASDisplayNode {
         }
 
         if self.currentViewport == nil {
-            let currentViewport = Viewport(theme: self.theme, zoomLevel: self.initialZoomLevel ?? ZoomLevel(rawValue: 3), maybeLoadHoleAnchor: { [weak self] holeAnchor, location in
+            let currentViewport = Viewport(theme: self.theme, zoomLevel: self.initialZoomLevel ?? ZoomLevel(rawValue: 3), maybeLoadHoleAnchor: { [weak self = self] holeAnchor, location in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.maybeLoadHoleAnchor(holeAnchor: holeAnchor, location: location)
-            }, coveringOffsetUpdated: { [weak self] viewport, transition in
+            }, coveringOffsetUpdated: { [weak self = self] viewport, transition in
                 self?.coveringOffsetUpdated(viewport: viewport, transition: transition)
-            }, offsetUpdated: { [weak self] viewport, transition in
+            }, offsetUpdated: { [weak self = self] viewport, transition in
                 self?.offsetUpdated(viewport: viewport, transition: transition)
             })
             self.currentViewport = currentViewport
@@ -2034,7 +2034,7 @@ public final class SparseItemGrid: ASDisplayNode {
 
         self.isLoadingHole = true
         self.loadingHoleDisposable.set((items.itemBinding.loadHole(anchor: holeAnchor, at: location)
-        |> deliverOnMainQueue).start(completed: { [weak self] in
+        |> deliverOnMainQueue).start(completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -2078,14 +2078,14 @@ public final class SparseItemGrid: ASDisplayNode {
         self.currentViewport = nil
         previousViewport.removeFromSupernode()
 
-        let currentViewport = Viewport(theme: self.theme, zoomLevel: level, maybeLoadHoleAnchor: { [weak self] holeAnchor, location in
+        let currentViewport = Viewport(theme: self.theme, zoomLevel: level, maybeLoadHoleAnchor: { [weak self = self] holeAnchor, location in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.maybeLoadHoleAnchor(holeAnchor: holeAnchor, location: location)
-        }, coveringOffsetUpdated: { [weak self] viewport, transition in
+        }, coveringOffsetUpdated: { [weak self = self] viewport, transition in
             self?.coveringOffsetUpdated(viewport: viewport, transition: transition)
-        }, offsetUpdated: { [weak self] viewport, transition in
+        }, offsetUpdated: { [weak self = self] viewport, transition in
             self?.offsetUpdated(viewport: viewport, transition: transition)
         })
         self.currentViewport = currentViewport
@@ -2101,16 +2101,16 @@ public final class SparseItemGrid: ASDisplayNode {
                 currentViewport.frame = CGRect(origin: CGPoint(), size: containerLayout.size)
                 currentViewport.update(containerLayout: containerLayout, items: items, restoreScrollPosition: restoreScrollPosition, synchronous: .semi, transition: .immediate)
 
-                let currentViewportTransition = ViewportTransition(interactiveState: nil, layout: containerLayout, anchorItemIndex: anchorItemIndex, transitionAnchorPoint: anchorLocation, from: previousViewport, to: currentViewport, coveringOffsetUpdated: { [weak self] transition in
+                let currentViewportTransition = ViewportTransition(interactiveState: nil, layout: containerLayout, anchorItemIndex: anchorItemIndex, transitionAnchorPoint: anchorLocation, from: previousViewport, to: currentViewport, coveringOffsetUpdated: { [weak self = self] transition in
                     self?.transitionCoveringOffsetUpdated(transition: transition)
-                }, offsetUpdated: { [weak self] transition in
+                }, offsetUpdated: { [weak self = self] transition in
                     self?.transitionOffsetUpdated(transition: transition)
                 })
                 currentViewportTransition.frame = CGRect(origin: CGPoint(), size: containerLayout.size)
                 self.insertSubnode(currentViewportTransition, belowSubnode: self.scrollingArea)
                 self.currentViewportTransition = currentViewportTransition
                 currentViewportTransition.update(progress: 0.0, transition: .immediate, completion: {})
-                currentViewportTransition.update(progress: 1.0, transition: .animated(duration: 0.25, curve: .easeInOut), completion: { [weak self] in
+                currentViewportTransition.update(progress: 1.0, transition: .animated(duration: 0.25, curve: .easeInOut), completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -2307,7 +2307,7 @@ public final class SparseItemGrid: ASDisplayNode {
         let pinchEnabled = self.pinchRecognizer?.isEnabled ?? true
         self.pinchRecognizer?.isEnabled = false
 
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             self?.tapRecognizer?.isEnabled = tapEnabled
             self?.pinchRecognizer?.isEnabled = pinchEnabled
             self?.brieflyDisabledTouchActions = false
@@ -2359,7 +2359,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -2374,7 +2374,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

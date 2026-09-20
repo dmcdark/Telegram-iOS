@@ -44,16 +44,16 @@ final class SearchNavigationContentNode: NavigationBarContentNode, ItemListContr
         
         self.addSubnode(self.searchBar)
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.queryUpdated?(query)
         }
         
-        updateActivity({ [weak self] value in
+        updateActivity({ [weak self = self] value in
             self?.activity = value
         })
         
@@ -129,7 +129,7 @@ final class InviteRequestsSearchItem: ItemListControllerSearch {
             } else {
                 return .single(value)
             }
-        }).start(next: { [weak self] value in
+        }).start(next: { [weak self = self] value in
             self?.updateActivity?(value)
         }))
     }
@@ -158,16 +158,16 @@ final class InviteRequestsSearchItem: ItemListControllerSearch {
             current.updateTheme(presentationData.theme)
             return current
         } else {
-            return SearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, cancel: self.cancel, updateActivity: { [weak self] value in
+            return SearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, cancel: self.cancel, updateActivity: { [weak self = self] value in
                 self?.updateActivity = value
             })
         }
     }
     
     func node(current: ItemListControllerSearchNode?, titleContentNode: (NavigationBarContentNode & ItemListControllerSearchNavigationContentNode)?) -> ItemListControllerSearchNode {
-        return InviteRequestsSearchItemNode(context: self.context, peerId: self.peerId, openPeer: self.openPeer, approveRequest: self.approveRequest, denyRequest: self.denyRequest, navigateToChat: self.navigateToChat, cancel: self.cancel, updateActivity: { [weak self] value in
+        return InviteRequestsSearchItemNode(context: self.context, peerId: self.peerId, openPeer: self.openPeer, approveRequest: self.approveRequest, denyRequest: self.denyRequest, navigateToChat: self.navigateToChat, cancel: self.cancel, updateActivity: { [weak self = self] value in
             self?.activity.set(value)
-        }, pushController: { [weak self] c in
+        }, pushController: { [weak self = self] c in
             self?.pushController(c)
         }, dismissInput: self.dismissInput, presentInGlobalOverlay: self.presentInGlobalOverlay)
     }
@@ -395,16 +395,16 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
         self.addSubnode(self.emptyResultsTextNode)
         
     
-        let interaction = InviteRequestsSearchContainerInteraction(openPeer: { [weak self] peer in
+        let interaction = InviteRequestsSearchContainerInteraction(openPeer: { [weak self = self] peer in
             openPeer(peer)
             self?.listNode.clearHighlightAnimated(true)
-        }, approveRequest: { [weak self] peer in
+        }, approveRequest: { [weak self = self] peer in
             approveRequest(peer)
             self?.processedPeerIds.insert(peer.id)
-        }, denyRequest: { [weak self] peer in
+        }, denyRequest: { [weak self = self] peer in
             denyRequest(peer)
             self?.processedPeerIds.insert(peer.id)
-        }, peerContextAction: { [weak self] peer, node, gesture in
+        }, peerContextAction: { [weak self = self] peer, node, gesture in
             guard let node = node as? ContextExtractedContentContainingNode else {
                 return
             }
@@ -412,7 +412,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
             let _ = (context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let peer = peer else {
                     return
                 }
@@ -427,7 +427,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
 
                 items.append(.action(ContextMenuActionItem(text: addString, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddUser"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
                     
                     approveRequest(peer)
@@ -444,7 +444,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
                 
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.MemberRequests_Dismiss, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.destructiveColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
                     
                     denyRequest(peer)
@@ -530,7 +530,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
         let previousSearchItems = Atomic<[InviteRequestsSearchEntry]?>(value: nil)
     
         self.searchDisposable.set((combineLatest(searchQuery, foundItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] query, entries, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] query, entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousSearchItems.swap(entries)
                 updateActivity(false)
@@ -541,7 +541,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 var presentationData = presentationData
                 
@@ -560,7 +560,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
             }
         })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -607,7 +607,7 @@ public final class InviteRequestsSearchContainerNode: SearchDisplayControllerCon
             options.insert(.PreferSynchronousResourceLoading)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

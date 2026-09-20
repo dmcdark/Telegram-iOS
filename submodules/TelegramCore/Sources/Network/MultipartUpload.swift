@@ -206,7 +206,7 @@ private final class MultipartUploadManager {
     func start() {
         self.queue.async {
             self.dataDisposable.set((self.dataSignal
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] data in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] data in
                 if let strongSelf = self {
                     strongSelf.resourceData = data
                     strongSelf.checkState()
@@ -288,9 +288,9 @@ private final class MultipartUploadManager {
                         self.headerPartState = .uploading
                         let part = self.uploadPart(UploadPart(fileId: self.fileId, index: partIndex, data: partData, bigTotalParts: currentBigTotalParts, bigPart: self.bigParts))
                         |> deliverOn(self.queue)
-                        self.uploadingParts[0] = (partSize, part.startStrict(error: { [weak self] _ in
+                        self.uploadingParts[0] = (partSize, part.startStrict(error: { [weak self = self] _ in
                             self?.completed(nil)
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.uploadingParts.removeValue(forKey: 0)?.1.dispose()
                                 strongSelf.headerPartState = .ready
@@ -362,9 +362,9 @@ private final class MultipartUploadManager {
                                     break
                             }
                         }
-                        self.uploadingParts[nextOffset] = (partSize, part.startStrict(error: { [weak self] _ in
+                        self.uploadingParts[nextOffset] = (partSize, part.startStrict(error: { [weak self = self] _ in
                             self?.completed(nil)
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.uploadingParts.removeValue(forKey: nextOffset)?.1.dispose()
                                 strongSelf.uploadedParts[partOffset] = partSize
@@ -470,7 +470,7 @@ func multipartUpload(network: Network, postbox: Postbox, source: MultipartUpload
                     fetchedResource = .complete()
             }
             
-            let onFloodWaitError: (String) -> Void = { [weak network] error in
+            let onFloodWaitError: (String) -> Void = { [weak network = network] error in
                 guard let network else {
                     return
                 }

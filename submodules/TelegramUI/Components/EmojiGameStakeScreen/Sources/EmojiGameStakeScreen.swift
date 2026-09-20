@@ -382,7 +382,7 @@ private final class SheetContent: CombinedComponent {
                         return .complete()
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] files in
+            |> deliverOnMainQueue).start(next: { [weak self = self] files in
                 guard let self else {
                     return
                 }
@@ -596,7 +596,7 @@ public final class EmojiGameStakeScreen: ViewControllerComponentContainer {
             self.push(BalanceNeededScreen(
                 context: self.context,
                 amount: needed,
-                buttonAction: { [weak self] in
+                buttonAction: { [weak self = self] in
                     self?.context.sharedContext.applicationBindings.openUrl(fragmentUrl)
                 }
             ))
@@ -631,7 +631,7 @@ public final class EmojiGameStakeScreen: ViewControllerComponentContainer {
                         peerId: context.account.peerId,
                         theme: context.sharedContext.currentPresentationData.with { $0 }.theme,
                         currency: .ton,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1057,7 +1057,7 @@ public final class AmountFieldComponent: Component {
                             forceMinValue: component.forceMinValue,
                             allowZero: component.allowZero,
                             maxValue: component.maxValue ?? Int64.max,
-                            updated: { [weak self] value in
+                            updated: { [weak self = self] value in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1065,13 +1065,13 @@ public final class AmountFieldComponent: Component {
                                     component.amountUpdated(value == 0 ? nil : value)
                                 }
                             },
-                            isEmptyUpdated: { [weak self] isEmpty in
+                            isEmptyUpdated: { [weak self = self] isEmpty in
                                 guard let self else {
                                     return
                                 }
                                 self.placeholderView.view?.isHidden = !isEmpty
                             },
-                            animateError: { [weak self] in
+                            animateError: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1094,7 +1094,7 @@ public final class AmountFieldComponent: Component {
                             forceMinValue: component.forceMinValue,
                             allowZero: component.allowZero,
                             maxValue: component.maxValue ?? Int64.max,
-                            updated: { [weak self] value in
+                            updated: { [weak self = self] value in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1102,13 +1102,13 @@ public final class AmountFieldComponent: Component {
                                     component.amountUpdated(value == 0 ? nil : value)
                                 }
                             },
-                            isEmptyUpdated: { [weak self] isEmpty in
+                            isEmptyUpdated: { [weak self = self] isEmpty in
                                 guard let self else {
                                     return
                                 }
                                 self.placeholderView.view?.isHidden = !isEmpty
                             },
-                            animateError: { [weak self] in
+                            animateError: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

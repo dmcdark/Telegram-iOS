@@ -221,14 +221,14 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
         self.view.addGestureRecognizer(recognizer)
         
         let hierarchyTrackingLayer = HierarchyTrackingLayer()
-        hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.trackingIsInHierarchy = true
         }
         
-        hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+        hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -643,7 +643,7 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
             let principalGraphics = PresentationResourcesChat.principalGraphics(theme: item.presentationData.theme.theme, wallpaper: item.presentationData.theme.wallpaper, bubbleCorners: item.presentationData.chatBubbleCorners)
             let viewOnceIconImage = principalGraphics.radialIndicatorViewOnceIcon
                         
-            return (result, { [weak self] layoutData, animation in
+            return (result, { [weak self = self] layoutData, animation in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.videoFrame = displayVideoFrame
@@ -828,7 +828,7 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
                     
                     if let updatedPlayerStatusSignal = updatedPlayerStatusSignal {
                         strongSelf.playerStatusDisposable.set((updatedPlayerStatusSignal
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                             displayLinkDispatcher.dispatch {
                                 if let strongSelf = self {
                                     strongSelf.playerStatus = status
@@ -1439,7 +1439,7 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
                     playbackStatusNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
                 }
                 playbackStatusNode.isUserInteractionEnabled = !isViewOnceMessage
-                playbackStatusNode.seekTo = { [weak self] position, play in
+                playbackStatusNode.seekTo = { [weak self = self] position, play in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1713,7 +1713,7 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
                 sizeAndApplyLayout = node.asyncLayout()(item, width, displaySize, maximumDisplaySize, scaleProgress, statusType, automaticDownload, avatarInset)
                 createdNode = node
             }
-            return (sizeAndApplyLayout.0, { [weak node] layoutData, transition in
+            return (sizeAndApplyLayout.0, { [weak node = node] layoutData, transition in
                 sizeAndApplyLayout.1(layoutData, transition)
                 if let createdNode = createdNode {
                     return createdNode
@@ -1893,7 +1893,7 @@ public class ChatMessageInteractiveInstantVideoNode: ASDisplayNode {
                 self.requestUpdateLayout(true)
                 
                 self.transcribeDisposable = (item.context.engine.messages.transcribeAudio(messageId: item.message.id)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                     guard let strongSelf = self else {
                         return
                     }

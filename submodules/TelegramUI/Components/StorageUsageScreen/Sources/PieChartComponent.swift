@@ -1054,7 +1054,7 @@ final class PieChartComponent: Component {
             self.backgroundColor = nil
             self.isOpaque = false
             
-            self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] delta in
+            self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] delta in
                 self?.update(deltaTime: CGFloat(delta))
             })
         }

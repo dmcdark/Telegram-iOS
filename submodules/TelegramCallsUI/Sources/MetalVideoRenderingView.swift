@@ -286,7 +286,7 @@ final class MetalVideoRenderingView: UIView, VideoRenderingView {
         self.metalLayer.framebufferOnly = true
         self.metalLayer.allowsNextDrawableTimeout = true
 
-        self.disposable = input.start(next: { [weak self] videoFrameData in
+        self.disposable = input.start(next: { [weak self = self] videoFrameData in
             Queue.mainQueue().async {
                 self?.addFrame(videoFrameData)
             }
@@ -609,7 +609,7 @@ class MetalVideoRenderingContext {
         }
         self.commandQueue = commandQueue
         
-        self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             self?.redraw()
         })
         self.displayLink?.isPaused = false

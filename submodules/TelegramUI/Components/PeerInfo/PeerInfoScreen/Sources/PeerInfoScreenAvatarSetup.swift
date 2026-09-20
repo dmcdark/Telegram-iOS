@@ -471,7 +471,7 @@ extension PeerInfoScreenImpl {
         let _ = (self.context.engine.data.get(
             TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
             guard let self, let peer else {
                 return
             }
@@ -525,9 +525,9 @@ extension PeerInfoScreenImpl {
             let parentController = (self.context.sharedContext.mainWindow?.viewController as? NavigationController)?.topViewController as? ViewController
             
             var dismissImpl: (() -> Void)?
-            let (mainController, pickerHolder) = self.context.sharedContext.makeAvatarMediaPickerScreen(context: self.context, peerType: PeerType.getType(for: peer), getSourceRect: { return nil }, canDelete: hasDeleteButton, performDelete: { [weak self] in
+            let (mainController, pickerHolder) = self.context.sharedContext.makeAvatarMediaPickerScreen(context: self.context, peerType: PeerType.getType(for: peer), getSourceRect: { return nil }, canDelete: hasDeleteButton, performDelete: { [weak self = self] in
                 self?.openAvatarRemoval(mode: mode, peer: peer, item: item)
-            }, completion: { [weak self] result, transitionView, transitionRect, transitionImage, fromCamera, transitionOut, cancelled in
+            }, completion: { [weak self = self] result, transitionView, transitionRect, transitionImage, fromCamera, transitionOut, cancelled in
                 guard let self else {
                     return
                 }
@@ -571,12 +571,12 @@ extension PeerInfoScreenImpl {
                         peerType = .user
                     }
                     let controller = AvatarEditorScreen(context: self.context, inputData: keyboardInputData.get(), peerType: peerType, markup: emojiMarkup)
-                    controller.imageCompletion = { [weak self] image, commit in
+                    controller.imageCompletion = { [weak self = self] image, commit in
                         resultImage = image
                         self?.updateProfilePhoto(image, mode: mode, uploadStatus: uploadStatusPromise)
                         commit()
                     }
-                    controller.videoCompletion = { [weak self] image, url, values, markup, commit in
+                    controller.videoCompletion = { [weak self = self] image, url, values, markup, commit in
                         resultImage = image
                         self?.updateProfileVideo(image, video: nil, values: nil, markup: markup, mode: mode, uploadStatus: uploadStatusPromise)
                         commit()
@@ -628,7 +628,7 @@ extension PeerInfoScreenImpl {
                             commit()
                         }
                     },
-                    completion: { [weak self] results, commit in
+                    completion: { [weak self = self] results, commit in
                         guard let result = results.first else {
                             return
                         }
@@ -698,7 +698,7 @@ extension PeerInfoScreenImpl {
     }
     
     func openAvatarRemoval(mode: PeerInfoAvatarEditingMode, peer: EnginePeer? = nil, item: PeerInfoAvatarListItem? = nil, completion: @escaping () -> Void = {}) {
-        let proceed = { [weak self] in
+        let proceed = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -837,7 +837,7 @@ extension PeerInfoScreenImpl {
         
         var dismissStatus: (() -> Void)?
         if [.suggest, .fallback, .accept].contains(mode) {
-            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self] in
+            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self = self] in
                 self?.controllerNode.updateAvatarDisposable.set(nil)
                 dismissStatus?()
             }))
@@ -854,7 +854,7 @@ extension PeerInfoScreenImpl {
         }
 
         self.controllerNode.updateAvatarDisposable.set((signal
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -874,7 +874,7 @@ extension PeerInfoScreenImpl {
                 dismissStatus?()
                 
                 let _ = (strongSelf.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: strongSelf.peerId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                     if let strongSelf = self, let peer {
                         switch mode {
                         case .fallback:
@@ -889,7 +889,7 @@ extension PeerInfoScreenImpl {
                                 }))
                             }
                         case .accept:
-                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedPhotoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedPhotoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedPhotoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedPhotoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                                 if case .info = action {
                                     self?.parentController?.openSettings(edit: false)
                                 }
@@ -977,7 +977,7 @@ extension PeerInfoScreenImpl {
                         let tempFile = EngineTempBox.shared.tempFile(fileName: "video.mp4")
                         let videoExport = MediaEditorVideoExport(postbox: context.account.postbox, subject: exportSubject, configuration: configuration, outputPath: tempFile.path, textScale: 2.0)
                         let _ = (videoExport.status
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] status in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] status in
                             guard let self else {
                                 return
                             }
@@ -1012,7 +1012,7 @@ extension PeerInfoScreenImpl {
         
         var dismissStatus: (() -> Void)?
         if [.suggest, .fallback, .accept].contains(mode) {
-            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self] in
+            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self = self] in
                 self?.controllerNode.updateAvatarDisposable.set(nil)
                 dismissStatus?()
             }))
@@ -1057,7 +1057,7 @@ extension PeerInfoScreenImpl {
                 })
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -1077,7 +1077,7 @@ extension PeerInfoScreenImpl {
                 dismissStatus?()
                 
                 let _ = (strongSelf.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: strongSelf.peerId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                     if let strongSelf = self, let peer {
                         switch mode {
                         case .fallback:
@@ -1092,7 +1092,7 @@ extension PeerInfoScreenImpl {
                                 }))
                             }
                         case .accept:
-                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                                 if case .info = action {
                                     self?.parentController?.openSettings(edit: false)
                                 }
@@ -1139,7 +1139,7 @@ extension PeerInfoScreenImpl {
         
         let videoResource: Signal<TelegramMediaResource?, UploadPeerPhotoError>
         if uploadVideo {
-            videoResource = Signal<TelegramMediaResource?, UploadPeerPhotoError> { [weak self] subscriber in
+            videoResource = Signal<TelegramMediaResource?, UploadPeerPhotoError> { [weak self = self] subscriber in
                 let entityRenderer: LegacyPaintEntityRenderer? = adjustments.flatMap { adjustments in
                     if let paintingData = adjustments.paintingData, paintingData.hasAnimation {
                         return LegacyPaintEntityRenderer(postbox: account.postbox, adjustments: adjustments)
@@ -1226,7 +1226,7 @@ extension PeerInfoScreenImpl {
         
         var dismissStatus: (() -> Void)?
         if [.suggest, .fallback, .accept].contains(mode) {
-            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self] in
+            let statusController = OverlayStatusController(theme: self.presentationData.theme, type: .loading(cancelled: { [weak self = self] in
                 self?.controllerNode.updateAvatarDisposable.set(nil)
                 dismissStatus?()
             }))
@@ -1271,7 +1271,7 @@ extension PeerInfoScreenImpl {
                 })
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -1289,7 +1289,7 @@ extension PeerInfoScreenImpl {
                 dismissStatus?()
                 
                 let _ = (strongSelf.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: strongSelf.peerId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                     if let strongSelf = self, let peer {
                         switch mode {
                         case .fallback:
@@ -1304,7 +1304,7 @@ extension PeerInfoScreenImpl {
                                 }))
                             }
                         case .accept:
-                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+                            (strongSelf.parentController?.topViewController as? ViewController)?.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .image(image: image, title: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccess, text: strongSelf.presentationData.strings.Conversation_SuggestedVideoSuccessText, round: true, undoText: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                                 if case .info = action {
                                     self?.parentController?.openSettings(edit: false)
                                 }

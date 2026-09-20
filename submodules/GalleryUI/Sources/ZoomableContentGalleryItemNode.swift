@@ -44,7 +44,7 @@ open class ZoomableContentGalleryItemNode: GalleryItemNode, ASScrollViewDelegate
         let edgeWidth: CGFloat = 44.0
         
         let tapRecognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.contentTap(_:)))
-        tapRecognizer.tapActionAtPoint = { [weak self] location in
+        tapRecognizer.tapActionAtPoint = { [weak self = self] location in
             if let strongSelf = self {
                 let pointInNode = strongSelf.scrollNode.view.convert(location, to: strongSelf.view)
                 if pointInNode.x < edgeWidth || pointInNode.x > strongSelf.frame.width - edgeWidth {

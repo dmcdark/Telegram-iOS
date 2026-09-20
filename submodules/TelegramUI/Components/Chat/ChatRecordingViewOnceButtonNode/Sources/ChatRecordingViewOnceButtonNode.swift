@@ -31,7 +31,7 @@ public final class ChatRecordingViewOnceButtonNode: HighlightTrackingButtonNode 
         self.view.addSubview(self.backgroundView)
         self.view.addSubview(self.iconView)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let self, self.bounds.width > 0.0 {
                 let topScale: CGFloat = (self.bounds.width - 8.0) / self.bounds.width
                 let maxScale: CGFloat = (self.bounds.width + 2.0) / self.bounds.width
@@ -44,7 +44,7 @@ public final class ChatRecordingViewOnceButtonNode: HighlightTrackingButtonNode 
                     let transition = ContainedViewLayoutTransition.immediate
                     transition.updateTransformScale(node: self, scale: 1.0)
                     
-                    self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                    self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                         guard let self else {
                             return
                         }

@@ -74,7 +74,7 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
         super.init(navigationBarPresentationData: navigationBarPresentationData)
         
         self.presentationDataDisposable = (self.updatedPresentationData.1
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
             }
@@ -126,14 +126,14 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
                 transition.updateFrame(node: giftAuctionAccessoryPanel, frame: panelFrame)
                 giftAuctionAccessoryPanel.updateLayout(size: panelFrame.size, leftInset: layout.safeInsets.left, rightInset: layout.safeInsets.right, isHidden: !self.displayNavigationBar, transition: transition)
             } else {
-                giftAuctionAccessoryPanel = GiftAuctionAccessoryPanel(context: self.context, theme: self.presentationData.theme, strings: self.presentationData.strings, tapAction: { [weak self] in
+                giftAuctionAccessoryPanel = GiftAuctionAccessoryPanel(context: self.context, theme: self.presentationData.theme, strings: self.presentationData.strings, tapAction: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     if self.giftAuctionStates.count == 1, let gift = self.giftAuctionStates.first?.gift, case let .generic(gift) = gift {
                         if let giftAuctionsManager = self.context.giftAuctionsManager {
                             let _ = (giftAuctionsManager.auctionContext(for: .giftId(gift.id))
-                            |> deliverOnMainQueue).start(next: { [weak self] auction in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] auction in
                                 guard let self, let auction else {
                                     return
                                 }
@@ -181,7 +181,7 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
     }
     
     open var keyShortcuts: [KeyShortcut] {
-        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self] in
+        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self = self] in
             if !(self?.navigationController?.topViewController is TabBarController) {
                 _ = self?.navigationBar?.executeBack()
             }
@@ -218,7 +218,7 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
                 return (result, callJoinAsPeerId)
             }
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] peers, callJoinAsPeerId in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peers, callJoinAsPeerId in
                 guard let strongSelf = self else {
                     return
                 }
@@ -297,13 +297,13 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
         
         let signal = self.context.engine.peers.joinCallInvitationInformation(messageId: message.id)
         let _ = (signal
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] resolvedCallLink in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] resolvedCallLink in
             guard let self else {
                 return
             }
             
             let _ = (self.context.engine.calls.getGroupCallPersistentSettings(callId: resolvedCallLink.id)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] value in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -312,7 +312,7 @@ open class TelegramBaseController: ViewController, KeyShortcutResponder {
                 
                 self.context.joinConferenceCall(call: resolvedCallLink, isVideo: conferenceCall.flags.contains(.isVideo), unmuteByDefault: value.isMicrophoneEnabledByDefault)
             })
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             guard let self else {
                 return
             }

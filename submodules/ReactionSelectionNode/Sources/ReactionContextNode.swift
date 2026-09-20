@@ -210,7 +210,7 @@ private final class TitleLabelView: UIView {
                     } else {
                         return nil
                     }
-                }, tapAction: { [weak self] attributes, _ in
+                }, tapAction: { [weak self = self] attributes, _ in
                     guard let self else {
                         return
                     }
@@ -614,7 +614,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
         self.addSubnode(self.previewingItemContainer)
         
         if let titleLabelView = self.titleLabelView {
-            titleLabelView.action = { [weak self] in
+            titleLabelView.action = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -624,7 +624,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
         
         self.availableReactionsDisposable = (context.engine.stickers.availableReactions()
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] availableReactions in
+        |> deliverOnMainQueue).start(next: { [weak self = self] availableReactions in
             guard let strongSelf = self else {
                 return
             }
@@ -635,7 +635,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             self.hasPremium = true
         } else {
             self.hasPremiumDisposable = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-                                         |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                         |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let strongSelf = self else {
                     return
                 }
@@ -646,7 +646,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
         if let getEmojiContent = getEmojiContent, !self.reactionsLocked {
             self.stableEmptyResultEmojiDisposable.set((self.context.engine.data.subscribe(TelegramEngine.EngineData.Item.OrderedLists.ListItems(collectionId: Namespaces.OrderedItemList.CloudFeaturedEmojiPacks))
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] items in
+            |> deliverOnMainQueue).start(next: { [weak self = self] items in
                 guard let strongSelf = self else {
                     return
                 }
@@ -667,7 +667,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             self.emojiContentDisposable = combineLatest(queue: .mainQueue(),
                 getEmojiContent(self.animationCache, self.animationRenderer),
                 self.emojiSearchState.get()
-            ).start(next: { [weak self] emojiContent, emojiSearchState in
+            ).start(next: { [weak self = self] emojiContent, emojiSearchState in
                 guard let strongSelf = self else {
                     return
                 }
@@ -755,7 +755,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
         }
         
         self.genericReactionEffectDisposable = (ReactionContextNode.randomGenericReactionEffect(context: context)
-        |> deliverOnMainQueue).start(next: { [weak self] path in
+        |> deliverOnMainQueue).start(next: { [weak self = self] path in
             self?.genericReactionEffect = path
         })
     }
@@ -1430,7 +1430,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                         separatorColor: self.presentationData.theme.list.itemPlainSeparatorColor.withMultipliedAlpha(0.5),
                         hideTopPanel: hideTopPanel,
                         disableTopPanel: self.alwaysAllowPremiumReactions,
-                        hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                        hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1503,7 +1503,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                         
                         if let expandItemView = self.expandItemView {
                             expandItemView.alpha = 0.0
-                            expandItemView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+                            expandItemView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -1646,7 +1646,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
         }
         
         emojiContent.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-            performItemAction: { [weak self] groupId, item, sourceView, sourceRect, sourceLayer, isLongPress in
+            performItemAction: { [weak self = self] groupId, item, sourceView, sourceRect, sourceLayer, isLongPress in
                 guard let strongSelf = self, let availableReactions = strongSelf.availableReactions else {
                     return
                 }
@@ -1733,7 +1733,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             },
             openSearch: {
             },
-            addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+            addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                 guard let strongSelf = self, let collectionId = groupId.base as? ItemCollectionId else {
                     return
                 }
@@ -1761,7 +1761,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                     }
                 })
             },
-            clearGroup: { [weak self] groupId in
+            clearGroup: { [weak self = self] groupId in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1798,13 +1798,13 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             navigationController: {
                 return nil
             },
-            requestUpdate: { [weak self] transition in
+            requestUpdate: { [weak self = self] transition in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.requestUpdateOverlayWantsToBeBelowKeyboard(transition.containedViewLayoutTransition)
             },
-            updateSearchQuery: { [weak self] query in
+            updateSearchQuery: { [weak self = self] query in
                 guard let self else {
                     return
                 }
@@ -2198,7 +2198,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                         self.emojiSearchStateValue.isSearching = true
                         self.emojiSearchDisposable.set((resultSignal
                         |> delay(0.15, queue: .mainQueue())
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -2392,7 +2392,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                         
                     var version = 0
                     self.emojiSearchDisposable.set((resultSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -2433,7 +2433,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             updateScrollingToItemGroup: {
             },
             onScroll: {},
-            loadMore: { [weak self] in
+            loadMore: { [weak self = self] in
                 self?.emojiSearchContext?.loadMore()
             },
             chatPeerId: nil,
@@ -2939,7 +2939,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
             
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + min(5.0, maxDuration * UIView.animationDurationFactor()), execute: {
                 if self.didTriggerExpandedReaction {
-                    self.animateFromItemNodeToReaction(itemNode: itemNode, targetView: targetView, hideNode: hideNode, completion: { [weak self] in
+                    self.animateFromItemNodeToReaction(itemNode: itemNode, targetView: targetView, hideNode: hideNode, completion: { [weak self = self] in
                         if let strongSelf = self, strongSelf.didTriggerExpandedReaction, let addStandaloneReactionAnimation = addStandaloneReactionAnimation {
                             let standaloneReactionAnimation = StandaloneReactionAnimation(genericReactionEffect: strongSelf.genericReactionEffect)
                             
@@ -3032,7 +3032,7 @@ public final class ReactionContextNode: ASDisplayNode, ASScrollViewDelegate {
                 }
                 
                 self.longPressTimer?.invalidate()
-                self.longPressTimer = SwiftSignalKit.Timer(timeout: longPressDuration, repeat: false, completion: { [weak self] in
+                self.longPressTimer = SwiftSignalKit.Timer(timeout: longPressDuration, repeat: false, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

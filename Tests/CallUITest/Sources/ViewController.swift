@@ -58,7 +58,7 @@ public final class ViewController: UIViewController {
         self.callScreenView = callScreenView
         self.view.addSubview(callScreenView)
         
-        callScreenView.speakerAction = { [weak self] in
+        callScreenView.speakerAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -100,7 +100,7 @@ public final class ViewController: UIViewController {
             default:
                 if self.audioLevelTimer == nil {
                     let startTime = CFAbsoluteTimeGetCurrent()
-                    self.audioLevelTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self] _ in
+                    self.audioLevelTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self = self] _ in
                         guard let self, let callScreenView = self.callScreenView else {
                             return
                         }
@@ -116,7 +116,7 @@ public final class ViewController: UIViewController {
             
             self.update(transition: .spring(duration: 0.4))
         }
-        callScreenView.flipCameraAction = { [weak self] in
+        callScreenView.flipCameraAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -126,7 +126,7 @@ public final class ViewController: UIViewController {
                 //input.sizeMultiplicator = input.sourceId == 0 ? CGPoint(x: 1.0, y: 1.0) : CGPoint(x: 1.0, y: 0.5)
             }
         }
-        callScreenView.videoAction = { [weak self] in
+        callScreenView.videoAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -145,7 +145,7 @@ public final class ViewController: UIViewController {
             }
             self.update(transition: .spring(duration: 0.4))
         }
-        callScreenView.endCallAction = { [weak self] in
+        callScreenView.endCallAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -156,14 +156,14 @@ public final class ViewController: UIViewController {
             self.callState.isRemoteBatteryLow = false
             self.update(transition: .spring(duration: 0.4))
         }
-        callScreenView.backAction = { [weak self] in
+        callScreenView.backAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.callState.isLocalAudioMuted = !self.callState.isLocalAudioMuted
             self.update(transition: .spring(duration: 0.4))
         }
-        callScreenView.closeAction = { [weak self] in
+        callScreenView.closeAction = { [weak self = self] in
             guard let self else {
                 return
             }

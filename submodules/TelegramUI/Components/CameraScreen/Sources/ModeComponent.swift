@@ -160,7 +160,7 @@ final class ModeComponent: Component {
             self.scrollView.scrollsToTop = false
             self.scrollView.clipsToBounds = true
             self.scrollView.delegate = self
-            self.scrollView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+            self.scrollView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
                 guard let self else {
                     return false
                 }

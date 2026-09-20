@@ -140,7 +140,7 @@ public final class HorizontalPeerItemNode: ListViewItemNode {
         self.addSubnode(self.badgeBackgroundNode)
         self.addSubnode(self.badgeTextNode)
         self.addSubnode(self.onlineNode)
-        self.peerNode.toggleSelection = { [weak self] _ in
+        self.peerNode.toggleSelection = { [weak self = self] _ in
             if let item = self?.item {
                 item.action(item.peer)
             }
@@ -163,7 +163,7 @@ public final class HorizontalPeerItemNode: ListViewItemNode {
         
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let itemLayout = ListViewItemNodeLayout(contentSize: CGSize(width: 92.0, height: item.customWidth ?? 80.0), insets: UIEdgeInsets())
             
             let itemTheme: SelectablePeerNodeTheme
@@ -229,7 +229,7 @@ public final class HorizontalPeerItemNode: ListViewItemNode {
                     strongSelf.peerNode.updateSelection(selected: item.isPeerSelected(item.peer.id), animated: false)
                     
                     if let contextAction = item.contextAction {
-                        strongSelf.peerNode.contextAction = { [weak item] node, gesture, location in
+                        strongSelf.peerNode.contextAction = { [weak item = item] node, gesture, location in
                             if let item = item {
                                 contextAction(item.peer, node, gesture, location)
                             }
@@ -296,4 +296,3 @@ public final class HorizontalPeerItemNode: ListViewItemNode {
         self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
     }
 }
-

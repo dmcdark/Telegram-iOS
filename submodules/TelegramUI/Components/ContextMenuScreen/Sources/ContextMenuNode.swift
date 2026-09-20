@@ -30,7 +30,7 @@ private final class ArrowNode: HighlightTrackingButtonNode {
         
         self.addTarget(self, action: #selector(self.pressed), forControlEvents: .touchUpInside)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }
@@ -136,7 +136,7 @@ final class ContextMenuNode: ASDisplayNode {
         self.containerNode.containerNode.addSubnode(self.pageLeftNode)
         self.containerNode.containerNode.addSubnode(self.pageRightNode)
         
-        let navigatePage: (Bool) -> Void = { [weak self] isLeft in
+        let navigatePage: (Bool) -> Void = { [weak self = self] isLeft in
             guard let self else {
                 return
             }
@@ -274,7 +274,7 @@ final class ContextMenuNode: ASDisplayNode {
             self.layer.rasterizationScale = UIScreen.main.scale
             self.layer.shouldRasterize = true
         }
-        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, completion: { [weak self = self] _ in
             self?.allowsGroupOpacity = false
             self?.layer.shouldRasterize = false
         })
@@ -290,7 +290,7 @@ final class ContextMenuNode: ASDisplayNode {
             self.layer.rasterizationScale = UIScreen.main.scale
             self.layer.shouldRasterize = true
         }
-        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.allowsGroupOpacity = false
             self?.layer.shouldRasterize = false
             completion()

@@ -190,7 +190,7 @@ class ReactionChatPreviewItemNode: ListViewItemNode {
                     }
                 case let .custom(fileId):
                     let _ = (item.context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                    |> deliverOnMainQueue).start(next: { [weak self] files in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] files in
                         guard let strongSelf = self else {
                             return
                         }
@@ -241,7 +241,7 @@ class ReactionChatPreviewItemNode: ListViewItemNode {
     
     private func loadNextGenericReactionEffect(context: AccountContext) {
         self.genericReactionEffectDisposable?.dispose()
-        self.genericReactionEffectDisposable = (ReactionContextNode.randomGenericReactionEffect(context: context) |> deliverOnMainQueue).start(next: { [weak self] path in
+        self.genericReactionEffectDisposable = (ReactionContextNode.randomGenericReactionEffect(context: context) |> deliverOnMainQueue).start(next: { [weak self = self] path in
             guard let strongSelf = self else {
                 return
             }
@@ -355,7 +355,7 @@ class ReactionChatPreviewItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] animation in
+            return (layout, { [weak self = self] animation in
                 if let strongSelf = self {
                     if let previousItem = strongSelf.item, previousItem.reaction != item.reaction {
                         if let standaloneReactionAnimation = strongSelf.standaloneReactionAnimation {

@@ -93,7 +93,9 @@ private final class LegacyComponentsGlobalsProviderImpl: NSObject, LegacyCompone
     }
     
     public func applicationWindows() -> [UIWindow]! {
-        return legacyComponentsApplication?.windows ?? []
+        return legacyComponentsApplication?.connectedScenes.compactMap { scene -> [UIWindow]? in
+            return (scene as? UIWindowScene)?.windows
+        }.flatMap { $0 } ?? []
     }
     
     public func applicationStatusBarWindow() -> UIWindow! {
@@ -101,7 +103,7 @@ private final class LegacyComponentsGlobalsProviderImpl: NSObject, LegacyCompone
     }
     
     public func applicationKeyboardWindow() -> UIWindow! {
-        for window in legacyComponentsApplication?.windows ?? [] {
+        for window in self.applicationWindows() ?? [] {
             if isKeyboardWindow(window: window) {
                 return window
             }

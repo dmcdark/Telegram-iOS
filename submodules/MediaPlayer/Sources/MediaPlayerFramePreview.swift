@@ -71,7 +71,7 @@ private final class MediaPlayerFramePreviewImpl {
         let queue = self.queue
         let takeDisposable = MetaDisposable()
         let disposable = (self.context.get()
-        |> take(1)).start(next: { [weak self] context in
+        |> take(1)).start(next: { [weak self = self] context in
             queue.justDispatch {
                 guard context.queue === queue else {
                     return
@@ -329,7 +329,7 @@ public final class MediaPlayerFramePreviewHLS: FramePreview {
                     return loadPlaylist($0.playlist, $0.dataFile)
                 })
             )
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] mainPlaylist, alternativePlaylists in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] mainPlaylist, alternativePlaylists in
                 guard let self else {
                     return
                 }
@@ -428,7 +428,7 @@ public final class MediaPlayerFramePreviewHLS: FramePreview {
             }
             
             let queue = self.queue
-            let updateState: (FFMpegLookahead.State) -> Void = { [weak self] state in
+            let updateState: (FFMpegLookahead.State) -> Void = { [weak self = self] state in
                 queue.async {
                     guard let self else {
                         return
@@ -756,7 +756,7 @@ public final class MediaPlayerFramePreviewHLSThumbnails: FramePreview {
                 self.postbox.mediaBox.resourceData(self.fileMap.media.resource) |> filter { $0.complete } |> take(1),
                 self.postbox.mediaBox.resourceData(self.file.media.resource) |> filter { $0.complete } |> take(1)
             )
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] fileMap, file in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] fileMap, file in
                 guard let self else {
                     return
                 }

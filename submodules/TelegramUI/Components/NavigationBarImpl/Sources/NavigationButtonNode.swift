@@ -94,7 +94,7 @@ private final class ItemComponent: Component {
                 case .back:
                     break
                 case let .item(item):
-                    self.setEnabledListener = item.addSetEnabledListener { [weak self] _ in
+                    self.setEnabledListener = item.addSetEnabledListener { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -102,7 +102,7 @@ private final class ItemComponent: Component {
                             self.state?.updated(transition: .immediate)
                         }
                     }
-                    self.setTitleListener = item.addSetTitleListener { [weak self] _ in
+                    self.setTitleListener = item.addSetTitleListener { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -235,7 +235,7 @@ private final class NavigationButtonItemNode: ImmediateTextNode {
                 }
                 
                 if let item = self.item {
-                    self.setEnabledListener = item.addSetEnabledListener { [weak self] value in
+                    self.setEnabledListener = item.addSetEnabledListener { [weak self = self] value in
                         guard let self else {
                             return
                         }
@@ -643,7 +643,7 @@ public final class NavigationButtonNodeImpl: ContextControllerSourceNode, Naviga
                     }
                 }
             }
-            node.requestUpdate = { [weak self] in
+            node.requestUpdate = { [weak self = self] in
                 self?.requestUpdate?()
             }
             self.nodes.append(node)
@@ -693,7 +693,7 @@ public final class NavigationButtonNodeImpl: ContextControllerSourceNode, Naviga
                         }
                     }
                 }
-                node.requestUpdate = { [weak self] in
+                node.requestUpdate = { [weak self = self] in
                     self?.requestUpdate?()
                 }
                 self.nodes.append(node)

@@ -68,7 +68,7 @@ public final class ListSwitchItemComponent: Component {
                 transition: transition,
                 component: AnyComponent(SwitchComponent(
                     value: component.value,
-                    valueUpdated: { [weak self] value in
+                    valueUpdated: { [weak self = self] value in
                         guard let self else {
                             return
                         }

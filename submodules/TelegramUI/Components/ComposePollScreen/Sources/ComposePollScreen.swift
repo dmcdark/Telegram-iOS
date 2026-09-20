@@ -311,7 +311,7 @@ final class ComposePollScreenComponent: Component {
             self.addSubview(self.bottomEdgeEffectView)
             
             let reorderRecognizer = ReorderGestureRecognizer(
-                shouldBegin: { [weak self] point in
+                shouldBegin: { [weak self = self] point in
                     guard let self, let (id, item) = self.item(at: point) else {
                         return (allowed: false, requiresLongPress: false, id: nil, item: nil)
                     }
@@ -319,19 +319,19 @@ final class ComposePollScreenComponent: Component {
                 },
                 willBegin: { point in
                 },
-                began: { [weak self] item in
+                began: { [weak self = self] item in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: item)
                 },
-                ended: { [weak self] in
+                ended: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: nil)
                 },
-                moved: { [weak self] distance in
+                moved: { [weak self = self] distance in
                     guard let self else {
                         return
                     }
@@ -821,13 +821,13 @@ final class ComposePollScreenComponent: Component {
                             }
                         }
                     })
-                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self] _ in
+                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self = self] _ in
                         Queue.mainQueue().after(0.3) {
                             guard let self else {
                                 return
                             }
                             if self.currentInputMode == .keyboard {
-                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self] finished in
+                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self = self] finished in
                                     guard let self else {
                                         return
                                     }
@@ -950,7 +950,7 @@ final class ComposePollScreenComponent: Component {
                 subject: pollAttachmentSubject,
                 availableButtons: availableButtons,
                 inputMediaNodeData: self.inputMediaNodeDataPromise.get() |> map(Optional.init),
-                present: { [weak self] c, push in
+                present: { [weak self = self] c, push in
                     guard let parentController = (self?.environment?.controller() as? ComposePollScreen)?.parentController() else {
                         return
                     }
@@ -960,7 +960,7 @@ final class ComposePollScreenComponent: Component {
                         parentController.present(c, in: .window(.root))
                     }
                 },
-                completion: { [weak self] media in
+                completion: { [weak self = self] media in
                 guard let self else {
                     return
                 }
@@ -983,7 +983,7 @@ final class ComposePollScreenComponent: Component {
                 text: presentationData.strings.CreatePoll_Link_Description,
                 link: link,
                 preview: true,
-                apply: { [weak self] link, webpage in
+                apply: { [weak self = self] link, webpage in
                     guard let self, let link else {
                         return
                     }
@@ -1021,7 +1021,7 @@ final class ComposePollScreenComponent: Component {
                     source: .resource(media.media.resourceReference(largest.resource)),
                     dimensions: largest.dimensions
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -1060,7 +1060,7 @@ final class ComposePollScreenComponent: Component {
                     attributes: file.attributes,
                     hintFileIsLarge: false
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1088,7 +1088,7 @@ final class ComposePollScreenComponent: Component {
             }
             if let webpage = media.media.media as? TelegramMediaWebpage, case let .Loaded(content) = webpage.content {
                 media.uploadDisposable = (webpagePreview(account: component.context.account, urls: [content.url])
-                |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -1127,7 +1127,7 @@ final class ComposePollScreenComponent: Component {
                     
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.CreatePoll_Media_Replace, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -1137,7 +1137,7 @@ final class ComposePollScreenComponent: Component {
                     
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.CreatePoll_Media_Delete, textColor: .destructive, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -1168,7 +1168,7 @@ final class ComposePollScreenComponent: Component {
                     
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.CreatePoll_Media_Replace, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -1178,7 +1178,7 @@ final class ComposePollScreenComponent: Component {
                     
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.CreatePoll_Media_Delete, textColor: .destructive, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -1246,7 +1246,7 @@ final class ComposePollScreenComponent: Component {
                 let optionText = timeIntervalString(strings: presentationData.strings, value: value)
                 subItems.append(.action(ContextMenuActionItem(text: optionText, icon: { theme in
                     return nil
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     guard let self else {
                         return
@@ -1258,7 +1258,7 @@ final class ComposePollScreenComponent: Component {
             
             subItems.append(.action(ContextMenuActionItem(text: presentationData.strings.CreatePoll_TimeLimit_Custom, icon: { theme in
                 return nil
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 guard let self else {
                     return
@@ -1298,7 +1298,7 @@ final class ComposePollScreenComponent: Component {
                 currentRepeatPeriod: nil,
                 minimalTime: nil,
                 isDark: false,
-                completion: { [weak self] result in
+                completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -1328,11 +1328,11 @@ final class ComposePollScreenComponent: Component {
                 initialSelectedCountries: self.limitToCountries,
                 showFragment: true
             )
-            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                 let controller = CountriesMultiselectionScreen(
                     context: component.context,
                     stateContext: stateContext,
-                    completion: { [weak self] countries in
+                    completion: { [weak self = self] countries in
                         guard let self else {
                             return
                         }
@@ -1416,7 +1416,7 @@ final class ComposePollScreenComponent: Component {
                     )
                 )
                 self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1442,7 +1442,7 @@ final class ComposePollScreenComponent: Component {
                     },
                     updateChoosingSticker: { _ in
                     },
-                    switchToTextInput: { [weak self] in
+                    switchToTextInput: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1451,7 +1451,7 @@ final class ComposePollScreenComponent: Component {
                     },
                     dismissTextInput: {
                     },
-                    insertText: { [weak self] text in
+                    insertText: { [weak self = self] text in
                         guard let self else {
                             return
                         }
@@ -1474,7 +1474,7 @@ final class ComposePollScreenComponent: Component {
                             }
                         }
                     },
-                    backwardsDeleteText: { [weak self] in
+                    backwardsDeleteText: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1498,19 +1498,19 @@ final class ComposePollScreenComponent: Component {
                     },
                     openStickerEditor: {
                     },
-                    presentController: { [weak self] c, a in
+                    presentController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    presentGlobalOverlayController: { [weak self] c, a in
+                    presentGlobalOverlayController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                     },
-                    getNavigationController: { [weak self] () -> NavigationController? in
+                    getNavigationController: { [weak self = self] () -> NavigationController? in
                         guard let self else {
                             return nil
                         }
@@ -1526,7 +1526,7 @@ final class ComposePollScreenComponent: Component {
                         }
                         return nil
                     },
-                    requestLayout: { [weak self] transition in
+                    requestLayout: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -1589,7 +1589,7 @@ final class ComposePollScreenComponent: Component {
                 backspaceKeyAction: nil,
                 selection: nil,
                 inputMode: self.currentInputMode,
-                toggleInputMode: { [weak self] in
+                toggleInputMode: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1622,7 +1622,7 @@ final class ComposePollScreenComponent: Component {
                 backspaceKeyAction: nil,
                 selection: nil,
                 inputMode: self.currentInputMode,
-                toggleInputMode: { [weak self] in
+                toggleInputMode: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1634,7 +1634,7 @@ final class ComposePollScreenComponent: Component {
                     }
                     self.state?.updated(transition: .spring(duration: 0.4))
                 },
-                attachAction: { [weak self] in
+                attachAction: { [weak self = self] in
                     self?.openAttachedMedia(subject: .description)
                 },
                 tag: self.pollDescriptionFieldTag
@@ -1692,7 +1692,7 @@ final class ComposePollScreenComponent: Component {
                         isSelected: self.selectedQuizOptionIds.contains(optionId),
                         isMultiSelection: self.effectiveIsMultiAnswer,
                         isQuiz: self.isQuiz,
-                        toggle: { [weak self] in
+                        toggle: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1738,7 +1738,7 @@ final class ComposePollScreenComponent: Component {
                     canAdd: i != 0 && i < component.initialData.maxPollAnswersCount,
                     attachment: pollOptionAttachment,
                     emptyLineHandling: .notAllowed,
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1754,7 +1754,7 @@ final class ComposePollScreenComponent: Component {
                             }
                         }
                     },
-                    backspaceKeyAction: { [weak self] in
+                    backspaceKeyAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1774,7 +1774,7 @@ final class ComposePollScreenComponent: Component {
                     },
                     selection: optionSelection,
                     inputMode: self.currentInputMode,
-                    toggleInputMode: { [weak self] in
+                    toggleInputMode: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1786,10 +1786,10 @@ final class ComposePollScreenComponent: Component {
                         }
                         self.state?.updated(transition: .spring(duration: 0.4))
                     },
-                    attachAction: { [weak self] in
+                    attachAction: { [weak self = self] in
                         self?.openAttachedMedia(subject: .pollOption(pollOption))
                     },
-                    deleteAction: canDelete ? { [weak self] in
+                    deleteAction: canDelete ? { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2039,7 +2039,7 @@ final class ComposePollScreenComponent: Component {
                     leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                         Image(image: self.cachedViewIcon, size: CGSize(width: 30.0, height: 30.0))
                     )), false),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: !self.isAnonymous, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: !self.isAnonymous, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2079,7 +2079,7 @@ final class ComposePollScreenComponent: Component {
                 leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                     Image(image: self.cachedMultipleIcon, size: CGSize(width: 30.0, height: 30.0))
                 )), false),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.effectiveIsMultiAnswer, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.effectiveIsMultiAnswer, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2128,7 +2128,7 @@ final class ComposePollScreenComponent: Component {
                     leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                         Image(image: self.cachedAddIcon, size: CGSize(width: 30.0, height: 30.0))
                     )), false),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: self.isQuiz ? .lock : .regular, isOn: self.canAddOptions, isInteractive: !self.isQuiz, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: self.isQuiz ? .lock : .regular, isOn: self.canAddOptions, isInteractive: !self.isQuiz, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2169,7 +2169,7 @@ final class ComposePollScreenComponent: Component {
                 leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                     Image(image: self.cachedRevoteIcon, size: CGSize(width: 30.0, height: 30.0))
                 )), false),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.canRevote, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.canRevote, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2206,7 +2206,7 @@ final class ComposePollScreenComponent: Component {
                 leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                     Image(image: self.cachedShuffleIcon, size: CGSize(width: 30.0, height: 30.0))
                 )), false),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.shuffleOptions, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.shuffleOptions, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2243,7 +2243,7 @@ final class ComposePollScreenComponent: Component {
                 leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                     Image(image: self.cachedQuizIcon, size: CGSize(width: 30.0, height: 30.0))
                 )), false),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isQuiz, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isQuiz, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2286,7 +2286,7 @@ final class ComposePollScreenComponent: Component {
                 leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                     Image(image: self.cachedDurationIcon, size: CGSize(width: 30.0, height: 30.0))
                 )), false),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.limitDuration, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.limitDuration, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2340,7 +2340,7 @@ final class ComposePollScreenComponent: Component {
                         maximumNumberOfLines: 1
                     )))),
                     accessory: .expandArrows,
-                    action: { [weak self] view in
+                    action: { [weak self = self] view in
                         guard let self else {
                             return
                         }
@@ -2365,7 +2365,7 @@ final class ComposePollScreenComponent: Component {
                     leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                         Image(image: self.cachedEmptyIcon, size: CGSize(width: 30.0, height: 30.0))
                     )), false),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.hideResults, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.hideResults, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2413,7 +2413,7 @@ final class ComposePollScreenComponent: Component {
                     leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                         Image(image: self.cachedSubscribersIcon, size: CGSize(width: 30.0, height: 30.0))
                     )), false),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.restrictToSubscribers, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.restrictToSubscribers, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2450,7 +2450,7 @@ final class ComposePollScreenComponent: Component {
                     leftIcon: .custom(AnyComponentWithIdentity(id: 0, component: AnyComponent(
                         Image(image: self.cachedCountryIcon, size: CGSize(width: 30.0, height: 30.0))
                     )), false),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.limitByCountry, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.limitByCountry, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2508,7 +2508,7 @@ final class ComposePollScreenComponent: Component {
                             maximumNumberOfLines: 1
                         )))),
                         accessory: .arrow,
-                        action: { [weak self] view in
+                        action: { [weak self = self] view in
                             guard let self else {
                                 return
                             }
@@ -2587,7 +2587,7 @@ final class ComposePollScreenComponent: Component {
                             characterLimit: component.initialData.maxPollTextLength,
                             attachment: quizAnswerAttachment,
                             emptyLineHandling: .allowed,
-                            returnKeyAction: { [weak self] in
+                            returnKeyAction: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -2596,7 +2596,7 @@ final class ComposePollScreenComponent: Component {
                             backspaceKeyAction: nil,
                             selection: nil,
                             inputMode: self.currentInputMode,
-                            toggleInputMode: { [weak self] in
+                            toggleInputMode: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -2608,7 +2608,7 @@ final class ComposePollScreenComponent: Component {
                                 }
                                 self.state?.updated(transition: .spring(duration: 0.4))
                             },
-                            attachAction: { [weak self] in
+                            attachAction: { [weak self = self] in
                                 self?.openAttachedMedia(subject: .quizAnswer)
                             },
                             tag: self.quizAnswerTextInputTag
@@ -2863,7 +2863,7 @@ final class ComposePollScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? ComposePollScreen else {
                             return
                         }
@@ -2898,7 +2898,7 @@ final class ComposePollScreenComponent: Component {
                     component: AnyComponentWithIdentity(id: "done", component: AnyComponent(
                         Text(text: environment.strings.MediaPicker_Send, font: Font.semibold(17.0), color: environment.theme.list.itemCheckColors.foregroundColor)
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? ComposePollScreen else {
                             return
                         }
@@ -2978,7 +2978,7 @@ final class ComposePollScreenComponent: Component {
             }
             
             if let currentEditingTag = self.currentEditingTag, previousEditingTag !== currentEditingTag, self.currentInputMode != .keyboard {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -3058,7 +3058,7 @@ public class ComposePollScreen: ViewControllerComponentContainer, AttachmentCont
     public var mediaPickerContext: AttachmentMediaPickerContext?
     
     public var isPanGestureEnabled: (() -> Bool)? {
-        return { [weak self] in
+        return { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ComposePollScreenComponent.View else {
                 return true
             }
@@ -3106,14 +3106,14 @@ public class ComposePollScreen: ViewControllerComponentContainer, AttachmentCont
         }
         sendButtonItem.isEnabled = false
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ComposePollScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? ComposePollScreenComponent.View else {
                 return true
             }

@@ -132,7 +132,7 @@ final class PeerInfoHeaderNavigationButtonContainerNode: SparseNode {
                     buttonNode = PeerInfoHeaderNavigationButton()
                     self.leftButtonNodes[spec] = buttonNode
                     self.leftButtonsContainer.addSubview(buttonNode.view)
-                    buttonNode.action = { [weak self] _, gesture in
+                    buttonNode.action = { [weak self = self] _, gesture in
                         guard let strongSelf = self, let buttonNode = strongSelf.leftButtonNodes[spec] else {
                             return
                         }
@@ -229,7 +229,7 @@ final class PeerInfoHeaderNavigationButtonContainerNode: SparseNode {
                     self.rightButtonNodes[spec] = buttonNode
                     self.rightButtonsContainer.addSubview(buttonNode.view)
                 }
-                buttonNode.action = { [weak self] _, gesture in
+                buttonNode.action = { [weak self = self] _, gesture in
                     guard let strongSelf = self, let buttonNode = strongSelf.rightButtonNodes[spec] else {
                         return
                     }

@@ -152,7 +152,7 @@ public final class CommunityRequestItemComponent: Component {
 
             self.addSubview(self.containerButton)
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 self?.customUpdateIsHighlighted?(highlighted)
             }
 
@@ -490,7 +490,7 @@ public final class CommunityRequestItemComponent: Component {
                     fitToContentWidth: true,
                     isEnabled: buttonsEnabled,
                     displaysProgress: component.declineDisplaysProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -525,7 +525,7 @@ public final class CommunityRequestItemComponent: Component {
                     fitToContentWidth: true,
                     isEnabled: buttonsEnabled,
                     displaysProgress: component.addDisplaysProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

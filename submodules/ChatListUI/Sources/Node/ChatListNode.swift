@@ -1431,19 +1431,19 @@ public final class ChatListNode: ListViewImpl {
         
         self.keepMinimalScrollHeightWithTopInset = self.scrollHeightTopInset
         
-        let nodeInteraction = ChatListNodeInteraction(context: context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, activateSearch: { [weak self] in
+        let nodeInteraction = ChatListNodeInteraction(context: context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, activateSearch: { [weak self = self] in
             if let strongSelf = self, let activateSearch = strongSelf.activateSearch {
                 activateSearch()
             }
-        }, peerSelected: { [weak self] peer, _, threadId, promoInfo, _ in
+        }, peerSelected: { [weak self = self] peer, _, threadId, promoInfo, _ in
             if let strongSelf = self, let peerSelected = strongSelf.peerSelected {
                 peerSelected(peer, threadId, true, true, promoInfo)
             }
-        }, disabledPeerSelected: { [weak self] peer, threadId, reason in
+        }, disabledPeerSelected: { [weak self = self] peer, threadId, reason in
             if let strongSelf = self, let disabledPeerSelected = strongSelf.disabledPeerSelected {
                 disabledPeerSelected(peer, threadId, reason)
             }
-        }, togglePeerSelected: { [weak self] peer, _ in
+        }, togglePeerSelected: { [weak self = self] peer, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1454,7 +1454,7 @@ public final class ChatListNode: ListViewImpl {
                 return
             }
             var didBeginSelecting = false
-            strongSelf.updateState { [weak self] state in
+            strongSelf.updateState { [weak self = self] state in
                 var state = state
                 if state.selectedPeerIds.contains(peer.id) {
                     state.selectedPeerIds.remove(peer.id)
@@ -1474,7 +1474,7 @@ public final class ChatListNode: ListViewImpl {
             if didBeginSelecting {
                 strongSelf.didBeginSelectingChats?()
             }
-        }, togglePeersSelection: { [weak self] peers, selected in
+        }, togglePeersSelection: { [weak self = self] peers, selected in
             self?.updateState { state in
                 var state = state
                 if selected {
@@ -1502,9 +1502,9 @@ public final class ChatListNode: ListViewImpl {
             if selected && !peers.isEmpty {
                 self?.didBeginSelectingChats?()
             }
-        }, additionalCategorySelected: { [weak self] id in
+        }, additionalCategorySelected: { [weak self = self] id in
             self?.additionalCategorySelected?(id)
-        }, messageSelected: { [weak self] peer, threadId, message, promoInfo in
+        }, messageSelected: { [weak self = self] peer, threadId, message, promoInfo in
             if let strongSelf = self, let peerSelected = strongSelf.peerSelected {
                 var activateInput = false
                 for media in message.media {
@@ -1519,12 +1519,12 @@ public final class ChatListNode: ListViewImpl {
                 }
                 peerSelected(peer, threadId, true, activateInput, promoInfo)
             }
-        }, groupSelected: { [weak self] groupId in
+        }, groupSelected: { [weak self = self] groupId in
             if let strongSelf = self, let groupSelected = strongSelf.groupSelected {
                 groupSelected(groupId)
             }
         }, addContact: { _ in
-        }, setPeerIdWithRevealedOptions: { [weak self] peerId, fromPeerId in
+        }, setPeerIdWithRevealedOptions: { [weak self = self] peerId, fromPeerId in
             if let strongSelf = self {
                 strongSelf.updateState { state in
                     if (peerId == nil && fromPeerId == state.peerIdWithRevealedOptions?.peerId) || (peerId != nil && fromPeerId == nil) || (peerId == nil && fromPeerId == nil) {
@@ -1540,7 +1540,7 @@ public final class ChatListNode: ListViewImpl {
                     }
                 }
             }
-        }, setItemPinned: { [weak self] itemId, _ in
+        }, setItemPinned: { [weak self = self] itemId, _ in
             if case let .savedMessagesChats(peerId) = location {
                 if case let .peer(itemPeerId) = itemId {
                     let _ = (context.engine.peers.toggleForumChannelTopicPinned(id: peerId, threadId: itemPeerId.toInt64())
@@ -1631,7 +1631,7 @@ public final class ChatListNode: ListViewImpl {
                     })
                 })
             }
-        }, setPeerMuted: { [weak self] peerId, _ in
+        }, setPeerMuted: { [weak self = self] peerId, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1645,7 +1645,7 @@ public final class ChatListNode: ListViewImpl {
                 }
                 self?.setCurrentRemovingItemId(nil)
             })
-        }, setPeerThreadMuted: { [weak self] peerId, threadId, value in
+        }, setPeerThreadMuted: { [weak self = self] peerId, threadId, value in
             self?.setCurrentRemovingItemId(ChatListNodeState.ItemId(peerId: peerId, threadId: threadId))
             let _ = (context.engine.peers.updatePeerMuteSetting(peerId: peerId, threadId: threadId, muteInterval: value ? Int32.max : 0)
             |> deliverOnMainQueue).startStandalone(completed: {
@@ -1656,17 +1656,17 @@ public final class ChatListNode: ListViewImpl {
                 }
                 self?.setCurrentRemovingItemId(nil)
             })
-        }, deletePeer: { [weak self] peerId, joined in
+        }, deletePeer: { [weak self = self] peerId, joined in
             self?.deletePeerChat?(peerId, joined)
-        }, deletePeerThread: { [weak self] peerId, threadId in
+        }, deletePeerThread: { [weak self = self] peerId, threadId in
             self?.deletePeerThread?(peerId, threadId)
-        }, setPeerThreadStopped: { [weak self] peerId, threadId, isStopped in
+        }, setPeerThreadStopped: { [weak self = self] peerId, threadId, isStopped in
             self?.setPeerThreadStopped?(peerId, threadId, isStopped)
-        }, setPeerThreadPinned: { [weak self] peerId, threadId, isPinned in
+        }, setPeerThreadPinned: { [weak self = self] peerId, threadId, isPinned in
             self?.setPeerThreadPinned?(peerId, threadId, isPinned)
-        }, setPeerThreadHidden: { [weak self] peerId, threadId, isHidden in
+        }, setPeerThreadHidden: { [weak self = self] peerId, threadId, isHidden in
             self?.setPeerThreadHidden?(peerId, threadId, isHidden)
-        }, updatePeerGrouping: { [weak self] peerId, group in
+        }, updatePeerGrouping: { [weak self = self] peerId, group in
             self?.updatePeerGrouping?(peerId, group)
         }, togglePeerMarkedUnread: { [weak self, weak context] peerId, animated in
             guard let context = context else {
@@ -1682,9 +1682,9 @@ public final class ChatListNode: ListViewImpl {
                 }
                 self?.setCurrentRemovingItemId(nil)
             })
-        }, toggleArchivedFolderHiddenByDefault: { [weak self] in
+        }, toggleArchivedFolderHiddenByDefault: { [weak self = self] in
             self?.toggleArchivedFolderHiddenByDefault?()
-        }, toggleThreadsSelection: { [weak self] threadIds, selected in
+        }, toggleThreadsSelection: { [weak self = self] threadIds, selected in
             self?.updateState { state in
                 var state = state
                 if selected {
@@ -1701,9 +1701,9 @@ public final class ChatListNode: ListViewImpl {
             if selected && !threadIds.isEmpty {
                 self?.didBeginSelectingChats?()
             }
-        }, hidePsa: { [weak self] id in
+        }, hidePsa: { [weak self = self] id in
             self?.hidePsa?(id)
-        }, activateChatPreview: { [weak self] item, threadId, node, gesture, location in
+        }, activateChatPreview: { [weak self = self] item, threadId, node, gesture, location in
             guard let strongSelf = self else {
                 return
             }
@@ -1712,41 +1712,41 @@ public final class ChatListNode: ListViewImpl {
             } else {
                 gesture?.cancel()
             }
-        }, present: { [weak self] c in
+        }, present: { [weak self = self] c in
             self?.present?(c)
-        }, openForumThread: { [weak self] peerId, threadId in
+        }, openForumThread: { [weak self = self] peerId, threadId in
             guard let self else {
                 return
             }
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
                 self.peerSelected?(peer, threadId, true, true, nil)
             })
-        }, openStorageManagement: { [weak self] in
+        }, openStorageManagement: { [weak self = self] in
             guard let self else {
                 return
             }
             let controller = self.context.sharedContext.makeStorageManagementController(context: self.context)
             self.push?(controller)
-        }, openPasswordSetup: { [weak self] in
+        }, openPasswordSetup: { [weak self = self] in
             guard let self else {
                 return
             }
-            Queue.mainQueue().after(0.6) { [weak self] in
+            Queue.mainQueue().after(0.6) { [weak self = self] in
                 if let self {
                     let _ = self.context.engine.notices.dismissServerProvidedSuggestion(suggestion: ServerProvidedSuggestion.setupPassword.id).startStandalone()
                 }
             }
             let controller = self.context.sharedContext.makeSetupTwoFactorAuthController(context: self.context)
             self.push?(controller)
-        }, openPremiumIntro: { [weak self] in
+        }, openPremiumIntro: { [weak self = self] in
             guard let self else {
                 return
             }
-            Queue.mainQueue().after(0.6) { [weak self] in
+            Queue.mainQueue().after(0.6) { [weak self = self] in
                 if let self {
                     let _ = self.context.engine.notices.dismissServerProvidedSuggestion(suggestion: ServerProvidedSuggestion.annualPremium.id).startStandalone()
                     let _ = self.context.engine.notices.dismissServerProvidedSuggestion(suggestion: ServerProvidedSuggestion.upgradePremium.id).startStandalone()
@@ -1755,7 +1755,7 @@ public final class ChatListNode: ListViewImpl {
             }
             let controller = self.context.sharedContext.makePremiumIntroController(context: self.context, source: .ads, forceDark: false, dismissed: nil)
             self.push?(controller)
-        }, openPremiumGift: { [weak self] peers, birthdays in
+        }, openPremiumGift: { [weak self = self] peers, birthdays in
             guard let self else {
                 return
             }
@@ -1773,12 +1773,12 @@ public final class ChatListNode: ListViewImpl {
                 controller.navigationPresentation = .modal
                 self.push?(controller)
             }
-        }, openPremiumManagement: { [weak self] in
+        }, openPremiumManagement: { [weak self = self] in
             guard let self else {
                 return
             }
             self.openPremiumManagement?()
-        }, openActiveSessions: { [weak self] in
+        }, openActiveSessions: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1789,7 +1789,7 @@ public final class ChatListNode: ListViewImpl {
                 return !state.sessions.isEmpty
             }
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+            |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1797,12 +1797,12 @@ public final class ChatListNode: ListViewImpl {
                 let recentSessionsController = self.context.sharedContext.makeRecentSessionsController(context: self.context, activeSessionsContext: activeSessionsContext)
                 self.push?(recentSessionsController)
             })
-        }, openBirthdaySetup: { [weak self] in
+        }, openBirthdaySetup: { [weak self = self] in
             guard let self else {
                 return
             }
             self.openBirthdaySetup?()
-        }, performActiveSessionAction: { [weak self] newSessionReview, isPositive in
+        }, performActiveSessionAction: { [weak self = self] newSessionReview, isPositive in
             guard let self else {
                 return
             }
@@ -1816,7 +1816,7 @@ public final class ChatListNode: ListViewImpl {
                 } else {
                     animationBackgroundColor = UIColor(rgb: 0x474747)
                 }
-                self.present?(UndoOverlayController(presentationData: presentationData, content: .universal(animation: "anim_success", scale: 1.0, colors: ["info1.info1.stroke": animationBackgroundColor, "info2.info2.Fill": animationBackgroundColor], title: presentationData.strings.ChatList_SessionReview_ConfirmToastTitle, text: presentationData.strings.ChatList_SessionReview_ConfirmToastText, customUndoText: nil, timeout: 5), elevatedLayout: false, action: { [weak self] action in
+                self.present?(UndoOverlayController(presentationData: presentationData, content: .universal(animation: "anim_success", scale: 1.0, colors: ["info1.info1.stroke": animationBackgroundColor, "info2.info2.Fill": animationBackgroundColor], title: presentationData.strings.ChatList_SessionReview_ConfirmToastTitle, text: presentationData.strings.ChatList_SessionReview_ConfirmToastText, customUndoText: nil, timeout: 5), elevatedLayout: false, action: { [weak self = self] action in
                     switch action {
                     case .info:
                         self?.interaction?.openActiveSessions()
@@ -1836,7 +1836,7 @@ public final class ChatListNode: ListViewImpl {
                 let _ = self.context.engine.privacy.terminateAnotherSession(id: newSessionReview.id).startStandalone()
                 #endif
             }
-        }, performBotConnectionReviewAction: { [weak self] newBotConnectionReview, isPositive in
+        }, performBotConnectionReviewAction: { [weak self = self] newBotConnectionReview, isPositive in
             guard let self else {
                 return
             }
@@ -1847,26 +1847,26 @@ public final class ChatListNode: ListViewImpl {
                 let _ = removeNewBotConnectionReviews(postbox: self.context.account.postbox, botIds: [newBotConnectionReview.botId]).startStandalone()
                 let _ = self.context.engine.accountData.setAccountConnectedBot(bot: nil).startStandalone()
             }
-        }, openChatFolderUpdates: { [weak self] in
+        }, openChatFolderUpdates: { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (self.chatFolderUpdates.get()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] result in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result in
                 guard let self, let result else {
                     return
                 }
                 
                 self.push?(ChatFolderLinkPreviewScreen(context: self.context, subject: .updates(result), contents: result.chatFolderLinkContents))
             })
-        }, hideChatFolderUpdates: { [weak self] in
+        }, hideChatFolderUpdates: { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (self.chatFolderUpdates.get()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] result in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result in
                 guard let self, let result else {
                     return
                 }
@@ -1875,42 +1875,42 @@ public final class ChatListNode: ListViewImpl {
                     let _ = self.context.engine.peers.hideChatFolderUpdates(folderId: localFilterId).startStandalone()
                 }
             })
-        }, openStories: { [weak self] subject, itemNode in
+        }, openStories: { [weak self = self] subject, itemNode in
             guard let self else {
                 return
             }
             self.openStories?(subject, itemNode)
-        }, openCommunity: { [weak self] communityId in
+        }, openCommunity: { [weak self = self] communityId in
             guard let self else {
                 return
             }
             self.openCommunity?(communityId)
-        }, ungroupCommunity: { [weak self] communityId in
+        }, ungroupCommunity: { [weak self = self] communityId in
             guard let self else {
                 return
             }
             self.ungroupCommunity?(communityId)
-        }, openStarsTopup: { [weak self] amount in
+        }, openStarsTopup: { [weak self = self] amount in
             guard let self else {
                 return
             }
             self.openStarsTopup?(amount)
         }, editPeer: { _ in
-        }, openWebApp: { [weak self] user in
+        }, openWebApp: { [weak self = self] user in
             guard let self else {
                 return
             }
             self.openWebApp?(user)
-        }, openPhotoSetup: { [weak self] in
+        }, openPhotoSetup: { [weak self = self] in
             guard let self else {
                 return
             }
             self.openPhotoSetup?()
-        }, openAdInfo: { [weak self] node, adPeer in
+        }, openAdInfo: { [weak self = self] node, adPeer in
             self?.openAdInfo?(node, adPeer)
-        }, openAccountFreezeInfo: { [weak self] in
+        }, openAccountFreezeInfo: { [weak self = self] in
             self?.openAccountFreezeInfo?()
-        }, openUrl: { [weak self] url in
+        }, openUrl: { [weak self = self] url in
             guard let self else {
                 return
             }
@@ -2670,14 +2670,14 @@ public final class ChatListNode: ListViewImpl {
             |> runOn(prepareOnMainQueue ? Queue.mainQueue() : viewProcessingQueue)
         }
         
-        let appliedTransition = chatListNodeViewTransition |> deliverOnMainQueue |> mapToQueue { [weak self] transition -> Signal<Void, NoError> in
+        let appliedTransition = chatListNodeViewTransition |> deliverOnMainQueue |> mapToQueue { [weak self = self] transition -> Signal<Void, NoError> in
             if let strongSelf = self {
                 return strongSelf.enqueueTransition(transition)
             }
             return .complete()
         }
         
-        self.displayedItemRangeChanged = { [weak self] range, transactionOpaqueState in
+        self.displayedItemRangeChanged = { [weak self = self] range, transactionOpaqueState in
             if let strongSelf = self, let chatListView = (transactionOpaqueState as? ChatListOpaqueTransactionState)?.chatListView {
                 let originalList = chatListView.originalList
                 if let range = range.loadedRange {
@@ -2900,7 +2900,7 @@ public final class ChatListNode: ListViewImpl {
                 }
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] activities in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] activities in
             if let strongSelf = self {
                 strongSelf.updateState { state in
                     var state = state
@@ -2910,7 +2910,7 @@ public final class ChatListNode: ListViewImpl {
             }
         })
         
-        self.reorderItem = { [weak self] fromIndex, toIndex, transactionOpaqueState -> Signal<Bool, NoError> in
+        self.reorderItem = { [weak self = self] fromIndex, toIndex, transactionOpaqueState -> Signal<Bool, NoError> in
             guard let strongSelf = self, let filteredEntries = (transactionOpaqueState as? ChatListOpaqueTransactionState)?.chatListView.filteredEntries else {
                 return .single(false)
             }
@@ -3072,7 +3072,7 @@ public final class ChatListNode: ListViewImpl {
             }
         }
         
-        self.beganInteractiveDragging = { [weak self] _ in
+        self.beganInteractiveDragging = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -3094,7 +3094,7 @@ public final class ChatListNode: ListViewImpl {
             strongSelf.didBeginInteractiveDragging?(strongSelf)
         }
         
-        self.didEndScrolling = { [weak self] _ in
+        self.didEndScrolling = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -3126,7 +3126,7 @@ public final class ChatListNode: ListViewImpl {
             }
         })
         
-        self.visibleContentOffsetChanged = { [weak self] offset, transition in
+        self.visibleContentOffsetChanged = { [weak self = self] offset, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -3168,7 +3168,7 @@ public final class ChatListNode: ListViewImpl {
             strongSelf.pinnedHeaderDisplayFractionUpdated?(transition)
         }
         
-        self.dynamicVisualInsets = { [weak self] in
+        self.dynamicVisualInsets = { [weak self = self] in
             guard let self else {
                 return UIEdgeInsets()
             }
@@ -3181,7 +3181,7 @@ public final class ChatListNode: ListViewImpl {
         self.resetFilter()
         
         let selectionRecognizer = ChatHistoryListSelectionRecognizer(target: self, action: #selector(self.selectionPanGesture(_:)))
-        selectionRecognizer.shouldBegin = { [weak self] in
+        selectionRecognizer.shouldBegin = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -3267,7 +3267,7 @@ public final class ChatListNode: ListViewImpl {
         }
         self.pollFilterUpdatesDisposable = self.context.engine.peers.pollChatFolderUpdates(folderId: id).start()
         self.chatFilterUpdatesDisposable = (self.context.engine.peers.subscribedChatFolderUpdates(folderId: id)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -3286,7 +3286,7 @@ public final class ChatListNode: ListViewImpl {
                 }
                 return nil
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] updatedFilter in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] updatedFilter in
                 guard let strongSelf = self else {
                     return
                 }
@@ -3325,7 +3325,7 @@ public final class ChatListNode: ListViewImpl {
     }
     
     private func enqueueTransition(_ transition: ChatListNodeListViewTransition) -> Signal<Void, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 if let _ = strongSelf.enqueuedTransition {
                     preconditionFailure()
@@ -3355,7 +3355,7 @@ public final class ChatListNode: ListViewImpl {
         if let (transition, completion) = self.enqueuedTransition {
             self.enqueuedTransition = nil
             
-            let completion: (ListViewDisplayedItemRange) -> Void = { [weak self] visibleRange in
+            let completion: (ListViewDisplayedItemRange) -> Void = { [weak self = self] visibleRange in
                 if let strongSelf = self {
                     strongSelf.chatListView = transition.chatListView
                     
@@ -3837,7 +3837,7 @@ public final class ChatListNode: ListViewImpl {
                         return .single(nil)
                     }
                 }
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] indexAndPeer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] indexAndPeer in
                     guard let strongSelf = self, let (index, peer) = indexAndPeer else {
                         return
                     }
@@ -3871,7 +3871,7 @@ public final class ChatListNode: ListViewImpl {
                 }
             case let .peerId(peerId):
                 let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                     guard let strongSelf = self, let peer = peer else {
                         return
                     }
@@ -3883,7 +3883,7 @@ public final class ChatListNode: ListViewImpl {
                 }
                 let _ = (self.chatListFilterValue.get()
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] filter in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] filter in
                     guard let self = self else {
                         return
                     }
@@ -4140,7 +4140,7 @@ public final class ChatListNode: ListViewImpl {
             } else {
                 if let _ = self.selectionScrollActivationTimer {
                 } else {
-                    let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self] in
+                    let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self = self] in
                         self?.setupSelectionScrolling()
                     }, queue: .mainQueue())
                     timer.start()
@@ -4156,7 +4156,7 @@ public final class ChatListNode: ListViewImpl {
     
     private var selectionScrollSkipUpdate = false
     private func setupSelectionScrolling() {
-        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             self?.selectionScrollActivationTimer = nil
             if let strongSelf = self, let delta = strongSelf.selectionScrollDelta {
                 let distance: CGFloat = 15.0 * min(1.0, 0.15 + abs(delta * delta))

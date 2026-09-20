@@ -304,7 +304,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
         
         super.init()
                 
-        requestUpdateLayoutImpl = { [weak self] in
+        requestUpdateLayoutImpl = { [weak self = self] in
             self?.requestUpdateLayout?(false)
         }
         
@@ -338,31 +338,31 @@ final class PeerInfoHeaderNode: ASDisplayNode {
         self.addSubnode(self.searchContainer)
         self.addSubnode(self.searchBarContainer)
         
-        self.avatarListNode.avatarContainerNode.tapped = { [weak self] in
+        self.avatarListNode.avatarContainerNode.tapped = { [weak self = self] in
             self?.initiateAvatarExpansion(gallery: false, first: false)
         }
-        self.avatarListNode.avatarContainerNode.contextAction = { [weak self] node, gesture in
+        self.avatarListNode.avatarContainerNode.contextAction = { [weak self = self] node, gesture in
             self?.displayAvatarContextMenu?(node, gesture)
         }
-        self.avatarListNode.avatarContainerNode.emojiTapped = { [weak self] in
+        self.avatarListNode.avatarContainerNode.emojiTapped = { [weak self = self] in
             self?.displayEmojiPackTooltip?()
         }
         
-        self.editingContentNode.avatarNode.tapped = { [weak self] confirm in
+        self.editingContentNode.avatarNode.tapped = { [weak self = self] confirm in
             self?.initiateAvatarExpansion(gallery: true, first: true)
         }
-        self.editingContentNode.requestEditing = { [weak self] in
+        self.editingContentNode.requestEditing = { [weak self = self] in
             self?.requestOpenAvatarForEditing?(true)
         }
         
-        self.avatarListNode.itemsUpdated = { [weak self] items in
+        self.avatarListNode.itemsUpdated = { [weak self = self] items in
             guard let strongSelf = self, let state = strongSelf.state, let peer = strongSelf.peer, let presentationData = strongSelf.presentationData, let avatarSize = strongSelf.avatarSize else {
                 return
             }
             strongSelf.editingContentNode.avatarNode.update(peer: peer, threadData: strongSelf.threadData, chatLocation: chatLocation, item: strongSelf.avatarListNode.item, updatingAvatar: state.updatingAvatar, uploadProgress: state.avatarUploadProgress, theme: presentationData.theme, avatarSize: avatarSize, isEditing: state.isEditing)
         }
 
-        self.avatarListNode.animateOverlaysFadeIn = { [weak self] in
+        self.avatarListNode.animateOverlaysFadeIn = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -930,7 +930,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     size: emojiStatusSize,
                     isVisibleForAnimations: true,
                     useSharedAnimation: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -952,7 +952,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     size: emojiStatusSize,
                     isVisibleForAnimations: true,
                     useSharedAnimation: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1002,7 +1002,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     particleColor: particleColor,
                     isVisibleForAnimations: true,
                     useSharedAnimation: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1012,7 +1012,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                             self.displayPremiumIntro?(self.titleStatusIconView, currentEmojiStatus, self.emojiStatusFileAndPackTitle.get(), false)
                         }
                     },
-                    emojiFileUpdated: { [weak self] emojiFile in
+                    emojiFileUpdated: { [weak self = self] emojiFile in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1063,7 +1063,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     particleColor: particleColor,
                     isVisibleForAnimations: true,
                     useSharedAnimation: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1403,7 +1403,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                 self.subtitleNode.addSubnode(subtitleBackgroundButton)
                 
                 subtitleBackgroundButton.addTarget(self, action: #selector(self.subtitleBackgroundPressed), forControlEvents: .touchUpInside)
-                subtitleBackgroundButton.highligthedChanged = { [weak self] highlighted in
+                subtitleBackgroundButton.highligthedChanged = { [weak self = self] highlighted in
                     guard let self else {
                         return
                     }
@@ -1521,7 +1521,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
             if let current = self.subtitleBadgeView {
                 subtitleBadgeView = current
             } else {
-                subtitleBadgeView = PeerInfoSubtitleBadgeView(action: { [weak self] in
+                subtitleBadgeView = PeerInfoSubtitleBadgeView(action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1824,7 +1824,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
             }
         } else if self.avatarListNode.listContainerNode.cornerRadius != avatarCornerRadius {
             transition.updateCornerRadius(node: self.avatarListNode.listContainerNode.controlsClippingNode, cornerRadius: avatarCornerRadius)
-            transition.updateCornerRadius(node: self.avatarListNode.listContainerNode, cornerRadius: avatarCornerRadius, completion: { [weak self] _ in
+            transition.updateCornerRadius(node: self.avatarListNode.listContainerNode, cornerRadius: avatarCornerRadius, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -2071,7 +2071,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     borderColor: ratingBorderColor,
                     foregroundColor: ratingForegroundColor,
                     level: Int(starRating.level),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let peer = self.peer, let currentStarRating = self.currentStarRating else {
                             return
                         }
@@ -2277,7 +2277,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                 buttonNode = current
             } else {
                 wasAdded = true
-                buttonNode = PeerInfoHeaderActionButtonNode(key: buttonKey, action: { [weak self] buttonNode, gesture in
+                buttonNode = PeerInfoHeaderActionButtonNode(key: buttonKey, action: { [weak self = self] buttonNode, gesture in
                     self?.actionButtonPressed(buttonNode, gesture: gesture)
                 })
                 self.actionButtonNodes[buttonKey] = buttonNode
@@ -2343,7 +2343,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                 buttonNode = current
             } else {
                 wasAdded = true
-                buttonNode = PeerInfoHeaderButtonNode(key: buttonKey, action: { [weak self] buttonNode, gesture in
+                buttonNode = PeerInfoHeaderButtonNode(key: buttonKey, action: { [weak self = self] buttonNode, gesture in
                     self?.buttonPressed(buttonNode, gesture: gesture)
                 })
                 self.buttonNodes[buttonKey] = buttonNode
@@ -2541,7 +2541,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                     topRightButtonsSize: CGSize(width: 76.0 + (self.isMyProfile ? 38.0 : 0.0), height: 46.0),
                     titleWidth: max(140.0, titleFrame.width) + 42.0,
                     bottomHeight: !buttonKeys.isEmpty ? 81.0 : 30.0,
-                    action: { [weak self] gift in
+                    action: { [weak self = self] gift in
                         guard let self, case let .unique(gift) = gift.gift else {
                             return
                         }
@@ -2691,7 +2691,7 @@ final class PeerInfoHeaderNode: ASDisplayNode {
                             ], spacing: 4.0)
                         ),
                         minSize: CGSize(width: backgroundFrame.width, height: musicHeight),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.displaySavedMusic?()
                         }
                     )

@@ -57,7 +57,7 @@ private final class PreviousBoostNode: ASDisplayNode {
         
         self.avatarNode.setPeer(context: context, theme: ptheme, peer: peer)
         
-        self.checkNode.valueChanged = { [weak self] value in
+        self.checkNode.valueChanged = { [weak self = self] value in
             if let self {
                 if value {
                     self.pressed(self)
@@ -174,7 +174,7 @@ private final class ReplaceBoostConfirmationAlertContentNode: AlertContentNode {
         }
         
         for boostNode in self.boostNodes {
-            boostNode.pressed = { [weak self] sender in
+            boostNode.pressed = { [weak self = self] sender in
                 if let self {
                     for node in self.boostNodes {
                         node.setChecked(node === sender)

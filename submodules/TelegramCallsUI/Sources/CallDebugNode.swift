@@ -89,7 +89,7 @@ final class CallDebugNode: ASDisplayNode {
         self.addSubnode(self.textNode)
         
         self.disposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] (version, info) in
+        |> deliverOnMainQueue).start(next: { [weak self = self] (version, info) in
             self?.update(info, version: version)
         }))
     }

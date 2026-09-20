@@ -112,7 +112,7 @@ private final class InnerActionsContainerNode: ASDisplayNode {
         
         super.init()
 
-        requestUpdateAction = { [weak self] id, action in
+        requestUpdateAction = { [weak self = self] id, action in
             guard let strongSelf = self else {
                 return
             }
@@ -147,7 +147,7 @@ private final class InnerActionsContainerNode: ASDisplayNode {
         
         let gesture = ContextActionsSelectionGestureRecognizer(target: nil, action: nil)
         self.gesture = gesture
-        gesture.updateLocation = { [weak self] point, moved in
+        gesture.updateLocation = { [weak self = self] point, moved in
             guard let strongSelf = self else {
                 return
             }
@@ -164,7 +164,7 @@ private final class InnerActionsContainerNode: ASDisplayNode {
             strongSelf.currentHighlightedActionNode = actionNode
             actionNode?.setIsHighlighted(true)
         }
-        gesture.completed = { [weak self] performAction in
+        gesture.completed = { [weak self = self] performAction in
             guard let strongSelf = self else {
                 return
             }
@@ -446,7 +446,7 @@ final class InnerTextSelectionTipContainerNode: ASDisplayNode {
         
         let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: presentationData.theme.contextMenu.primaryColor.withAlphaComponent(0.15), knob: presentationData.theme.contextMenu.primaryColor, knobDiameter: 8.0, isDark: presentationData.theme.overallDarkAppearance), strings: presentationData.strings, textNodeOrView: .node(self.textNode.textNode), updateIsActive: { _ in
         }, present: { _, _ in
-        }, rootView: { [weak self] in
+        }, rootView: { [weak self = self] in
             return self?.view
         }, performAction: { _, _ in
         })
@@ -617,7 +617,7 @@ final class InnerTextSelectionTipContainerNode: ASDisplayNode {
     func animateIn() {
         if let textSelectionNode = self.textSelectionNode, let targetSelectionIndex = self.targetSelectionIndex {
             textSelectionNode.pretendInitiateSelection()
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -748,7 +748,7 @@ final class ContextActionsContainerNode: ASDisplayNode {
         
         if let tipSignal = items.tipSignal {
             self.textSelectionTipNodeDisposable = (tipSignal
-            |> deliverOnMainQueue).start(next: { [weak self] tip in
+            |> deliverOnMainQueue).start(next: { [weak self = self] tip in
                 guard let strongSelf = self else {
                     return
                 }

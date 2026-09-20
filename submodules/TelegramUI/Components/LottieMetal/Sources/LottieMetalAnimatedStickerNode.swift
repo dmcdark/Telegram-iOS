@@ -862,7 +862,7 @@ public final class LottieContentLayer: MetalEngineSubjectLayer, MetalEngineSubje
             )
         })
         
-        context.renderToLayer(spec: renderSpec, state: RenderState.self, layer: self, inputs: computeOutput, commands: { [weak self] encoder, placement, computeOutput in
+        context.renderToLayer(spec: renderSpec, state: RenderState.self, layer: self, inputs: computeOutput, commands: { [weak self = self] encoder, placement, computeOutput in
             guard let computeOutput else {
                 return
             }
@@ -969,13 +969,13 @@ public final class LottieMetalAnimatedStickerNode: ASDisplayNode, AnimatedSticke
         
         super.init()
         
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
             self.updatePlayback()
         }
-        self.hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1007,7 +1007,7 @@ public final class LottieMetalAnimatedStickerNode: ASDisplayNode, AnimatedSticke
         self.sourceDisposable = (source.directDataPath(attemptSynchronously: false)
         |> filter { $0 != nil }
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] path in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] path in
             Queue.concurrentDefaultQueue().async {
                 guard let path else {
                     return
@@ -1074,7 +1074,7 @@ public final class LottieMetalAnimatedStickerNode: ASDisplayNode, AnimatedSticke
                 } else {
                     fps = 60
                 }
-                self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(fps), { [weak self] deltaTime in
+                self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(fps), { [weak self = self] deltaTime in
                     guard let self, let lottieContent = self.lottieContent, let renderLayer = self.renderLayer else {
                         return
                     }

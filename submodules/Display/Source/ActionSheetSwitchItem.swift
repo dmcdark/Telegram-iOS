@@ -73,11 +73,11 @@ public class ActionSheetSwitchNode: ActionSheetItemNode {
         self.addSubnode(self.accessibilityArea)
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
-        self.switchNode.valueUpdated = { [weak self] value in
+        self.switchNode.valueUpdated = { [weak self = self] value in
             self?.item?.action(value)
         }
         
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             self?.buttonPressed()
             return true
         }

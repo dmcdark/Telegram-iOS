@@ -288,7 +288,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
         self.actionButton.addTarget(self, action: #selector(self.actionButtonPressed), forControlEvents: .touchUpInside)
         
         self.rateButton.addTarget(self, action: #selector(self.rateButtonPressed), forControlEvents: .touchUpInside)
-        self.rateButton.contextAction = { [weak self] sourceNode, gesture in
+        self.rateButton.contextAction = { [weak self = self] sourceNode, gesture in
             self?.openRateMenu(sourceNode: sourceNode, gesture: gesture)
         }
         
@@ -299,7 +299,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
         
         self.addSubnode(self.separatorNode)
         
-        self.actionButton.highligthedChanged = { [weak self] highlighted in
+        self.actionButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.actionButton.layer.removeAnimation(forKey: "opacity")
@@ -311,7 +311,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
             }
         }
         
-        self.scrubbingNode.playerStatusUpdated = { [weak self] status in
+        self.scrubbingNode.playerStatusUpdated = { [weak self = self] status in
             guard let strongSelf = self else {
                 return
             }
@@ -322,7 +322,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
             }
         }
         
-        self.scrubbingNode.playbackStatusUpdated = { [weak self] status in
+        self.scrubbingNode.playbackStatusUpdated = { [weak self = self] status in
             if let strongSelf = self {
                 let paused: Bool
                 if let status = status {
@@ -532,7 +532,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
         let frame = self.rateButton.view.convert(self.rateButton.bounds, to: nil)
         
         let _ = (ApplicationSpecificNotice.incrementAudioRateOptionsTip(accountManager: self.context.sharedContext.accountManager)
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self, let controller = strongSelf.getController?(), value == 2 {
                 let tooltipController = TooltipScreen(account: strongSelf.context.account, sharedContext: strongSelf.context.sharedContext, text: .plain(text: strongSelf.strings.Conversation_AudioRateOptionsTooltip), style: .default, icon: nil, location: .point(frame.offsetBy(dx: 0.0, dy: 4.0), .bottom), displayDuration: .custom(3.0), inset: 3.0, shouldDismissOnTouch: { _, _ in
                     return .dismiss(consume: false)
@@ -559,7 +559,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
         let previousRate = self.playbackBaseRate
         let previousValue = self.playbackBaseRate?.doubleValue ?? 1.0
         let sliderValuePromise = ValuePromise<Double?>(nil)
-        let sliderItem: ContextMenuItem = .custom(SliderContextItem(minValue: 0.2, maxValue: 2.5, value: previousValue, valueChanged: { [weak self] newValue, finished in
+        let sliderItem: ContextMenuItem = .custom(SliderContextItem(minValue: 0.2, maxValue: 2.5, value: previousValue, valueChanged: { [weak self = self] newValue, finished in
             let newValue = normalizeValue(newValue)
             self?.setRate?(AudioPlaybackRate(newValue), .sliderChange)
             sliderValuePromise.set(newValue)
@@ -578,7 +578,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
                 } else {
                     return UIImage()
                 }
-            }), action: { [weak self] _, f in
+            }), action: { [weak self = self] _, f in
                 scheduleTooltip(nil)
                 f(.default)
                 
@@ -602,7 +602,7 @@ public final class MediaNavigationAccessoryHeaderNode: ASDisplayNode, ASScrollVi
             scheduledTooltip = change
         })
         let contextController = makeContextController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, source: .reference(HeaderContextReferenceContentSource(controller: controller, sourceNode: self.rateButton.referenceNode, shouldBeDismissed: self.dismissedPromise.get())), items: items, gesture: gesture)
-        contextController.dismissed = { [weak self] in
+        contextController.dismissed = { [weak self = self] in
             if let scheduledTooltip, let self, let rate = self.playbackBaseRate {
                 self.setRate?(rate, scheduledTooltip)
             }
@@ -739,13 +739,13 @@ public final class AudioRateButton: HighlightableButtonNode {
         self.referenceNode.addSubnode(self.iconNode)
         self.addSubnode(self.containerNode)
 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.contextAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }

@@ -47,7 +47,7 @@ class InstantPageSettingsItemNode: ASDisplayNode {
         if let highlightButtonNode = self.highlightButtonNode {
             self.addSubnode(highlightButtonNode)
             highlightButtonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-            highlightButtonNode.highligthedChanged = { [weak self] highlighted in
+            highlightButtonNode.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self, let highlightedBackgroundNode = strongSelf.highlightedBackgroundNode {
                     if highlighted {
                         strongSelf.supernode?.view.bringSubviewToFront(strongSelf.view)

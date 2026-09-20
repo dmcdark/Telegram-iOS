@@ -402,7 +402,7 @@ public final class InviteLinkViewController: ViewController {
         self.blocksBackgroundWhenInOverlay = true
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
                 strongSelf.presentationDataPromise.set(.single(presentationData))
@@ -448,7 +448,7 @@ public final class InviteLinkViewController: ViewController {
             
             self.dismissAllTooltips()
             
-            self.controllerNode.animateOut(completion: { [weak self] in
+            self.controllerNode.animateOut(completion: { [weak self = self] in
                 completion?()
                 self?.dismiss(animated: false)
             })
@@ -577,7 +577,7 @@ public final class InviteLinkViewController: ViewController {
             self.backgroundColor = nil
             self.isOpaque = false
         
-            self.interaction = InviteLinkViewInteraction(context: context, openPeer: { [weak self] peerId in
+            self.interaction = InviteLinkViewInteraction(context: context, openPeer: { [weak self = self] peerId in
                 let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
                 |> deliverOnMainQueue).start(next: { peer in
                     guard let peer else {
@@ -587,9 +587,9 @@ public final class InviteLinkViewController: ViewController {
                         context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: context, chatLocation: .peer(peer), keepStack: .always))
                     }
                 })
-            }, openSubscription: { [weak self] pricing, importer in
+            }, openSubscription: { [weak self = self] pricing, importer in
                 let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let peer else {
                         return
                     }
@@ -597,28 +597,28 @@ public final class InviteLinkViewController: ViewController {
                     let subscriptionController = context.sharedContext.makeStarsSubscriptionScreen(context: context, peer: peer, pricing: pricing, importer: importer, usdRate: usdRate)
                     self?.controller?.push(subscriptionController)
                 })
-            }, copyLink: { [weak self] invite in
+            }, copyLink: { [weak self = self] invite in
                 UIPasteboard.general.string = invite.link
                 
                 self?.controller?.dismissAllTooltips()
                 
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                 self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.InviteLink_InviteLinkCopiedText), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
-            }, shareLink: { [weak self] invite in
+            }, shareLink: { [weak self = self] invite in
                 guard let inviteLink = invite.link else {
                     return
                 }
-                let shareController = context.sharedContext.makeShareController(context: context, params: ShareControllerParams(subject: .url(inviteLink), actionCompleted: { [weak self] in
+                let shareController = context.sharedContext.makeShareController(context: context, params: ShareControllerParams(subject: .url(inviteLink), actionCompleted: { [weak self = self] in
                     let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                     self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.InviteLink_InviteLinkCopiedText), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
-                }, completed: { [weak self] peerIds in
+                }, completed: { [weak self = self] peerIds in
                     if let strongSelf = self {
                         let _ = (strongSelf.context.engine.data.get(
                             EngineDataList(
                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                             )
                         )
-                        |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                             if let strongSelf = self {
                                 let peers = peerList.compactMap { $0 }
                                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -647,7 +647,7 @@ public final class InviteLinkViewController: ViewController {
                                 strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                                     if savedMessages, let self, action == .info {
                                         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                        |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                             guard let self, let peer else {
                                                 return
                                             }
@@ -664,9 +664,9 @@ public final class InviteLinkViewController: ViewController {
                     }
                 }))
                 self?.controller?.present(shareController, in: .window(.root))
-            }, editLink: { [weak self] invite in
+            }, editLink: { [weak self = self] invite in
                 self?.editButtonPressed()
-            }, contextAction: { [weak self] invite, node, gesture in
+            }, contextAction: { [weak self = self] invite, node, gesture in
                 guard let node = node as? ContextReferenceContentNode else {
                     return
                 }
@@ -693,7 +693,7 @@ public final class InviteLinkViewController: ViewController {
 
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextCopy, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         
                         UIPasteboard.general.string = invite.link
@@ -707,7 +707,7 @@ public final class InviteLinkViewController: ViewController {
                     if invite.isRevoked {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextDelete, textColor: .destructive, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.actionSheet.destructiveActionTextColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             let controller = ActionSheetController(presentationData: presentationData)
@@ -736,7 +736,7 @@ public final class InviteLinkViewController: ViewController {
                         if !invitationAvailability(invite).isZero {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextGetQRCode, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Settings/QrIcon"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
@@ -747,7 +747,7 @@ public final class InviteLinkViewController: ViewController {
                                         return .never()
                                     }
                                 }
-                                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                     guard let strongSelf = self, let parentController = strongSelf.controller else {
                                         return
                                     }
@@ -765,7 +765,7 @@ public final class InviteLinkViewController: ViewController {
                         if !creatorIsBot {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.InviteLink_ContextRevoke, textColor: .destructive, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.actionSheet.destructiveActionTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
@@ -848,7 +848,7 @@ public final class InviteLinkViewController: ViewController {
                     self.importersContext.state,
                     requestsState,
                     creatorPeerSignal
-                ) |> deliverOnMainQueue).start(next: { [weak self] presentationData, state, requestsState, creatorPeer in
+                ) |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, state, requestsState, creatorPeer in
                     if let strongSelf = self {
                         let usdRate = Double(configuration.usdWithdrawRate) / 1000.0 / 100.0
              
@@ -952,12 +952,12 @@ public final class InviteLinkViewController: ViewController {
             
             self.listNode.preloadPages = true
             self.listNode.stackFromBottom = true
-            self.listNode.updateFloatingHeaderOffset = { [weak self] offset, transition in
+            self.listNode.updateFloatingHeaderOffset = { [weak self = self] offset, transition in
                 if let strongSelf = self {
                     strongSelf.updateFloatingHeaderOffset(offset: offset, transition: transition)
                 }
             }
-            self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+            self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
                 if case let .known(value) = offset, value < 40.0 {
                     self?.importersContext.loadMore()
                 }
@@ -1014,7 +1014,7 @@ public final class InviteLinkViewController: ViewController {
             let revokedInvitationsContext = parentController.revokedInvitationsContext
             if let navigationController = navigationController {
                 let updatedPresentationData = (self.presentationData, parentController.presentationDataPromise.get())
-                let controller = inviteLinkEditController(context: self.context, updatedPresentationData: updatedPresentationData, peerId: self.peerId, invite: self.invite, completion: { [weak self] invite in
+                let controller = inviteLinkEditController(context: self.context, updatedPresentationData: updatedPresentationData, peerId: self.peerId, invite: self.invite, completion: { [weak self = self] invite in
                     if let invite = invite {
                         if invite.isRevoked {
                             invitationsContext?.remove(invite)
@@ -1164,7 +1164,7 @@ public final class InviteLinkViewController: ViewController {
                         } else {
                             subtitleText = self.presentationData.strings.InviteLink_ExpiresIn(textForTimeout(value: elapsedTime)).string
                             if self.countdownTimer == nil {
-                                let countdownTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+                                let countdownTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                                     if let strongSelf = self, let layout = strongSelf.validLayout {
                                         strongSelf.containerLayoutUpdated(layout, transition: .immediate)
                                     }

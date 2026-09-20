@@ -143,7 +143,7 @@ public final class BottomButtonPanelComponent: Component {
                     ),
                     isEnabled: component.isEnabled,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

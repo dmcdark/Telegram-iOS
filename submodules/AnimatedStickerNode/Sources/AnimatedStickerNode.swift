@@ -32,7 +32,7 @@ private class AnimatedStickerNodeDisplayEvents: ASDisplayNode {
     override func didExitHierarchy() {
         super.didExitHierarchy()
         
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -276,7 +276,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
         
         super.init()
         
-        self.eventsNode.updated = { [weak self] value in
+        self.eventsNode.updated = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -352,7 +352,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
         self.playbackMode = playbackMode
         switch mode {
         case let .direct(cachePathPrefix):
-            let f: (String) -> Void = { [weak self] path in
+            let f: (String) -> Void = { [weak self = self] path in
                 guard let strongSelf = self else {
                     return
                 }
@@ -380,7 +380,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
             }))
         case .cached:
             self.disposable.set((source.cachedDataPath(width: width, height: height)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] path, complete in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] path, complete in
                 guard let strongSelf = self else {
                     return
                 }
@@ -474,7 +474,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
             let timerHolder = self.timer
             let frameSourceHolder = self.frameSource
             let useMetalCache = self.useMetalCache
-            self.queue.async { [weak self] in
+            self.queue.async { [weak self = self] in
                 var maybeFrameSource: AnimatedStickerFrameSource? = frameSourceHolder.with { $0 }?.syncWith { $0 }.value
                 if maybeFrameSource == nil {
                     let notifyUpdated: (() -> Void)? = nil
@@ -592,7 +592,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
             let timerHolder = self.timer
             let frameSourceHolder = self.frameSource
             let useMetalCache = self.useMetalCache
-            self.queue.async { [weak self] in
+            self.queue.async { [weak self = self] in
                 var maybeFrameSource: AnimatedStickerFrameSource?
                 let notifyUpdated: (() -> Void)? = nil
                 if let directData = directData {
@@ -718,7 +718,7 @@ public final class DefaultAnimatedStickerNodeImpl: ASDisplayNode, AnimatedSticke
         let timerHolder = self.timer
         let useMetalCache = self.useMetalCache
         
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             var maybeFrameSource: AnimatedStickerFrameSource? = frameSourceHolder.with { $0 }?.syncWith { $0 }.value
             if case .timestamp = position {
             } else {

@@ -176,7 +176,7 @@ public final class GalleryPagerNode: ASDisplayNode, ASScrollViewDelegate, ASGest
         self.addSubnode(self.rightFadeNode)
         
         self.pagingEnabledDisposable = (self.pagingEnabledPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] pagingEnabled  in
+        |> deliverOnMainQueue).start(next: { [weak self = self] pagingEnabled  in
             if let strongSelf = self {
                 strongSelf.pagingEnabled = pagingEnabled
             }
@@ -193,7 +193,7 @@ public final class GalleryPagerNode: ASDisplayNode, ASScrollViewDelegate, ASGest
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
         recognizer.delegate = self.wrappedGestureRecognizerDelegate
         self.tapRecognizer = recognizer
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             guard let strongSelf = self else {
                 return .fail
             }
@@ -243,7 +243,7 @@ public final class GalleryPagerNode: ASDisplayNode, ASScrollViewDelegate, ASGest
                 return .keepWithSingleTap
             }
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }

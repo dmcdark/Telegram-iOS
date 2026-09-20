@@ -145,7 +145,7 @@ public final class ManagedAudioSession {
     
     func headsetConnected() -> Signal<Bool, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 subscriber.putNext(strongSelf.isHeadsetPluggedInValue)
                 
@@ -168,7 +168,7 @@ public final class ManagedAudioSession {
     
     public func isActive() -> Signal<Bool, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 subscriber.putNext(strongSelf.currentTypeAndOutputMode != nil)
                 
@@ -201,7 +201,7 @@ public final class ManagedAudioSession {
     func push(audioSessionType: ManagedAudioSessionType, outputMode: AudioSessionOutputMode = .system, once: Bool = false, manualActivate: @escaping (ManagedAudioSessionControl) -> Void, deactivate: @escaping () -> Signal<Void, NoError>, headsetConnectionStatusChanged: @escaping (Bool) -> Void = { _ in }) -> Disposable {
         let id = OSAtomicIncrement32(&self.nextId)
         self.queue.async {
-            self.holders.append(HolderRecord(id: id, audioSessionType: audioSessionType, control: ManagedAudioSessionControl(setupImpl: { [weak self] synchronous in
+            self.holders.append(HolderRecord(id: id, audioSessionType: audioSessionType, control: ManagedAudioSessionControl(setupImpl: { [weak self = self] synchronous in
                 if let strongSelf = self {
                     let f: () -> Void = {
                         for holder in strongSelf.holders {
@@ -218,7 +218,7 @@ public final class ManagedAudioSession {
                         strongSelf.queue.async(f)
                     }
                 }
-            }, activateImpl: { [weak self] completion in
+            }, activateImpl: { [weak self = self] completion in
                 if let strongSelf = self {
                     strongSelf.queue.async {
                         for holder in strongSelf.holders {
@@ -230,7 +230,7 @@ public final class ManagedAudioSession {
                         }
                     }
                 }
-            }, setOutputModeImpl: { [weak self] value in
+            }, setOutputModeImpl: { [weak self = self] value in
                 if let strongSelf = self {
                     strongSelf.queue.async {
                         for holder in strongSelf.holders {
@@ -249,7 +249,7 @@ public final class ManagedAudioSession {
             }), activate: manualActivate, deactivate: deactivate, headsetConnectionStatusChanged: headsetConnectionStatusChanged, once: once, outputMode: outputMode))
             self.updateHolders()
         }
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.queue.async {
                     strongSelf.removeDeactivatedHolder(id: id)
@@ -317,7 +317,7 @@ public final class ManagedAudioSession {
                     if deactivate {
                         self.holders[activeIndex].active = false
                         let id = self.holders[activeIndex].id
-                        self.holders[activeIndex].deactivatingDisposable = (self.holders[activeIndex].deactivate() |> deliverOn(self.queue)).start(completed: { [weak self] in
+                        self.holders[activeIndex].deactivatingDisposable = (self.holders[activeIndex].deactivate() |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                             if let strongSelf = self {
                                 var index = 0
                                 for currentRecord in strongSelf.holders {
@@ -355,7 +355,7 @@ public final class ManagedAudioSession {
         if self.currentTypeAndOutputMode?.0 == .voiceCall {
             self.applyNone()
         } else {
-            let deactivateTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+            let deactivateTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.applyNone()
                 }

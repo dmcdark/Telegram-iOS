@@ -65,7 +65,7 @@ private final class SurfaceGroup {
         if self.surface != nil {
             return true
         }
-        let sink: (Data) -> Void = { [weak self] data in
+        let sink: (Data) -> Void = { [weak self = self] data in
             self?.accumulatedNalData.append(data)
         }
         guard let surface = try? SCMuxSurface.create(
@@ -130,7 +130,7 @@ private final class SurfaceGroup {
 
         if self.lastDecodedFrame == nil {
             self.accumulatedNalData = Data()
-            guard let _ = try? surface.advanceFrame(sink: { [weak self] data in
+            guard let _ = try? surface.advanceFrame(sink: { [weak self = self] data in
                 self?.accumulatedNalData.append(data)
             }) else {
                 return false
@@ -164,7 +164,7 @@ private final class SurfaceGroup {
             strideY: Int32(decodedWidth),
             strideCb: Int32(chromaWidth),
             strideCr: Int32(chromaWidth),
-            withSink: { [weak self] data in
+            withSink: { [weak self = self] data in
                 self?.accumulatedNalData.append(data)
             }
         ) else {
@@ -237,7 +237,7 @@ private final class SurfaceGroup {
         }
 
         self.accumulatedNalData = Data()
-        guard let _ = try? surface.emitFrameIfNeeded(sink: { [weak self] data in
+        guard let _ = try? surface.emitFrameIfNeeded(sink: { [weak self = self] data in
             self?.accumulatedNalData.append(data)
         }) else {
             return
@@ -412,7 +412,7 @@ public final class SubcodecMultiAnimationRendererImpl: MultiAnimationRenderer {
                             }
                         }
                         let frameInterval = Double(self.frameSkip) / 60.0
-                        let displayTimer = Foundation.Timer(timeInterval: frameInterval, target: TimerTarget { [weak self] in
+                        let displayTimer = Foundation.Timer(timeInterval: frameInterval, target: TimerTarget { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -493,7 +493,7 @@ public final class SubcodecMultiAnimationRendererImpl: MultiAnimationRenderer {
                     }
                 }
 
-                let updateStateIndex = target.updateStateCallbacks.add { [weak self] in
+                let updateStateIndex = target.updateStateCallbacks.add { [weak self = self] in
                     self?.updateIsPlaying()
                 }
 

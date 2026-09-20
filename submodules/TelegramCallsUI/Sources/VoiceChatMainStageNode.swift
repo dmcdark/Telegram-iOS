@@ -43,7 +43,7 @@ class VoiceChatPinButtonNode: HighlightTrackingButtonNode {
         self.addSubnode(self.pinButtonIconNode)
         self.pinButtonClippingnode.addSubnode(self.pinButtonTitleNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.pinButtonClippingnode.layer.removeAnimation(forKey: "opacity")
@@ -285,7 +285,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
         self.addSubnode(self.placeholderButton)
         self.placeholderButton.addSubnode(self.placeholderButtonHighlightNode)
         self.placeholderButton.addSubnode(self.placeholderButtonTextNode)
-        self.placeholderButton.highligthedChanged = { [weak self] highlighted in
+        self.placeholderButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.placeholderButtonHighlightNode.layer.removeAnimation(forKey: "opacity")
@@ -304,7 +304,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
 
         self.backButtonNode.setTitle(presentationData.strings.Common_Back, with: Font.regular(17.0), with: .white, for: [])
         self.backButtonNode.hitTestSlop = UIEdgeInsets(top: -8.0, left: -20.0, bottom: -8.0, right: -8.0)
-        self.backButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.backButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.backButtonNode.layer.removeAnimation(forKey: "opacity")
@@ -449,7 +449,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
         self.update(size: startLocalFrame.size, sideInset: sideInset, bottomInset: bottomInset, isLandscape: isLandscape, isTablet: isTablet, force: true, transition: .immediate)
         self.frame = startLocalFrame
         self.update(size: targetFrame.size, sideInset: sideInset, bottomInset: bottomInset, isLandscape: isLandscape, isTablet: isTablet, force: true, transition: transition)
-        transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self] _ in
+        transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self = self] _ in
             sourceNode.alpha = 1.0
             self?.animatingIn = false
             completion()
@@ -518,14 +518,14 @@ final class VoiceChatMainStageNode: ASDisplayNode {
             self.frame = initialFrame
             if offset < 0.0 {
                 let targetFrame = CGRect(origin: CGPoint(x: 0.0, y: -originalFrame.size.height), size: originalFrame.size)
-                transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self] _ in
+                transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self = self] _ in
                     self?.frame = originalFrame
                     completion()
                     self?.animatingOut = false
                 })
             } else {
                 let targetFrame = CGRect(origin: CGPoint(x: 0.0, y: supernode.frame.height), size: originalFrame.size)
-                transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self] _ in
+                transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self = self] _ in
                     self?.frame = originalFrame
                     completion()
                     self?.animatingOut = false
@@ -582,7 +582,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
         }
         
         self.update(size: targetFrame.size, sideInset: sideInset, bottomInset: bottomInset, isLandscape: isLandscape, isTablet: isTablet, force: true, transition: transition)
-        transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self] _ in
+        transition.updateFrame(node: self, frame: targetFrame, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 completion()
                 
@@ -637,7 +637,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                     return .never()
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let strongSelf = self else {
                     return
                 }
@@ -662,7 +662,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                 
                 let blobFrame = strongSelf.speakingAvatarNode.frame.insetBy(dx: -12.0, dy: -12.0)
                 strongSelf.speakingAudioLevelDisposable.set((getAudioLevel(peerId)
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -802,7 +802,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
             
             self.audioLevelNode.isHidden = self.currentPeer?.1 != nil
             self.audioLevelDisposable.set((getAudioLevel(peerEntry.peer.id)
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let strongSelf = self else {
                     return
                 }
@@ -888,7 +888,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                         waitForFullSize = false
                     }
                     
-                    self.getVideo?(endpointId, isMyPeer && !isPresentation, { [weak self] videoNode in
+                    self.getVideo?(endpointId, isMyPeer && !isPresentation, { [weak self = self] videoNode in
                         Queue.mainQueue().async {
                             guard let strongSelf = self, let videoNode = videoNode else {
                                 return
@@ -898,13 +898,13 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                             if videoNode.isMainstageExclusive {
                                 videoNode.storeSnapshot()
                             }
-                            videoNode.tapped = { [weak self] in
+                            videoNode.tapped = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
                                 strongSelf.tap()
                             }
-                            videoNode.sourceContainerNode.activate = { [weak self] sourceNode in
+                            videoNode.sourceContainerNode.activate = { [weak self = self] sourceNode in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -915,7 +915,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                                 })
                                 strongSelf.context.sharedContext.mainWindow?.presentInGlobalOverlay(pinchController)
                             }
-                            videoNode.sourceContainerNode.animatedOut = { [weak self] in
+                            videoNode.sourceContainerNode.animatedOut = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -955,7 +955,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                                 strongSelf.videoReadyDisposable.set((videoNode.ready
                                 |> filter { $0 }
                                 |> take(1)
-                                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                                     Queue.mainQueue().after(0.1) {
                                         guard let strongSelf = self else {
                                             return
@@ -980,7 +980,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                                             }
                                             if let videoNode = strongSelf.currentVideoNode {
                                                 videoNode.alpha = 1.0
-                                                videoNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self] _ in
+                                                videoNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self = self] _ in
                                                     if let strongSelf = self {
                                                         strongSelf.setAvatarHidden(true)
                                                         strongSelf.avatarNode.layer.removeAllAnimations()
@@ -1036,7 +1036,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                     self.videoReadyDisposable.set((videoNode.ready
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         Queue.mainQueue().after(0.1) {
                             guard let strongSelf = self else {
                                 return
@@ -1057,7 +1057,7 @@ final class VoiceChatMainStageNode: ASDisplayNode {
                                 strongSelf.bottomFadeNode.isHidden = true
                                 if let videoNode = strongSelf.currentVideoNode {
                                     videoNode.alpha = 1.0
-                                    videoNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self] _ in
+                                    videoNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self = self] _ in
                                         if let strongSelf = self {
                                             strongSelf.setAvatarHidden(true)
                                         }
@@ -1241,7 +1241,7 @@ class VoiceChatBlobNode: ASDisplayNode {
         
         super.init()
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
                 strongSelf.updateAnimations()
@@ -1301,7 +1301,7 @@ class VoiceChatBlobNode: ASDisplayNode {
             animation.fromValue = previousValue
             animation.toValue = newValue
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 if let isCurrentlyInHierarchy = self?.isCurrentlyInHierarchy, isCurrentlyInHierarchy {
                     self?.setupGradientAnimations()
                 }

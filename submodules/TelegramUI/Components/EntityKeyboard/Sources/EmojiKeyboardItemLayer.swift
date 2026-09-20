@@ -195,7 +195,7 @@ public final class EmojiKeyboardItemLayer: MultiAnimationRenderTarget {
                 return
             }
             
-            let loadAnimation: () -> Void = { [weak self] in
+            let loadAnimation: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -207,7 +207,7 @@ public final class EmojiKeyboardItemLayer: MultiAnimationRenderTarget {
                 if !renderer.loadFirstFrameSynchronously(target: self, cache: cache, itemId: animationDataResource.resource.id.stringRepresentation, size: pixelSize) {
                     self.updateDisplayPlaceholder(displayPlaceholder: true)
                     
-                    self.fetchDisposable = renderer.loadFirstFrame(target: self, cache: cache, itemId: animationDataResource.resource.id.stringRepresentation, size: pixelSize, fetch: animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: animationDataResource, type: animationData.type.animationCacheAnimationType, keyframeOnly: true, customColor: animationData.isTemplate ? .white : nil), completion: { [weak self] success, isFinal in
+                    self.fetchDisposable = renderer.loadFirstFrame(target: self, cache: cache, itemId: animationDataResource.resource.id.stringRepresentation, size: pixelSize, fetch: animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: animationDataResource, type: animationData.type.animationCacheAnimationType, keyframeOnly: true, customColor: animationData.isTemplate ? .white : nil), completion: { [weak self = self] success, isFinal in
                         if !isFinal {
                             if !success {
                                 Queue.mainQueue().async {
@@ -237,7 +237,7 @@ public final class EmojiKeyboardItemLayer: MultiAnimationRenderTarget {
                     loadAnimation()
                 }
             } else {
-                self.fetchDisposable = renderer.loadFirstFrame(target: self, cache: cache, itemId: animationDataResource.resource.id.stringRepresentation, size: pixelSize, fetch: animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: animationDataResource, type: animationData.type.animationCacheAnimationType, keyframeOnly: true, customColor: animationData.isTemplate ? .white : nil), completion: { [weak self] success, isFinal in
+                self.fetchDisposable = renderer.loadFirstFrame(target: self, cache: cache, itemId: animationDataResource.resource.id.stringRepresentation, size: pixelSize, fetch: animationCacheFetchFile(context: context, userLocation: .other, userContentType: .sticker, resource: animationDataResource, type: animationData.type.animationCacheAnimationType, keyframeOnly: true, customColor: animationData.isTemplate ? .white : nil), completion: { [weak self = self] success, isFinal in
                     if !isFinal {
                         if !success {
                             Queue.mainQueue().async {

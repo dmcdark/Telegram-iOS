@@ -76,7 +76,7 @@ private final class ReplaceBoostScreenComponent: CombinedComponent {
             }
             
             self.disposable.set((context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                 guard let self else {
                     return
                 }
@@ -84,7 +84,7 @@ private final class ReplaceBoostScreenComponent: CombinedComponent {
                 self.updated()
             }))
             
-            self.timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 if let self {
                     self.currentTime = Int32(CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970)
                     self.updated()
@@ -360,7 +360,7 @@ public class ReplaceBoostScreen: ViewController {
             
             self.wrappingView.addSubview(self.footerView)
             
-            self.footerView.action = { [weak self] in
+            self.footerView.action = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -448,7 +448,7 @@ public class ReplaceBoostScreen: ViewController {
             self.isDismissing = true
             
             let positionTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
-            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self] _ in
+            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self = self] _ in
                 self?.controller?.dismiss(animated: false, completion: completion)
             })
             positionTransition.updatePosition(layer: self.footerView.layer, position: CGPoint(x: self.footerView.center.x, y: self.bounds.height + self.footerView.bounds.height / 2.0))
@@ -486,7 +486,7 @@ public class ReplaceBoostScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -862,10 +862,10 @@ public class ReplaceBoostScreen: ViewController {
         
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
-        selectedSlotsUpdatedImpl = { [weak self] selectedSlots in
+        selectedSlotsUpdatedImpl = { [weak self = self] selectedSlots in
             self?.node.selectedSlots = selectedSlots
         }
-        presentControllerImpl = { [weak self] c in
+        presentControllerImpl = { [weak self = self] c in
             self?.dismissAllTooltips()
             self?.present(c, in: .window(.root))
         }
@@ -876,7 +876,7 @@ public class ReplaceBoostScreen: ViewController {
             self.node.selectedSlots = [initiallySelectedSlot]
         }
         
-        giftPremiumImpl = { [weak self] in
+        giftPremiumImpl = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1060,7 +1060,7 @@ private final class FooterView: UIView {
                     ),
                     isEnabled: true,
                     displaysProgress: self.inProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, !self.inProgress else {
                             return
                         }

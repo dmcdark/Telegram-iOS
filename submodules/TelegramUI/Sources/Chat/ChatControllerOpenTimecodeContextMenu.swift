@@ -38,7 +38,7 @@ extension ChatControllerImpl {
         var items: [ContextMenuItem] = []
         
         items.append(
-            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Timecode_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Timecode_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                 f(.default)
 
                 guard let self else {
@@ -80,7 +80,7 @@ extension ChatControllerImpl {
         self.canReadHistory.set(false)
         
         let controller = makeContextController(presentationData: self.presentationData, source: source, items: .single(ContextController.Items(content: .list(items))), recognizer: recognizer, gesture: gesture, disableScreenshots: false)
-        controller.dismissed = { [weak self] in
+        controller.dismissed = { [weak self = self] in
             self?.canReadHistory.set(true)
         }
         

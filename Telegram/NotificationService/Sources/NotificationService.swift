@@ -852,7 +852,7 @@ private final class NotificationServiceHandler {
             ])
         )
         |> take(1)
-        |> deliverOn(self.queue)).start(next: { [weak self] records, sharedData in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] records, sharedData in
             var recordId: AccountRecordId?
             var isCurrentAccount: Bool = false
             
@@ -2561,7 +2561,7 @@ final class NotificationService: UNNotificationServiceExtension {
 
         let content = self.content
 
-        self.impl = QueueLocalObject(queue: queue, generate: { [weak self] in
+        self.impl = QueueLocalObject(queue: queue, generate: { [weak self = self] in
             return BoxedNotificationServiceHandler(value: NotificationServiceHandler(
                 queue: queue,
                 episode: episode,

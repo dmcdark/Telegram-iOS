@@ -477,7 +477,7 @@ final class MessageItemComponent: Component {
                             isLarge: false,
                             hideCenterAnimation: true,
                             targetView: emojiTargetView,
-                            addStandaloneReactionAnimation: { [weak self] standaloneReactionAnimation in
+                            addStandaloneReactionAnimation: { [weak self = self] standaloneReactionAnimation in
                                 guard let self else {
                                     return
                                 }

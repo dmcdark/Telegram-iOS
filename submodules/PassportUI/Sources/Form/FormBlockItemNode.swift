@@ -45,7 +45,7 @@ class FormBlockItemNode<Item: FormControllerItem>: ASDisplayNode, FormController
         self.addSubnode(self.highlightedBackgroundNode)
         
         if selectable {
-            self.selectionButtonNode.highligthedChanged = { [weak self] highlighted in
+            self.selectionButtonNode.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.highlightedBackgroundNode.layer.removeAnimation(forKey: "opacity")

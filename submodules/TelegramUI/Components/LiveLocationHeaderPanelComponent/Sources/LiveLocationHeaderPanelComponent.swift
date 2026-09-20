@@ -112,7 +112,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                     theme: component.theme,
                     strings: component.strings,
                     nameDisplayOrder: component.context.sharedContext.currentPresentationData.with({ $0 }).nameDisplayOrder,
-                    tapAction: { [weak self] in
+                    tapAction: { [weak self = self] in
                         guard let self, let component = self.component, let controller = component.controller() else {
                             return
                         }
@@ -141,7 +141,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                                             }
                                             
                                             if let beginTimeAndTimeout {
-                                                items.append(LocationBroadcastActionSheetItem(context: component.context, peer: EnginePeer(peer), title: EnginePeer(peer).displayTitle(strings: presentationData.strings, displayOrder: presentationData.nameDisplayOrder), beginTimestamp: beginTimeAndTimeout.0, timeout: beginTimeAndTimeout.1, strings: presentationData.strings, action: { [weak self] in
+                                                items.append(LocationBroadcastActionSheetItem(context: component.context, peer: EnginePeer(peer), title: EnginePeer(peer).displayTitle(strings: presentationData.strings, displayOrder: presentationData.nameDisplayOrder), beginTimestamp: beginTimeAndTimeout.0, timeout: beginTimeAndTimeout.1, strings: presentationData.strings, action: { [weak self = self] in
                                                     dismissAction()
                                                     
                                                     guard let self, let component = self.component, let controller = component.controller() else {
@@ -152,7 +152,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                                             }
                                         }
                                     }
-                                    items.append(ActionSheetButtonItem(title: presentationData.strings.LiveLocation_MenuStopAll, color: .destructive, action: { [weak self] in
+                                    items.append(ActionSheetButtonItem(title: presentationData.strings.LiveLocation_MenuStopAll, color: .destructive, action: { [weak self = self] in
                                         dismissAction()
                                         
                                         guard let self, let component = self.component else {
@@ -174,7 +174,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                             presentLiveLocationController(context: component.context, peerId: peerId, controller: controller)
                         }
                     },
-                    close: { [weak self] _ in
+                    close: { [weak self = self] _ in
                         guard let self, let component = self.component, let controller = component.controller() else {
                             return
                         }
@@ -199,7 +199,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                         if let closePeers = closePeers, !closePeers.isEmpty {
                             items.append(ActionSheetTextItem(title: presentationData.strings.LiveLocation_MenuChatsCount(Int32(closePeers.count))))
                             for peer in closePeers {
-                                items.append(ActionSheetButtonItem(title: peer.displayTitle(strings: presentationData.strings, displayOrder: presentationData.nameDisplayOrder), action: { [weak self] in
+                                items.append(ActionSheetButtonItem(title: peer.displayTitle(strings: presentationData.strings, displayOrder: presentationData.nameDisplayOrder), action: { [weak self = self] in
                                     dismissAction()
                                     
                                     guard let self, let component = self.component, let controller = component.controller() else {
@@ -208,7 +208,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                                     presentLiveLocationController(context: component.context, peerId: peer.id, controller: controller)
                                 }))
                             }
-                            items.append(ActionSheetButtonItem(title: presentationData.strings.LiveLocation_MenuStopAll, color: .destructive, action: { [weak self] in
+                            items.append(ActionSheetButtonItem(title: presentationData.strings.LiveLocation_MenuStopAll, color: .destructive, action: { [weak self = self] in
                                 dismissAction()
                                 
                                 guard let self, let component = self.component else {
@@ -219,7 +219,7 @@ public final class LiveLocationHeaderPanelComponent: Component {
                                 }
                             }))
                         } else if let closePeerId {
-                            items.append(ActionSheetButtonItem(title: presentationData.strings.Map_StopLiveLocation, color: .destructive, action: { [weak self] in
+                            items.append(ActionSheetButtonItem(title: presentationData.strings.Map_StopLiveLocation, color: .destructive, action: { [weak self = self] in
                                 dismissAction()
                                 
                                 guard let self, let component = self.component else {

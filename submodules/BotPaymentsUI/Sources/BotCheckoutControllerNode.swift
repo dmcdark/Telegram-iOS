@@ -524,7 +524,7 @@ private final class RecurrentConfirmationNode: ASDisplayNode {
                 return nil
             }
         }
-        self.textNode.tapAttributeAction = { [weak self] attributes, _ in
+        self.textNode.tapAttributeAction = { [weak self = self] attributes, _ in
             if let _ = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] {
                 self?.openTerms()
             }
@@ -568,7 +568,7 @@ private final class RecurrentConfirmationNode: ASDisplayNode {
             checkNode = current
         } else {
             checkNode = InteractiveCheckNode(theme: CheckNodeTheme(backgroundColor: presentationData.theme.list.itemCheckColors.fillColor, strokeColor: presentationData.theme.list.itemCheckColors.foregroundColor, borderColor: presentationData.theme.list.itemCheckColors.strokeColor, overlayBorder: false, hasInset: false, hasShadow: false))
-            checkNode.valueChanged = { [weak self] value in
+            checkNode.valueChanged = { [weak self = self] value in
                 self?.isAcceptedUpdated(value)
             }
             self.checkNode = checkNode
@@ -624,13 +624,13 @@ private final class ActionButtonPanelNode: ASDisplayNode {
             if let current = self.recurrentConfirmationNode {
                 recurrentConfirmationNode = current
             } else {
-                recurrentConfirmationNode = RecurrentConfirmationNode(isAcceptedUpdated: { [weak self] value in
+                recurrentConfirmationNode = RecurrentConfirmationNode(isAcceptedUpdated: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.isAccepted = value
                     strongSelf.isAcceptedUpdated?()
-                }, openTerms: { [weak self] in
+                }, openTerms: { [weak self = self] in
                     self?.openRecurrentTerms?()
                 })
                 self.recurrentConfirmationNode = recurrentConfirmationNode
@@ -766,14 +766,14 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
         
         self.arguments = arguments
         
-        self.actionButtonPanelNode.isAcceptedUpdated = { [weak self] in
+        self.actionButtonPanelNode.isAcceptedUpdated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.updateActionButton()
         }
         
-        self.actionButtonPanelNode.openRecurrentTerms = { [weak self] in
+        self.actionButtonPanelNode.openRecurrentTerms = { [weak self = self] in
             guard let strongSelf = self, let paymentForm = strongSelf.paymentFormValue, let termsInfo = paymentForm.invoice.termsInfo else {
                 return
             }
@@ -782,7 +782,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             })
         }
         
-        openInfoImpl = { [weak self] focus in
+        openInfoImpl = { [weak self = self] focus in
             if let strongSelf = self, let paymentFormValue = strongSelf.paymentFormValue, let currentFormInfo = strongSelf.currentFormInfo {
                 strongSelf.controller?.view.endEditing(true)
                 strongSelf.present(BotCheckoutInfoController(context: context, invoice: paymentFormValue.invoice, source: source, initialFormInfo: currentFormInfo, focus: focus, formInfoUpdated: { formInfo, validatedInfo in
@@ -804,7 +804,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             }
         }
         
-        let applyPaymentMethod: (BotCheckoutPaymentMethod) -> Void = { [weak self] method in
+        let applyPaymentMethod: (BotCheckoutPaymentMethod) -> Void = { [weak self = self] method in
             if let strongSelf = self, let paymentFormValue = strongSelf.paymentFormValue, let currentFormInfo = strongSelf.currentFormInfo {
                 strongSelf.currentPaymentMethod = method
                 strongSelf.paymentFormAndInfo.set(.single((paymentFormValue, currentFormInfo, strongSelf.currentValidatedFormInfo, strongSelf.currentShippingOptionId, strongSelf.currentPaymentMethod, strongSelf.currentTipAmount)))
@@ -812,7 +812,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             }
         }
         
-        let openNewCard: (String?, String?) -> Void = { [weak self] customUrl, customTitle in
+        let openNewCard: (String?, String?) -> Void = { [weak self = self] customUrl, customTitle in
             if let strongSelf = self, let paymentForm = strongSelf.paymentFormValue {
                 if customUrl == nil, let nativeProvider = paymentForm.nativeProvider, nativeProvider.name == "stripe" {
                     guard let paramsData = nativeProvider.params.data(using: .utf8) else {
@@ -976,7 +976,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                     } else {
                         url = paymentForm.url ?? ""
                     }
-                    let controller = BotCheckoutWebInteractionController(context: context, url: url, intent: .addPaymentMethod(customTitle: customTitle, completion: { [weak self] token in
+                    let controller = BotCheckoutWebInteractionController(context: context, url: url, intent: .addPaymentMethod(customTitle: customTitle, completion: { [weak self = self] token in
                         dismissImpl?()
                         
                         guard let strongSelf = self else {
@@ -1037,7 +1037,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             }
         }
 
-        updateTipImpl = { [weak self] value in
+        updateTipImpl = { [weak self = self] value in
             guard let strongSelf = self, let paymentFormValue = strongSelf.paymentFormValue, let currentFormInfo = strongSelf.currentFormInfo else {
                 return
             }
@@ -1053,7 +1053,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             strongSelf.updateActionButton()
         }
 
-        ensureTipInputVisibleImpl = { [weak self] in
+        ensureTipInputVisibleImpl = { [weak self = self] in
             self?.afterLayout({
                 guard let strongSelf = self else {
                     return
@@ -1070,7 +1070,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             })
         }
         
-        openPaymentMethodImpl = { [weak self] in
+        openPaymentMethodImpl = { [weak self = self] in
             if let strongSelf = self, let paymentForm = strongSelf.paymentFormValue {
                 strongSelf.controller?.view.endEditing(true)
                 let methods = availablePaymentMethods(form: paymentForm, current: strongSelf.currentPaymentMethod)
@@ -1088,7 +1088,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             }
         }
         
-        openShippingMethodImpl = { [weak self] in
+        openShippingMethodImpl = { [weak self = self] in
             if let strongSelf = self, let paymentFormValue = strongSelf.paymentFormValue, let shippingOptions = strongSelf.currentValidatedFormInfo?.shippingOptions, !shippingOptions.isEmpty {
                 strongSelf.controller?.view.endEditing(true)
                 strongSelf.controller?.push(BotCheckoutShippingOptionScreen(context: strongSelf.context, currency: paymentFormValue.invoice.currency, options: shippingOptions, currentId: strongSelf.currentShippingOptionId, applyValue: { id in
@@ -1102,7 +1102,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             }
         }
         
-        self.formRequestDisposable = (inputData.get() |> deliverOnMainQueue).start(next: { [weak self] formAndValidatedInfo in
+        self.formRequestDisposable = (inputData.get() |> deliverOnMainQueue).start(next: { [weak self = self] formAndValidatedInfo in
             if let strongSelf = self {
                 guard let formAndValidatedInfo = formAndValidatedInfo else {
                     strongSelf.controller?.dismiss()
@@ -1141,7 +1141,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
         self.listNode.supernode?.insertSubnode(self.inProgressDimNode, aboveSubnode: self.listNode)
 
         self.passwordTipDisposable = (self.context.engine.auth.twoStepVerificationConfiguration()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1157,7 +1157,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
         
         self.actionButtonPanelSeparator.backgroundColor = self.presentationData.theme.rootController.navigationBar.separatorColor
         self.actionButtonPanelNode.backgroundColor = presentationData.theme.rootController.navigationBar.opaqueBackgroundColor
-        self.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self else {
                 return
             }
@@ -1311,7 +1311,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
         let totalAmount = currentTotalPrice(paymentForm: paymentForm, validatedFormInfo: self.currentValidatedFormInfo, currentShippingOptionId: self.currentShippingOptionId, currentTip: self.currentTipAmount)
         let currencyValue = formatCurrencyAmount(totalAmount, currency: paymentForm.invoice.currency)
         
-        let proceedWithCompletion: (Bool, EngineMessage.Id?) -> Void = { [weak self] success, receiptMessageId in
+        let proceedWithCompletion: (Bool, EngineMessage.Id?) -> Void = { [weak self = self] success, receiptMessageId in
             guard let strongSelf = self else {
                 return
             }
@@ -1336,7 +1336,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                                 credentials = .saved(id: id, tempPassword: savedCredentialsToken.token)
                             } else {
                                 let _ = (self.context.engine.auth.cachedTwoStepPasswordToken()
-                                |> deliverOnMainQueue).start(next: { [weak self] token in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] token in
                                     if let strongSelf = self {
                                         let timestamp = strongSelf.context.account.network.getApproximateRemoteTimestamp()
                                         if let token = token, token.validUntilDate > timestamp - 1 * 60 {
@@ -1400,7 +1400,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                     let _ = (context.engine.data.get(
                         TelegramEngine.EngineData.Item.Peer.Peer(id: botPeerId)
                     )
-                    |> deliverOnMainQueue).start(next: { [weak self] botPeer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] botPeer in
                         if let strongSelf = self, let botPeer = botPeer {
                             let request = PKPaymentRequest()
                             
@@ -1480,7 +1480,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                 botPeer,
                 providerPeer
             )
-            |> deliverOnMainQueue).start(next: { [weak self] value, botPeer, providerPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value, botPeer, providerPeer in
                 if let strongSelf = self, let botPeer = botPeer {
                     if value {
                         strongSelf.pay(savedCredentialsToken: savedCredentialsToken, liabilityNoticeAccepted: true)
@@ -1516,7 +1516,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                 tipAmount = 0
             }
 
-            self.payDisposable.set((self.context.engine.payments.sendBotPaymentForm(source: self.source, formId: paymentForm.id, validatedInfoId: self.currentValidatedFormInfo?.id, shippingOptionId: self.currentShippingOptionId, tipAmount: tipAmount, credentials: credentials) |> deliverOnMainQueue).start(next: { [weak self] result in
+            self.payDisposable.set((self.context.engine.payments.sendBotPaymentForm(source: self.source, formId: paymentForm.id, validatedInfoId: self.currentValidatedFormInfo?.id, shippingOptionId: self.currentShippingOptionId, tipAmount: tipAmount, credentials: credentials) |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 if let strongSelf = self {
                     strongSelf.inProgressDimNode.isUserInteractionEnabled = false
                     strongSelf.inProgressDimNode.alpha = 0.0
@@ -1547,7 +1547,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                             strongSelf.present(controller, ViewControllerPresentationArguments(presentationAnimation: .modalSheet))
                     }
                 }
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 if let strongSelf = self {
                     strongSelf.inProgressDimNode.isUserInteractionEnabled = false
                     strongSelf.inProgressDimNode.alpha = 0.0
@@ -1597,7 +1597,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
             period = 1 * 60 * 60
             requiresBiometrics = false
         }
-        self.present(botCheckoutPasswordEntryController(context: self.context, strings: self.presentationData.strings, passwordTip: self.passwordTip, cartTitle: cardTitle, period: period, requiresBiometrics: requiresBiometrics, completion: { [weak self] token in
+        self.present(botCheckoutPasswordEntryController(context: self.context, strings: self.presentationData.strings, passwordTip: self.passwordTip, cartTitle: cardTitle, period: period, requiresBiometrics: requiresBiometrics, completion: { [weak self = self] token in
             if let strongSelf = self {
                 let durationString = timeIntervalString(strings: strongSelf.presentationData.strings, value: period)
                 
@@ -1675,7 +1675,7 @@ final class BotCheckoutControllerNode: ItemListControllerNode, PKPaymentAuthoriz
                 }
             }
             
-            self.paymentAuthDisposable.set((signal |> deliverOnMainQueue).start(next: { [weak self] token in
+            self.paymentAuthDisposable.set((signal |> deliverOnMainQueue).start(next: { [weak self = self] token in
                 if let strongSelf = self {
                     strongSelf.applePayAuthrorizationCompletion = completion
                     strongSelf.pay(liabilityNoticeAccepted: true, receivedCredentials: .generic(data: "{\"type\": \"card\", \"id\": \"\(token.tokenId)\"}", saveOnServer: false))

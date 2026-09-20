@@ -219,7 +219,7 @@ final class ContextResultPanelComponent: Component {
                             presence: nil,
                             selectionState: .none,
                             hasNext: index != peers.count - 1,
-                            action: { [weak self] peer, _, _ in
+                            action: { [weak self = self] peer, _, _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -248,7 +248,7 @@ final class ContextResultPanelComponent: Component {
                                     subtitle: component.strings.Chat_HashtagSuggestion_UseGeneric_Text,
                                     hashtag: query,
                                     hasNext: index != hashtags.count - 1,
-                                    action: { [weak self] hashtag, _ in
+                                    action: { [weak self = self] hashtag, _ in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -265,7 +265,7 @@ final class ContextResultPanelComponent: Component {
                                     subtitle: isGroup ? component.strings.Chat_HashtagSuggestion_UseLocal_Group_Text : component.strings.Chat_HashtagSuggestion_UseLocal_Channel_Text,
                                     hashtag: "\(query)@\(addressName)",
                                     hasNext: index != hashtags.count - 1,
-                                    action: { [weak self] hashtag, _ in
+                                    action: { [weak self = self] hashtag, _ in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -285,7 +285,7 @@ final class ContextResultPanelComponent: Component {
                                 subtitle: nil,
                                 hashtag: hashtag,
                                 hasNext: index != hashtags.count - 1,
-                                action: { [weak self] hashtag, _ in
+                                action: { [weak self = self] hashtag, _ in
                                     guard let self, let component = self.component else {
                                         return
                                     }

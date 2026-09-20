@@ -194,13 +194,13 @@ private final class AlertAmountFieldComponent: Component {
             if self.component == nil {
                 self.currentValue = component.initialValue
                 
-                component.externalState.animateError = { [weak self] in
+                component.externalState.animateError = { [weak self = self] in
                     self?.animateError()
                 }
-                component.externalState.activateInput = { [weak self] in
+                component.externalState.activateInput = { [weak self = self] in
                     self?.activateInput()
                 }
-                component.externalState.resetToMinValue = { [weak self] in
+                component.externalState.resetToMinValue = { [weak self = self] in
                     self?.resetToMinValue()
                 }
             }
@@ -233,7 +233,7 @@ private final class AlertAmountFieldComponent: Component {
                         labelText: nil,
                         currency: .stars,
                         dateTimeFormat: presentationData.dateTimeFormat,
-                        amountUpdated: { [weak self] value in
+                        amountUpdated: { [weak self = self] value in
                             guard let self else {
                                 return
                             }

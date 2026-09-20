@@ -222,7 +222,7 @@ public final class ChatRecentActionsController: TelegramBaseController {
             context.sharedContext.presentationData,
             context.engine.themes.getChatThemes(accountManager: context.sharedContext.accountManager, onlyCached: true),
             chatTheme
-        ).startStrict(next: { [weak self] presentationData, chatThemes, chatTheme in
+        ).startStrict(next: { [weak self = self] presentationData, chatThemes, chatTheme in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -283,20 +283,20 @@ public final class ChatRecentActionsController: TelegramBaseController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = ChatRecentActionsControllerNode(context: self.context, controller: self, peer: self.peer._asPeer(), presentationData: self.presentationData, pushController: { [weak self] c in
+        self.displayNode = ChatRecentActionsControllerNode(context: self.context, controller: self, peer: self.peer._asPeer(), presentationData: self.presentationData, pushController: { [weak self = self] c in
             (self?.navigationController as? NavigationController)?.pushViewController(c)
-        }, presentController: { [weak self] c, t, a in
+        }, presentController: { [weak self = self] c, t, a in
             self?.present(c, in: t, with: a, blockInteraction: true)
-        }, getNavigationController: { [weak self] in
+        }, getNavigationController: { [weak self = self] in
             return self?.navigationController as? NavigationController
         })
-        self.controllerNode.isEmptyUpdated = { [weak self] isEmpty in
+        self.controllerNode.isEmptyUpdated = { [weak self = self] isEmpty in
             guard let self, let rightBarButton = self.rightBarButton else {
                 return
             }
             self.navigationItem.setRightBarButton(isEmpty ? nil : rightBarButton.buttonItem, animated: true)
         }
-        self.controllerNode.contentStatsUpdated = { [weak self] in
+        self.controllerNode.contentStatsUpdated = { [weak self = self] in
             self?.updatePreferredGlassType()
         }
         self.controllerNode.updatePreferredGlassType(self.preferredGlassType, transition: .immediate)
@@ -322,12 +322,12 @@ public final class ChatRecentActionsController: TelegramBaseController {
     @objc private func activateSearch() {
         if let navigationBar = self.navigationBar {
             if !(navigationBar.contentNode is ChatRecentActionsSearchNavigationContentNode) {
-                let searchNavigationNode = ChatRecentActionsSearchNavigationContentNode(theme: self.presentationData.theme, preferClearGlass: self.preferredGlassType == .clear, strings: self.presentationData.strings, cancel: { [weak self] in
+                let searchNavigationNode = ChatRecentActionsSearchNavigationContentNode(theme: self.presentationData.theme, preferClearGlass: self.preferredGlassType == .clear, strings: self.presentationData.strings, cancel: { [weak self = self] in
                     self?.deactivateSearch()
                 })
             
                 navigationBar.setContentNode(searchNavigationNode, animated: true)
-                searchNavigationNode.setQueryUpdated({ [weak self] query in
+                searchNavigationNode.setQueryUpdated({ [weak self = self] query in
                     self?.controllerNode.updateSearchQuery(query)
                     self?.updateTitle()
                 })
@@ -363,7 +363,7 @@ public final class ChatRecentActionsController: TelegramBaseController {
         let _ = (adminsPromise.get()
         |> filter { $0 != nil }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -381,7 +381,7 @@ public final class ChatRecentActionsController: TelegramBaseController {
                     events: self.controllerNode.filter.events,
                     admins: self.controllerNode.filter.adminPeerIds
                 ),
-                completion: { [weak self] result in
+                completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }

@@ -174,7 +174,7 @@ final class GiftListItemComponent: Component {
                 
                 var isFirstTime = true
                 self.resaleGiftsDisposable.set((resaleGiftsContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -253,7 +253,7 @@ final class GiftListItemComponent: Component {
                     items: tabSelectorItems,
                     selectedId: AnyHashable(self.selectedGiftId),
                     reorderItem: nil,
-                    setSelectedId: { [weak self] id in
+                    setSelectedId: { [weak self = self] id in
                         guard let self, let idValue = id.base as? Int64 else {
                             return
                         }
@@ -356,7 +356,7 @@ final class GiftListItemComponent: Component {
                                 horizontalAlignment: .center,
                                 maximumNumberOfLines: 0
                             )),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -485,7 +485,7 @@ final class GiftListItemComponent: Component {
                                     )
                                 ),
                                 effectAlignment: .center,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let component = self.component else {
                                         return
                                     }

@@ -121,19 +121,19 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
             let (currency, amount) = storeProduct.priceCurrencyAndAmount
             let purpose: AppStoreTransactionPurpose = .authCode(restore: false, phoneNumber: component.phoneNumber, phoneCodeHash: component.phoneCodeHash, premiumDays: component.premiumDays, currency: currency, amount: amount)
             let _ = (component.engine.payments.canPurchasePremium(purpose: purpose)
-            |> deliverOnMainQueue).start(next: { [weak self] available in
+            |> deliverOnMainQueue).start(next: { [weak self = self] available in
                 guard let self else {
                     return
                 }
                 let presentationData = component.presentationData
                 if available {
                     self.paymentDisposable.set((component.inAppPurchaseManager.buyProduct(storeProduct, quantity: 1, purpose: purpose)
-                    |> deliverOnMainQueue).start(next: { [weak self] status in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] status in
                         guard let self else {
                             return
                         }
                         self.inProgress = false
-                    }, error: { [weak self] error in
+                    }, error: { [weak self = self] error in
                         guard let self, let controller = self.environment?.controller() else {
                             return
                         }
@@ -173,7 +173,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
                                 text: errorText,
                                 actions: [
                                     TextAlertAction(type: .genericAction, title: presentationData.strings.Common_OK, action: {}),
-                                    TextAlertAction(type: .defaultAction, title: presentationData.strings.Login_PhoneNumberHelp, action: { [weak self] in
+                                    TextAlertAction(type: .defaultAction, title: presentationData.strings.Login_PhoneNumberHelp, action: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -234,7 +234,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
             
             if self.component == nil {
                 self.productsDisposable = (component.inAppPurchaseManager.availableProducts
-                |> deliverOnMainQueue).start(next: { [weak self] products in
+                |> deliverOnMainQueue).start(next: { [weak self = self] products in
                     guard let self else {
                         return
                     }
@@ -264,7 +264,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
                         component: AnyComponentWithIdentity(id: "label", component: AnyComponent(MultilineTextComponent(
                             text: .plain(NSAttributedString(string: environment.strings.Login_PhoneNumberHelp, font: Font.regular(17.0), textColor: environment.theme.chat.inputPanel.panelControlColor))
                         ))),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -360,7 +360,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
                         textColor: secondaryTextColor,
                         iconName: "Premium/Authorization/Support",
                         iconColor: linkColor,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let controller = self.environment?.controller(), let product = self.products.first(where: { $0.id == component.storeProduct }) else {
                                 return
                             }
@@ -369,7 +369,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
                                 engine: component.engine,
                                 inAppPurchaseManager: component.inAppPurchaseManager,
                                 source: .auth(product.price, component.premiumDays),
-                                proceed: { [weak self] in
+                                proceed: { [weak self = self] in
                                     self?.proceed()
                                 }
                             )
@@ -458,7 +458,7 @@ final class AuthorizationSequencePaymentScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: self.inProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.proceed()
                     }
                 )),
@@ -512,7 +512,7 @@ public final class AuthorizationSequencePaymentScreen: ViewControllerComponentCo
             supportEmailSubject: supportEmailSubject
         ), navigationBarAppearance: .transparent, theme: .default, updatedPresentationData: (initial: presentationData, signal: .single(presentationData)))
         
-        loadServerCountryCodes(accountManager: sharedContext.accountManager, engine: engine, completion: { [weak self] in
+        loadServerCountryCodes(accountManager: sharedContext.accountManager, engine: engine, completion: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.requestLayout(forceUpdate: true, transition: ContainedViewLayoutTransition.immediate)
             }

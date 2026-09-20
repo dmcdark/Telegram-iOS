@@ -236,7 +236,7 @@ private final class StarsRevenueStatsContextImpl {
         let _ = (account.postbox.transaction { transaction -> StarsRevenueStats? in
             return transaction.retrieveItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedStarsRevenueStats, key: StarsRevenueStats.key(peerId: peerId, ton: ton)))?.get(StarsRevenueStats.self)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] cachedResult in
+        |> deliverOnMainQueue).start(next: { [weak self = self] cachedResult in
             guard let self, let cachedResult else {
                 return
             }
@@ -285,7 +285,7 @@ private final class StarsRevenueStatsContextImpl {
         }
         
         self.disposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let self {
                 self._state = StarsRevenueStatsContextState(stats: stats)
                 self._statePromise.set(.single(self._state))

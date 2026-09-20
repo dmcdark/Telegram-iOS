@@ -127,9 +127,9 @@ final class SpoilerDustView: UIView {
         let maskSize = emitterContainer.frame.size
         DispatchQueue.global().async {
             let image = Self.emitterMaskImage(size: maskSize, position: location)
-            DispatchQueue.main.async { [weak self] in self?.emitterSpot.image = image }
+            DispatchQueue.main.async { [weak self = self] in self?.emitterSpot.image = image }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self = self] in
             guard let self else { return }
             self.emitterContainer.mask = self.emitterMask
             let mw = self.emitterMask.frame.width, mh = self.emitterMask.frame.height
@@ -165,7 +165,7 @@ final class SpoilerDustView: UIView {
         }
         // Timer-driven teardown (fires even without a render server, so headless tests complete): after the
         // mask dissolve, drop the attractor + the view. Mirrors Telegram's 0.8s post-reveal cleanup.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self = self] in
             guard let self else { completion(); return }
             self.emitterLayer.setValue(false, forKeyPath: "emitterBehaviors.fingerAttractor.enabled")
             self.alpha = 0

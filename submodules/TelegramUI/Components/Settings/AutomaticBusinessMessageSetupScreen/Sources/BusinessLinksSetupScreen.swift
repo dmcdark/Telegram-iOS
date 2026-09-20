@@ -158,7 +158,7 @@ final class BusinessLinksSetupScreenComponent: Component {
             
             self.createLinkDisposable?.dispose()
             self.createLinkDisposable = (component.context.engine.accountData.createBusinessChatLink(message: "", entities: [], title: nil)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] link in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] link in
                 guard let self else {
                     return
                 }
@@ -167,7 +167,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                 self.state?.updated(transition: .immediate)
                 
                 self.openLink(link: link, openKeyboard: true)
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let self, let component = self.component, let environment = self.environment else {
                     return
                 }
@@ -271,7 +271,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                 self.linksDisposable = (component.context.engine.data.subscribe(
                     TelegramEngine.EngineData.Item.Peer.BusinessChatLinks(id: component.context.account.peerId)
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] links in
+                |> deliverOnMainQueue).start(next: { [weak self = self] links in
                     guard let self else {
                         return
                     }
@@ -420,7 +420,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                     tintColor: environment.theme.list.itemAccentColor
                 ))), false),
                 accessory: nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -463,7 +463,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             guard let self, let component = self.component, let environment = self.environment else {
                                 return
                             }
@@ -522,25 +522,25 @@ final class BusinessLinksSetupScreenComponent: Component {
                     theme: environment.theme,
                     strings: environment.strings,
                     link: link,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.openLink(url: link.url)
                     },
-                    deleteAction: { [weak self] in
+                    deleteAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.openDeleteLink(url: link.url)
                     },
-                    shareAction: { [weak self] in
+                    shareAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.openShareLink(url: link.url)
                     },
-                    contextAction: { [weak self] sourceView, gesture in
+                    contextAction: { [weak self = self] sourceView, gesture in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -552,7 +552,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                             text: presentationData.strings.Business_Links_ItemActionShare,
                             textColor: .primary,
                             icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Share"), color: theme.contextMenu.primaryColor) },
-                            action: { [weak self] c, _ in
+                            action: { [weak self = self] c, _ in
                                 c?.dismiss(completion: {
                                     guard let self else {
                                         return
@@ -565,7 +565,7 @@ final class BusinessLinksSetupScreenComponent: Component {
                             text: presentationData.strings.Common_Delete,
                             textColor: .destructive,
                             icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) },
-                            action: { [weak self] c, _ in
+                            action: { [weak self = self] c, _ in
                                 c?.dismiss(completion: {
                                     guard let self else {
                                         return
@@ -692,14 +692,14 @@ public final class BusinessLinksSetupScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessLinksSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessLinksSetupScreenComponent.View else {
                 return true
             }

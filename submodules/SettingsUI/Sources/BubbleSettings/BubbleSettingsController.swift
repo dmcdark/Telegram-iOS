@@ -99,7 +99,7 @@ private final class BubbleSettingsControllerNode: ASDisplayNode, ASScrollViewDel
             dismiss()
         }
         var dismissed = false
-        self.toolbarNode.done = { [weak self] in
+        self.toolbarNode.done = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -108,14 +108,14 @@ private final class BubbleSettingsControllerNode: ASDisplayNode, ASScrollViewDel
                 apply(strongSelf.presentationThemeSettings.chatBubbleSettings)
             }
         }
-        self.toolbarNode.updateMergeBubbleCorners = { [weak self] value in
+        self.toolbarNode.updateMergeBubbleCorners = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.presentationThemeSettings.chatBubbleSettings.mergeBubbleCorners = value
             strongSelf.updatePresentationThemeSettings(strongSelf.presentationThemeSettings)
         }
-        self.toolbarNode.updateCornerRadius = { [weak self] value in
+        self.toolbarNode.updateCornerRadius = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -335,7 +335,7 @@ final class BubbleSettingsController: ViewController {
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
             }
@@ -367,11 +367,11 @@ final class BubbleSettingsController: ViewController {
     override public func loadDisplayNode() {
         super.loadDisplayNode()
         
-        self.displayNode = BubbleSettingsControllerNode(context: self.context, presentationThemeSettings: self.presentationThemeSettings, dismiss: { [weak self] in
+        self.displayNode = BubbleSettingsControllerNode(context: self.context, presentationThemeSettings: self.presentationThemeSettings, dismiss: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }
-        }, apply: { [weak self] chatBubbleSettings in
+        }, apply: { [weak self = self] chatBubbleSettings in
             if let strongSelf = self {
                 strongSelf.apply(chatBubbleSettings: chatBubbleSettings)
             }
@@ -385,7 +385,7 @@ final class BubbleSettingsController: ViewController {
             current.chatBubbleSettings = chatBubbleSettings
             return current
         })
-        |> deliverOnMainQueue).start(completed: { [weak self] in
+        |> deliverOnMainQueue).start(completed: { [weak self = self] in
             self?.dismiss()
         })
     }
@@ -443,7 +443,7 @@ private final class BubbleSettingsToolbarNode: ASDisplayNode {
         
         self.updatePresentationData(presentationData: self.presentationData)
         
-        self.cancelButton.highligthedChanged = { [weak self] highlighted in
+        self.cancelButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.cancelButton.backgroundColor = strongSelf.presentationData.theme.list.itemHighlightedBackgroundColor
@@ -455,7 +455,7 @@ private final class BubbleSettingsToolbarNode: ASDisplayNode {
             }
         }
         
-        self.doneButton.highligthedChanged = { [weak self] highlighted in
+        self.doneButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.doneButton.backgroundColor = strongSelf.presentationData.theme.list.itemHighlightedBackgroundColor
@@ -499,10 +499,10 @@ private final class BubbleSettingsToolbarNode: ASDisplayNode {
     func updateLayout(width: CGFloat, bottomInset: CGFloat, layout: ContainerViewLayout, transition: ContainedViewLayoutTransition) -> CGFloat {
         var contentHeight: CGFloat = 0.0
         
-        let switchItem = ItemListSwitchItem(presentationData: ItemListPresentationData(self.presentationData), title: self.presentationData.strings.Appearance_BubbleCorners_AdjustAdjacent, value: self.presentationThemeSettings.chatBubbleSettings.mergeBubbleCorners, disableLeadingInset: true, sectionId: 0, style: .blocks, updated: { [weak self] value in
+        let switchItem = ItemListSwitchItem(presentationData: ItemListPresentationData(self.presentationData), title: self.presentationData.strings.Appearance_BubbleCorners_AdjustAdjacent, value: self.presentationThemeSettings.chatBubbleSettings.mergeBubbleCorners, disableLeadingInset: true, sectionId: 0, style: .blocks, updated: { [weak self = self] value in
             self?.updateMergeBubbleCorners?(value)
         })
-        let cornerRadiusItem = BubbleSettingsRadiusItem(theme: self.presentationData.theme, value: Int(self.presentationData.chatBubbleCorners.mainRadius), enabled: true, disableLeadingInset: false, displayIcons: false, disableDecorations: true, force: false, sectionId: 0, updated: { [weak self] value in
+        let cornerRadiusItem = BubbleSettingsRadiusItem(theme: self.presentationData.theme, value: Int(self.presentationData.chatBubbleCorners.mainRadius), enabled: true, disableLeadingInset: false, displayIcons: false, disableDecorations: true, force: false, sectionId: 0, updated: { [weak self = self] value in
             self?.updateCornerRadius?(Int32(max(8, min(16, value))))
         })
         

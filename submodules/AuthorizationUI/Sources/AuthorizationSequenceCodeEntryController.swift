@@ -64,7 +64,7 @@ public final class AuthorizationSequenceCodeEntryController: ViewController {
         self.attemptNavigation = { _ in
             return false
         }
-        self.navigationBar?.backPressed = { [weak self] in
+        self.navigationBar?.backPressed = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -99,43 +99,43 @@ public final class AuthorizationSequenceCodeEntryController: ViewController {
         
         self.controllerNode.view.disableAutomaticKeyboardHandling = [.forward, .backward]
         
-        self.controllerNode.loginWithCode = { [weak self] code in
+        self.controllerNode.loginWithCode = { [weak self = self] code in
             self?.continueWithCode(code)
         }
         
-        self.controllerNode.signInWithApple = { [weak self] in
+        self.controllerNode.signInWithApple = { [weak self = self] in
             self?.signInWithApple?()
         }
         
-        self.controllerNode.openFragment = { [weak self] url in
+        self.controllerNode.openFragment = { [weak self = self] url in
             self?.openFragment?(url)
         }
         
-        self.controllerNode.requestNextOption = { [weak self] in
+        self.controllerNode.requestNextOption = { [weak self = self] in
             self?.requestNextOption?()
         }
         
-        self.controllerNode.requestAnotherOption = { [weak self] in
+        self.controllerNode.requestAnotherOption = { [weak self = self] in
             self?.requestNextOption?()
         }
         
-        self.controllerNode.requestPreviousOption = { [weak self] in
+        self.controllerNode.requestPreviousOption = { [weak self = self] in
             self?.requestPreviousOption?()
         }
         
-        self.controllerNode.updateNextEnabled = { [weak self] value in
+        self.controllerNode.updateNextEnabled = { [weak self = self] value in
             self?.navigationItem.rightBarButtonItem?.isEnabled = value
         }
         
-        self.controllerNode.reset = { [weak self] in
+        self.controllerNode.reset = { [weak self = self] in
             self?.resetEmail?()
         }
         
-        self.controllerNode.retryReset = { [weak self] in
+        self.controllerNode.retryReset = { [weak self = self] in
             self?.retryResetEmail?()
         }
         
-        self.controllerNode.present = { [weak self] c, a in
+        self.controllerNode.present = { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         }
         

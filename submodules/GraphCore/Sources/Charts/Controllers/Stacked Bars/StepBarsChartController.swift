@@ -148,7 +148,7 @@ public class StepBarsChartController: BaseChartController {
                 zoomedBarsController.mainBarsRenderer.setup(verticalRange: targetVerticalRange, animated: animated, timeFunction: .easeInOut)
                 zoomedBarsController.previewBarsChartRenderer.setup(verticalRange: targetVerticalRange, animated: animated, timeFunction: .easeInOut)
                 zoomedBarsController.previewBarsChartRenderer.setup(horizontalRange: barsController.totalHorizontalRange, animated: animated)
-                DispatchQueue.main.asyncAfter(deadline: .now() + .defaultDuration) { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: .now() + .defaultDuration) { [weak self = self] in
                     self?.zoomedBarsController.mainBarsRenderer.setVisible(false, animated: false)
                     self?.zoomedBarsController.previewBarsChartRenderer.setVisible(false, animated: false)
                 }

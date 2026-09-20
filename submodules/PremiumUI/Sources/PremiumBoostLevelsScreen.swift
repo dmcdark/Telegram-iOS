@@ -881,7 +881,7 @@ private final class PremiumBoostLevelsSheetComponent: CombinedComponent {
             }
             self.peerDisposable = (context.engine.data.get(
                 EngineDataMap(peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
-            ) |> deliverOnMainQueue).startStrict(next: { [weak self] peers in
+            ) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers in
                 guard let self else {
                     return
                 }
@@ -991,7 +991,7 @@ private final class PremiumBoostLevelsSheetComponent: CombinedComponent {
                     self.myBoostCount += 1
                     
                     let _ = (context.engine.peers.applyChannelBoost(peerId: peerId, slots: [availableBoost.slot])
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] myBoostStatus in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] myBoostStatus in
                         self?.updatedState.set(context.engine.peers.getChannelBoostStatus(peerId: peerId)
                         |> beforeNext { boostStatus in
                             if let boostStatus, let myBoostStatus {
@@ -1011,7 +1011,7 @@ private final class PremiumBoostLevelsSheetComponent: CombinedComponent {
                     
                     let _ = (self.updatedState.get()
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] state in
                         guard let self, let state else {
                             return
                         }
@@ -1104,17 +1104,17 @@ private final class PremiumBoostLevelsSheetComponent: CombinedComponent {
                                 guard let peer, let controller else {
                                     return
                                 }
-                                let replaceController = replaceBoostConfirmationController(context: context, fromPeers: [occupiedPeer], toPeer: peer, commit: { [weak self] in
+                                let replaceController = replaceBoostConfirmationController(context: context, fromPeers: [occupiedPeer], toPeer: peer, commit: { [weak self = self] in
                                     self?.currentMyBoostCount += 1
                                     self?.myBoostCount += 1
                                     let _ = (context.engine.peers.applyChannelBoost(peerId: peerId, slots: [boost.slot])
-                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
                                         let _ = (self.updatedState.get()
                                         |> take(1)
-                                        |> deliverOnMainQueue).startStandalone(next: { [weak self] state in
+                                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] state in
                                             guard let self, let state else {
                                                 return
                                             }

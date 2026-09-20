@@ -88,7 +88,7 @@ public final class QrCodeScanScreen: ViewController {
         self.navigationBar?.intrinsicCanTransitionInline = false
 
         self.inForegroundDisposable = (context.sharedContext.applicationBindings.applicationInForeground
-        |> deliverOnMainQueue).start(next: { [weak self] inForeground in
+        |> deliverOnMainQueue).start(next: { [weak self = self] inForeground in
             guard let strongSelf = self else {
                 return
             }
@@ -181,7 +181,7 @@ public final class QrCodeScanScreen: ViewController {
         |> mapToSignal { code -> Signal<String?, NoError> in
             return .single(code)
             |> delay(0.5, queue: Queue.mainQueue())
-        }).start(next: { [weak self] code in
+        }).start(next: { [weak self = self] code in
             guard let strongSelf = self, !strongSelf.codeResolved else {
                 return
             }
@@ -215,7 +215,7 @@ public final class QrCodeScanScreen: ViewController {
                     break
                 case .peer:
                     if let _ = URL(string: code) {
-                        strongSelf.controllerNode.resolveCode(code: code, completion: { [weak self] result in
+                        strongSelf.controllerNode.resolveCode(code: code, completion: { [weak self = self] result in
                             if let strongSelf = self {
                                 strongSelf.codeResolved = true
                             }
@@ -226,7 +226,7 @@ public final class QrCodeScanScreen: ViewController {
             }
         })
         
-        self.controllerNode.present = { [weak self] c in
+        self.controllerNode.present = { [weak self = self] c in
             self?.present(c, in: .window(.root))
         }
     }
@@ -473,7 +473,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         self.backgroundColor = self.presentationData.theme.list.plainBackgroundColor
         
         self.torchDisposable = (self.camera.hasTorch
-        |> deliverOnMainQueue).start(next: { [weak self] hasTorch in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasTorch in
             if let strongSelf = self {
                 strongSelf.torchButtonNode.isHidden = !hasTorch
             }
@@ -494,11 +494,11 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         self.addSubnode(self.textNode)
         self.addSubnode(self.errorTextNode)
 
-        self.galleryButtonNode.pressed = { [weak self] in
+        self.galleryButtonNode.pressed = { [weak self = self] in
             self?.galleryPressed()
         }
 
-        self.torchButtonNode.pressed = { [weak self] in
+        self.torchButtonNode.pressed = { [weak self = self] in
             self?.torchPressed()
         }
 
@@ -507,7 +507,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
             let _ = (self.previewView.isPreviewing
             |> filter { $0 }
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                 self?.previewView.removePlaceholder(delay: 0.15)
             })
         } else {
@@ -544,7 +544,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         }
         
         self.codeDisposable.set((throttledSignal
-        |> deliverOnMainQueue).start(next: { [weak self] codes in
+        |> deliverOnMainQueue).start(next: { [weak self = self] codes in
             guard let strongSelf = self else {
                 return
             }
@@ -674,7 +674,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
                         tintColor: .white
                     )
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -826,12 +826,12 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         let context = self.context
         let presentationData = context.sharedContext.currentPresentationData.with { $0 }
         
-        let presentError = { [weak self] in
+        let presentError = { [weak self = self] in
             let alertController = textAlertController(context: context, title: nil, text: presentationData.strings.Contacts_QrCode_NoCodeFound, actions: [TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: {})])
             self?.present(alertController)
         }
         
-        let _ = legacyWallpaperPicker(context: context, presentationData: presentationData, subject: .qrCode).start(next: { [weak self] generator in
+        let _ = legacyWallpaperPicker(context: context, presentationData: presentationData, subject: .qrCode).start(next: { [weak self = self] generator in
             let legacyController = LegacyController(presentation: .modal(animateIn: true), theme: presentationData.theme)
             legacyController.statusBar.statusBarStyle = presentationData.theme.rootController.statusBarStyle.style
             
@@ -843,7 +843,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
                     TGMediaAssetImageSignals.image(for: asset, imageType: TGMediaAssetImageTypeScreen, size: CGSize(width: 1280.0, height: 1280.0)).start(next: { image in
                         if let image = image as? UIImage {
                             let _ = (recognizeQRCode(in: image)
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 if let result = result, let strongSelf = self {
                                     strongSelf.resolveCode(code: result, completion: { result in
                                         if result {
@@ -883,7 +883,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
     
     fileprivate func resolveCode(code: String, completion: @escaping (Bool) -> Void) {
         self.resolveDisposable.set((self.context.sharedContext.resolveUrl(context: self.context, peerId: nil, url: code, skipUrlAuth: false)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 completion(strongSelf.openResolved(result))
             }
@@ -901,7 +901,7 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         guard let navigationController = self.controller?.navigationController as? NavigationController else {
             return false
         }
-        self.context.sharedContext.openResolvedUrl(result, context: self.context, urlContext: .generic, navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { [weak self] peer, navigation in
+        self.context.sharedContext.openResolvedUrl(result, context: self.context, urlContext: .generic, navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { [weak self = self] peer, navigation in
             guard let strongSelf = self else {
                 return
             }
@@ -926,9 +926,9 @@ private final class QrCodeScanScreenNode: ViewControllerTracingNode, ASScrollVie
         sendEmoji: nil,
         requestMessageActionUrlAuth: nil,
         joinVoiceChat: { peerId, invite, call in
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.controller?.present(c, in: .window(.root), with: a)
-        }, dismissInput: { [weak self] in
+        }, dismissInput: { [weak self = self] in
             self?.view.endEditing(true)
         }, contentContext: nil, progress: nil, completion: nil)
         

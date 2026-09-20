@@ -89,7 +89,7 @@ final class SecureIdDocumentTypeSelectionController: ActionSheetController {
         
         super.init(theme: ActionSheetControllerTheme(presentationData: presentationData))
         
-        self.presentationDisposable = context.sharedContext.presentationData.start(next: { [weak self] presentationData in
+        self.presentationDisposable = context.sharedContext.presentationData.start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.theme = ActionSheetControllerTheme(presentationData: presentationData)
             }
@@ -99,7 +99,7 @@ final class SecureIdDocumentTypeSelectionController: ActionSheetController {
         
         var items: [ActionSheetItem] = []
         for (title, data) in documentSelectionItemsForField(field: field, strings: strings) {
-            items.append(ActionSheetButtonItem(title: title, action: { [weak self] in
+            items.append(ActionSheetButtonItem(title: title, action: { [weak self = self] in
                 self?.dismissAnimated()
                 completion(data)
             }))
@@ -107,7 +107,7 @@ final class SecureIdDocumentTypeSelectionController: ActionSheetController {
         self.setItemGroups([
             ActionSheetItemGroup(items: items),
             ActionSheetItemGroup(items: [
-                ActionSheetButtonItem(title: strings.Common_Cancel, action: { [weak self] in
+                ActionSheetButtonItem(title: strings.Common_Cancel, action: { [weak self = self] in
                     self?.dismissAnimated()
                 }),
             ])

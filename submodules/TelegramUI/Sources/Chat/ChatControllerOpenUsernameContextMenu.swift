@@ -41,7 +41,7 @@ extension ChatControllerImpl {
         }
         
         let _ = (peer
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let self else {
                 return
             }
@@ -51,7 +51,7 @@ extension ChatControllerImpl {
             if let peer {
                 if case .user = peer {
                     items.append(
-                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Username_SendMessage, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                        .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Username_SendMessage, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                             f(.default)
                             guard let self else {
                                 return
@@ -76,7 +76,7 @@ extension ChatControllerImpl {
                         openIcon = UIImage(bundleImageName: "Chat/Context Menu/Channels")
                     }
                     items.append(
-                        .action(ContextMenuActionItem(text: openTitle, icon: { theme in return generateTintedImage(image: openIcon, color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                        .action(ContextMenuActionItem(text: openTitle, icon: { theme in return generateTintedImage(image: openIcon, color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                             f(.default)
                             guard let self else {
                                 return
@@ -88,7 +88,7 @@ extension ChatControllerImpl {
             }
             
             items.append(
-                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Username_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Username_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                     f(.default)
 
                     guard let self else {
@@ -113,7 +113,7 @@ extension ChatControllerImpl {
                 }
                 
                 items.append(
-                    .action(ContextMenuActionItem(text: peer.displayTitle(strings: self.presentationData.strings, displayOrder: self.presentationData.nameDisplayOrder), textLayout: .secondLineWithAttributedValue(subtitle), icon: { theme in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), iconPosition: .left, action: { [weak self]  _, f in
+                    .action(ContextMenuActionItem(text: peer.displayTitle(strings: self.presentationData.strings, displayOrder: self.presentationData.nameDisplayOrder), textLayout: .secondLineWithAttributedValue(subtitle), icon: { theme in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), iconPosition: .left, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -132,7 +132,7 @@ extension ChatControllerImpl {
             self.canReadHistory.set(false)
             
             let controller = makeContextController(presentationData: self.presentationData, source: source, items: .single(ContextController.Items(content: .list(items))), recognizer: recognizer, gesture: gesture, disableScreenshots: false)
-            controller.dismissed = { [weak self] in
+            controller.dismissed = { [weak self = self] in
                 self?.canReadHistory.set(true)
             }
             

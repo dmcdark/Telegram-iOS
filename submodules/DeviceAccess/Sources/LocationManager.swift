@@ -1,6 +1,14 @@
 import Foundation
 import CoreLocation
 
+private func currentLocationAuthorizationStatus(_ manager: CLLocationManager) -> CLAuthorizationStatus {
+    if #available(iOS 14.0, *) {
+        return manager.authorizationStatus
+    } else {
+        return CLLocationManager.authorizationStatus()
+    }
+}
+
 public final class LocationManager: NSObject, CLLocationManagerDelegate {
     public let manager = CLLocationManager()
     var pendingCompletion: ((CLAuthorizationStatus) -> Void, CLAuthorizationStatus)?
@@ -11,7 +19,7 @@ public final class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func requestWhenInUseAuthorization(completion: @escaping (CLAuthorizationStatus) -> Void) {
-        let status = CLLocationManager.authorizationStatus()
+        let status = currentLocationAuthorizationStatus(self.manager)
         if status == .notDetermined {
             self.manager.requestWhenInUseAuthorization()
             self.pendingCompletion = (completion, .authorizedWhenInUse)
@@ -21,7 +29,7 @@ public final class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func requestAlwaysAuthorization(completion: @escaping (CLAuthorizationStatus) -> Void) {
-        let status = CLLocationManager.authorizationStatus()
+        let status = currentLocationAuthorizationStatus(self.manager)
         if status == .notDetermined {
             self.manager.requestWhenInUseAuthorization()
             self.pendingCompletion = (completion, .authorizedAlways)

@@ -211,7 +211,7 @@ private final class OldChannelsSearchContainerNode: SearchDisplayControllerConte
         
         self.addSubnode(self.listNode)
         
-        let interaction = OldChannelsSearchInteraction(togglePeer: { [weak self] peerId in
+        let interaction = OldChannelsSearchInteraction(togglePeer: { [weak self = self] peerId in
             togglePeer(peerId)
             
             if let strongSelf = self {
@@ -240,7 +240,7 @@ private final class OldChannelsSearchContainerNode: SearchDisplayControllerConte
         }
         
         let previousEntriesHolder = Atomic<([OldChannelsSearchEntry], PresentationTheme, PresentationStrings)?>(value: nil)
-        self.searchDisposable.set(combineLatest(queue: .mainQueue(), queryAndFoundItems, self.presentationDataPromise.get()).start(next: { [weak self] queryAndFoundItems, presentationData in
+        self.searchDisposable.set(combineLatest(queue: .mainQueue(), queryAndFoundItems, self.presentationDataPromise.get()).start(next: { [weak self = self] queryAndFoundItems, presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -261,7 +261,7 @@ private final class OldChannelsSearchContainerNode: SearchDisplayControllerConte
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -275,7 +275,7 @@ private final class OldChannelsSearchContainerNode: SearchDisplayControllerConte
             }
         })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -318,7 +318,7 @@ private final class OldChannelsSearchContainerNode: SearchDisplayControllerConte
             options.insert(.PreferSynchronousResourceLoading)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
             })
         }
@@ -389,7 +389,7 @@ private final class OldChannelsSearchItemNode: ItemListControllerSearchNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: OldChannelsSearchContainerNode(context: self.context, peers: self.peers, selectedPeerIds: self.selectedPeerIds, togglePeer: self.togglePeer), cancel: { [weak self] in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: OldChannelsSearchContainerNode(context: self.context, peers: self.peers, selectedPeerIds: self.selectedPeerIds, togglePeer: self.togglePeer), cancel: { [weak self = self] in
             self?.cancel()
         }, fieldStyle: placeholderNode.fieldStyle)
         

@@ -260,7 +260,7 @@ public class ShareRootControllerImpl {
             
             setupSharedLogger(rootPath: rootPath, path: logsPath)
             
-            let applicationBindings = TelegramApplicationBindings(isMainApp: false, appBundleId: self.initializationData.appBundleId, appBuildType: self.initializationData.appBuildType, containerPath: self.initializationData.appGroupPath, appSpecificScheme: "tg", openUrl: { [weak self] url in
+            let applicationBindings = TelegramApplicationBindings(isMainApp: false, appBundleId: self.initializationData.appBundleId, appBuildType: self.initializationData.appBuildType, containerPath: self.initializationData.appGroupPath, appSpecificScheme: "tg", openUrl: { [weak self = self] url in
                 self?.openUrl(url)
             }, openUniversalUrl: { _, completion in
                 completion.completion(false)
@@ -513,7 +513,7 @@ public class ShareRootControllerImpl {
                 }
             }
             |> deliverOnMainQueue
-            |> afterNext { [weak self] environment, context, accessChallengeData, otherAccounts in
+            |> afterNext { [weak self = self] environment, context, accessChallengeData, otherAccounts in
                 (environment as? ShareControllerEnvironmentExtension)?.accounts = otherAccounts.compactMap { $0.account as? ShareControllerAccountContextExtension }
                 
                 initializeLegacyComponents(application: nil, currentSizeClassGetter: { return .compact }, currentHorizontalClassGetter: { return .compact }, documentsPath: "", currentApplicationBounds: { return CGRect() }, canOpenUrl: { _ in return false}, openUrl: { _ in })
@@ -526,7 +526,7 @@ public class ShareRootControllerImpl {
                     
                     let beginShare: () -> Void = {
                         let requestUserInteraction: ([UnpreparedShareItemContent]) -> Signal<[PreparedShareItemContent], NoError> = { content in
-                            return Signal { [weak self] subscriber in
+                            return Signal { [weak self = self] subscriber in
                                 switch content[0] {
                                     case let .contact(data):
                                         let controller = deviceContactInfoController(context: context, environment: environment, subject: .filter(peer: nil, contactId: nil, contactData: data, completion: { peer, contactData in
@@ -633,7 +633,7 @@ public class ShareRootControllerImpl {
                         
                         if canShareToStory {
                             shareController.canSendInHighQuality = canSendInHighQuality
-                            shareController.shareStory = { [weak self] in
+                            shareController.shareStory = { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -700,7 +700,7 @@ public class ShareRootControllerImpl {
                         }*/
                         
                         cancelImpl = { [weak shareController] in
-                            shareController?.dismiss(completion: { [weak self] in
+                            shareController?.dismiss(completion: { [weak self = self] in
                                 //inForeground.set(false)
                                 self?.getExtensionContext()?.completeRequest(returningItems: nil, completionHandler: nil)
                             })
@@ -950,7 +950,7 @@ public class ShareRootControllerImpl {
                 })
             }
             
-            self.disposable.set(applicationInterface.start(next: { _, _, _, _ in }, error: { [weak self] error in
+            self.disposable.set(applicationInterface.start(next: { _, _, _, _ in }, error: { [weak self = self] error in
                 guard let strongSelf = self else {
                     return
                 }

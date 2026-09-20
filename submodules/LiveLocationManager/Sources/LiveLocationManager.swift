@@ -54,7 +54,7 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
         self.summaryManagerImpl = LiveLocationSummaryManagerImpl(queue: self.queue, engine: engine, accountPeerId: engine.account.peerId)
 
         self.messagesDisposable = (self.engine.messages.activeLiveLocationMessages()
-        |> deliverOn(self.queue)).start(next: { [weak self] message in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] message in
             if let strongSelf = self {
                 let timestamp = Int32(CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970)
                 
@@ -108,10 +108,10 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
             }
         }
         |> distinctUntilChanged
-        |> deliverOn(self.queue)).start(next: { [weak self] value in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 if value {
-                    strongSelf.deviceLocationDisposable.set(strongSelf.locationManager.push(mode: .preciseAlways, updated: { [weak self] location, heading in
+                    strongSelf.deviceLocationDisposable.set(strongSelf.locationManager.push(mode: .preciseAlways, updated: { [weak self = self] location, heading in
                         self?.deviceLocationPromise.set(.single((location, heading)))
                     }))
                 } else {
@@ -126,7 +126,7 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
         }
         
         self.updateCoordinateDisposable.set((throttledDeviceLocation
-        |> deliverOn(self.queue)).start(next: { [weak self] location, heading in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] location, heading in
             if let strongSelf = self {
                 var effectiveHeading = heading ?? location.course
                 if location.speed > 1.0 {
@@ -178,7 +178,7 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
         self.stopMessageIds = stopMessageIds
         for id in addedStopped {
             self.editMessageDisposables.set((self.engine.messages.requestEditLiveLocation(messageId: id, stop: true, coordinate: nil, heading: nil, proximityNotificationRadius: nil, extendPeriod: nil)
-                |> deliverOn(self.queue)).start(completed: { [weak self] in
+                |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.editMessageDisposables.set(nil, forKey: id)
                     }
@@ -210,7 +210,7 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
             if self.invalidationTimer?.1 != timestamp {
                 self.invalidationTimer?.0.invalidate()
                 
-                let timer = SwiftSignalKit.Timer(timeout: Double(max(0, timestamp - currentTimestamp)), repeat: false, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: Double(max(0, timestamp - currentTimestamp)), repeat: false, completion: { [weak self = self] in
                     self?.invalidationTimer?.0.invalidate()
                     self?.invalidationTimer = nil
                     self?.rescheduleTimer()
@@ -233,7 +233,7 @@ public final class LiveLocationManagerImpl: LiveLocationManager {
         let remainingIds = Atomic<Set<EngineMessage.Id>>(value: Set(ids.keys))
         for id in ids.keys {
             self.editMessageDisposables.set((self.engine.messages.requestEditLiveLocation(messageId: id, stop: false, coordinate: (latitude: coordinate.latitude, longitude: coordinate.longitude, accuracyRadius: Int32(accuracyRadius)), heading: heading.flatMap { Int32($0) }, proximityNotificationRadius: nil, extendPeriod: nil)
-            |> deliverOn(self.queue)).start(completed: { [weak self] in
+            |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.editMessageDisposables.set(nil, forKey: id)
                     

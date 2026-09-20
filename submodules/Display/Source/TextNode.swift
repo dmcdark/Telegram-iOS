@@ -1061,7 +1061,7 @@ private final class TextAccessibilityOverlayNodeView: UIView {
                 element.accessibilityLabel = value as? String ?? ""
                 element.frame = rect
                 element.accessibilityTraits = .link
-                element.activate = { [weak self] in
+                element.activate = { [weak self = self] in
                     self?.openUrl(value as? String ?? "")
                     return true
                 }
@@ -1102,7 +1102,7 @@ public final class TextAccessibilityOverlayNode: ASDisplayNode {
         self.isOpaque = false
         self.backgroundColor = nil
         
-        let openUrl: (String) -> Void = { [weak self] url in
+        let openUrl: (String) -> Void = { [weak self = self] url in
             self?.openUrl?(url)
         }
         

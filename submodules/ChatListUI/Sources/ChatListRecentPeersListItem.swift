@@ -98,7 +98,7 @@ class ChatListRecentPeersListItemNode: ListViewItemNode {
     func asyncLayout() -> (_ item: ChatListRecentPeersListItem, _ params: ListViewItemLayoutParams, _ last: Bool) -> (ListViewItemNodeLayout, (Bool) -> Void) {
         let currentItem = self.item
         
-        return { [weak self] item, params, last in
+        return { [weak self = self] item, params, last in
             let nodeLayout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: 96.0), insets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0))
             
             var updatedTheme: PresentationTheme?
@@ -106,7 +106,7 @@ class ChatListRecentPeersListItemNode: ListViewItemNode {
                 updatedTheme = item.theme
             }
             
-            return (nodeLayout, { [weak self] synchronousLoads in
+            return (nodeLayout, { [weak self = self] synchronousLoads in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

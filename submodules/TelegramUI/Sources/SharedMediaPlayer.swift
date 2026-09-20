@@ -200,12 +200,12 @@ final class SharedMediaPlayer {
             self.forceAudioToSpeaker = true
         }
         
-        playlist.currentItemDisappeared = { [weak self] in
+        playlist.currentItemDisappeared = { [weak self = self] in
             self?.cancelled?()
         }
         
         self.stateDisposable = (playlist.state
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
             if let strongSelf = self {
                 let previousPlaybackItem = strongSelf.playbackItem
                 strongSelf.updatePrefetchItems(item: state.item, previousItem: state.previousItem, nextItem: state.nextItem, ordering: state.order)
@@ -365,12 +365,12 @@ final class SharedMediaPlayer {
         })
         
         self.playbackStateValueDisposable = (self.playbackState
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             self?._playbackStateValue = value
         })
         
         if controlPlaybackWithProximity {
-            self.proximityManagerIndex = DeviceProximityManager.shared().add { [weak self] value in
+            self.proximityManagerIndex = DeviceProximityManager.shared().add { [weak self = self] value in
                 let forceAudioToSpeaker = !value
                 if let strongSelf = self, strongSelf.forceAudioToSpeaker != forceAudioToSpeaker {
                     strongSelf.forceAudioToSpeaker = forceAudioToSpeaker

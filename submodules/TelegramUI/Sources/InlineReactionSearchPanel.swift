@@ -90,7 +90,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
     override func didLoad() {
         super.didLoad()
         
-        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point in
+        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point in
             if let strongSelf = self {
                 let convertedPoint = strongSelf.scrollNode.view.convert(point, from: strongSelf.view)
                 guard strongSelf.scrollNode.view.bounds.contains(convertedPoint) else {
@@ -143,7 +143,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                             }
                             
                             menuItems.append(
-                                .action(ContextMenuActionItem(text: isStarred ? strongSelf.strings.Stickers_RemoveFromFavorites : strongSelf.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                .action(ContextMenuActionItem(text: isStarred ? strongSelf.strings.Stickers_RemoveFromFavorites : strongSelf.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
                                     
                                     if let strongSelf = self {
@@ -161,7 +161,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                                                     } else {
                                                         text = strongSelf.strings.Premium_MaxFavedStickersText("\(premiumLimit)").string
                                                     }
-                                                    strongSelf.getControllerInteraction?()?.presentGlobalOverlayController(UndoOverlayController(presentationData: presentationData, content: .sticker(context: strongSelf.context, file: item.file._parse(), loop: true, title: strongSelf.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self] action in
+                                                    strongSelf.getControllerInteraction?()?.presentGlobalOverlayController(UndoOverlayController(presentationData: presentationData, content: .sticker(context: strongSelf.context, file: item.file._parse(), loop: true, title: strongSelf.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self = self] action in
                                                         if let strongSelf = self {
                                                             if case .info = action {
                                                                 let controller = PremiumIntroScreen(context: strongSelf.context, source: .savedStickers)
@@ -178,7 +178,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                             )
                                 
                             menuItems.append(
-                                .action(ContextMenuActionItem(text: strongSelf.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                .action(ContextMenuActionItem(text: strongSelf.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
                                 
                                     if let strongSelf = self, let controllerInteraction = strongSelf.getControllerInteraction?() {
@@ -205,7 +205,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                                     }
                                 }))
                             )
-                            return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.theme, strings: strongSelf.strings, item: .pack(item.file._parse()), menu: menuItems, openPremiumIntro: { [weak self] in
+                            return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.theme, strings: strongSelf.strings, item: .pack(item.file._parse()), menu: menuItems, openPremiumIntro: { [weak self = self] in
                                 guard let strongSelf = self, let controllerInteraction = strongSelf.getControllerInteraction?() else {
                                     return
                                 }
@@ -219,13 +219,13 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                 }
             }
             return nil
-            }, present: { [weak self] content, sourceView, sourceRect in
+            }, present: { [weak self = self] content, sourceView, sourceRect in
                 if let strongSelf = self {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     let controller = makePeekController(presentationData: presentationData, content: content, sourceView: {
                         return (sourceView, sourceRect)
                     })
-                    controller.visibilityUpdated = { [weak self] visible in
+                    controller.visibilityUpdated = { [weak self = self] visible in
                         self?.previewingStickersPromise.set(visible)
                     }
                     strongSelf.peekController = controller
@@ -233,7 +233,7 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                     return controller
                 }
                 return nil
-            }, updateContent: { [weak self] content in
+            }, updateContent: { [weak self = self] content in
                 if let strongSelf = self {
                     var item: TelegramMediaFile?
                     if let content = content as? StickerPreviewPeekContent, case let .pack(contentItem) = content.item {
@@ -442,9 +442,9 @@ private final class InlineReactionSearchStickersNode: ASDisplayNode, ASScrollVie
                         context: self.context,
                         file: item.file,
                         theme: self.theme,
-                        isPreviewed: { [weak self] item in
+                        isPreviewed: { [weak self = self] item in
                             return item.file.fileId == self?.previewedStickerItem?.fileId
-                        }, sendSticker: { [weak self] file, view, rect in
+                        }, sendSticker: { [weak self = self] file, view, rect in
                             self?.sendSticker?(file, view, rect)
                         }
                     )
@@ -517,11 +517,11 @@ final class InlineReactionSearchPanel: ChatInputContextPanelNode {
         
         self.addSubnode(self.containerNode)
         
-        self.stickersNode.getControllerInteraction = { [weak self] in
+        self.stickersNode.getControllerInteraction = { [weak self = self] in
             return self?.controllerInteraction
         }
         
-        self.stickersNode.updateBackgroundOffset = { [weak self] offset, animateIn, transition in
+        self.stickersNode.updateBackgroundOffset = { [weak self = self] offset, animateIn, transition in
             guard let strongSelf = self, let (_, _) = strongSelf.validLayout else {
                 return
             }
@@ -534,7 +534,7 @@ final class InlineReactionSearchPanel: ChatInputContextPanelNode {
             }
         }
         
-        self.stickersNode.sendSticker = { [weak self] file, node, rect in
+        self.stickersNode.sendSticker = { [weak self = self] file, node, rect in
             guard let strongSelf = self else {
                 return
             }
@@ -545,7 +545,7 @@ final class InlineReactionSearchPanel: ChatInputContextPanelNode {
         self.view.disablesInteractiveKeyboardGestureRecognizer = true
         
         self.choosingStickerDisposable = (self.stickersNode.choosingSticker
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.controllerInteraction?.updateChoosingSticker(value)
             }

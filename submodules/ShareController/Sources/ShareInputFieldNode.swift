@@ -143,7 +143,7 @@ private final class ShareInputCopyComponent: Component {
                     content: AnyComponent(MultilineTextComponent(
                         text: .plain(NSAttributedString(string: component.strings.Conversation_LinkDialogCopy, font: Font.regular(17.0), textColor: component.theme.accentColor))
                     )),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

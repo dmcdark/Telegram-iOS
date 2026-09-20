@@ -99,7 +99,7 @@ final class SecureIdDocumentFormController: FormController<SecureIdDocumentFormS
     
     @objc private func cancelPressed() {
         if self.controllerNode.hasUnsavedData() {
-            self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_DiscardMessageTitle, text: self.presentationData.strings.Passport_DiscardMessageDescription, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Passport_DiscardMessageAction, action: { [weak self] in
+            self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_DiscardMessageTitle, text: self.presentationData.strings.Passport_DiscardMessageDescription, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Passport_DiscardMessageAction, action: { [weak self = self] in
                 self?.dismiss()
             })]), in: .window(.root))
         } else {
@@ -114,7 +114,7 @@ final class SecureIdDocumentFormController: FormController<SecureIdDocumentFormS
     override func displayNodeDidLoad() {
         super.displayNodeDidLoad()
         
-        self.controllerNode.actionInputStateUpdated = { [weak self] state in
+        self.controllerNode.actionInputStateUpdated = { [weak self = self] state in
             if let strongSelf = self {
                 switch state {
                     case .inProgress:
@@ -132,14 +132,14 @@ final class SecureIdDocumentFormController: FormController<SecureIdDocumentFormS
             }
         }
         
-        self.controllerNode.completedWithValues = { [weak self] values in
+        self.controllerNode.completedWithValues = { [weak self = self] values in
             if let strongSelf = self {
                 strongSelf.updatedValues(values ?? [])
                 strongSelf.dismiss()
             }
         }
         
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.dismiss()
         }
         

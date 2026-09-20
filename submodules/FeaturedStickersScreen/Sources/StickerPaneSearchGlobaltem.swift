@@ -262,7 +262,7 @@ public class StickerPaneSearchGlobalItemNode: GridItemNode {
         self.addSubnode(self.uninstallButtonNode)
         self.addSubnode(self.topSeparatorNode)
         
-        self.installButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.installButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.installBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -279,7 +279,7 @@ public class StickerPaneSearchGlobalItemNode: GridItemNode {
         }
         self.installButtonNode.addTarget(self, action: #selector(self.installPressed), forControlEvents: .touchUpInside)
         
-        self.uninstallButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.uninstallButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.uninstallBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -352,7 +352,7 @@ public class StickerPaneSearchGlobalItemNode: GridItemNode {
         
         Queue.mainQueue().after(1.5) {
             self.highlightNode = nil
-            highlightNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak highlightNode] _ in
+            highlightNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak highlightNode = highlightNode] _ in
                 highlightNode?.removeFromSupernode()
             })
         }

@@ -271,7 +271,7 @@ public final class MessageReadMetricsTracker {
         guard self.heartbeatTimer == nil else { return }
         let hasTrackingPhases = self.phases.values.contains(where: { $0.state == .tracking })
         guard hasTrackingPhases else { return }
-        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kHeartbeatInterval, repeat: true, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kHeartbeatInterval, repeat: true, completion: { [weak self = self] in
             self?.heartbeatTick()
         }, queue: Queue.mainQueue())
         self.heartbeatTimer = timer
@@ -317,7 +317,7 @@ public final class MessageReadMetricsTracker {
         )
         let now = CFAbsoluteTimeGetCurrent()
         phase.graceDeadline = now + MessageReadMetricsTracker.kGracePeriod
-        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kGracePeriod, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kGracePeriod, repeat: false, completion: { [weak self = self] in
             self?.graceStartCompleted(messageId: messageId)
         }, queue: Queue.mainQueue())
         phase.graceTimer = timer
@@ -342,7 +342,7 @@ public final class MessageReadMetricsTracker {
         phase.stopTicking(now: now, lastActivityTime: self.lastActivityTime)
         phase.state = .graceEnd
         phase.graceDeadline = now + MessageReadMetricsTracker.kGracePeriod
-        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kGracePeriod, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: MessageReadMetricsTracker.kGracePeriod, repeat: false, completion: { [weak self = self] in
             self?.graceEndCompleted(messageId: messageId)
         }, queue: Queue.mainQueue())
         phase.graceTimer = timer
@@ -364,7 +364,7 @@ public final class MessageReadMetricsTracker {
         phase.graceRemainingAtPause = nil
         phase.state = .graceEnd
         phase.graceDeadline = now + remaining
-        let timer = SwiftSignalKit.Timer(timeout: remaining, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: remaining, repeat: false, completion: { [weak self = self] in
             self?.graceEndCompleted(messageId: messageId)
         }, queue: Queue.mainQueue())
         phase.graceTimer = timer
@@ -409,7 +409,7 @@ public final class MessageReadMetricsTracker {
             phase.state = .graceStart
             phase.lastTickTime = now
             phase.graceDeadline = now + remaining
-            let timer = SwiftSignalKit.Timer(timeout: remaining, repeat: false, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: remaining, repeat: false, completion: { [weak self = self] in
                 self?.graceStartCompleted(messageId: messageId)
             }, queue: Queue.mainQueue())
             phase.graceTimer = timer

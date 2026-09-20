@@ -57,7 +57,7 @@ public final class PinchSourceGesture: UIPinchGestureRecognizer {
 
         super.init(target: self.target, action: #selector(self.target.onGesture(_:)))
 
-        self.target.updated = { [weak self] in
+        self.target.updated = { [weak self = self] in
             self?.gestureUpdated()
         }
     }
@@ -163,7 +163,7 @@ public final class PinchSourceContainerNode: ASDisplayNode, ASGestureRecognizerD
 
         self.addSubnode(self.contentNode)
 
-        self.gesture.began = { [weak self] in
+        self.gesture.began = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -174,7 +174,7 @@ public final class PinchSourceContainerNode: ASDisplayNode, ASGestureRecognizerD
             strongSelf.activate?(strongSelf)
         }
 
-        self.gesture.ended = { [weak self] in
+        self.gesture.ended = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -184,7 +184,7 @@ public final class PinchSourceContainerNode: ASDisplayNode, ASGestureRecognizerD
             strongSelf.deactivated?()
         }
 
-        self.gesture.updated = { [weak self] scale, pinchLocation, offset in
+        self.gesture.updated = { [weak self = self] scale, pinchLocation, offset in
             guard let strongSelf = self else {
                 return
             }
@@ -197,7 +197,7 @@ public final class PinchSourceContainerNode: ASDisplayNode, ASGestureRecognizerD
         super.didLoad()
 
         self.view.addGestureRecognizer(self.gesture)
-        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }

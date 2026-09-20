@@ -21,7 +21,7 @@ extension ChatControllerImpl {
             updatedPresentationData: self.updatedPresentationData,
             value: currentText,
             entities: currentEntities,
-            apply: { [weak self] text, entities in
+            apply: { [weak self = self] text, entities in
             guard let self else {
                 return
             }

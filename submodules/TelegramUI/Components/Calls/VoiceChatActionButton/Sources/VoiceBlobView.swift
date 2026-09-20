@@ -73,7 +73,7 @@ final class VoiceBlobView: UIView {
         //self.addSubview(self.mediumBlob)
         self.layer.addSublayer(self.blobsLayer)
         
-        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let strongSelf = self else { return }
 
             if !strongSelf.isCurrentlyInHierarchy {
@@ -87,7 +87,7 @@ final class VoiceBlobView: UIView {
             //strongSelf.bigBlob.level = strongSelf.presentationAudioLevel
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
             }

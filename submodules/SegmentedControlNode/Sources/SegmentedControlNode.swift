@@ -423,7 +423,7 @@ public final class SegmentedControlNode: ASDisplayNode, ASGestureRecognizerDeleg
             return
         }
         
-        self.selectedIndexShouldChange(index, { [weak self] commit in
+        self.selectedIndexShouldChange(index, { [weak self = self] commit in
             if let strongSelf = self, commit {
                 strongSelf._selectedIndex = index
                 strongSelf.selectedIndexChanged(index)
@@ -463,7 +463,7 @@ public final class SegmentedControlNode: ASDisplayNode, ASGestureRecognizerDeleg
             case .ended:
                 if let gestureSelectedIndex = self.gestureSelectedIndex {
                     if gestureSelectedIndex != self.selectedIndex  {
-                        self.selectedIndexShouldChange(gestureSelectedIndex, { [weak self] commit in
+                        self.selectedIndexShouldChange(gestureSelectedIndex, { [weak self = self] commit in
                             if let strongSelf = self {
                                 if commit {
                                     strongSelf._selectedIndex = gestureSelectedIndex

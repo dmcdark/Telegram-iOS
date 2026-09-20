@@ -1113,11 +1113,11 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
             self.supportsAdaptiveImageGlyph = false
         }
         
-        self.displayInternal.updateDisplayElements = { [weak self] in
+        self.displayInternal.updateDisplayElements = { [weak self = self] in
             self?.updateTextElements()
         }
         
-        self.shouldRespondToAction = { [weak self] action in
+        self.shouldRespondToAction = { [weak self = self] action in
             guard let self, let action else {
                 return false
             }
@@ -1127,7 +1127,7 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
                 return true
             }
         }
-        self.targetForAction = { [weak self] action in
+        self.targetForAction = { [weak self = self] action in
             guard let self, let action else {
                 return nil
             }
@@ -1144,7 +1144,7 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
         self.backgroundColor = nil
         self.isOpaque = false
         
-        self.dropAutocorrectioniOS16 = { [weak self] in
+        self.dropAutocorrectioniOS16 = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1165,25 +1165,25 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
             self.isPreservingText = false
         }
         
-        self.shouldCopy = { [weak self] in
+        self.shouldCopy = { [weak self = self] in
             guard let self else {
                 return true
             }
             return self.customDelegate?.chatInputTextNodeShouldCopy() ?? true
         }
-        self.shouldPaste = { [weak self] in
+        self.shouldPaste = { [weak self = self] in
             guard let self else {
                 return true
             }
             return self.customDelegate?.chatInputTextNodeShouldPaste() ?? true
         }
-        self.shouldReturn = { [weak self] modifierFlags in
+        self.shouldReturn = { [weak self = self] modifierFlags in
             guard let self else {
                 return true
             }
             return self.customDelegate?.chatInputTextNodeShouldReturn(modifierFlags: modifierFlags) ?? true
         }
-        self.backspaceWhileEmpty = { [weak self] in
+        self.backspaceWhileEmpty = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1234,7 +1234,7 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
         
         self.selectionChangedForEditedText = false
         
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1355,7 +1355,7 @@ public final class ChatInputTextView: ChatInputTextViewImpl, UITextViewDelegate,
             if let current = self.blockQuotes[displayBlockQuote.id] {
                 blockQuote = current
             } else {
-                blockQuote = QuoteBackgroundView(toggleCollapse: { [weak self] range in
+                blockQuote = QuoteBackgroundView(toggleCollapse: { [weak self = self] range in
                     guard let self else {
                         return
                     }

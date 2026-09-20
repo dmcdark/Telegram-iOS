@@ -692,7 +692,7 @@ public final class MessageInputPanelComponent: Component {
             self.addSubview(self.textClippingView)
             
             self.viewForOverlayContent = ViewForOverlayContent(
-                ignoreHit: { [weak self] view, point in
+                ignoreHit: { [weak self = self] view, point in
                     guard let self else {
                         return false
                     }
@@ -704,7 +704,7 @@ public final class MessageInputPanelComponent: Component {
                     }
                     return false
                 },
-                dismissSuggestions: { [weak self] in
+                dismissSuggestions: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -848,7 +848,7 @@ public final class MessageInputPanelComponent: Component {
 
             if self.contextQueryPeer == nil, let peerId = component.chatLocation?.peerId {
                 let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let self, let peer, case .channel = peer, peer.addressName != nil else {
                         return
                     }
@@ -872,7 +872,7 @@ public final class MessageInputPanelComponent: Component {
                     var inScope = true
                     var inScopeResult: ((ChatPresentationInputQueryResult?) -> ChatPresentationInputQueryResult?)?
                     self.contextQueryStates[kind] = (query, (signal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         if let self {
                             if Thread.isMainThread && inScope {
                                 inScope = false
@@ -979,7 +979,7 @@ public final class MessageInputPanelComponent: Component {
                         }
                         inlineActions.append(ChatTextInputPanelComponent.InlineAction(
                             kind: .inputMode(mappedInputMode),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -990,7 +990,7 @@ public final class MessageInputPanelComponent: Component {
                     if component.paidMessageAction != nil && self.textInputPanelExternalState.textInputState.inputText.length == 0 {
                         inlineActions.append(ChatTextInputPanelComponent.InlineAction(
                             kind: .paidMessage,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1059,12 +1059,12 @@ public final class MessageInputPanelComponent: Component {
                 
                 let rightAction: ChatTextInputPanelComponent.RightAction?
                 if component.sendStarsAction != nil {
-                    rightAction = ChatTextInputPanelComponent.RightAction(kind: .stars(count: Int(component.starStars?.totalStars ?? 0), isFilled: component.starStars?.hasOutgoingStars ?? false), action: { [weak self] sourceView in
+                    rightAction = ChatTextInputPanelComponent.RightAction(kind: .stars(count: Int(component.starStars?.totalStars ?? 0), isFilled: component.starStars?.hasOutgoingStars ?? false), action: { [weak self = self] sourceView in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.sendStarsAction?(sourceView, false)
-                    }, longPressAction: { [weak self] sourceView in
+                    }, longPressAction: { [weak self = self] sourceView in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1075,7 +1075,7 @@ public final class MessageInputPanelComponent: Component {
                 }
                 var secondaryRightAction: ChatTextInputPanelComponent.RightAction?
                 if component.isEmbeddedInCamera, let call = component.call, let liveChatState = component.liveChatState, !liveChatState.isUnifiedStream {
-                    secondaryRightAction = ChatTextInputPanelComponent.RightAction(kind: .liveMicrophone(call: call), action: { [weak self] sourceView in
+                    secondaryRightAction = ChatTextInputPanelComponent.RightAction(kind: .liveMicrophone(call: call), action: { [weak self = self] sourceView in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1085,7 +1085,7 @@ public final class MessageInputPanelComponent: Component {
                 
                 var secondaryLeftAction: ChatTextInputPanelComponent.LeftAction?
                 if component.isEmbeddedInCamera {
-                    secondaryLeftAction = ChatTextInputPanelComponent.LeftAction(kind: .settings, action: { [weak self] in
+                    secondaryLeftAction = ChatTextInputPanelComponent.LeftAction(kind: .settings, action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1102,7 +1102,7 @@ public final class MessageInputPanelComponent: Component {
                         strings: component.strings,
                         chatPeerId: component.chatLocation?.peerId ?? component.context.account.peerId,
                         inlineActions: inlineActions,
-                        leftAction: ChatTextInputPanelComponent.LeftAction(kind: .toggleExpanded(isVisible: component.liveChatState == nil || component.liveChatState?.isEnabled == true, isExpanded: component.liveChatState?.isExpanded ?? true && component.liveChatState?.isEmpty == false, hasUnseen: component.liveChatState?.hasUnseenMessages ?? false), action: { [weak self] in
+                        leftAction: ChatTextInputPanelComponent.LeftAction(kind: .toggleExpanded(isVisible: component.liveChatState == nil || component.liveChatState?.isEnabled == true, isExpanded: component.liveChatState?.isExpanded ?? true && component.liveChatState?.isEmpty == false, hasUnseen: component.liveChatState?.hasUnseenMessages ?? false), action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1133,13 +1133,13 @@ public final class MessageInputPanelComponent: Component {
                         maxHeight: availableSize.height,
                         maxLength: component.maxLength,
                         allowConsecutiveNewlines: false,
-                        sendAction: { [weak self] in
+                        sendAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.sendMessageAction(nil)
                         },
-                        sendContextAction: component.sendMessageOptionsAction == nil ? nil : { [weak self] view, gesture in
+                        sendContextAction: component.sendMessageOptionsAction == nil ? nil : { [weak self = self] view, gesture in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1163,13 +1163,13 @@ public final class MessageInputPanelComponent: Component {
                 component.externalState.isEditing = self.textInputPanelExternalState.isEditing || inputPanelViewIsActive
                 component.externalState.hasText = self.textInputPanelExternalState.textInputState.inputText.length != 0
                 component.externalState.isKeyboardHidden = component.hideKeyboard
-                component.externalState.insertText = { [weak self] text in
+                component.externalState.insertText = { [weak self = self] text in
                     guard let self, let inputPanelView = self.inputPanel?.view as? ChatTextInputPanelComponent.View else {
                         return
                     }
                     inputPanelView.insertText(text: text)
                 }
-                component.externalState.deleteBackward = { [weak self] in
+                component.externalState.deleteBackward = { [weak self = self] in
                     guard let self, let inputPanelView = self.inputPanel?.view as? ChatTextInputPanelComponent.View else {
                         return
                     }
@@ -1321,7 +1321,7 @@ public final class MessageInputPanelComponent: Component {
                     paste: { data in
                         component.paste(data)
                     },
-                    returnKeyAction: [.videoChat, .gift].contains(component.style) ? { [weak self] in
+                    returnKeyAction: [.videoChat, .gift].contains(component.style) ? { [weak self = self] in
                         self?.sendMessageAction()
                     } : nil
                 )),
@@ -1732,7 +1732,7 @@ public final class MessageInputPanelComponent: Component {
                                 tintColor: tintColor
                             )),
                             effectAlignment: .center,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1898,7 +1898,7 @@ public final class MessageInputPanelComponent: Component {
                         mode: attachmentButtonMode,
                         style: attachmentButtonMode != .attach ? .glass(isTinted: false) : .legacy,
                         storyId: component.storyItem?.id,
-                        action: { [weak self] mode, action, sendAction in
+                        action: { [weak self = self] mode, action, sendAction in
                             guard let self, let component = self.component, case .up = action else {
                                 return
                             }
@@ -1921,7 +1921,7 @@ public final class MessageInputPanelComponent: Component {
                         },
                         stopAndPreviewMediaRecording: {
                         },
-                        moreAction: { [weak self] view, gesture in
+                        moreAction: { [weak self = self] view, gesture in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1977,7 +1977,7 @@ public final class MessageInputPanelComponent: Component {
                             color: .white,
                             startingPosition: .begin
                         )),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -2087,7 +2087,7 @@ public final class MessageInputPanelComponent: Component {
                     mode: inputActionButtonMode,
                     style: inputActionButtonStyle,
                     storyId: component.storyItem?.id,
-                    action: { [weak self] mode, action, sendAction in
+                    action: { [weak self = self] mode, action, sendAction in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -2136,7 +2136,7 @@ public final class MessageInputPanelComponent: Component {
                         }
                     },
                     longPressAction: inputActionButtonMode == .send ? component.sendMessageOptionsAction : nil,
-                    switchMediaInputMode: { [weak self] in
+                    switchMediaInputMode: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2145,7 +2145,7 @@ public final class MessageInputPanelComponent: Component {
                         self.hapticFeedback.impact(.medium)
                         self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                     },
-                    updateMediaCancelFraction: { [weak self] mediaCancelFraction in
+                    updateMediaCancelFraction: { [weak self = self] mediaCancelFraction in
                         guard let self else {
                             return
                         }
@@ -2154,13 +2154,13 @@ public final class MessageInputPanelComponent: Component {
                             self.state?.updated(transition: .immediate)
                         }
                     },
-                    lockMediaRecording: { [weak self] in
+                    lockMediaRecording: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.lockMediaRecording?()
                     },
-                    stopAndPreviewMediaRecording: { [weak self] in
+                    stopAndPreviewMediaRecording: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -2253,7 +2253,7 @@ public final class MessageInputPanelComponent: Component {
                 component: AnyComponent(MessageInputActionButtonComponent(
                     mode: .like(reaction: component.myReaction?.reaction, file: component.myReaction?.file, animationFileId: component.myReaction?.animationFileId),
                     storyId: component.storyItem?.id,
-                    action: { [weak self] _, action, _ in
+                    action: { [weak self = self] _, action, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -2373,7 +2373,7 @@ public final class MessageInputPanelComponent: Component {
                         content: LottieComponent.AppBundleContent(name: animationName),
                         color: stickerButtonColor
                     )),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2461,12 +2461,12 @@ public final class MessageInputPanelComponent: Component {
             
             component.externalState.isEditing = isEditing
             component.externalState.hasText = self.textFieldExternalState.hasText
-            component.externalState.insertText = { [weak self] text in
+            component.externalState.insertText = { [weak self = self] text in
                 if let self, let view = self.textField.view as? TextFieldComponent.View {
                     view.insertText(text)
                 }
             }
-            component.externalState.deleteBackward = { [weak self] in
+            component.externalState.deleteBackward = { [weak self = self] in
                 if let self, let view = self.textField.view as? TextFieldComponent.View {
                     view.deleteBackward()
                 }
@@ -2502,7 +2502,7 @@ public final class MessageInputPanelComponent: Component {
                         cancelFraction: self.mediaCancelFraction,
                         inputInsets: insets,
                         insets: mediaInsets,
-                        cancelAction: { [weak self] in
+                        cancelAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -2655,18 +2655,18 @@ public final class MessageInputPanelComponent: Component {
                         theme: component.theme,
                         strings: component.strings,
                         files: stickers.map { $0.file },
-                        action: { [weak self] sticker in
+                        action: { [weak self = self] sticker in
                             if let self, let textView = self.textField.view as? TextFieldComponent.View {
                                 textView.updateText(NSAttributedString(), selectionRange: 0 ..< 0)
                                 self.component?.sendStickerAction(sticker)
                             }
                         },
-                        present: { [weak self] c in
+                        present: { [weak self = self] c in
                             if let self, let component = self.component {
                                 component.presentController(c)
                             }
                         },
-                        presentInGlobalOverlay: { [weak self] c in
+                        presentInGlobalOverlay: { [weak self = self] c in
                             if let self, let component = self.component {
                                 component.presentInGlobalOverlay(c)
                             }
@@ -2715,7 +2715,7 @@ public final class MessageInputPanelComponent: Component {
                         theme: component.theme,
                         strings: component.strings,
                         results: contextResults,
-                        action: { [weak self] action in
+                        action: { [weak self = self] action in
                             if let self, let textView = self.textField.view as? TextFieldComponent.View {
                                 let inputState = textView.getInputState()
                                 
@@ -2895,7 +2895,7 @@ public final class MessageInputPanelComponent: Component {
                         animationCache: component.context.animationCache,
                         animationRenderer: component.context.animationRenderer,
                         files: value,
-                        action: { [weak self] file in
+                        action: { [weak self = self] file in
                             guard let self, let textView = self.textField.view as? TextFieldComponent.View, let currentEmojiSuggestion = self.textFieldExternalState.currentEmojiSuggestion else {
                                 return
                             }
@@ -2994,7 +2994,7 @@ public final class MessageInputPanelComponent: Component {
                         animationCache: component.context.animationCache,
                         animationRenderer: component.context.animationRenderer,
                         files: value,
-                        action: { [weak self] file in
+                        action: { [weak self = self] file in
                             guard let self, let textView = self.textField.view as? TextFieldComponent.View, let currentEmojiSearch = self.textFieldExternalState.currentEmojiSearch else {
                                 return
                             }

@@ -99,7 +99,7 @@ public class ChatMessageUnlockMediaNode: ASDisplayNode {
         self.currentProgressDisposable?.dispose()
         self.currentProgressDisposable = (progress.get()
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
             guard let self, let loadingView = self.loadingView else {
                 return
             }
@@ -277,7 +277,7 @@ public final class LoadingEffectView: UIView {
         self.borderBackgroundView.image = generateGradient(1.0)
         
         self.layer.addSublayer(self.hierarchyTrackingLayer)
-        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] inHierarchy in
+        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] inHierarchy in
             guard let self, let size = self.size else {
                 return
             }

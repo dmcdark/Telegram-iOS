@@ -100,7 +100,7 @@ final class WebEmbedVideoContentNode: ASDisplayNode, UniversalVideoContentNode {
         
         if let image = webpageContent.image {
             self.imageNode.setSignal(chatMessagePhoto(postbox: postbox, userLocation: userLocation, photoReference: .webPage(webPage: WebpageReference(webPage), media: image)))
-            self.imageNode.imageUpdated = { [weak self] _ in
+            self.imageNode.imageUpdated = { [weak self = self] _ in
                 self?._ready.set(.single(Void()))
             }
         } else {
@@ -109,7 +109,7 @@ final class WebEmbedVideoContentNode: ASDisplayNode, UniversalVideoContentNode {
         self._status.set(self.playerNode.status)
         self._bufferingStatus.set(.single(nil))
         
-        self.readyDisposable.set(self.playerNode.ready.start(next: { [weak self] ready in
+        self.readyDisposable.set(self.playerNode.ready.start(next: { [weak self = self] ready in
             if ready {
                 self?.imageNode.isHidden = true
             }

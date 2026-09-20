@@ -330,7 +330,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         self.addSubnode(self.listNodeContainer)
         self.listNodeContainer.addSubnode(self.listNode)
         
-        self.listNode.displayedItemRangeChanged = { [weak self] displayedRange, opaqueTransactionState in
+        self.listNode.displayedItemRangeChanged = { [weak self = self] displayedRange, opaqueTransactionState in
             if let strongSelf = self, let visibleEntriesUpdated = strongSelf.visibleEntriesUpdated, let mergedEntries = (opaqueTransactionState as? ItemListNodeOpaqueState)?.mergedEntries {
                 if let visible = displayedRange.visibleRange {
                     let indexRange = (visible.firstIndex, visible.lastIndex)
@@ -349,7 +349,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        self.listNode.reorderItem = { [weak self] fromIndex, toIndex, opaqueTransactionState in
+        self.listNode.reorderItem = { [weak self = self] fromIndex, toIndex, opaqueTransactionState in
             if let strongSelf = self, let reorderEntry = strongSelf.reorderEntry, let mergedEntries = (opaqueTransactionState as? ItemListNodeOpaqueState)?.mergedEntries {
                 if fromIndex >= 0 && fromIndex < mergedEntries.count && toIndex >= 0 && toIndex < mergedEntries.count {
                     return reorderEntry(fromIndex, toIndex, mergedEntries)
@@ -358,13 +358,13 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             return .single(false)
         }
         
-        self.listNode.reorderCompleted = { [weak self] opaqueTransactionState in
+        self.listNode.reorderCompleted = { [weak self = self] opaqueTransactionState in
             if let strongSelf = self, let reorderCompleted = strongSelf.reorderCompleted, let mergedEntries = (opaqueTransactionState as? ItemListNodeOpaqueState)?.mergedEntries {
                 reorderCompleted(mergedEntries)
             }
         }
         
-        self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             self?.visibleBottomContentOffsetChanged?(offset)
             
             if let strongSelf = self {
@@ -372,7 +372,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        self.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -420,19 +420,19 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             strongSelf.previousContentOffset = offset
         }
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.beganInteractiveDragging?()
             }
         }
         
-        self.listNode.didEndScrolling = { [weak self] _ in
+        self.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self {
                 let _ = strongSelf.contentScrollingEnded?(strongSelf.listNode)
             }
         }
         
-        self.listNode.itemNodeHitTest = { [weak self] point in
+        self.listNode.itemNodeHitTest = { [weak self = self] point in
             if let strongSelf = self {
                 return point.x > strongSelf.leftOverlayNode.frame.maxX && point.x < strongSelf.rightOverlayNode.frame.minX
             } else {
@@ -463,7 +463,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             
             return ItemListNodeTransition(theme: presentationData.theme, strings: presentationData.strings, entries: transition, updateStyle: updatedStyle, emptyStateItem: state.emptyStateItem, searchItem: state.searchItem, toolbarItem: state.toolbarItem, headerItem: state.headerItem, footerItem: state.footerItem, focusItemTag: state.focusItemTag, ensureVisibleItemTag: state.ensureVisibleItemTag, scrollToItem: scrollToItem, firstTime: previous == nil, animated: previous != nil && state.animateChanges, animateAlpha: previous != nil && state.animateChanges, crossfade: state.crossfadeState, mergedEntries: state.entries, scrollEnabled: state.scrollEnabled)
         })
-        |> deliverOnMainQueue).start(next: { [weak self] transition in
+        |> deliverOnMainQueue).start(next: { [weak self = self] transition in
             if let strongSelf = self {
                 strongSelf.enqueueTransition(transition)
             }
@@ -479,7 +479,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         
         self.navigationBar.updateBackgroundAlpha(0.0, transition: .immediate)
         
-        (self.view as? ItemListControllerNodeView)?.onLayout = { [weak self] in
+        (self.view as? ItemListControllerNodeView)?.onLayout = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -492,11 +492,11 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        (self.view as? ItemListControllerNodeView)?.hitTestImpl = { [weak self] point, event in
+        (self.view as? ItemListControllerNodeView)?.hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let self, let directions = self.panGestureAllowedDirections?() else {
                 return []
             }
@@ -628,7 +628,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
     }
     
     open func animateOut(completion: (() -> Void)? = nil) {
-        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.dismiss?()
             }
@@ -702,7 +702,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "left_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self, let toolbarData = self.toolbarItem else {
                                         return
                                     }
@@ -717,7 +717,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self, let toolbarData = self.toolbarItem else {
                                         return
                                     }
@@ -736,7 +736,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self, let toolbarData = self.toolbarItem else {
                                         return
                                     }
@@ -999,7 +999,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                         if let titleContentNode = self.navigationBar.contentNode as? ItemListControllerSearchNavigationContentNode {
                             titleContentNode.deactivate()
                         }
-                        updatedTitleContentNode?.setQueryUpdated { [weak self] query in
+                        updatedTitleContentNode?.setQueryUpdated { [weak self = self] query in
                             if let strongSelf = self {
                                 strongSelf.searchNode?.queryUpdated(query)
                             }
@@ -1107,7 +1107,7 @@ open class ItemListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                 }
             }
             
-            self.listNode.transaction(deleteIndices: transition.entries.deletions, insertIndicesAndItems: transition.entries.insertions, updateIndicesAndItems: transition.entries.updates, options: options, scrollToItem: scrollToItem, updateOpaqueState: ItemListNodeOpaqueState(mergedEntries: transition.mergedEntries), completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.entries.deletions, insertIndicesAndItems: transition.entries.insertions, updateIndicesAndItems: transition.entries.updates, options: options, scrollToItem: scrollToItem, updateOpaqueState: ItemListNodeOpaqueState(mergedEntries: transition.mergedEntries), completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if !strongSelf.didSetReady {
                         strongSelf.didSetReady = true

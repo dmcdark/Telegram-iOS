@@ -91,7 +91,7 @@ public final class TextLoadingEffectView: UIView {
         self.borderBackgroundView.image = generateGradient(1.0)
         
         self.layer.addSublayer(self.hierarchyTrackingLayer)
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let self, let size = self.size else {
                 return
             }

@@ -88,7 +88,7 @@ public final class WrappedMediaStreamingContext {
 
         func video() -> Signal<OngoingGroupCallContext.VideoFrameData, NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
 
                 queue.async {
@@ -166,7 +166,7 @@ public final class ExternalMediaStreamingContext: SharedHLSServerSource {
                 self.updatePlaylistDisposable.set(nil)
                 
                 let queue = self.queue
-                self.resetPlaylistDisposable.set(broadcastPartsSource.requestTime(completion: { [weak self] timestamp in
+                self.resetPlaylistDisposable.set(broadcastPartsSource.requestTime(completion: { [weak self = self] timestamp in
                     queue.async {
                         guard let self else {
                             return
@@ -209,7 +209,7 @@ public final class ExternalMediaStreamingContext: SharedHLSServerSource {
                 |> delay(1.0, queue: self.queue)
                 |> restart
                 |> deliverOn(self.queue)
-            ).start(next: { [weak self] _ in
+            ).start(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -388,7 +388,7 @@ public final class DirectMediaStreamingContext {
                 self.updatePlaylistDisposable.set(nil)
                 
                 let queue = self.queue
-                self.resetPlaylistDisposable.set(broadcastPartsSource.requestTime(completion: { [weak self] timestamp in
+                self.resetPlaylistDisposable.set(broadcastPartsSource.requestTime(completion: { [weak self = self] timestamp in
                     queue.async {
                         guard let self else {
                             return
@@ -420,7 +420,7 @@ public final class DirectMediaStreamingContext {
                 |> delay(1.0, queue: self.queue)
                 |> restart
                 |> deliverOn(self.queue)
-            ).start(next: { [weak self] _ in
+            ).start(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -587,7 +587,7 @@ public final class SharedHLSServer {
             if isEmpty {
                 if self.listener != nil {
                     if self.shutdownTimer == nil {
-                        self.shutdownTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+                        self.shutdownTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -610,7 +610,7 @@ public final class SharedHLSServer {
                     self.startListener()
                 }
                 if self.referenceCheckTimer == nil {
-                    self.referenceCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+                    self.referenceCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -631,7 +631,7 @@ public final class SharedHLSServer {
             }
             self.listener = listener
             
-            listener.newConnectionHandler = { [weak self] connection in
+            listener.newConnectionHandler = { [weak self = self] connection in
                 guard let self else {
                     return
                 }
@@ -668,7 +668,7 @@ public final class SharedHLSServer {
         
         private func handleConnection(connection: NWConnection) {
             connection.start(queue: self.queue.queue)
-            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self] data, _, isComplete, error in
+            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self = self] data, _, isComplete, error in
                 guard let self else {
                     return
                 }
@@ -733,7 +733,7 @@ public final class SharedHLSServer {
             if filePath == "master.m3u8" {
                 let _ = (source.masterPlaylistData()
                 |> deliverOn(self.queue)
-                |> take(1)).start(next: { [weak self] result in
+                |> take(1)).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -748,7 +748,7 @@ public final class SharedHLSServer {
                 
                 let _ = (source.playlistData(quality: levelIndex)
                 |> deliverOn(self.queue)
-                |> take(1)).start(next: { [weak self] result in
+                |> take(1)).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -771,7 +771,7 @@ public final class SharedHLSServer {
                 }
                 let _ = (source.partData(index: partIndex, quality: levelIndex)
                 |> deliverOn(self.queue)
-                |> take(1)).start(next: { [weak self] result in
+                |> take(1)).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -814,7 +814,7 @@ public final class SharedHLSServer {
                 let _ = (source.fileData(id: fileIdValue, range: requestRange.lowerBound ..< requestRange.upperBound + 1)
                 |> deliverOn(self.queue)
                 //|> timeout(5.0, queue: self.queue, alternate: .single(nil))
-                |> take(1)).start(next: { [weak self] result in
+                |> take(1)).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -828,7 +828,7 @@ public final class SharedHLSServer {
             } else {
                 let _ = (source.arbitraryFileData(path: filePath)
                 |> deliverOn(self.queue)
-                |> take(1)).start(next: { [weak self] result in
+                |> take(1)).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -931,7 +931,7 @@ public final class SharedHLSServer {
             self.updateNeedsListener()
             completion()
             
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     guard let self else {
                         return

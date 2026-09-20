@@ -259,7 +259,7 @@ public final class EditableTokenListNode: ASDisplayNode, UITextFieldDelegate {
         
         self.textFieldNode.textField.delegate = self
         self.textFieldNode.textField.addTarget(self, action: #selector(self.textFieldChanged(_:)), for: .editingChanged)
-        self.textFieldNode.textField.didDeleteBackwardWhileEmpty = { [weak self] in
+        self.textFieldNode.textField.didDeleteBackwardWhileEmpty = { [weak self = self] in
             if let strongSelf = self {
                 if let selectedTokenId = strongSelf.selectedTokenId {
                     strongSelf.deleteToken?(selectedTokenId)

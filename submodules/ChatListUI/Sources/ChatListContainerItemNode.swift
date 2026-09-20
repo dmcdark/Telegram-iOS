@@ -84,7 +84,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
         self.addSubnode(self.listNode)
         self.view.addSubview(self.edgeEffectView)
         
-        self.listNode.isEmptyUpdated = { [weak self] isEmptyState, _, transition in
+        self.listNode.isEmptyUpdated = { [weak self = self] isEmptyState, _, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -192,7 +192,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
             }
         }
         
-        self.listNode.updateFloatingHeaderOffset = { [weak self] offset, transition in
+        self.listNode.updateFloatingHeaderOffset = { [weak self = self] offset, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -206,7 +206,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
         if let filter, case let .filter(id, _, _, data) = filter, data.isShared {
             self.pollFilterUpdatesDisposable = self.context.engine.peers.pollChatFolderUpdates(folderId: id).startStrict()
             self.chatFilterUpdatesDisposable = (self.context.engine.peers.subscribedChatFolderUpdates(folderId: id)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -234,7 +234,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
             self.peerDataDisposable = (context.engine.data.subscribe(
                 TelegramEngine.EngineData.Item.Peer.StatusSettings(id: peerId)
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] statusSettings in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] statusSettings in
                 guard let self else {
                     return
                 }
@@ -328,14 +328,14 @@ final class ChatListContainerItemNode: ASDisplayNode {
                     theme: self.presentationData.theme,
                     title: title,
                     color: .accent,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let chatFolderUpdates = self.chatFolderUpdates else {
                             return
                         }
                         
                         self.listNode.push?(ChatFolderLinkPreviewScreen(context: self.context, subject: .updates(chatFolderUpdates), contents: chatFolderUpdates.chatFolderLinkContents))
                     },
-                    dismissAction: { [weak self] in
+                    dismissAction: { [weak self = self] in
                         guard let self, let chatFolderUpdates = self.chatFolderUpdates else {
                             return
                         }
@@ -375,7 +375,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
                     theme: self.presentationData.theme,
                     title: title,
                     color: .destructive,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, case let .forum(peerId) = self.location else {
                             return
                         }
@@ -401,7 +401,7 @@ final class ChatListContainerItemNode: ASDisplayNode {
                         ])
                         self.listNode.present?(actionSheet)
                     },
-                    dismissAction: { [weak self] in
+                    dismissAction: { [weak self = self] in
                         guard let self, case let .forum(peerId) = self.location else {
                             return
                         }

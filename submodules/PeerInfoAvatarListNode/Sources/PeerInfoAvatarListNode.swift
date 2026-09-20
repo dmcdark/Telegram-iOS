@@ -294,7 +294,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
             } else {
                 return .single(value)
             }
-        } |> distinctUntilChanged, self.loadingProgress.get() |> distinctUntilChanged)).startStrict(next: { [weak self] isLoading, progress in
+        } |> distinctUntilChanged, self.loadingProgress.get() |> distinctUntilChanged)).startStrict(next: { [weak self = self] isLoading, progress in
             guard let strongSelf = self else {
                 return
             }
@@ -303,7 +303,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
                 strongSelf.statusNode.transitionToState(.progress(color: .white, lineWidth: nil, value: CGFloat(max(0.027, progress)), cancelEnabled: false, animateRotation: true), completion: {})
             } else if strongSelf.hasProgress {
                 strongSelf.hasProgress = false
-                strongSelf.statusNode.transitionToState(.progress(color: .white, lineWidth: nil, value: 1.0, cancelEnabled: false, animateRotation: true), completion: { [weak self] in
+                strongSelf.statusNode.transitionToState(.progress(color: .white, lineWidth: nil, value: 1.0, cancelEnabled: false, animateRotation: true), completion: { [weak self = self] in
                      guard let strongSelf = self else {
                         return
                     }
@@ -316,7 +316,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
             }
         }))
 
-        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] value in
+        self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -408,7 +408,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
                 return playing
             }
             |> take(1)
-            |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                 if let strongSelf = self {
                     if let _ = strongSelf.videoNode {
                         videoNode.seek(0.0)
@@ -422,7 +422,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
                         }
                     }
                 }
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 if let strongSelf = self {
                     Queue.mainQueue().after(0.1) {
                         strongSelf.videoNode?.isHidden = false
@@ -440,7 +440,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
         self.statusPromise.set(videoNode.status |> map { ($0, videoStartTimestamp) })
         
         self.statusDisposable.set((self.mediaStatus
-        |> deliverOnMainQueue).startStrict(next: { [weak self] mediaStatus in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] mediaStatus in
             if let strongSelf = self {
                 if let mediaStatusAndStartTimestamp = mediaStatus {
                     strongSelf.playerStatus = mediaStatusAndStartTimestamp.0
@@ -466,7 +466,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
         
         if let progress = progress {
             self.loadingProgress.set((progress
-            |> beforeNext { [weak self] next in
+            |> beforeNext { [weak self = self] next in
                 self?.isLoading.set(.single(next != nil))
             }))
         }
@@ -555,7 +555,7 @@ public final class PeerInfoAvatarListItemNode: ASDisplayNode {
             self.statusPromise.set(.single(nil))
             self.statusDisposable.set(nil)
             
-            self.imageNode.imageUpdated = { [weak self] _ in
+            self.imageNode.imageUpdated = { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -938,7 +938,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
     
     private func ensureHasTimer() {
         if self.playerUpdateTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.016, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.016, repeat: true, completion: { [weak self = self] in
                 self?.updateStatus()
                 }, queue: Queue.mainQueue())
             self.playerUpdateTimer = timer
@@ -1123,7 +1123,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
         self.addSubnode(self.setByYouNode)
         self.addSubnode(self.setByYouImageNode)
         
-        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -1135,7 +1135,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
         recognizer.tapActionAtPoint = { _ in
             return .keepWithSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }
@@ -1461,7 +1461,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
                 return representation.flatMap { AvatarGalleryEntry(representation: $0.0, peer: peer) }
             }
             
-            self.disposable.set(combineLatest(queue: Queue.mainQueue(), peerInfoProfilePhotosWithCache(context: self.context, peerId: peer.id), entry).startStrict(next: { [weak self] completeAndEntries, entry in
+            self.disposable.set(combineLatest(queue: Queue.mainQueue(), peerInfoProfilePhotosWithCache(context: self.context, peerId: peer.id), entry).startStrict(next: { [weak self = self] completeAndEntries, entry in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1545,7 +1545,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
                     hasUnseenPrivate: storyParams.hasUnseenPrivate,
                     totalCount: storyParams.count,
                     theme: defaultDarkPresentationTheme,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.openStories?()
                     }
                 )),
@@ -1594,7 +1594,7 @@ public final class PeerInfoAvatarListContainerNode: ASDisplayNode {
             
             if let currentItemNode = self.currentItemNode {
                 self.positionDisposable.set((currentItemNode.mediaStatus
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] statusAndVideoStartTimestamp in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] statusAndVideoStartTimestamp in
                         if let strongSelf = self {
                             strongSelf.playerStatus = statusAndVideoStartTimestamp
                         }

@@ -162,7 +162,7 @@ class InviteLinkHeaderItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     if strongSelf.item == nil {
                         strongSelf.animationNode.setup(source: AnimatedStickerNodeLocalFileSource(name: item.animationName), width: 256, height: 256, playbackMode: .count(1), mode: .direct(cachePathPrefix: nil))

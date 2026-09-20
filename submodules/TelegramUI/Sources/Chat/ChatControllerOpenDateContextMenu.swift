@@ -41,7 +41,7 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
         
         var items: [ContextMenuItem] = []
         items.append(
-            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_Copy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                 f(.default)
 
                 guard let self else {
@@ -55,7 +55,7 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
             }))
         )
         items.append(
-            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_AddToCalendar, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Calendar"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_AddToCalendar, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Calendar"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                 f(.default)
 
                 guard let self else {
@@ -78,7 +78,7 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
             }))
         )
         items.append(
-            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_SetReminder, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unmute"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+            .action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Context_Date_SetReminder, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unmute"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                 f(.default)
 
                 guard let self else {
@@ -92,7 +92,7 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
                     currentRepeatPeriod: nil,
                     minimalTime: nil,
                     isDark: false,
-                    completion: { [weak self] result in
+                    completion: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -103,10 +103,10 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
                         let _ = enqueueMessages(account: self.context.account, peerId: self.context.account.peerId, messages: [forwardMessage]).start()
                         
                         let text = self.presentationData.strings.Conversation_DateReminderSet.replacingOccurrences(of: "[", with: "**").replacingOccurrences(of: "]()", with: "**")
-                        self.present(UndoOverlayController(presentationData: self.presentationData, content: .forward(savedMessages: true, text: text), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self] action in
+                        self.present(UndoOverlayController(presentationData: self.presentationData, content: .forward(savedMessages: true, text: text), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self = self] action in
                             if let self, action == .info {
                                 let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                     guard let self, let peer else {
                                         return
                                     }
@@ -127,7 +127,7 @@ extension ChatControllerImpl: EKEventEditViewDelegate {
         self.canReadHistory.set(false)
         
         let controller = makeContextController(presentationData: self.presentationData, source: source, items: .single(ContextController.Items(content: .list(items))), recognizer: recognizer, gesture: gesture, disableScreenshots: false)
-        controller.dismissed = { [weak self] in
+        controller.dismissed = { [weak self = self] in
             self?.canReadHistory.set(true)
         }
         

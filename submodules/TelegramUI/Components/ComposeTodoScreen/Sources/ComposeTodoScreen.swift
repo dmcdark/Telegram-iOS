@@ -150,7 +150,7 @@ final class ComposeTodoScreenComponent: Component {
             self.addSubview(self.bottomEdgeEffectView)
             
             let reorderRecognizer = ReorderGestureRecognizer(
-                shouldBegin: { [weak self] point in
+                shouldBegin: { [weak self = self] point in
                     guard let self, let (id, item) = self.item(at: point) else {
                         return (allowed: false, requiresLongPress: false, id: nil, item: nil)
                     }
@@ -158,19 +158,19 @@ final class ComposeTodoScreenComponent: Component {
                 },
                 willBegin: { point in
                 },
-                began: { [weak self] item in
+                began: { [weak self = self] item in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: item)
                 },
-                ended: { [weak self] in
+                ended: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.setReorderingItem(item: nil)
                 },
-                moved: { [weak self] distance in
+                moved: { [weak self = self] distance in
                     guard let self else {
                         return
                     }
@@ -535,13 +535,13 @@ final class ComposeTodoScreenComponent: Component {
                             }
                         }
                     })
-                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self] _ in
+                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self = self] _ in
                         Queue.mainQueue().after(0.3) {
                             guard let self else {
                                 return
                             }
                             if self.currentInputMode == .keyboard {
-                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self] finished in
+                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self = self] finished in
                                     guard let self else {
                                         return
                                     }
@@ -645,7 +645,7 @@ final class ComposeTodoScreenComponent: Component {
                     )
                 )
                 self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -669,7 +669,7 @@ final class ComposeTodoScreenComponent: Component {
                     },
                     updateChoosingSticker: { _ in
                     },
-                    switchToTextInput: { [weak self] in
+                    switchToTextInput: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -678,7 +678,7 @@ final class ComposeTodoScreenComponent: Component {
                     },
                     dismissTextInput: {
                     },
-                    insertText: { [weak self] text in
+                    insertText: { [weak self = self] text in
                         guard let self else {
                             return
                         }
@@ -701,7 +701,7 @@ final class ComposeTodoScreenComponent: Component {
                             }
                         }
                     },
-                    backwardsDeleteText: { [weak self] in
+                    backwardsDeleteText: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -725,19 +725,19 @@ final class ComposeTodoScreenComponent: Component {
                     },
                     openStickerEditor: {
                     },
-                    presentController: { [weak self] c, a in
+                    presentController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    presentGlobalOverlayController: { [weak self] c, a in
+                    presentGlobalOverlayController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                     },
-                    getNavigationController: { [weak self] () -> NavigationController? in
+                    getNavigationController: { [weak self = self] () -> NavigationController? in
                         guard let self else {
                             return nil
                         }
@@ -753,7 +753,7 @@ final class ComposeTodoScreenComponent: Component {
                         }
                         return nil
                     },
-                    requestLayout: { [weak self] transition in
+                    requestLayout: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -801,7 +801,7 @@ final class ComposeTodoScreenComponent: Component {
                 characterLimit: component.initialData.maxTodoTextLength,
                 formattingAvailable: true,
                 emptyLineHandling: .allowed,
-                returnKeyAction: { [weak self] in
+                returnKeyAction: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -816,7 +816,7 @@ final class ComposeTodoScreenComponent: Component {
                 backspaceKeyAction: nil,
                 selection: nil,
                 inputMode: self.currentInputMode,
-                toggleInputMode: { [weak self] in
+                toggleInputMode: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -894,7 +894,7 @@ final class ComposeTodoScreenComponent: Component {
                     canAdd: isEnabled && i != 0 && i < component.initialData.maxTodoItemsCount,
                     formattingAvailable: true,
                     emptyLineHandling: .notAllowed,
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -910,7 +910,7 @@ final class ComposeTodoScreenComponent: Component {
                             }
                         }
                     },
-                    backspaceKeyAction: { [weak self] in
+                    backspaceKeyAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -930,7 +930,7 @@ final class ComposeTodoScreenComponent: Component {
                     },
                     selection: nil,
                     inputMode: self.currentInputMode,
-                    toggleInputMode: { [weak self] in
+                    toggleInputMode: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -942,14 +942,14 @@ final class ComposeTodoScreenComponent: Component {
                         }
                         self.state?.updated(transition: .spring(duration: 0.4))
                     },
-                    deleteAction: canDelete ? { [weak self] in
+                    deleteAction: canDelete ? { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.todoItems.removeAll(where: { $0.id == optionId })
                         self.state?.updated(transition: .spring(duration: 0.4))
                     } : nil,
-                    paste: { [weak self] data in
+                    paste: { [weak self = self] data in
                         guard let self else {
                             return
                         }
@@ -977,7 +977,7 @@ final class ComposeTodoScreenComponent: Component {
                             }
                         }
                     },
-                    present: { [weak self] c in
+                    present: { [weak self = self] c in
                         guard let controller = self?.environment?.controller() else {
                             return
                         }
@@ -1168,7 +1168,7 @@ final class ComposeTodoScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1257,7 +1257,7 @@ final class ComposeTodoScreenComponent: Component {
                             maximumNumberOfLines: 1
                         ))),
                     ], alignment: .left, spacing: 2.0)),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isCompletableByOthers, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isCompletableByOthers, action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1281,7 +1281,7 @@ final class ComposeTodoScreenComponent: Component {
                                 maximumNumberOfLines: 1
                             ))),
                         ], alignment: .left, spacing: 2.0)),
-                        accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isAppendableByOthers, action: { [weak self] _ in
+                        accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isAppendableByOthers, action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1610,7 +1610,7 @@ final class ComposeTodoScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? ComposeTodoScreen else {
                             return
                         }
@@ -1643,7 +1643,7 @@ final class ComposeTodoScreenComponent: Component {
                             tintColor: environment.theme.list.itemCheckColors.foregroundColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? ComposeTodoScreen else {
                             return
                         }
@@ -1665,7 +1665,7 @@ final class ComposeTodoScreenComponent: Component {
             }
             
             if let currentEditingTag = self.currentEditingTag, previousEditingTag !== currentEditingTag, self.currentInputMode != .keyboard {
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1761,7 +1761,7 @@ public class ComposeTodoScreen: ViewControllerComponentContainer, AttachmentCont
     public var mediaPickerContext: AttachmentMediaPickerContext?
     
     public var isPanGestureEnabled: (() -> Bool)? {
-        return { [weak self] in
+        return { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ComposeTodoScreenComponent.View else {
                 return true
             }
@@ -1807,14 +1807,14 @@ public class ComposeTodoScreen: ViewControllerComponentContainer, AttachmentCont
             sendButtonItem.isEnabled = false
         }
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ComposeTodoScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? ComposeTodoScreenComponent.View else {
                 return true
             }

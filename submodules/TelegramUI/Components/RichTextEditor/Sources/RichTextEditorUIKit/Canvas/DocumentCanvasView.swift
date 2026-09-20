@@ -556,7 +556,7 @@ final class DocumentCanvasView: UIView {
         // synchronously on the posting (main) thread.
         self.inputModeObserver = NotificationCenter.default.addObserver(
             forName: UITextInputMode.currentInputModeDidChangeNotification, object: nil, queue: nil
-        ) { [weak self] _ in
+        ) { [weak self = self] _ in
             self?.refreshEmptyBoxWritingDirections()
             self?.updateCaretView()
         }

@@ -17,7 +17,7 @@ public final class GalleryNavigationCheckNode: ASDisplayNode, NavigationButtonCu
         
         self.addSubnode(self.checkNode)
         
-        self.checkNode.valueChanged = { [weak self] value in
+        self.checkNode.valueChanged = { [weak self = self] value in
             if let strongSelf = self, let target = strongSelf.target, let action = strongSelf.action {
                 let _ = target.perform(action)
             }

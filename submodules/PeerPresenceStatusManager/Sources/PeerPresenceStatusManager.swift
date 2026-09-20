@@ -52,7 +52,7 @@ public final class PeerPresenceStatusManager {
         let timestamp = CFAbsoluteTimeGetCurrent() + NSTimeIntervalSince1970
         let timeout = suggestedUserPresenceStringRefreshTimeout(presence, relativeTo: Int32(timestamp), isOnline: isOnline)
         if timeout.isFinite {
-            self.timer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: timeout, repeat: false, completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.update()
                 }

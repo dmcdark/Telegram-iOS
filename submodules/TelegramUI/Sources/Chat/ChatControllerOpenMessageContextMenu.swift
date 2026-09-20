@@ -55,7 +55,7 @@ extension ChatControllerImpl {
                 peerMessageSelectedReactions(context: self.context, message: EngineMessage(topMessage)),
                 topMessageReactions(context: self.context, message: topMessage, subPeerId: self.chatLocation.threadId.flatMap(EnginePeer.Id.init), ignoreDefault: canBypassReactionRestrictions),
                 ApplicationSpecificNotice.getChatTextSelectionTips(accountManager: self.context.sharedContext.accountManager)
-            ).startStandalone(next: { [weak self] peer, actions, allowedReactionsAndStars, selectedReactions, topReactions, chatTextSelectionTips in
+            ).startStandalone(next: { [weak self = self] peer, actions, allowedReactionsAndStars, selectedReactions, topReactions, chatTextSelectionTips in
                 guard let self else {
                     return
                 }
@@ -170,7 +170,7 @@ extension ChatControllerImpl {
                         
                         if allReactionsAreAvailable {
                             let premiumConfiguration = PremiumConfiguration.with(appConfiguration: context.currentAppConfiguration.with { $0 })
-                            actions.getEmojiContent = { [weak self] animationCache, animationRenderer in
+                            actions.getEmojiContent = { [weak self = self] animationCache, animationRenderer in
                                 guard let self else {
                                     preconditionFailure()
                                 }
@@ -190,7 +190,7 @@ extension ChatControllerImpl {
                                 )
                             }
                         } else if reactionItems.count > 16 {
-                            actions.getEmojiContent = { [weak self] animationCache, animationRenderer in
+                            actions.getEmojiContent = { [weak self = self] animationCache, animationRenderer in
                                 guard let self else {
                                     preconditionFailure()
                                 }
@@ -253,7 +253,7 @@ extension ChatControllerImpl {
                                     }
                                 }
                                 
-                                let action = { [weak self] in
+                                let action = { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -333,7 +333,7 @@ extension ChatControllerImpl {
                 
                 let isSecret = self.presentationInterfaceState.copyProtectionEnabled || self.presentationInterfaceState.myCopyProtectionEnabled || self.chatLocation.peerId?.namespace == Namespaces.Peer.SecretChat
                 let controller = makeContextController(presentationData: self.presentationData, source: source, items: actionsSignal, recognizer: recognizer, gesture: gesture, disableScreenshots: isSecret, hideReactionPanelTail: hideReactionPanelTail)
-                controller.dismissed = { [weak self] in
+                controller.dismissed = { [weak self = self] in
                     self?.canReadHistory.set(true)
                 }
                 controller.immediateItemsTransitionAnimation = disableTransitionAnimations
@@ -370,7 +370,7 @@ extension ChatControllerImpl {
                     if case .stars = chosenUpdatedReaction.reaction {
                         if !canSendReactionsToChat(self.presentationInterfaceState) {
                             if let controller {
-                                controller.dismiss(completion: { [weak self] in
+                                controller.dismiss(completion: { [weak self = self] in
                                     self?.displaySendReactionRestrictedToast()
                                 })
                             } else {
@@ -381,7 +381,7 @@ extension ChatControllerImpl {
 
                         if isLarge {
                             if let controller {
-                                controller.dismiss(completion: { [weak self] in
+                                controller.dismiss(completion: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -409,7 +409,7 @@ extension ChatControllerImpl {
                                                 hideTargetButton = targetView.superview
                                             }
                                             
-                                            controller.dismissWithReaction(value: chosenReaction, targetView: targetView, hideNode: true, animateTargetContainer: hideTargetButton, addStandaloneReactionAnimation: { [weak self] standaloneReactionAnimation in
+                                            controller.dismissWithReaction(value: chosenReaction, targetView: targetView, hideNode: true, animateTargetContainer: hideTargetButton, addStandaloneReactionAnimation: { [weak self = self] standaloneReactionAnimation in
                                                 guard let self else {
                                                     return
                                                 }
@@ -444,7 +444,7 @@ extension ChatControllerImpl {
                             self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.ReactionSettings(id: message.id.peerId))
                         )
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] state, reactionSettings in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] state, reactionSettings in
                             guard let strongSelf = self, let balance = state?.balance else {
                                 return
                             }
@@ -516,7 +516,7 @@ extension ChatControllerImpl {
                         
                         if removedReaction == nil && !canSendReactionsToChat(self.presentationInterfaceState) {
                             if let controller {
-                                controller.dismiss(completion: { [weak self] in
+                                controller.dismiss(completion: { [weak self = self] in
                                     self?.displaySendReactionRestrictedToast()
                                 })
                             } else {
@@ -560,7 +560,7 @@ extension ChatControllerImpl {
                                                     hideTargetButton = targetView.superview
                                                 }
                                                 
-                                                controller.dismissWithReaction(value: chosenReaction, targetView: targetView, hideNode: true, animateTargetContainer: hideTargetButton, addStandaloneReactionAnimation: { [weak self] standaloneReactionAnimation in
+                                                controller.dismissWithReaction(value: chosenReaction, targetView: targetView, hideNode: true, animateTargetContainer: hideTargetButton, addStandaloneReactionAnimation: { [weak self = self] standaloneReactionAnimation in
                                                     guard let self else {
                                                         return
                                                     }

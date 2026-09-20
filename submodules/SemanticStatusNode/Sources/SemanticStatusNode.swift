@@ -354,7 +354,7 @@ public final class SemanticStatusNode: ASControlNode {
             return context?.generateImage()
         }
         self.disposable?.dispose()
-        self.disposable = combineLatest(queue: Queue.mainQueue(), imageSignal, self.hasLayoutPromise.get()).startStrict(next: { [weak self] image, ready in
+        self.disposable = combineLatest(queue: Queue.mainQueue(), imageSignal, self.hasLayoutPromise.get()).startStrict(next: { [weak self = self] image, ready in
             guard let strongSelf = self, ready else {
                 return
             }
@@ -439,7 +439,7 @@ public final class SemanticStatusNode: ASControlNode {
             if let current = self.animator {
                 animator = current
             } else {
-                animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateAnimations()
                 })
                 self.animator = animator
@@ -467,7 +467,7 @@ public final class SemanticStatusNode: ASControlNode {
             let previousAppearanceContext = updateCutout ? self.appearanceContext : nil
             
             self.stateContext = self.state.context(current: self.stateContext, animated: animated)
-            self.stateContext.requestUpdate = { [weak self] in
+            self.stateContext.requestUpdate = { [weak self = self] in
                 self?.setNeedsDisplay()
             }
             if updateCutout {

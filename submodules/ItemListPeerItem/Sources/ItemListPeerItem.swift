@@ -867,14 +867,14 @@ public class ItemListPeerItemNode: ItemListRevealOptionsItemNode, ItemListItemNo
         self.containerNode.addSubnode(self.statusNode)
         self.containerNode.addSubnode(self.labelNode.textNode)
         
-        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self] in
+        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
             if let strongSelf = self, let layoutParams = strongSelf.layoutParams {
                 let (_, apply) = strongSelf.asyncLayout()(layoutParams.0, layoutParams.1, layoutParams.2, layoutParams.3)
                 apply(false, true)
             }
         })
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -1306,7 +1306,7 @@ public class ItemListPeerItemNode: ItemListRevealOptionsItemNode, ItemListItemNo
                 currentDisabledOverlayNode = nil
             }
             
-            return (layout, { [weak self] synchronousLoad, animated in
+            return (layout, { [weak self = self] synchronousLoad, animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors, headerAtTop)
                     
@@ -2193,7 +2193,7 @@ public final class ItemListPeerItemHeaderNode: ListViewItemHeaderNode, ItemListH
         self.addSubnode(self.actionButton)
         
         self.actionButton.addTarget(self, action: #selector(self.actionButtonPressed), forControlEvents: .touchUpInside)
-        self.actionButton.highligthedChanged = { [weak self] highlighted in
+        self.actionButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.actionTextNode.layer.removeAnimation(forKey: "opacity")

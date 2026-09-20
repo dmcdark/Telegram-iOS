@@ -75,7 +75,7 @@ final class GroupVideoNode: ASDisplayNode, PreviewVideoNode {
                 
         self.clipsToBounds = true
         
-        videoView.setOnFirstFrameReceived({ [weak self] _ in
+        videoView.setOnFirstFrameReceived({ [weak self = self] _ in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -87,7 +87,7 @@ final class GroupVideoNode: ASDisplayNode, PreviewVideoNode {
             }
         })
         
-        videoView.setOnOrientationUpdated({ [weak self] _, _ in
+        videoView.setOnOrientationUpdated({ [weak self = self] _, _ in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -332,7 +332,7 @@ final class GroupVideoNode: ASDisplayNode, PreviewVideoNode {
                 self.backdropVideoView?.updateIsEnabled(true)
             }
 
-            transition.updatePosition(layer: backdropVideoView.layer, position: rotatedVideoFrame.center, force: true, completion: { [weak self] value in
+            transition.updatePosition(layer: backdropVideoView.layer, position: rotatedVideoFrame.center, force: true, completion: { [weak self = self] value in
                 guard let strongSelf = self, value else {
                     return
                 }

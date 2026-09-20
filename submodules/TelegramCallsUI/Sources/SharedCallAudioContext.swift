@@ -63,7 +63,7 @@ public final class SharedCallAudioContext {
         }
         
         var didReceiveAudioOutputs = false
-        self.audioSessionDisposable = audioSession.push(audioSessionType: enableMicrophone ? .voiceCall : .play(mixWithOthers: true), manualActivate: { [weak self] control in
+        self.audioSessionDisposable = audioSession.push(audioSessionType: enableMicrophone ? .voiceCall : .play(mixWithOthers: true), manualActivate: { [weak self = self] control in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -91,7 +91,7 @@ public final class SharedCallAudioContext {
                     self.isAudioSessionActivePromise.set(audioSessionActive)
                     
                     self.initialSetupTimer?.invalidate()
-                    self.initialSetupTimer = Foundation.Timer(timeInterval: 0.5, repeats: false, block: { [weak self] _ in
+                    self.initialSetupTimer = Foundation.Timer(timeInterval: 0.5, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -114,7 +114,7 @@ public final class SharedCallAudioContext {
                     })
                 }
             }
-        }, deactivate: { [weak self] _ in
+        }, deactivate: { [weak self = self] _ in
             return Signal { subscriber in
                 Queue.mainQueue().async {
                     if let self {
@@ -125,7 +125,7 @@ public final class SharedCallAudioContext {
                 }
                 return EmptyDisposable
             }
-        }, availableOutputsChanged: { [weak self] availableOutputs, currentOutput in
+        }, availableOutputsChanged: { [weak self = self] availableOutputs, currentOutput in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -154,7 +154,7 @@ public final class SharedCallAudioContext {
         
         self.audioSessionShouldBeActive.set(.single(true))
         self.audioSessionShouldBeActiveDisposable = (self.audioSessionShouldBeActive.get()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -177,7 +177,7 @@ public final class SharedCallAudioContext {
         })
         
         self.isAudioSessionActiveDisposable = (self.isAudioSessionActive
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -185,7 +185,7 @@ public final class SharedCallAudioContext {
         })
         
         self.audioOutputStateDisposable = (self.audioOutputStatePromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }

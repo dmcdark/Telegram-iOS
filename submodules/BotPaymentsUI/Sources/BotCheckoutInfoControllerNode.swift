@@ -248,14 +248,14 @@ final class BotCheckoutInfoControllerNode: ViewControllerTracingNode, ASScrollVi
         
         self.addSubnode(self.scrollNode)
         
-        openCountrySelectionImpl = { [weak self] in
+        openCountrySelectionImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.view.endEditing(true)
                 strongSelf.openCountrySelection()
             }
         }
         
-        let fieldsAndTypes = { [weak self] () -> [(BotPaymentFieldItemNode, BotCheckoutInfoControllerFocus)] in
+        let fieldsAndTypes = { [weak self = self] () -> [(BotPaymentFieldItemNode, BotCheckoutInfoControllerFocus)] in
             guard let strongSelf = self else {
                 return []
             }
@@ -293,7 +293,7 @@ final class BotCheckoutInfoControllerNode: ViewControllerTracingNode, ASScrollVi
                             }
                         }
                     }
-                    item.textUpdated = { [weak self] in
+                    item.textUpdated = { [weak self = self] in
                         self?.updateDone()
                     }
                     item.returnPressed = { [weak self, weak item] in
@@ -367,11 +367,11 @@ final class BotCheckoutInfoControllerNode: ViewControllerTracingNode, ASScrollVi
     func verify() {
         self.isVerifying = true
         let formInfo = self.collectFormInfo()
-        self.verifyDisposable.set((self.context.engine.payments.validateBotPaymentForm(saveInfo: self.saveInfoItem.isOn, source: self.source, formInfo: formInfo) |> deliverOnMainQueue).start(next: { [weak self] result in
+        self.verifyDisposable.set((self.context.engine.payments.validateBotPaymentForm(saveInfo: self.saveInfoItem.isOn, source: self.source, formInfo: formInfo) |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 strongSelf.formInfoUpdated(formInfo, result)
             }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 strongSelf.isVerifying = false
                 strongSelf.updateDone()
@@ -553,7 +553,7 @@ final class BotCheckoutInfoControllerNode: ViewControllerTracingNode, ASScrollVi
     }
     
     func animateOut(completion: (() -> Void)? = nil) {
-        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }

@@ -65,7 +65,7 @@ final class VideoChatListInviteComponent: Component {
             
             super.init(frame: frame)
             
-            self.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }

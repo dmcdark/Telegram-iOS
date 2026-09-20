@@ -82,7 +82,7 @@ public final class ComponentHostView<EnvironmentType>: UIView {
         self.currentComponent = component
         self.currentContainerSize = containerSize
 
-        componentState._updated = { [weak self] transition, _ in
+        componentState._updated = { [weak self = self] transition, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -208,7 +208,7 @@ public final class ComponentView<EnvironmentType> {
         self.currentComponent = component
         self.currentContainerSize = containerSize
 
-        componentState._updated = { [weak self] transition, isLocal in
+        componentState._updated = { [weak self = self] transition, isLocal in
             guard let strongSelf = self else {
                 return
             }

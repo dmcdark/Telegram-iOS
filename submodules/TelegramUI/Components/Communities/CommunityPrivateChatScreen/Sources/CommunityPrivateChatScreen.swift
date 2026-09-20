@@ -338,10 +338,10 @@ private final class CommunityPrivateChatScreenComponent: Component {
                         chatPeer: component.chatPeer,
                         requestedByPeer: component.requestedByPeer,
                         memberCount: component.memberCount,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss(animated: true)
                         },
-                        messageOwner: { [weak self] in
+                        messageOwner: { [weak self = self] in
                             self?.dismiss(animated: true, completion: {
                                 component.messageOwner()
                             })
@@ -362,7 +362,7 @@ private final class CommunityPrivateChatScreenComponent: Component {
                         isCentered: environment.metrics.widthClass == .regular,
                         hasInputHeight: !environment.inputHeight.isZero,
                         regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                        dismiss: { [weak self] animated in
+                        dismiss: { [weak self = self] animated in
                             self?.dismiss(animated: animated)
                         }
                     )

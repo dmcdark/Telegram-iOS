@@ -181,14 +181,14 @@ public final class PresentationContext {
             if blockInteraction {
                 blockInteractionToken = self.addBlockInteraction()
             }
-            self.presentationDisposables.add((controllerReady |> afterDisposed { [weak self] in
+            self.presentationDisposables.add((controllerReady |> afterDisposed { [weak self = self] in
                 Queue.mainQueue().async {
                     if let blockInteractionToken = blockInteractionToken {
                         self?.removeBlockInteraction(blockInteractionToken)
                     }
                     completion()
                 }
-            }).start(next: { [weak self] _ in
+            }).start(next: { [weak self = self] _ in
                 if let strongSelf = self {
                     if let blockInteractionToken = blockInteractionToken {
                         strongSelf.removeBlockInteraction(blockInteractionToken)
@@ -208,9 +208,9 @@ public final class PresentationContext {
                         let (updatedControllerLayout, updatedControllerFrame) = strongSelf.layoutForController(containerLayout: layout, controller: controller)
                         
                         let weakStrongSelf = Weak(strongSelf)
-                        let weakController = Weak(controller)
+                        let weakController = Weak(controller as AnyObject)
                         (controller as? UIViewController)?.navigation_setDismiss({
-                            if let strongSelf = weakStrongSelf.value, let controller = weakController.value {
+                            if let strongSelf = weakStrongSelf.value, let controller = weakController.value as? ContainableController {
                                 strongSelf.dismiss(controller)
                             }
                         }, rootController: nil)
@@ -234,7 +234,7 @@ public final class PresentationContext {
                         strongSelf.updateViews()
                         controller.viewWillAppear(false)
                         if let controller = controller as? PresentableController {
-                            controller.viewDidAppear(completion: { [weak self] in
+                            controller.viewDidAppear(completion: { [weak self = self] in
                                 self?.notifyAccessibilityScreenChanged()
                             })
                         } else {
@@ -300,7 +300,7 @@ public final class PresentationContext {
                 controller.view.frame = controllerFrame
                 controller.containerLayoutUpdated(controllerLayout, transition: .immediate)
                 if let controller = controller as? PresentableController {
-                    controller.viewDidAppear(completion: { [weak self] in
+                    controller.viewDidAppear(completion: { [weak self = self] in
                         self?.notifyAccessibilityScreenChanged()
                     })
                 } else {

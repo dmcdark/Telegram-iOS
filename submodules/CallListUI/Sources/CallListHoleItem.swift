@@ -100,7 +100,7 @@ class CallListHoleItemNode: ListViewItemNode {
                 separatorInset = 80.0 + params.leftInset
             }
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.relativePosition = (first, last)
                     

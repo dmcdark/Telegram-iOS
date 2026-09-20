@@ -348,7 +348,7 @@ private final class GiftSetupScreenComponent: Component {
                             ).string,
                             actions: [
                                 TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                                TextAlertAction(type: .defaultAction, title: environment.strings.Gift_Send_Premium_Confirmation_Confirm, action: { [weak self] in
+                                TextAlertAction(type: .defaultAction, title: environment.strings.Gift_Send_Premium_Confirmation_Confirm, action: { [weak self = self] in
                                     if let self {
                                         self.proceedWithStarGift()
                                     }
@@ -389,14 +389,14 @@ private final class GiftSetupScreenComponent: Component {
             let completion = component.completion
             
             let _ = (component.context.engine.payments.canPurchasePremium(purpose: purpose)
-            |> deliverOnMainQueue).start(next: { [weak self] available in
+            |> deliverOnMainQueue).start(next: { [weak self = self] available in
                 guard let self else {
                     return
                 }
                 let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
                 if available {
                     let _ = (inAppPurchaseManager.buyProduct(storeProduct, quantity: quantity, purpose: purpose)
-                    |> deliverOnMainQueue).start(next: { [weak self] status in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] status in
                         if let completion {
                             completion()
                             
@@ -425,7 +425,7 @@ private final class GiftSetupScreenComponent: Component {
                             }
                             navigationController.setViewControllers(controllers, animated: true)
                         }
-                    }, error: { [weak self] error in
+                    }, error: { [weak self = self] error in
                         guard let self, let controller = self.environment?.controller() else {
                             return
                         }
@@ -516,7 +516,7 @@ private final class GiftSetupScreenComponent: Component {
                 source = .starGift(hideName: self.hideName, includeUpgrade: self.includeUpgrade, peerId: peerId, giftId: starGift.id, text: textInputText.string, entities: entities)
             }
             
-            let proceed = { [weak self] in
+            let proceed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -542,7 +542,7 @@ private final class GiftSetupScreenComponent: Component {
                 }
                 |> deliverOnMainQueue
                                 
-                let _ = signal.start(next: { [weak self] result in
+                let _ = signal.start(next: { [weak self = self] result in
                     guard let self, let controller = self.environment?.controller(), let navigationController = controller.navigationController as? NavigationController else {
                         return
                     }
@@ -625,7 +625,7 @@ private final class GiftSetupScreenComponent: Component {
                     Queue.mainQueue().after(2.5) {
                         starsContext.load(force: true)
                     }
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self, let controller = self.environment?.controller() else {
                         return
                     }
@@ -667,7 +667,7 @@ private final class GiftSetupScreenComponent: Component {
                 let _ = (self.optionsPromise.get()
                 |> filter { $0 != nil }
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                     guard let self, let component = self.component, let controller = self.environment?.controller() else {
                         return
                     }
@@ -822,13 +822,13 @@ private final class GiftSetupScreenComponent: Component {
                             }
                         }
                     })
-                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self] _ in
+                    transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self = self] _ in
                         Queue.mainQueue().after(0.3) {
                             guard let self else {
                                 return
                             }
                             if self.currentInputMode == .text {
-                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self] finished in
+                                self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self = self] finished in
                                     guard let self else {
                                         return
                                     }
@@ -911,13 +911,13 @@ private final class GiftSetupScreenComponent: Component {
                 
                 if case let .starGift(gift, _) = component.subject, gift.flags.contains(.isAuction), let giftAuctionsManager = component.context.giftAuctionsManager {
                     let _ = (giftAuctionsManager.auctionContext(for: .giftId(gift.id))
-                    |> deliverOnMainQueue).start(next: { [weak self] auctionContext in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] auctionContext in
                         guard let self, let auctionContext else {
                             return
                         }
                         self.giftAuction = auctionContext
                         self.giftAuctionDisposable = (auctionContext.state
-                        |> deliverOnMainQueue).start(next: { [weak self] state in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] state in
                             guard let self else {
                                 return
                             }
@@ -925,7 +925,7 @@ private final class GiftSetupScreenComponent: Component {
                             self.state?.updated()
                         })
                         
-                        self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                        self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                             self?.state?.updated()
                         }, queue: Queue.mainQueue())
                         self.giftAuctionTimer?.start()
@@ -957,7 +957,7 @@ private final class GiftSetupScreenComponent: Component {
                     component.context.engine.data.get(
                         TelegramEngine.EngineData.Item.Peer.SendPaidMessageStars(id: component.peerId)
                     )
-                ).start(next: { [weak self] peers, sendPaidMessageStars in
+                ).start(next: { [weak self = self] peers, sendPaidMessageStars in
                     guard let self else {
                         return
                     }
@@ -988,7 +988,7 @@ private final class GiftSetupScreenComponent: Component {
                     )
                 )
                 self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1012,7 +1012,7 @@ private final class GiftSetupScreenComponent: Component {
                     },
                     updateChoosingSticker: { _ in
                     },
-                    switchToTextInput: { [weak self] in
+                    switchToTextInput: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1021,13 +1021,13 @@ private final class GiftSetupScreenComponent: Component {
                     },
                     dismissTextInput: {
                     },
-                    insertText: { [weak self] text in
+                    insertText: { [weak self = self] text in
                         guard let self else {
                             return
                         }
                         self.inputPanelExternalState.insertText(text)
                     },
-                    backwardsDeleteText: { [weak self] in
+                    backwardsDeleteText: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1035,19 +1035,19 @@ private final class GiftSetupScreenComponent: Component {
                     },
                     openStickerEditor: {
                     },
-                    presentController: { [weak self] c, a in
+                    presentController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    presentGlobalOverlayController: { [weak self] c, a in
+                    presentGlobalOverlayController: { [weak self = self] c, a in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                     },
-                    getNavigationController: { [weak self] () -> NavigationController? in
+                    getNavigationController: { [weak self = self] () -> NavigationController? in
                         guard let self else {
                             return nil
                         }
@@ -1060,7 +1060,7 @@ private final class GiftSetupScreenComponent: Component {
                         }
                         return nil
                     },
-                    requestLayout: { [weak self] transition in
+                    requestLayout: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -1071,7 +1071,7 @@ private final class GiftSetupScreenComponent: Component {
                 )
                 
                 self.optionsDisposable = (component.context.engine.payments.starsTopUpOptions()
-                |> deliverOnMainQueue).start(next: { [weak self] options in
+                |> deliverOnMainQueue).start(next: { [weak self = self] options in
                     guard let self else {
                         return
                     }
@@ -1129,7 +1129,7 @@ private final class GiftSetupScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1171,7 +1171,7 @@ private final class GiftSetupScreenComponent: Component {
                                 tintColor: environment.theme.list.itemCheckColors.foregroundColor
                             )
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             self?.proceed()
                         }
                     )),
@@ -1280,7 +1280,7 @@ private final class GiftSetupScreenComponent: Component {
                             },
                             presentInGlobalOverlay: { c in
                             },
-                            sendMessageAction: { [weak self] _ in
+                            sendMessageAction: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1298,7 +1298,7 @@ private final class GiftSetupScreenComponent: Component {
                             myReaction: nil,
                             likeAction: nil,
                             likeOptionsAction: nil,
-                            inputModeAction: { [weak self] in
+                            inputModeAction: { [weak self = self] in
                                 if let self {
                                     switch self.currentInputMode {
                                     case .text:
@@ -1474,7 +1474,7 @@ private final class GiftSetupScreenComponent: Component {
                                         maximumNumberOfLines: 1
                                     )))),
                                     accessory: .arrow,
-                                    action: { [weak self] _ in
+                                    action: { [weak self = self] _ in
                                         guard let self, let component = self.component, let controller = environment.controller() else {
                                             return
                                         }
@@ -1552,7 +1552,7 @@ private final class GiftSetupScreenComponent: Component {
                                         return nil
                                     }
                                 },
-                                tapAction: { [weak self] _, _ in
+                                tapAction: { [weak self = self] _, _ in
                                     guard let self, let component = self.component, let controller = self.environment?.controller(), let starsContext = component.context.starsContext else {
                                         return
                                     }
@@ -1582,7 +1582,7 @@ private final class GiftSetupScreenComponent: Component {
                                             )
                                         )),
                                     ], alignment: .left, spacing: 2.0)),
-                                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.payWithStars, action: { [weak self] _ in
+                                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.payWithStars, action: { [weak self = self] _ in
                                         guard let self else {
                                             return
                                         }
@@ -1654,13 +1654,13 @@ private final class GiftSetupScreenComponent: Component {
                                         return nil
                                     }
                                 },
-                                tapAction: { [weak self] _, _ in
+                                tapAction: { [weak self = self] _, _ in
                                     guard let self else {
                                         return
                                     }
                                     let _ = (self.previewPromise.get()
                                     |> take(1)
-                                    |> deliverOnMainQueue).start(next: { [weak self] upgradePreview in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] upgradePreview in
                                         guard let self, let component = self.component, let controller = self.environment?.controller(), let upgradePreview else {
                                             return
                                         }
@@ -1684,7 +1684,7 @@ private final class GiftSetupScreenComponent: Component {
                                             )
                                         )),
                                     ], alignment: .left, spacing: 2.0)),
-                                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.includeUpgrade, isEnabled: forceUnique != true, action: { [weak self] _ in
+                                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.includeUpgrade, isEnabled: forceUnique != true, action: { [weak self = self] _ in
                                         guard let self, forceUnique != true else {
                                             return
                                         }
@@ -1745,7 +1745,7 @@ private final class GiftSetupScreenComponent: Component {
                                         maximumNumberOfLines: 1
                                     ))),
                                 ], alignment: .left, spacing: 2.0)),
-                                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.hideName, action: { [weak self] _ in
+                                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.hideName, action: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -1842,7 +1842,7 @@ private final class GiftSetupScreenComponent: Component {
                                     return nil
                                 }
                             },
-                            tapAction: { [weak self] _, _ in
+                            tapAction: { [weak self = self] _, _ in
                                 guard let self, let component = self.component,  let controller = self.environment?.controller(), let auctionContext = self.giftAuction else {
                                     return
                                 }
@@ -1997,7 +1997,7 @@ private final class GiftSetupScreenComponent: Component {
                     ),
                     isEnabled: buttonIsEnabled,
                     displaysProgress: self.inProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.proceed()
                     }
                 )),
@@ -2159,7 +2159,7 @@ public class GiftSetupScreen: ViewControllerComponentContainer, GiftSetupScreenP
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? GiftSetupScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

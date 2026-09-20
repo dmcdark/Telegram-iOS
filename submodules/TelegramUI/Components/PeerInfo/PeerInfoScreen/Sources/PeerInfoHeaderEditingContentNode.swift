@@ -150,7 +150,7 @@ final class PeerInfoHeaderEditingContentNode: ASDisplayNode {
                     }
                 }
                 if isMultiline {
-                    itemNode = PeerInfoHeaderMultiLineTextFieldNode(requestUpdateHeight: { [weak self] in
+                    itemNode = PeerInfoHeaderMultiLineTextFieldNode(requestUpdateHeight: { [weak self = self] in
                         self?.requestUpdateLayout()
                     })
                 } else {

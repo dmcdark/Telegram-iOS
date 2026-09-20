@@ -25,7 +25,7 @@ extension PeerInfoScreenNode {
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                 let text = stringForCompactBirthday(birthday, strings: presentationData.strings)
                 
-                let actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+                let actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                     UIPasteboard.general.string = text
                     
                     self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .copy(text: presentationData.strings.Conversation_TextCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
@@ -56,7 +56,7 @@ extension PeerInfoScreenNode {
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                 let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.translationSettings])
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] sharedData in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] sharedData in
                     let translationSettings: TranslationSettings
                     if let current = sharedData.entries[ApplicationSpecificSharedDataKeys.translationSettings]?.get(TranslationSettings.self) {
                         translationSettings = current
@@ -64,7 +64,7 @@ extension PeerInfoScreenNode {
                         translationSettings = TranslationSettings.defaultSettings
                     }
                     
-                    var actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+                    var actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                         UIPasteboard.general.string = text
                         
                         self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .copy(text: presentationData.strings.Conversation_TextCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
@@ -72,8 +72,8 @@ extension PeerInfoScreenNode {
                     
                     let (canTranslate, language) = canTranslateText(context: context, text: text, showTranslate: translationSettings.showTranslate, showTranslateIfTopical: false, ignoredLanguages: translationSettings.ignoredLanguages)
                     if canTranslate {
-                        actions.append(ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuTranslate, accessibilityLabel: presentationData.strings.Conversation_ContextMenuTranslate), action: { [weak self] in
-                            Task { @MainActor [weak self] in
+                        actions.append(ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuTranslate, accessibilityLabel: presentationData.strings.Conversation_ContextMenuTranslate), action: { [weak self = self] in
+                            Task { @MainActor [weak self = self] in
                                 guard let self, let parentController = self.controller else {
                                     return
                                 }
@@ -107,7 +107,7 @@ extension PeerInfoScreenNode {
                 })
             }
         case let .phone(phone):
-            let contextMenuController = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+            let contextMenuController = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                 UIPasteboard.general.string = phone
                 
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
@@ -143,7 +143,7 @@ extension PeerInfoScreenNode {
                 content = .linkCopied(title: nil, text: self.presentationData.strings.Conversation_LinkCopied)
             }
         
-            let contextMenuController = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+            let contextMenuController = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                 UIPasteboard.general.string = text
                 
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
@@ -163,7 +163,7 @@ extension PeerInfoScreenNode {
         case .businessHours(let text), .businessLocation(let text):
             let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                 
-            let actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+            let actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                 UIPasteboard.general.string = text
                 
                 self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .copy(text: presentationData.strings.Conversation_TextCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)

@@ -190,7 +190,7 @@ private final class VideoStickerFrameSourceCache {
         let height = self.height
         
         let queue = self.queue
-        self.storeQueue.async { [weak self] in
+        self.storeQueue.async { [weak self = self] in
             let compressedData = compressFrame(width: width, height: height, rgbData: rgbData, unpremultiply: false)
             
             queue.async {

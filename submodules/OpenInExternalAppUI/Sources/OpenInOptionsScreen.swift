@@ -167,7 +167,7 @@ private final class OpenInOptionsScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] animated in
+                dismiss: { [weak self = self] animated in
                     self?.dismiss(animated: animated)
                 }
             )
@@ -180,7 +180,7 @@ private final class OpenInOptionsScreenComponent: Component {
                         options: component.options,
                         additionalAction: component.additionalAction,
                         invokeAction: component.invokeAction,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss(animated: true)
                         }
                     )),

@@ -190,7 +190,7 @@ final class ButtonGroupView: OverlayMaskContainerView {
                 closeButtonView = CloseButtonView()
                 self.closeButtonView = closeButtonView
                 self.addSubview(closeButtonView)
-                closeButtonView.pressAction = { [weak self] in
+                closeButtonView.pressAction = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -284,7 +284,7 @@ final class ButtonGroupView: OverlayMaskContainerView {
                 self.buttonViews[button.content.key] = buttonView
                 
                 let key = button.content.key
-                buttonView.action = { [weak self] in
+                buttonView.action = { [weak self = self] in
                     guard let self, let button = self.buttons?.first(where: { $0.content.key == key }) else {
                         return
                     }

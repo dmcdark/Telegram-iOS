@@ -47,7 +47,7 @@ private final class WrappedLegacyReachability: NSObject {
         
         super.init()
         
-        self.reachability.reachabilityChanged = { [weak self] status in
+        self.reachability.reachabilityChanged = { [weak self = self] status in
             WrappedLegacyReachability.dispatchOnThread {
                 guard let strongSelf = self else {
                     return
@@ -95,7 +95,7 @@ private final class PathMonitor {
         self.queue = queue
         self.monitor = NWPathMonitor()
         
-        self.monitor.pathUpdateHandler = { [weak self] path in
+        self.monitor.pathUpdateHandler = { [weak self = self] path in
             queue.async {
                 guard let strongSelf = self else {
                     return

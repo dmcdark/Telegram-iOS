@@ -141,7 +141,7 @@ final class HorizontalListContextResultsChatInputPanelItemNode: ListViewItemNode
         self.addSubnode(self.imageNode)
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -195,7 +195,7 @@ final class HorizontalListContextResultsChatInputPanelItemNode: ListViewItemNode
         let currentVideoFile = self.currentVideoFile
         let currentAnimatedStickerFile = self.currentAnimatedStickerFile
         
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let height = params.width
             
             let sideInset: CGFloat = 4.0
@@ -384,7 +384,7 @@ final class HorizontalListContextResultsChatInputPanelItemNode: ListViewItemNode
                                 }
                                 strongSelf.animationNode = animationNode
                             }
-                            animationNode.started = { [weak self] in
+                            animationNode.started = { [weak self = self] in
                                 self?.imageNode.alpha = 0.0
                             }
                             let dimensions = animatedStickerFile.dimensions ?? PixelDimensions(width: 512, height: 512)

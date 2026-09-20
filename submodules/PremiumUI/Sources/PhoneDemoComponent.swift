@@ -254,7 +254,7 @@ private final class PhoneView: UIView {
             }
         }
         
-        self.statusDisposable.set((status |> deliverOnMainQueue).start(next: { [weak self] status in
+        self.statusDisposable.set((status |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.playbackStatusValue = status
                 strongSelf.playbackStatusPromise.set(status)

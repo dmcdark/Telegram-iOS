@@ -368,7 +368,7 @@ private final class AuthAlertContentNode: AlertContentNode {
             self.addSubnode(separatorNode)
         }
         
-        self.inputFieldNode.updateHeight = { [weak self] in
+        self.inputFieldNode.updateHeight = { [weak self = self] in
             if let strongSelf = self {
                 if let _ = strongSelf.validLayout {
                     strongSelf.requestLayout?(.animated(duration: 0.15, curve: .spring))

@@ -191,7 +191,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
                     contentNode.frame = previous.frame
                     contentNode.updateLayout(size: previous.bounds.size, isLandscape: layout.size.width > layout.size.height, bottomInset: bottomGridInset, transition: .immediate)
                     
-                    contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                    contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                         self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                     })
                     self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -211,7 +211,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
                     previous.deactivate()
                 } else {
                     if let contentNode = self.contentNode {
-                        contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                        contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                             self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                         })
                         self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -220,7 +220,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
                     self.containerLayoutUpdated(layout, navigationBarHeight: navigationBarHeight, transition: transition)
                 }
             } else if let contentNode = contentNode {
-                contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                     self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                 })
                 self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -356,7 +356,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
             var dimCompleted = false
             var offsetCompleted = false
             
-            let internalCompletion: () -> Void = { [weak self] in
+            let internalCompletion: () -> Void = { [weak self = self] in
                 if let strongSelf = self, dimCompleted && offsetCompleted {
                     strongSelf.dismiss?()
                 }
@@ -419,7 +419,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -438,7 +438,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
         
         self.transitionToContentNode(ShareLoadingContainerNode(theme: self.presentationData.theme, forceNativeAppearance: false), fastOut: true)
         let timestamp = CACurrentMediaTime()
-        self.disposable.set(signal.start(completed: { [weak self] in
+        self.disposable.set(signal.start(completed: { [weak self = self] in
             let minDelay = 0.6
             let delay = max(0.0, (timestamp + minDelay) - CACurrentMediaTime())
             Queue.mainQueue().after(delay, {
@@ -468,7 +468,7 @@ final class LanguageLinkPreviewControllerNode: ViewControllerTracingNode, ASScro
             self.actionButtonNode.setTitle(self.presentationData.strings.ApplyLanguage_ChangeLanguageAction, with: Font.medium(20.0), with: self.presentationData.theme.actionSheet.disabledActionTextColor, for: .disabled)
         }
         
-        self.transitionToContentNode(LanguageLinkPreviewContentNode(context: self.context, localizationInfo: localizationInfo, theme: self.presentationData.theme, strings: self.presentationData.strings, openTranslationUrl: { [weak self] url in
+        self.transitionToContentNode(LanguageLinkPreviewContentNode(context: self.context, localizationInfo: localizationInfo, theme: self.presentationData.theme, strings: self.presentationData.strings, openTranslationUrl: { [weak self = self] url in
             self?.openUrl(url)
         }))
     }

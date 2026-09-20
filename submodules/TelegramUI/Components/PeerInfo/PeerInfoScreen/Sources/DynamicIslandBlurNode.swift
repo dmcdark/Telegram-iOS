@@ -53,7 +53,7 @@ final class DynamicIslandBlurNode: ASDisplayNode {
     override func didLoad() {
         super.didLoad()
         
-        let hierarchyTrackingNode = HierarchyTrackingNode({ [weak self] value in
+        let hierarchyTrackingNode = HierarchyTrackingNode({ [weak self = self] value in
             if !value {
                 self?.animator?.stopAnimation(true)
                 self?.animator = nil
@@ -98,7 +98,7 @@ final class DynamicIslandBlurNode: ASDisplayNode {
         let animator =  UIViewPropertyAnimator(duration: 1.0, curve: .linear)
         self.animator = animator
         self.effectView?.effect = nil
-        animator.addAnimations { [weak self] in
+        animator.addAnimations { [weak self = self] in
             self?.effectView?.effect = UIBlurEffect(style: .dark)
         }
         return true

@@ -323,7 +323,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
         
         private func updateTimer() {
             if self.isPlaying {
-                self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self] in
+                self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -524,7 +524,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
                                     )
                                 ),
                                 effectAlignment: .center,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let state = self.state else {
                                         return
                                     }
@@ -943,7 +943,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
                         SegmentControlComponent.Item(id: AnyHashable(SelectedSection.symbols), title: environment.strings.Gift_Variants_Symbols)
                     ],
                     selectedId: selectedId,
-                    action: { [weak self] id in
+                    action: { [weak self = self] id in
                         guard let self, let component = self.component, let id = id.base as? SelectedSection else {
                             return
                         }
@@ -1028,7 +1028,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] attributes, _ in
+                    tapAction: { [weak self = self] attributes, _ in
                         if let self, let _ = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] as? String {
                             self.displayCraftableModels = !self.displayCraftableModels
                             self.isPlaying = false
@@ -1083,7 +1083,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
                             tintColor: .white
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1113,7 +1113,7 @@ private final class GiftUpgradeVariantsScreenComponent: Component {
                     component: AnyComponentWithIdentity(id: "content", component: AnyComponent(
                         PlayButtonComponent(isPlay: !self.isPlaying, title: !self.isPlaying && self.showRandomizeTip ? environment.strings.Gift_Variants_Randomize : nil)
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1289,7 +1289,7 @@ public class GiftUpgradeVariantsScreen: ViewControllerComponentContainer {
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? GiftUpgradeVariantsScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

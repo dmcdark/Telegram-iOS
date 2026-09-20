@@ -377,7 +377,7 @@ private final class AlertCurrencyComponent: Component {
                         )
                     ],
                     selectedId: component.currency == .ton ? AnyHashable(1) : AnyHashable(0),
-                    setSelectedId: { [weak self] id in
+                    setSelectedId: { [weak self = self] id in
                         guard let self, let component = self.component else {
                             return
                         }

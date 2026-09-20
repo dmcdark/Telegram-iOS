@@ -67,7 +67,7 @@ public class ChatMessageStoryMentionContentNode: ChatMessageBubbleContentNode {
         self.addSubnode(self.buttonNode)
         self.addSubnode(self.buttonTitleNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonNode.layer.removeAnimation(forKey: "opacity")
@@ -96,7 +96,7 @@ public class ChatMessageStoryMentionContentNode: ChatMessageBubbleContentNode {
     
     override public func transitionNode(messageId: EngineMessage.Id, media: EngineRawMedia, adjustRect: Bool) -> (ASDisplayNode, CGRect, () -> (UIView?, UIView?))? {
         if self.item?.message.id == messageId {
-            return (self.imageNode, self.imageNode.bounds, { [weak self] in
+            return (self.imageNode, self.imageNode.bounds, { [weak self = self] in
                 guard let strongSelf = self else {
                     return (nil, nil)
                 }
@@ -201,7 +201,7 @@ public class ChatMessageStoryMentionContentNode: ChatMessageBubbleContentNode {
                 let backgroundSize = CGSize(width: width, height: subtitleLayout.size.height + 167.0 + buttonTitleLayout.size.height)
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (backgroundSize, { [weak self] animation, synchronousLoads, _ in
+                    return (backgroundSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             

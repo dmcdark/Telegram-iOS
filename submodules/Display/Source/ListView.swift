@@ -409,7 +409,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         didSet {
             if self.isAuxiliaryDisplayLinkEnabled {
                 if self.auxiliaryDisplayLinkHandle == nil {
-                    self.auxiliaryDisplayLinkHandle = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                    self.auxiliaryDisplayLinkHandle = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -500,7 +500,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         
         (self.view as! ListViewBackingView).target = self
         
-        self.transactionQueue.transactionCompleted = { [weak self] in
+        self.transactionQueue.transactionCompleted = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.updateVisibleItemRange()
             }
@@ -520,7 +520,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         trackingRecognizer.cancelsTouchesInView = false
         self.view.addGestureRecognizer(trackingRecognizer)
 
-        self.view.addGestureRecognizer(ListViewReorderingGestureRecognizer(shouldBegin: { [weak self] point in
+        self.view.addGestureRecognizer(ListViewReorderingGestureRecognizer(shouldBegin: { [weak self = self] point in
             if let strongSelf = self, !strongSelf.isTracking {
                 if let index = strongSelf.itemIndexAtPoint(point) {
                     for i in 0 ..< strongSelf.itemNodes.count {
@@ -538,13 +538,13 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
                 }
             }
             return (false, false, nil)
-        }, willBegin: { [weak self] point in
+        }, willBegin: { [weak self = self] point in
             self?.willBeginReorder(point)
-        }, began: { [weak self] itemNode in
+        }, began: { [weak self = self] itemNode in
             self?.beginReordering(itemNode: itemNode)
-        }, ended: { [weak self] in
+        }, ended: { [weak self = self] in
             self?.endReordering()
-        }, moved: { [weak self] offset in
+        }, moved: { [weak self = self] offset in
             self?.updateReordering(offset: offset)
         }))
         
@@ -649,7 +649,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         self.itemReorderingTimer = nil
         self.lastReorderingOffset = nil
         
-        let f: () -> Void = { [weak self] in
+        let f: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -706,7 +706,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         self.lastReorderingOffset = verticalTopOffset
         
         if !force {
-            self.itemReorderingTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: false, completion: { [weak self] in
+            self.itemReorderingTimer = SwiftSignalKit.Timer(timeout: 0.025, repeat: false, completion: { [weak self = self] in
                 self?.checkItemReordering(force: true)
             }, queue: Queue.mainQueue())
             self.itemReorderingTimer?.start()
@@ -766,7 +766,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
                         }
                         self.reorderInProgress = true
                         self.reorderFeedbackDisposable?.set((self.reorderItem(reorderItemIndex, toIndex, self.opaqueTransactionState)
-                        |> deliverOnMainQueue).start(next: { [weak self] value in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] value in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -804,7 +804,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         }
         
         if start {
-            let timer = Timer(timeInterval: duration, target: ListViewTimerProxy { [weak self] in
+            let timer = Timer(timeInterval: duration, target: ListViewTimerProxy { [weak self = self] in
                 if let strongSelf = self {
                     if let flashNodesDelayTimer = strongSelf.flashNodesDelayTimer {
                         flashNodesDelayTimer.invalidate()
@@ -826,7 +826,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         }
         
         if start {
-            let timer = Timer(timeInterval: 0.1, target: ListViewTimerProxy { [weak self] in
+            let timer = Timer(timeInterval: 0.1, target: ListViewTimerProxy { [weak self = self] in
                 if let strongSelf = self {
                     if let flashScrollIndicatorTimer = strongSelf.flashScrollIndicatorTimer {
                         flashScrollIndicatorTimer.invalidate()
@@ -940,7 +940,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         let startTime = CACurrentMediaTime()
         let decelerationRate: CGFloat = 0.998
         self.scroller.forceDecelerating = true
-        self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.decelerationAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1043,7 +1043,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         }
         
         if self.useMainQueueTransactions {
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async { [weak self = self] in
                 self?.enqueueUpdateVisibleItems(synchronous: false)
             }
         } else {
@@ -2191,11 +2191,12 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
                                 readySignals = currentReadySignals
                             }
                             
-                            let beginReplay = { [weak self] in
-                                if let strongSelf = self {
+                            let weakSelf = Weak(self)
+                            let beginReplay = {
+                                if let strongSelf = weakSelf.value {
                                     strongSelf.replayOperations(animated: animated, animateAlpha: options.contains(.AnimateAlpha), animateCrossfade: options.contains(.AnimateCrossfade), animateFullTransition: options.contains(.AnimateFullTransition), customAnimationTransition: updateSizeAndInsets?.customAnimationTransition, synchronous: options.contains(.Synchronous), synchronousLoads: options.contains(.PreferSynchronousResourceLoading), animateTopItemVerticalOrigin: options.contains(.AnimateTopItemPosition), operations: updatedOperations, requestItemInsertionAnimationsIndices: options.contains(.RequestItemInsertionAnimations) ? insertedIndexSet : Set(), scrollToItem: scrollToItem, additionalScrollDistance: additionalScrollDistance, updateSizeAndInsets: updateSizeAndInsets, stationaryItemIndex: stationaryItemIndex, updateOpaqueState: updateOpaqueState, forceInvertOffsetDirection: options.contains(.InvertOffsetDirection), completion: {
                                         if options.contains(.PreferSynchronousDrawing) {
-                                            self?.recursivelyEnsureDisplaySynchronously(true)
+                                            weakSelf.value?.recursivelyEnsureDisplaySynchronously(true)
                                         }
                                         completion()
                                     })
@@ -3362,7 +3363,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
                     
                     if customAnimationTransition == nil {
                         deferredUpdateVisible = true
-                        animation.completion = { [weak self] _ in
+                        animation.completion = { [weak self = self] _ in
                             self?.updateItemNodesVisibilities(onlyPositive: false)
                         }
                         self.layer.add(animation, forKey: "animation-\(self.takeNextAnimationId())")
@@ -3765,7 +3766,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
                     
                     if scrollToItem.displayLink {
                         self.layer.sublayerTransform = CATransform3DMakeTranslation(0.0, -offset, 0.0)
-                        let offsetAnimation = ListViewAnimation(from: -offset, to: 0.0, duration: insertionAnimationDuration * UIView.animationDurationFactor(), curve: listViewAnimationCurveSystem, beginAt: timestamp, update: { [weak self] progress, currentValue in
+                        let offsetAnimation = ListViewAnimation(from: -offset, to: 0.0, duration: insertionAnimationDuration * UIView.animationDurationFactor(), curve: listViewAnimationCurveSystem, beginAt: timestamp, update: { [weak self = self] progress, currentValue in
                             if let strongSelf = self {
                                 strongSelf.layer.sublayerTransform = CATransform3DMakeTranslation(0.0, currentValue, 0.0)
                                 
@@ -4611,7 +4612,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
         if !self.enqueuedUpdateVisibleItems {
             self.enqueuedUpdateVisibleItems = true
             
-            self.transactionQueue.addTransaction({ [weak self] completion in
+            self.transactionQueue.addTransaction({ [weak self = self] completion in
                 if let strongSelf = self {
                     strongSelf.transactionOffset = 0.0
                     strongSelf.updateVisibleItemsTransaction(synchronous: synchronous, completion: {
@@ -4966,7 +4967,7 @@ open class ListViewImpl: ASDisplayNode, ListView, ASScrollViewDelegate, ASGestur
             self.selectionTouchDelayTimer?.invalidate()
             self.selectionLongTapDelayTimer?.invalidate()
             self.selectionLongTapDelayTimer = nil
-            let timer = Timer(timeInterval: 0.08, target: ListViewTimerProxy { [weak self] in
+            let timer = Timer(timeInterval: 0.08, target: ListViewTimerProxy { [weak self = self] in
                 if let strongSelf = self, strongSelf.selectionTouchLocation != nil {
                     strongSelf.clearHighlightAnimated(false)
                     

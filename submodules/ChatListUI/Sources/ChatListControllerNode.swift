@@ -183,55 +183,55 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
         self.currentItemNodeValue = itemNode
         itemNode.accessibilityElementsHidden = false
         
-        itemNode.listNode.activateSearch = { [weak self] in
+        itemNode.listNode.activateSearch = { [weak self = self] in
             self?.activateSearch?()
         }
-        itemNode.listNode.presentAlert = { [weak self] text in
+        itemNode.listNode.presentAlert = { [weak self = self] text in
             self?.presentAlert?(text)
         }
-        itemNode.listNode.present = { [weak self] c in
+        itemNode.listNode.present = { [weak self = self] c in
             self?.present?(c)
         }
-        itemNode.listNode.push = { [weak self] c in
+        itemNode.listNode.push = { [weak self = self] c in
             self?.push?(c)
         }
-        itemNode.listNode.toggleArchivedFolderHiddenByDefault = { [weak self] in
+        itemNode.listNode.toggleArchivedFolderHiddenByDefault = { [weak self = self] in
             self?.toggleArchivedFolderHiddenByDefault?()
         }
-        itemNode.listNode.hidePsa = { [weak self] peerId in
+        itemNode.listNode.hidePsa = { [weak self = self] peerId in
             self?.hidePsa?(peerId)
         }
-        itemNode.listNode.deletePeerChat = { [weak self] peerId, joined in
+        itemNode.listNode.deletePeerChat = { [weak self = self] peerId, joined in
             self?.deletePeerChat?(peerId, joined)
         }
-        itemNode.listNode.deletePeerThread = { [weak self] peerId, threadId in
+        itemNode.listNode.deletePeerThread = { [weak self = self] peerId, threadId in
             self?.deletePeerThread?(peerId, threadId)
         }
-        itemNode.listNode.setPeerThreadStopped = { [weak self] peerId, threadId, isStopped in
+        itemNode.listNode.setPeerThreadStopped = { [weak self = self] peerId, threadId, isStopped in
             self?.setPeerThreadStopped?(peerId, threadId, isStopped)
         }
-        itemNode.listNode.setPeerThreadPinned = { [weak self] peerId, threadId, isPinned in
+        itemNode.listNode.setPeerThreadPinned = { [weak self = self] peerId, threadId, isPinned in
             self?.setPeerThreadPinned?(peerId, threadId, isPinned)
         }
-        itemNode.listNode.setPeerThreadHidden = { [weak self] peerId, threadId, isHidden in
+        itemNode.listNode.setPeerThreadHidden = { [weak self = self] peerId, threadId, isHidden in
             self?.setPeerThreadHidden?(peerId, threadId, isHidden)
         }
-        itemNode.listNode.peerSelected = { [weak self] peerId, threadId, animated, activateInput, promoInfo in
+        itemNode.listNode.peerSelected = { [weak self = self] peerId, threadId, animated, activateInput, promoInfo in
             self?.peerSelected?(peerId, threadId, animated, activateInput, promoInfo)
         }
-        itemNode.listNode.disabledPeerSelected = { [weak self] peerId, threadId, reason in
+        itemNode.listNode.disabledPeerSelected = { [weak self = self] peerId, threadId, reason in
             self?.disabledPeerSelected?(peerId, threadId, reason)
         }
-        itemNode.listNode.groupSelected = { [weak self] groupId in
+        itemNode.listNode.groupSelected = { [weak self = self] groupId in
             self?.groupSelected?(groupId)
         }
-        itemNode.listNode.openCommunity = { [weak self] communityId in
+        itemNode.listNode.openCommunity = { [weak self = self] communityId in
             self?.openCommunity?(communityId)
         }
-        itemNode.listNode.ungroupCommunity = { [weak self] communityId in
+        itemNode.listNode.ungroupCommunity = { [weak self = self] communityId in
             self?.ungroupCommunity?(communityId)
         }
-        itemNode.listNode.updatePeerGrouping = { [weak self] peerId, group in
+        itemNode.listNode.updatePeerGrouping = { [weak self = self] peerId, group in
             self?.updatePeerGrouping?(peerId, group)
         }
         itemNode.listNode.contentOffsetChanged = { [weak self, weak itemNode] offset in
@@ -285,7 +285,7 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
                 }
             }
         }
-        itemNode.listNode.didBeginInteractiveDragging = { [weak self] listView in
+        itemNode.listNode.didBeginInteractiveDragging = { [weak self = self] listView in
             guard let self else {
                 return
             }
@@ -319,65 +319,65 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
                 self.hintUpdatedStoryExpansion = false
             }
         }
-        itemNode.listNode.endedInteractiveDragging = { [weak self] _ in
+        itemNode.listNode.endedInteractiveDragging = { [weak self = self] _ in
             guard let self else {
                 return
             }
             self.endedInteractiveDragging?(self.currentItemNode)
         }
-        itemNode.listNode.shouldStopScrolling = { [weak self] velocity in
+        itemNode.listNode.shouldStopScrolling = { [weak self = self] velocity in
             guard let self else {
                 return false
             }
             return self.shouldStopScrolling?(self.currentItemNode, velocity) ?? false
         }
-        itemNode.listNode.contentScrollingEnded = { [weak self] listView in
+        itemNode.listNode.contentScrollingEnded = { [weak self = self] listView in
             guard let self else {
                 return false
             }
             
             return self.contentScrollingEnded?(listView) ?? false
         }
-        itemNode.listNode.pinnedHeaderDisplayFractionUpdated = { [weak self] transition in
+        itemNode.listNode.pinnedHeaderDisplayFractionUpdated = { [weak self = self] transition in
             guard let self else {
                 return
             }
             self.pinnedHeaderDisplayFractionUpdated?(transition)
         }
-        itemNode.listNode.activateChatPreview = { [weak self] item, threadId, sourceNode, gesture, location in
+        itemNode.listNode.activateChatPreview = { [weak self = self] item, threadId, sourceNode, gesture, location in
             self?.activateChatPreview?(item, threadId, sourceNode, gesture, location)
         }
-        itemNode.listNode.openStories = { [weak self] subject, itemNode in
+        itemNode.listNode.openStories = { [weak self = self] subject, itemNode in
             self?.openStories?(subject, itemNode)
         }
-        itemNode.listNode.addedVisibleChatsWithPeerIds = { [weak self] ids in
+        itemNode.listNode.addedVisibleChatsWithPeerIds = { [weak self = self] ids in
             self?.addedVisibleChatsWithPeerIds?(ids)
         }
-        itemNode.listNode.didBeginSelectingChats = { [weak self] in
+        itemNode.listNode.didBeginSelectingChats = { [weak self = self] in
             self?.didBeginSelectingChats?()
         }
-        itemNode.listNode.canExpandHiddenItems = { [weak self] in
+        itemNode.listNode.canExpandHiddenItems = { [weak self = self] in
             guard let self, let canExpandHiddenItems = self.canExpandHiddenItems else {
                 return false
             }
             return canExpandHiddenItems()
         }
-        itemNode.listNode.openBirthdaySetup = { [weak self] in
+        itemNode.listNode.openBirthdaySetup = { [weak self = self] in
             self?.openBirthdaySetup?()
         }
-        itemNode.listNode.openPremiumManagement = { [weak self] in
+        itemNode.listNode.openPremiumManagement = { [weak self = self] in
             self?.openPremiumManagement?()
         }
-        itemNode.listNode.openStarsTopup = { [weak self] amount in
+        itemNode.listNode.openStarsTopup = { [weak self = self] amount in
             self?.openStarsTopup?(amount)
         }
-        itemNode.listNode.openWebApp = { [weak self] amount in
+        itemNode.listNode.openWebApp = { [weak self = self] amount in
             self?.openWebApp?(amount)
         }
-        itemNode.listNode.openPhotoSetup = { [weak self] in
+        itemNode.listNode.openPhotoSetup = { [weak self = self] in
             self?.openPhotoSetup?()
         }
-        itemNode.listNode.openAccountFreezeInfo = { [weak self] in
+        itemNode.listNode.openAccountFreezeInfo = { [weak self = self] in
             self?.openAccountFreezeInfo?()
         }
         
@@ -527,13 +527,13 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
         
         self.backgroundColor = presentationData.theme.chatList.backgroundColor
         
-        let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: nil, chatListMode: chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self] filter in
+        let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: nil, chatListMode: chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self = self] filter in
             self?.filterBecameEmpty(filter)
-        }, emptyAction: { [weak self] filter in
+        }, emptyAction: { [weak self = self] filter in
             self?.filterEmptyAction(filter)
-        }, secondaryEmptyAction: { [weak self] in
+        }, secondaryEmptyAction: { [weak self = self] in
             self?.secondaryEmptyAction()
-        }, openArchiveSettings: { [weak self] in
+        }, openArchiveSettings: { [weak self = self] in
             self?.openArchiveSettings()
         }, autoSetReady: true, isMainTab: nil)
         self.itemNodes[.all] = itemNode
@@ -543,7 +543,7 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
         
         self.applyItemNodeAsCurrent(id: .all, itemNode: itemNode)
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let self, self.availableFilters.count > 1 || (self.controller?.isStoryPostingAvailable == true && !(self.context.sharedContext.callManager?.hasActiveCall ?? false)) else {
                 return []
             }
@@ -839,7 +839,7 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
     
     public func updateAvailableFilters(_ availableFilters: [ChatListContainerNodeFilter], limit: Int32?) {
         if self.availableFilters != availableFilters {
-            let apply: () -> Void = { [weak self] in
+            let apply: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -892,13 +892,13 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
                 itemNode.emptyNode?.restartAnimation()
                 completion?()
             } else if self.pendingItemNode == nil {
-                let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: self.availableFilters[index].filter, chatListMode: self.chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self] filter in
+                let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: self.availableFilters[index].filter, chatListMode: self.chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self = self] filter in
                     self?.filterBecameEmpty(filter)
-                }, emptyAction: { [weak self] filter in
+                }, emptyAction: { [weak self = self] filter in
                     self?.filterEmptyAction(filter)
-                }, secondaryEmptyAction: { [weak self] in
+                }, secondaryEmptyAction: { [weak self = self] in
                     self?.secondaryEmptyAction()
-                }, openArchiveSettings: { [weak self] in
+                }, openArchiveSettings: { [weak self = self] in
                     self?.openArchiveSettings()
                 }, autoSetReady: !animated, isMainTab: index == 0)
                 self.pendingItemNode?.2.dispose()
@@ -1042,13 +1042,13 @@ public final class ChatListContainerNode: ASDisplayNode, ASGestureRecognizerDele
                 validNodeIds.append(id)
                 
                 if self.itemNodes[id] == nil && self.enableAdjacentFilterLoading && !self.disableItemNodeOperationsWhileAnimating {
-                    let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: self.availableFilters[i].filter, chatListMode: self.chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self] filter in
+                    let itemNode = ChatListContainerItemNode(context: self.context, controller: self.controller, location: self.location, filter: self.availableFilters[i].filter, chatListMode: self.chatListMode, previewing: self.previewing, isInlineMode: self.isInlineMode, controlsHistoryPreload: self.controlsHistoryPreload, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, becameEmpty: { [weak self = self] filter in
                         self?.filterBecameEmpty(filter)
-                    }, emptyAction: { [weak self] filter in
+                    }, emptyAction: { [weak self = self] filter in
                         self?.filterEmptyAction(filter)
-                    }, secondaryEmptyAction: { [weak self] in
+                    }, secondaryEmptyAction: { [weak self = self] in
                         self?.secondaryEmptyAction()
-                    }, openArchiveSettings: { [weak self] in
+                    }, openArchiveSettings: { [weak self = self] in
                         self?.openArchiveSettings()
                     }, autoSetReady: false, isMainTab: i == 0)
                     itemNode.listNode.tempTopInset = self.tempTopInset
@@ -1219,28 +1219,28 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         
         self.addSubnode(self.mainContainerNode)
         
-        self.mainContainerNode.contentOffsetChanged = { [weak self] offset, listView in
+        self.mainContainerNode.contentOffsetChanged = { [weak self = self] offset, listView in
             self?.contentOffsetChanged(offset: offset, listView: listView, isPrimary: true)
         }
-        self.mainContainerNode.contentScrollingEnded = { [weak self] listView in
+        self.mainContainerNode.contentScrollingEnded = { [weak self = self] listView in
             return self?.contentScrollingEnded(listView: listView, isPrimary: true) ?? false
         }
-        self.mainContainerNode.pinnedHeaderDisplayFractionUpdated = { [weak self] transition in
+        self.mainContainerNode.pinnedHeaderDisplayFractionUpdated = { [weak self = self] transition in
             self?.pinnedHeaderDisplayFractionUpdated(transition: transition)
         }
-        self.mainContainerNode.didBeginInteractiveDragging = { [weak self] listView in
+        self.mainContainerNode.didBeginInteractiveDragging = { [weak self = self] listView in
             self?.didBeginInteractiveDragging(listView: listView, isPrimary: true)
         }
-        self.mainContainerNode.endedInteractiveDragging = { [weak self] listView in
+        self.mainContainerNode.endedInteractiveDragging = { [weak self = self] listView in
             self?.endedInteractiveDragging(listView: listView, isPrimary: true)
         }
-        self.mainContainerNode.shouldStopScrolling = { [weak self] listView, velocity in
+        self.mainContainerNode.shouldStopScrolling = { [weak self = self] listView, velocity in
             return self?.shouldStopScrolling(listView: listView, velocity: velocity, isPrimary: true) ?? false
         }
         
         self.addSubnode(self.debugListView)
         
-        filterBecameEmpty = { [weak self] _ in
+        filterBecameEmpty = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1248,14 +1248,14 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                 strongSelf.dismissSelfIfCompletedPresentation?()
             }
         }
-        filterEmptyAction = { [weak self] _ in
+        filterEmptyAction = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.emptyListAction?(nil)
         }
         
-        secondaryEmptyAction = { [weak self] in
+        secondaryEmptyAction = { [weak self = self] in
             guard let strongSelf = self, case let .forum(peerId) = strongSelf.location, let controller = strongSelf.controller else {
                 return
             }
@@ -1264,20 +1264,20 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             (controller.navigationController as? NavigationController)?.replaceController(controller, with: chatController, animated: false)
         }
         
-        openArchiveSettings = { [weak self] in
+        openArchiveSettings = { [weak self = self] in
             guard let self, let controller = self.controller else {
                 return
             }
             controller.push(self.context.sharedContext.makeArchiveSettingsController(context: self.context))
         }
         
-        self.mainContainerNode.onFilterSwitch = { [weak self] in
+        self.mainContainerNode.onFilterSwitch = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controller?.dismissAllUndoControllers()
             }
         }
         
-        self.mainContainerNode.onStoriesLockedUpdated = { [weak self] isLocked in
+        self.mainContainerNode.onStoriesLockedUpdated = { [weak self = self] isLocked in
             guard let self else {
                 return
             }
@@ -1289,7 +1289,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        self.mainContainerNode.canExpandHiddenItems = { [weak self] in
+        self.mainContainerNode.canExpandHiddenItems = { [weak self = self] in
             guard let self, let controller = self.controller else {
                 return false
             }
@@ -1306,7 +1306,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        let inlineContentPanRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.inlineContentPanGesture(_:)), allowedDirections: { [weak self] _ in
+        let inlineContentPanRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.inlineContentPanGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let strongSelf = self, strongSelf.inlineStackContainerNode != nil else {
                 return []
             }
@@ -1421,7 +1421,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                     theme: self.presentationData.theme,
                     strings: self.presentationData.strings,
                     data: chatListNotice,
-                    activateAction: { [weak self] notice in
+                    activateAction: { [weak self = self] notice in
                         guard let self else {
                             return
                         }
@@ -1454,13 +1454,13 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             self.effectiveContainerNode.currentItemNode.interaction?.openUrl(url)
                         }
                     },
-                    dismissAction: { [weak self] notice in
+                    dismissAction: { [weak self = self] notice in
                         guard let self, let controller = self.controller else {
                             return
                         }
                         controller.globalControlPanelsContext.dismissChatListNotice(parentController: controller, notice: notice)
                     },
-                    selectAction: { [weak self] notice, isPositive in
+                    selectAction: { [weak self = self] notice, isPositive in
                         guard let self else {
                             return
                         }
@@ -1488,7 +1488,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                         theme: self.presentationData.theme,
                         strings: self.presentationData.strings,
                         data: mediaPlayback,
-                        controller: { [weak self] in
+                        controller: { [weak self = self] in
                             return self?.controller
                         }
                     )))
@@ -1504,7 +1504,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                     theme: self.presentationData.theme,
                     strings: self.presentationData.strings,
                     data: liveLocation,
-                    controller: { [weak self] in
+                    controller: { [weak self = self] in
                         return self?.controller
                     }
                 )))
@@ -1571,7 +1571,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             id: id,
                             content: .title(title),
                             badge: badge,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let tabContainerData = self.controller?.tabContainerData else {
                                     return
                                 }
@@ -1610,7 +1610,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                                     self.controller?.selectTab(id: mappedId)
                                 }
                             },
-                            contextAction: { [weak self] sourceView, gesture in
+                            contextAction: { [weak self = self] sourceView, gesture in
                                 guard let self, let tabContainerData = self.controller?.tabContainerData else {
                                     return
                                 }
@@ -1634,7 +1634,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                                 
                                 self.controller?.tabContextGesture(id: mappedId, sourceNode: nil, sourceView: sourceView, gesture: gesture, keepInPlace: false, isDisabled: isDisabled)
                             },
-                            deleteAction: (!isEditing || isMainTab) ? nil : { [weak self] in
+                            deleteAction: (!isEditing || isMainTab) ? nil : { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1689,7 +1689,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                 tabsNodeIsSearch: false,
                 accessoryPanelContainer: self.controller?.accessoryPanelContainer,
                 accessoryPanelContainerHeight: self.controller?.accessoryPanelContainerHeight ?? 0.0,
-                activateSearch: { [weak self] searchContentNode in
+                activateSearch: { [weak self = self] searchContentNode in
                     guard let self, let controller = self.controller else {
                         return
                     }
@@ -1708,13 +1708,13 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                         searchContentNode: searchContentNode
                     )
                 },
-                openStatusSetup: { [weak self] sourceView in
+                openStatusSetup: { [weak self = self] sourceView in
                     guard let self, let controller = self.controller else {
                         return
                     }
                     controller.openStatusSetup(sourceView: sourceView)
                 },
-                allowAutomaticOrder: { [weak self] in
+                allowAutomaticOrder: { [weak self = self] in
                     guard let self, let controller = self.controller else {
                         return
                     }
@@ -1883,7 +1883,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "left_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1898,7 +1898,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1913,7 +1913,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                             items: [GlassControlGroupComponent.Item(
                                 id: "right_" + value.title,
                                 content: .text(value.title),
-                                action: value.isEnabled ? { [weak self] in
+                                action: value.isEnabled ? { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -2038,40 +2038,40 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             }
         }
         
-        let contentNode = ChatListSearchContainerNode(context: self.context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, filter: filter, requestPeerType: nil, location: effectiveLocation, folder: folder, displaySearchFilters: displaySearchFilters, hasDownloads: hasDownloads, initialFilter: initialFilter, openPeer: { [weak self] peer, _, threadId, dismissSearch in
+        let contentNode = ChatListSearchContainerNode(context: self.context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, filter: filter, requestPeerType: nil, location: effectiveLocation, folder: folder, displaySearchFilters: displaySearchFilters, hasDownloads: hasDownloads, initialFilter: initialFilter, openPeer: { [weak self = self] peer, _, threadId, dismissSearch in
             self?.requestOpenPeerFromSearch?(peer, threadId, dismissSearch)
         }, openDisabledPeer: { _, _, _ in
-        }, openRecentPeerOptions: { [weak self] peer in
+        }, openRecentPeerOptions: { [weak self = self] peer in
             self?.requestOpenRecentPeerOptions?(peer)
-        }, openMessage: { [weak self] peer, threadId, messageId, deactivateOnAction in
+        }, openMessage: { [weak self = self] peer, threadId, messageId, deactivateOnAction in
             if let requestOpenMessageFromSearch = self?.requestOpenMessageFromSearch {
                 requestOpenMessageFromSearch(peer, threadId, messageId, deactivateOnAction)
             }
-        }, addContact: { [weak self] phoneNumber in
+        }, addContact: { [weak self = self] phoneNumber in
             if let requestAddContact = self?.requestAddContact {
                 requestAddContact(phoneNumber)
             }
-        }, peerContextAction: self.peerContextAction, present: { [weak self] c, a in
+        }, peerContextAction: self.peerContextAction, present: { [weak self = self] c, a in
             self?.controller?.present(c, in: .window(.root), with: a)
-        }, presentInGlobalOverlay: { [weak self] c, a in
+        }, presentInGlobalOverlay: { [weak self = self] c, a in
             self?.controller?.presentInGlobalOverlay(c, with: a)
-        }, navigationController: navigationController, parentController: { [weak self] in
+        }, navigationController: navigationController, parentController: { [weak self = self] in
             return self?.controller
         })
-        contentNode.dismissSearch = { [weak self] in
+        contentNode.dismissSearch = { [weak self = self] in
             self?.dismissSearch?()
         }
-        contentNode.dismissSearchImmediately = { [weak self] in
+        contentNode.dismissSearchImmediately = { [weak self = self] in
             self?.controller?.deactivateSearch(animated: false)
         }
-        contentNode.openAdInfo = { [weak self] node, adPeer in
+        contentNode.openAdInfo = { [weak self = self] node, adPeer in
             self?.controller?.openAdInfo(node: node, adPeer: adPeer)
         }
         
         let searchTips = await ApplicationSpecificNotice.getGlobalPostsSearch(accountManager: self.context.sharedContext.accountManager).get()
         contentNode.displayGlobalPostsNewBadge = searchTips < 3
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .list, contentNode: contentNode, cancel: { [weak self] in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .list, contentNode: contentNode, cancel: { [weak self = self] in
             if let requestDeactivateSearch = self?.requestDeactivateSearch {
                 requestDeactivateSearch()
             }
@@ -2079,7 +2079,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
         self.mainContainerNode.accessibilityElementsHidden = true
         self.inlineStackContainerNode?.accessibilityElementsHidden = true
                 
-        return ({ [weak self] focus in
+        return ({ [weak self = self] focus in
             guard let strongSelf = self else {
                 return
             }
@@ -2087,7 +2087,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             strongSelf.isSearchDisplayControllerActive = ChatListNavigationBar.ActiveSearch(isExternal: placeholderNode == nil)
             
             strongSelf.searchDisplayController?.containerLayoutUpdated(containerLayout, navigationBarHeight: cleanNavigationBarHeight, transition: .immediate)
-            strongSelf.searchDisplayController?.activate(insertSubnode: { [weak self] subnode, isSearchBar in
+            strongSelf.searchDisplayController?.activate(insertSubnode: { [weak self = self] subnode, isSearchBar in
                 guard let self else {
                     return
                 }
@@ -2327,7 +2327,7 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
             forumPeerId = peerId
         }
         
-        let inlineStackContainerNode = ChatListContainerNode(context: self.context, controller: self.controller, location: location, previewing: false, controlsHistoryPreload: false, isInlineMode: true, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, filterBecameEmpty: { _ in }, filterEmptyAction: { [weak self] _ in self?.emptyListAction?(forumPeerId) }, secondaryEmptyAction: {}, openArchiveSettings: {})
+        let inlineStackContainerNode = ChatListContainerNode(context: self.context, controller: self.controller, location: location, previewing: false, controlsHistoryPreload: false, isInlineMode: true, presentationData: self.presentationData, animationCache: self.animationCache, animationRenderer: self.animationRenderer, filterBecameEmpty: { _ in }, filterEmptyAction: { [weak self = self] _ in self?.emptyListAction?(forumPeerId) }, secondaryEmptyAction: {}, openArchiveSettings: {})
         return inlineStackContainerNode
     }
     
@@ -2356,22 +2356,22 @@ final class ChatListControllerNode: ASDisplayNode, ASGestureRecognizerDelegate {
                 inlineStackContainerNode.ungroupCommunity = self.mainContainerNode.ungroupCommunity
                 inlineStackContainerNode.updatePeerGrouping = self.mainContainerNode.updatePeerGrouping
                 
-                inlineStackContainerNode.contentOffsetChanged = { [weak self] offset, listView in
+                inlineStackContainerNode.contentOffsetChanged = { [weak self = self] offset, listView in
                     self?.contentOffsetChanged(offset: offset, listView: listView, isPrimary: false)
                 }
-                inlineStackContainerNode.didBeginInteractiveDragging = { [weak self] listView in
+                inlineStackContainerNode.didBeginInteractiveDragging = { [weak self = self] listView in
                     self?.didBeginInteractiveDragging(listView: listView, isPrimary: false)
                 }
-                inlineStackContainerNode.endedInteractiveDragging = { [weak self] listView in
+                inlineStackContainerNode.endedInteractiveDragging = { [weak self = self] listView in
                     self?.endedInteractiveDragging(listView: listView, isPrimary: false)
                 }
-                inlineStackContainerNode.shouldStopScrolling = { [weak self] listView, velocity in
+                inlineStackContainerNode.shouldStopScrolling = { [weak self = self] listView, velocity in
                     return self?.shouldStopScrolling(listView: listView, velocity: velocity, isPrimary: false) ?? false
                 }
-                inlineStackContainerNode.contentScrollingEnded = { [weak self] listView in
+                inlineStackContainerNode.contentScrollingEnded = { [weak self = self] listView in
                     return self?.contentScrollingEnded(listView: listView, isPrimary: false) ?? false
                 }
-                inlineStackContainerNode.pinnedHeaderDisplayFractionUpdated = { [weak self] transition in
+                inlineStackContainerNode.pinnedHeaderDisplayFractionUpdated = { [weak self = self] transition in
                     self?.pinnedHeaderDisplayFractionUpdated(transition: transition)
                 }
                 

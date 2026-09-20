@@ -308,7 +308,7 @@ public final class ListTextFieldItemComponent: Component {
                         )),
                         effectAlignment: .center,
                         minSize: CGSize(width: 44.0, height: 44.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }

@@ -96,7 +96,7 @@ public final class MediaAssetsContext: NSObject, PHPhotoLibraryChangeObserver {
     }
     
     public func requestMediaAccess(completion: @escaping () -> Void = {}) -> Void {
-        PHPhotoLibrary.requestAuthorization { [weak self] status in
+        PHPhotoLibrary.requestAuthorization { [weak self = self] status in
             Queue.mainQueue().async {
                 completion()
             }
@@ -120,7 +120,7 @@ public final class MediaAssetsContext: NSObject, PHPhotoLibraryChangeObserver {
     }
     
     public func requestCameraAccess() -> Void {
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: { [weak self] result in
+        AVCaptureDevice.requestAccess(for: .video, completionHandler: { [weak self = self] result in
             if result {
                 self?.cameraAccessSink.putNext(.authorized)
             } else {

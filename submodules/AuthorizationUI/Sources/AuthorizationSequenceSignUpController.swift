@@ -67,7 +67,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
         self.attemptNavigation = { _ in
             return false
         }
-        self.navigationBar?.backPressed = { [weak self] in
+        self.navigationBar?.backPressed = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -83,7 +83,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customDisplayNode: self.moreButtonNode)
         
-        self.moreButtonNode.action = { [weak self] _, gesture in
+        self.moreButtonNode.action = { [weak self = self] _, gesture in
             if let strongSelf = self {
                 strongSelf.morePressed(node: strongSelf.moreButtonNode.contextSourceNode, gesture: gesture)
             }
@@ -96,7 +96,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
     
     @objc private func cancelPressed() {
         self.present(textAlertController(sharedContext: self.sharedContext, title: nil, text: self.presentationData.strings.Login_CancelSignUpConfirmation, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Login_CancelPhoneVerificationContinue, action: {
-        }), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_CancelPhoneVerificationStop, action: { [weak self] in
+        }), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_CancelPhoneVerificationStop, action: { [weak self = self] in
             self?.back()
         })]), in: .window(.root))
     }
@@ -119,7 +119,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
                 return UIImage()
             }
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-        }, iconPosition: .left, action: { [weak self] _, a in
+        }, iconPosition: .left, action: { [weak self = self] _, a in
             a(.default)
           
             self?.announceSignUp = true
@@ -130,7 +130,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
                 return UIImage()
             }
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-        }, iconPosition: .left, action: { [weak self] _, a in
+        }, iconPosition: .left, action: { [weak self = self] _, a in
             a(.default)
 
             self?.announceSignUp = false
@@ -158,7 +158,7 @@ final class AuthorizationSequenceSignUpController: ViewController {
         let currentAvatarMixin = Atomic<NSObject?>(value: nil)
         
         let theme = self.presentationData.theme
-        self.displayNode = AuthorizationSequenceSignUpControllerNode(theme: theme, strings: self.presentationData.strings, addPhoto: { [weak self] in
+        self.displayNode = AuthorizationSequenceSignUpControllerNode(theme: theme, strings: self.presentationData.strings, addPhoto: { [weak self = self] in
             presentLegacyAvatarPicker(holder: currentAvatarMixin, signup: true, theme: theme, present: { c, a in
                 self?.view.endEditing(true)
                 self?.present(c, in: .window(.root), with: a)
@@ -176,10 +176,10 @@ final class AuthorizationSequenceSignUpController: ViewController {
         
         self.controllerNode.view.disableAutomaticKeyboardHandling = [.forward, .backward]
         
-        self.controllerNode.signUpWithName = { [weak self] _, _ in
+        self.controllerNode.signUpWithName = { [weak self = self] _, _ in
             self?.nextPressed()
         }
-        self.controllerNode.openTermsOfService = { [weak self] in
+        self.controllerNode.openTermsOfService = { [weak self = self] in
             guard let strongSelf = self, let termsOfService = strongSelf.termsOfService else {
                 return
             }

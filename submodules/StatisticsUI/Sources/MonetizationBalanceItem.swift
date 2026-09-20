@@ -223,7 +223,7 @@ final class MonetizationBalanceItemNode: ListViewItemNode, ItemListItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     let themeUpdated = strongSelf.item?.presentationData.theme !== item.presentationData.theme
                     strongSelf.item = item
@@ -340,7 +340,7 @@ final class MonetizationBalanceItemNode: ListViewItemNode, ItemListItemNode {
             
             if remainingCooldownSeconds > 0 {
                 if self.timer == nil {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -388,7 +388,7 @@ final class MonetizationBalanceItemNode: ListViewItemNode, ItemListItemNode {
                     isEnabled: item.isEnabled,
                     allowActionWhenDisabled: false,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let item = self.item, item.isEnabled else {
                             return
                         }
@@ -419,7 +419,7 @@ final class MonetizationBalanceItemNode: ListViewItemNode, ItemListItemNode {
                         isEnabled: true,
                         allowActionWhenDisabled: false,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let item = self.item else {
                                 return
                             }

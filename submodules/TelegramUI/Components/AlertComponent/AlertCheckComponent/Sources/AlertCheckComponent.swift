@@ -146,7 +146,7 @@ public final class AlertCheckComponent: Component {
                         )))
                     ], spacing: 10.0)),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

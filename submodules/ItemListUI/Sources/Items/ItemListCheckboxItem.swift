@@ -185,7 +185,7 @@ public class ItemListCheckboxItemNode: ItemListRevealOptionsItemNode {
         self.contentContainerNode.addSubnode(self.subtitleNode)
         self.addSubnode(self.activateArea)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             self?.item?.action()
             return true
         }
@@ -277,7 +277,7 @@ public class ItemListCheckboxItemNode: ItemListRevealOptionsItemNode {
                 }
             }
 
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

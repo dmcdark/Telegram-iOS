@@ -337,7 +337,7 @@ final class BusinessRecipientListScreenComponent: Component {
                 context: component.context,
                 mode: component.mode,
                 initialPeerList: self.peerList,
-                completion: { [weak self] peerList in
+                completion: { [weak self = self] peerList in
                     guard let self else {
                         return
                     }
@@ -428,7 +428,7 @@ final class BusinessRecipientListScreenComponent: Component {
                     tintColor: environment.theme.list.itemAccentColor
                 ))), false),
                 accessory: nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -482,7 +482,7 @@ final class BusinessRecipientListScreenComponent: Component {
                             id: AnyHashable(0),
                             title: environment.strings.Common_Delete,
                             color: .destructive,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -520,7 +520,7 @@ final class BusinessRecipientListScreenComponent: Component {
                             id: AnyHashable(0),
                             title: environment.strings.Common_Delete,
                             color: .destructive,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -582,7 +582,7 @@ final class BusinessRecipientListScreenComponent: Component {
                         leftIcon: nil,
                         icon: nil,
                         accessory: .none,
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -712,14 +712,14 @@ public final class BusinessRecipientListScreen: ViewControllerComponentContainer
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessRecipientListScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessRecipientListScreenComponent.View else {
                 return true
             }

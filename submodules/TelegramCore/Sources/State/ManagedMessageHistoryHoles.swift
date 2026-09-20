@@ -71,7 +71,7 @@ private final class ManagedMessageHistoryHolesContext {
         self.postbox = postbox
         self.network = network
         
-        self.currentEntriesDisposable = (entries |> deliverOn(self.queue)).start(next: { [weak self] entries in
+        self.currentEntriesDisposable = (entries |> deliverOn(self.queue)).start(next: { [weak self = self] entries in
             guard let self = self else {
                 return
             }
@@ -109,7 +109,7 @@ private final class ManagedMessageHistoryHolesContext {
         let needsTimer = !self.discardedEntries.isEmpty
         if needsTimer {
             if self.oldEntriesTimer == nil {
-                self.oldEntriesTimer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self] in
+                self.oldEntriesTimer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self = self] in
                     guard let self = self else {
                         return
                     }
@@ -197,7 +197,7 @@ private final class ManagedMessageHistoryHolesContext {
                     source: .network(self.network),
                     postbox: self.postbox,
                     peerInput: .direct(peerId: hole.peerId, threadId: hole.threadId), namespace: hole.namespace, direction: pendingEntry.entry.direction, space: pendingEntry.entry.space, count: pendingEntry.entry.count)
-                |> deliverOn(self.queue)).start(completed: { [weak self] in
+                |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                     guard let self = self else {
                         return
                     }

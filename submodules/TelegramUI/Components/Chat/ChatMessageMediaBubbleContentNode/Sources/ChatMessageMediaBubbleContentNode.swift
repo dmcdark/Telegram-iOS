@@ -43,7 +43,7 @@ public class ChatMessageMediaBubbleContentNode: ChatMessageBubbleContentNode {
         
         self.addSubnode(self.interactiveImageNode)
         
-        self.interactiveImageNode.activateLocalContent = { [weak self] mode in
+        self.interactiveImageNode.activateLocalContent = { [weak self = self] mode in
             guard let self, let item = self.item else {
                 return
             }
@@ -71,35 +71,35 @@ public class ChatMessageMediaBubbleContentNode: ChatMessageBubbleContentNode {
             }
         }
         
-        self.interactiveImageNode.activateAgeRestrictedMedia = { [weak self] in
+        self.interactiveImageNode.activateAgeRestrictedMedia = { [weak self = self] in
             guard let self, let item = self.item else {
                 return
             }
-            let _ = item.controllerInteraction.openAgeRestrictedMessageMedia(item.message, { [weak self] in
+            let _ = item.controllerInteraction.openAgeRestrictedMessageMedia(item.message, { [weak self = self] in
                 self?.interactiveImageNode.reveal()
             })
         }
         
-        self.interactiveImageNode.updateMessageReaction = { [weak self] message, value, force, sourceView in
+        self.interactiveImageNode.updateMessageReaction = { [weak self = self] message, value, force, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(message, value, force, sourceView)
         }
 
-        self.interactiveImageNode.activatePinch = { [weak self] sourceNode in
+        self.interactiveImageNode.activatePinch = { [weak self = self] sourceNode in
             guard let strongSelf = self, let _ = strongSelf.item else {
                 return
             }
             strongSelf.item?.controllerInteraction.activateMessagePinch(sourceNode)
         }
-        self.interactiveImageNode.playMessageEffect = { [weak self] message in
+        self.interactiveImageNode.playMessageEffect = { [weak self = self] message in
             guard let strongSelf = self, let _ = strongSelf.item else {
                 return
             }
             strongSelf.item?.controllerInteraction.playMessageEffect(message)
         }
-        self.interactiveImageNode.requestInlineUpdate = { [weak self] in
+        self.interactiveImageNode.requestInlineUpdate = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -456,7 +456,7 @@ public class ChatMessageMediaBubbleContentNode: ChatMessageBubbleContentNode {
                     
                     let layoutSize = CGSize(width: layoutWidth, height: imageLayoutSize.height)
                     
-                    return (layoutSize, { [weak self] animation, synchronousLoads, _ in
+                    return (layoutSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.media = selectedMedia

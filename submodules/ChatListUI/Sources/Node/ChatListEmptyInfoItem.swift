@@ -125,7 +125,7 @@ class ChatListEmptyInfoItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: topInset + animationHeight + textSpacing + textLayout.0.size.height + bottomInset), insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -235,7 +235,7 @@ class ChatListSectionHeaderNode: ListViewItemNode {
         return { item, params, last in
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: 28.0), insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

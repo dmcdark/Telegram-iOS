@@ -380,7 +380,7 @@ public class Window1 {
         self.overlayPresentationContext = GlobalOverlayPresentationContext(statusBarHost: statusBarHost, parentView: self.hostView.containerView)
         self.topPresentationContext = PresentationContext()
         
-        self.presentationContext.topLevelSubview = { [weak self] in
+        self.presentationContext.topLevelSubview = { [weak self = self] in
             guard let strongSelf = self else {
                 return nil
             }
@@ -393,14 +393,14 @@ public class Window1 {
             return nil
         }
         
-        self.presentationContext.updateIsInteractionBlocked = { [weak self] value in
+        self.presentationContext.updateIsInteractionBlocked = { [weak self = self] value in
             self?.isInteractionBlocked = value
         }
-        self.presentationContext.updateStatusBar = { [weak self] transition in
+        self.presentationContext.updateStatusBar = { [weak self = self] transition in
             self?.updateStatusBar(transition: transition)
         }
         
-        let updateOpaqueOverlays: () -> Void = { [weak self] in
+        let updateOpaqueOverlays: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -412,59 +412,59 @@ public class Window1 {
         self.topPresentationContext.updateHasOpaqueOverlay = { value in
             updateOpaqueOverlays()
         }
-        self.topPresentationContext.updateStatusBar = { [weak self] transition in
+        self.topPresentationContext.updateStatusBar = { [weak self = self] transition in
             self?.updateStatusBar(transition: transition)
         }
         
-        self.hostView.present = { [weak self] controller, level, blockInteraction, completion in
+        self.hostView.present = { [weak self = self] controller, level, blockInteraction, completion in
             self?.present(controller, on: level, blockInteraction: blockInteraction, completion: completion)
         }
         
-        self.hostView.presentInGlobalOverlay = { [weak self] controller in
+        self.hostView.presentInGlobalOverlay = { [weak self = self] controller in
             self?.presentInGlobalOverlay(controller)
         }
         
-        self.hostView.addGlobalPortalHostViewImpl = { [weak self] sourceView in
+        self.hostView.addGlobalPortalHostViewImpl = { [weak self = self] sourceView in
             self?.addGlobalPortalHostView(sourceView: sourceView)
         }
         
-        self.hostView.presentNative = { [weak self] controller in
+        self.hostView.presentNative = { [weak self = self] controller in
             self?.presentNative(controller)
         }
         
-        self.hostView.updateSize = { [weak self] size, duration, orientation in
+        self.hostView.updateSize = { [weak self = self] size, duration, orientation in
             self?.updateSize(size, duration: duration, orientation: orientation)
         }
         
-        self.hostView.layoutSubviews = { [weak self] in
+        self.hostView.layoutSubviews = { [weak self = self] in
             self?.layoutSubviews(force: false)
         }
         
-        self.hostView.updateToInterfaceOrientation = { [weak self] orientation in
+        self.hostView.updateToInterfaceOrientation = { [weak self = self] orientation in
             self?.updateToInterfaceOrientation(orientation)
         }
         
-        self.hostView.hitTest = { [weak self] point, event in
+        self.hostView.hitTest = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
         
-        self.hostView.invalidateDeferScreenEdgeGesture = { [weak self] in
+        self.hostView.invalidateDeferScreenEdgeGesture = { [weak self = self] in
             self?.invalidateDeferScreenEdgeGestures()
         }
         
-        self.hostView.invalidatePrefersOnScreenNavigationHidden = { [weak self] in
+        self.hostView.invalidatePrefersOnScreenNavigationHidden = { [weak self = self] in
             self?.invalidatePrefersOnScreenNavigationHidden()
         }
         
-        self.hostView.invalidateSupportedOrientations = { [weak self] in
+        self.hostView.invalidateSupportedOrientations = { [weak self = self] in
             self?.invalidateSupportedOrientations()
         }
         
-        self.hostView.cancelInteractiveKeyboardGestures = { [weak self] in
+        self.hostView.cancelInteractiveKeyboardGestures = { [weak self = self] in
             self?.cancelInteractiveKeyboardGestures()
         }
         
-        self.hostView.forEachController = { [weak self] f in
+        self.hostView.forEachController = { [weak self = self] f in
             self?.forEachViewController({ controller in
                 f(controller)
                 return true
@@ -478,7 +478,7 @@ public class Window1 {
         self.overlayPresentationContext.containerLayoutUpdated(containedLayoutForWindowLayout(self.windowLayout, deviceMetrics: self.deviceMetrics), transition: .immediate)
         
         //TODO:release check old iOS
-        /*self.statusBarChangeObserver = NotificationCenter.default.addObserver(forName: UIApplication.willChangeStatusBarFrameNotification, object: nil, queue: OperationQueue.main, using: { [weak self] notification in
+        /*self.statusBarChangeObserver = NotificationCenter.default.addObserver(forName: UIApplication.willChangeStatusBarFrameNotification, object: nil, queue: OperationQueue.main, using: { [weak self = self] notification in
             if let strongSelf = self, strongSelf.statusBarHost != nil {
                 let statusBarHeight: CGFloat = max(defaultStatusBarHeight, (notification.userInfo?[UIApplication.statusBarFrameUserInfoKey] as? NSValue)?.cgRectValue.height ?? defaultStatusBarHeight)
                 
@@ -487,7 +487,7 @@ public class Window1 {
             }
         })*/
         
-        self.keyboardRotationChangeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("UITextEffectsWindowDidRotateNotification"), object: nil, queue: nil, using: { [weak self] notification in
+        self.keyboardRotationChangeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name("UITextEffectsWindowDidRotateNotification"), object: nil, queue: nil, using: { [weak self = self] notification in
             if let strongSelf = self {
                 if !strongSelf.hostView.isUpdatingOrientationLayout {
                     return
@@ -522,7 +522,7 @@ public class Window1 {
         testView.layer.zPosition = 1000.0
         self.hostView.containerView.addSubview(testView)
         #endif
-        self.keyboardFrameChangeObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil, using: { [weak self] notification in
+        self.keyboardFrameChangeObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil, using: { [weak self = self] notification in
             if let strongSelf = self {
                 var isTablet = false
                 if case .regular = strongSelf.windowLayout.metrics.widthClass {
@@ -652,7 +652,7 @@ public class Window1 {
                 strongSelf.updateLayout { $0.update(inputHeight: keyboardHeight.isLessThanOrEqualTo(0.0) ? nil : keyboardHeight, transition: transition, overrideTransition: false) }
             }
         })
-        self.keyboardWillHideObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil, using: { [weak self] notification in
+        self.keyboardWillHideObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil, using: { [weak self = self] notification in
             guard let self else {
                 return
             }
@@ -660,7 +660,7 @@ public class Window1 {
         })
         
         if #available(iOSApplicationExtension 11.0, iOS 11.0, *) {
-            self.keyboardTypeChangeObserver = NotificationCenter.default.addObserver(forName: UITextInputMode.currentInputModeDidChangeNotification, object: nil, queue: OperationQueue.main, using: { [weak self] notification in
+            self.keyboardTypeChangeObserver = NotificationCenter.default.addObserver(forName: UITextInputMode.currentInputModeDidChangeNotification, object: nil, queue: OperationQueue.main, using: { [weak self = self] notification in
                 if let strongSelf = self, let initialInputHeight = strongSelf.windowLayout.inputHeight, let firstResponder = getFirstResponderAndAccessoryHeight(strongSelf.hostView.eventView).0 {
                     if firstResponder.textInputMode?.primaryLanguage != nil {
                         return
@@ -691,7 +691,7 @@ public class Window1 {
         }
         
         if #available(iOSApplicationExtension 11.0, iOS 11.0, *) {
-            self.voiceOverStatusObserver = NotificationCenter.default.addObserver(forName: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil, queue: OperationQueue.main, using: { [weak self] _ in
+            self.voiceOverStatusObserver = NotificationCenter.default.addObserver(forName: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil, queue: OperationQueue.main, using: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.updateLayout { $0.update(inVoiceOver: UIAccessibility.isVoiceOverRunning) }
                 }
@@ -704,13 +704,13 @@ public class Window1 {
         recognizer.delaysTouchesEnded = false
         recognizer.delegate = self.keyboardGestureRecognizerDelegate
         recognizer.isEnabled = self.deviceMetrics.type == .phone
-        recognizer.began = { [weak self] point in
+        recognizer.began = { [weak self = self] point in
             self?.panGestureBegan(location: point)
         }
-        recognizer.moved = { [weak self] point in
+        recognizer.moved = { [weak self = self] point in
             self?.panGestureMoved(location: point)
         }
-        recognizer.ended = { [weak self] point, velocity in
+        recognizer.ended = { [weak self = self] point, velocity in
             self?.panGestureEnded(location: point, velocity: velocity)
         }
         self.windowPanRecognizer = recognizer
@@ -895,7 +895,7 @@ public class Window1 {
             if let rootController = self._rootController {
                 if let rootController = rootController as? NavigationController {
                     rootController.statusBarHost = self.statusBarHost
-                    rootController.updateSupportedOrientations = { [weak self] in
+                    rootController.updateSupportedOrientations = { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -925,14 +925,14 @@ public class Window1 {
                         }
                         strongSelf.hostView.updateSupportedInterfaceOrientations(resolvedOrientations)
                     }
-                    rootController.updateStatusBar = { [weak self] transition in
+                    rootController.updateStatusBar = { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.updateStatusBar(transition: transition)
                     }
                     rootController.keyboardViewManager = self.keyboardViewManager
-                    rootController.inCallNavigate = { [weak self] in
+                    rootController.inCallNavigate = { [weak self = self] in
                         self?.inCallNavigate?()
                     }
                 }
@@ -974,7 +974,7 @@ public class Window1 {
                 }
                 
                 if let controller = controller as? ViewController {
-                    controller.statusBar.alphaUpdated = { [weak self] transition in
+                    controller.statusBar.alphaUpdated = { [weak self = self] transition in
                         guard let strongSelf = self, let navigationController = strongSelf._rootController as? NavigationController else {
                             return
                         }
@@ -1122,14 +1122,14 @@ public class Window1 {
             if !self.hostView.isUpdatingOrientationLayout {
                 self.commitUpdatingLayout()
             } else {
-                self.addPostUpdateToInterfaceOrientationBlock(f: { [weak self] in
+                self.addPostUpdateToInterfaceOrientationBlock(f: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.hostView.eventView.setNeedsLayout()
                     }
                 })
             }
         } else {
-            UIWindow.addPostDeviceOrientationDidChange({ [weak self] in
+            UIWindow.addPostDeviceOrientationDidChange({ [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.hostView.eventView.setNeedsLayout()
                 }
@@ -1241,7 +1241,7 @@ public class Window1 {
                     if hide {
                         print("hide with \(updatingLayout.transition)")
                     }
-                    self.keyboardManager?.updateInteractiveInputOffset(updatedInputOffset, transition: updatingLayout.transition, completion: { [weak self] in
+                    self.keyboardManager?.updateInteractiveInputOffset(updatedInputOffset, transition: updatingLayout.transition, completion: { [weak self = self] in
                         if let strongSelf = self, hide {
                             strongSelf.updateLayout {
                                 $0.update(upperKeyboardInputPositionBound: nil, transition: .immediate, overrideTransition: false)

@@ -149,13 +149,13 @@ private final class ImportManager {
                 return .limitExceeded
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] session in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] session in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.session = session
             strongSelf.updateState()
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             guard let strongSelf = self else {
                 return
             }
@@ -201,12 +201,12 @@ private final class ImportManager {
             return
         }
         self.disposable.set((TelegramEngine(account: self.account).historyImport.startImport(session: session)
-        |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.failWithError(.generic)
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -293,7 +293,7 @@ private final class ImportManager {
             self.activeEntries[entry.1] = disposable
             
             disposable.set((uploadedEntrySignal
-            |> deliverOnMainQueue).start(next: { [weak self] progress in
+            |> deliverOnMainQueue).start(next: { [weak self = self] progress in
                 guard let strongSelf = self else {
                     return
                 }
@@ -301,12 +301,12 @@ private final class ImportManager {
                     strongSelf.entryProgress[entry.1] = (size, Int64(progress * Float(entry.0.uncompressedSize)))
                     strongSelf.updateProgress()
                 }
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.failWithError(error)
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -405,7 +405,7 @@ public final class ChatImportActivityScreen: ViewController {
             self.animationNode.visibility = true
             
             self.doneAnimationNode.setup(source: AnimatedStickerNodeLocalFileSource(name: "HistoryImportDone"), width: 190 * 2, height: 190 * 2, playbackMode: .once, mode: .direct(cachePathPrefix: nil))
-            self.doneAnimationNode.started = { [weak self] in
+            self.doneAnimationNode.started = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -426,7 +426,7 @@ public final class ChatImportActivityScreen: ViewController {
             self.addSubnode(self.doneButton)
             
             self.statusButton.addTarget(self, action: #selector(self.statusButtonPressed), forControlEvents: .touchUpInside)
-            self.statusButton.highligthedChanged = { [weak self] highlighted in
+            self.statusButton.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.statusButtonText.layer.removeAnimation(forKey: "opacity")
@@ -438,7 +438,7 @@ public final class ChatImportActivityScreen: ViewController {
                 }
             }
             
-            self.animationNode.completed = { [weak self] stopped in
+            self.animationNode.completed = { [weak self = self] stopped in
                 guard let strongSelf = self, stopped else {
                     return
                 }
@@ -447,7 +447,7 @@ public final class ChatImportActivityScreen: ViewController {
                 strongSelf.doneAnimationNode.isHidden = false
             }
             
-            self.animationNode.frameUpdated = { [weak self] index, totalCount in
+            self.animationNode.frameUpdated = { [weak self = self] index, totalCount in
                 guard let strongSelf = self else {
                     return
                 }
@@ -473,7 +473,7 @@ public final class ChatImportActivityScreen: ViewController {
                 videoNode.canAttachContent = true
                 videoNode.play()
                 
-                self.doneButton.pressed = { [weak self] in
+                self.doneButton.pressed = { [weak self = self] in
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
@@ -697,19 +697,19 @@ public final class ChatImportActivityScreen: ViewController {
                 if case .done = state {
                     self.radialCheck.transitionToState(.progress(color: .clear, lineWidth: 6.0, value: 1.0, cancelEnabled: false, animateRotation: false), animated: false, synchronous: true, completion: {})
                     self.radialCheck.transitionToState(.check(self.presentationData.theme.list.itemAccentColor), animated: animated, synchronous: true, completion: {})
-                    self.radialStatus.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    self.radialStatus.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.radialStatus.layer.animateScale(from: 1.05, to: 1.0, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, additive: false)
                     })
-                    self.radialStatusBackground.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    self.radialStatusBackground.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.radialStatusBackground.layer.animateScale(from: 1.05, to: 1.0, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, additive: false)
                     })
-                    self.radialCheck.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    self.radialCheck.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -849,7 +849,7 @@ public final class ChatImportActivityScreen: ViewController {
         }
         
         self.disposable.set((resolvedPeerId
-        |> deliverOnMainQueue).startStrict(next: { [weak self] peerId in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerId in
             guard let strongSelf = self else {
                 return
             }
@@ -866,7 +866,7 @@ public final class ChatImportActivityScreen: ViewController {
                     strongSelf.totalMediaProgress = progress
                 }
             }))
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             guard let strongSelf = self else {
                 return
             }

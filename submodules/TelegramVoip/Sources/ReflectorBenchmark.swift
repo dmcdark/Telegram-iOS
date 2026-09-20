@@ -110,7 +110,7 @@ public final class ReflectorBenchmark {
             self.receiveOutgoingPacket()
             self.sendIncomingPingPackets()
             
-            self.pingTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            self.pingTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -119,7 +119,7 @@ public final class ReflectorBenchmark {
             }, queue: self.queue)
             self.pingTimer?.start()
             
-            self.sendPacketTimer = SwiftSignalKit.Timer(timeout: self.sendPacketInterval, repeat: true, completion: { [weak self] in
+            self.sendPacketTimer = SwiftSignalKit.Timer(timeout: self.sendPacketInterval, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -127,7 +127,7 @@ public final class ReflectorBenchmark {
             }, queue: self.queue)
             self.sendPacketTimer?.start()
             
-            self.bandwidthTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            self.bandwidthTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -327,7 +327,7 @@ public final class ReflectorBenchmark {
             guard let connection = self.incomingConnection else {
                 return
             }
-            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self] content, _, _, error in
+            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self = self] content, _, _, error in
                 guard let self else {
                     return
                 }
@@ -373,7 +373,7 @@ public final class ReflectorBenchmark {
             guard let connection = self.outgoingConnection else {
                 return
             }
-            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self] content, _, _, error in
+            connection.receive(minimumIncompleteLength: 1, maximumLength: 32 * 1024, completion: { [weak self = self] content, _, _, error in
                 guard let self else {
                     return
                 }

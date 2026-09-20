@@ -413,7 +413,7 @@ private final class ChannelStatsContextImpl {
         assert(Queue.mainQueue().isCurrent())
         
         self.disposable.set((requestChannelStats(postbox: self.postbox, network: self.network, peerId: self.peerId)
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let strongSelf = self {
                 strongSelf._state = ChannelStatsContextState(stats: stats)
                 strongSelf._statePromise.set(.single(strongSelf._state))
@@ -427,7 +427,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.growthGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedGrowthGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -442,7 +442,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.followersGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedFollowersGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -457,7 +457,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.muteGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedMuteGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -472,7 +472,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.topHoursGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedTopHoursGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -487,7 +487,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.interactionsGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedInteractionsGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -502,7 +502,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.instantPageInteractionsGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedInstantPageInteractionsGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -517,7 +517,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.viewsBySourceGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedViewsBySourceGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -532,7 +532,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.newFollowersBySourceGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedNewFollowersBySourceGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -547,7 +547,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.languagesGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedLanguagesGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -562,7 +562,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.reactionsByEmotionGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedReactionsByEmotionGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -577,7 +577,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.storyInteractionsGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedStoryInteractionsGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -592,7 +592,7 @@ private final class ChannelStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.storyReactionsByEmotionGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = ChannelStatsContextState(stats: strongSelf._state.stats?.withUpdatedStoryReactionsByEmotionGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -892,7 +892,7 @@ private final class GroupStatsContextImpl {
         assert(Queue.mainQueue().isCurrent())
         
         self.disposable.set((requestGroupStats(accountPeerId: self.accountPeerId, postbox: self.postbox, network: self.network, peerId: self.peerId)
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let strongSelf = self {
                 strongSelf._state = GroupStatsContextState(stats: stats)
                 strongSelf._statePromise.set(.single(strongSelf._state))
@@ -906,7 +906,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.growthGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedGrowthGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -921,7 +921,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.membersGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedMembersGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -936,7 +936,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.newMembersBySourceGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedNewMembersBySourceGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -951,7 +951,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.languagesGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedLanguagesGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -966,7 +966,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.messagesGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedMessagesGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -981,7 +981,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.actionsGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedActionsGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -996,7 +996,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.topHoursGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedTopHoursGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))
@@ -1011,7 +1011,7 @@ private final class GroupStatsContextImpl {
         }
         if case let .OnDemand(token) = stats.topWeekdaysGraph {
             self.disposables.set((requestGraph(postbox: self.postbox, network: self.network, peerId: self.peerId, token: token)
-            |> deliverOnMainQueue).start(next: { [weak self] graph in
+            |> deliverOnMainQueue).start(next: { [weak self = self] graph in
                 if let strongSelf = self, let graph = graph {
                     strongSelf._state = GroupStatsContextState(stats: strongSelf._state.stats?.withUpdatedTopWeekdaysGraph(graph))
                     strongSelf._statePromise.set(.single(strongSelf._state))

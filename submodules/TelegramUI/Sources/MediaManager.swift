@@ -434,11 +434,11 @@ public final class MediaManagerImpl: NSObject, MediaManager {
         }))
 
         self.musicListenTrackingDisposable.set((self.musicMediaPlayerState
-        |> deliverOnMainQueue).startStrict(next: { [weak self] stateAndType in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] stateAndType in
             self?.musicListenTracker?.update(with: stateAndType)
         }))
 
-        self.globalAudioSessionForegroundDisposable.set((shouldKeepAudioSession |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        self.globalAudioSessionForegroundDisposable.set((shouldKeepAudioSession |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -504,7 +504,7 @@ public final class MediaManagerImpl: NSObject, MediaManager {
         }
         
         self.setPlaylistByTypeDisposables.set((inputData
-        |> deliverOnMainQueue).startStrict(next: { [weak self] inputData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] inputData in
             if let strongSelf = self {
                 let nextPlayerIndex = strongSelf.nextPlayerIndex
                 strongSelf.nextPlayerIndex += 1

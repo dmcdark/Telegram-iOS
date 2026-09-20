@@ -159,7 +159,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                 )
             )
             |> distinctUntilChanged
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -185,7 +185,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                     self.tagMessageCount?.disposable = (context.engine.data.subscribe(
                         TelegramEngine.EngineData.Item.Messages.ReactionTagMessageCount(peerId: context.account.peerId, threadId: params.interfaceState.chatLocation.threadId, reaction: reaction)
                     )
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] count in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] count in
                         guard let self else {
                             return
                         }
@@ -325,7 +325,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                     effectAlignment: .right,
                     minSize: CGSize(width: 1.0, height: 40.0),
                     contentInsets: UIEdgeInsets(top: 0.0, left: 4.0, bottom: 0.0, right: 4.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let params = self.currentLayout?.params else {
                             return
                         }
@@ -377,7 +377,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                     )),
                     effectAlignment: .center,
                     minSize: CGSize(width: 40.0, height: 40.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -434,7 +434,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                     )),
                     effectAlignment: .center,
                     minSize: CGSize(width: 40.0, height: 40.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -499,7 +499,7 @@ final class ChatTagSearchInputPanelNode: ChatInputPanelNode {
                         items: resultsTextString
                     )),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let params = self.currentLayout?.params else {
                             return
                         }

@@ -361,7 +361,7 @@ public final class LocationMapNode: ASDisplayNode, MKMapViewDelegateTarget {
             }
         }
         
-        mapView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        mapView.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             return self?.disableHorizontalTransitionGesture == true
         }
         
@@ -379,7 +379,7 @@ public final class LocationMapNode: ASDisplayNode, MKMapViewDelegateTarget {
         mapView.showsUserLocation = true
         mapView.pointOfInterestFilter = .excludingAll
         mapView.showsCompass = false
-        mapView.customHitTest = { [weak self] point in
+        mapView.customHitTest = { [weak self = self] point in
             guard let strongSelf = self else {
                 return false
             }
@@ -396,7 +396,7 @@ public final class LocationMapNode: ASDisplayNode, MKMapViewDelegateTarget {
             
             return false
         }
-        mapView.onTouch = { [weak self] in
+        mapView.onTouch = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -644,7 +644,7 @@ public final class LocationMapNode: ASDisplayNode, MKMapViewDelegateTarget {
     }
             
     public var distancesToAllAnnotations: Signal<[Double], NoError> {
-        let poll = Signal<[LocationPinAnnotation], NoError> { [weak self] subscriber in
+        let poll = Signal<[LocationPinAnnotation], NoError> { [weak self = self] subscriber in
             if let strongSelf = self {
                 subscriber.putNext(strongSelf.annotations)
             }
@@ -850,12 +850,12 @@ public final class LocationMapNode: ASDisplayNode, MKMapViewDelegateTarget {
          
          let signal: Signal<Never, NoError> = .complete()
          |> delay(timeout, queue: Queue.mainQueue())
-         self.pinDisposable.set(signal.start(completed: { [weak self] in
+         self.pinDisposable.set(signal.start(completed: { [weak self = self] in
             guard let strongSelf = self, let pickerAnnotationView = strongSelf.pickerAnnotationView else {
                 return
             }
             
-            pickerAnnotationView.setRaised(false, animated: true) { [weak self] in
+            pickerAnnotationView.setRaised(false, animated: true) { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

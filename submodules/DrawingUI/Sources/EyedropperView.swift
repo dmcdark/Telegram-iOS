@@ -166,7 +166,7 @@ public final class EyedropperView: UIView {
     
     func dismiss() {
         self.containerView.alpha = 0.0
-        self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+        self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
             self?.removeFromSuperview()
         })
         self.containerView.layer.animateScale(from: 1.0, to: 0.01, duration: 0.2)
@@ -230,7 +230,7 @@ public final class EyedropperView: UIView {
         case .ended, .cancelled:
             if let color = currentColor {
                 self.containerView.alpha = 0.0
-                self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+                self.containerView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                     self?.removeFromSuperview()
                 })
                 self.containerView.layer.animateScale(from: 1.0, to: 0.01, duration: 0.2)

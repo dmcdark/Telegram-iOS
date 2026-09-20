@@ -79,7 +79,7 @@ final class BalanceComponent: Component {
                     self.balanceDisposable = combineLatest(queue: Queue.mainQueue(),
                         starsContext.state,
                         tonContext.state
-                    ).start(next: { [weak self] starsState, tonState in
+                    ).start(next: { [weak self = self] starsState, tonState in
                         guard let self else {
                             return
                         }

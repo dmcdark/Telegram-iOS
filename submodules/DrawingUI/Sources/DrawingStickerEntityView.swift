@@ -210,7 +210,7 @@ public class DrawingStickerEntityView: DrawingEntityView {
                                 }
                                 let _ = (animationNode.status
                                 |> take(1)
-                                |> deliverOnMainQueue).start(next: { [weak self] status in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                                     self?.started?(status.duration)
                                 })
                             }
@@ -324,7 +324,7 @@ public class DrawingStickerEntityView: DrawingEntityView {
                     if let animationNode = animationNode {
                         let _ = (animationNode.status
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] status in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] status in
                             self?.started?(status.duration)
                         })
                     }
@@ -396,7 +396,7 @@ public class DrawingStickerEntityView: DrawingEntityView {
                 hintDimensions: file.dimensions?.cgSize,
                 storeAfterDownload: nil,
                 displayImage: false,
-                hasSentFramesToDisplay: { [weak self] in
+                hasSentFramesToDisplay: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -509,7 +509,7 @@ public class DrawingStickerEntityView: DrawingEntityView {
         self.setNeedsLayout()
         
         self.progressDisposable.set((progress
-        |> deliverOnMainQueue).startStrict(next: { [weak self] progress in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] progress in
             if let self {
                 self.progressLayer.strokeEnd = CGFloat(progress)
             }
@@ -956,7 +956,7 @@ final class DrawingStickerEntitySelectionView: DrawingEntitySelectionView {
             self.layer.addSublayer(handle)
         }
                 
-        self.snapTool.onSnapUpdated = { [weak self] type, snapped in
+        self.snapTool.onSnapUpdated = { [weak self = self] type, snapped in
             if let self, let entityView = self.entityView {
                 entityView.onSnapUpdated(type, snapped)
             }

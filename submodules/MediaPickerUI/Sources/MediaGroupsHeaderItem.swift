@@ -78,7 +78,7 @@ private class MediaGroupsHeaderItemNode: ListViewItemNode {
         let makeTitleLayout = TextNode.asyncLayout(self.titleNode)
     
     
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let titleString = NSAttributedString(string: item.title, font: titleFont, textColor: item.presentationData.theme.list.itemPrimaryTextColor)
             
             let (titleLayout, titleApply) = makeTitleLayout(TextNodeLayoutArguments(attributedString: titleString, backgroundColor: nil, maximumNumberOfLines: 1, truncationType: .end, constrainedSize: CGSize(width: params.width - params.leftInset - params.rightInset - 16.0, height: 100.0), alignment: .natural, cutout: nil, insets: UIEdgeInsets()))
@@ -86,7 +86,7 @@ private class MediaGroupsHeaderItemNode: ListViewItemNode {
             let contentSize = CGSize(width: params.width, height: 45.0)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets())
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 return (nil, { _ in
                     if let strongSelf = self {
                         strongSelf.item = item

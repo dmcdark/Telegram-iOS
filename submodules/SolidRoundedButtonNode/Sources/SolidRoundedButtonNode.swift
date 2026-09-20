@@ -278,7 +278,7 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
                         Queue.mainQueue().after(1.25) {
                             self.animationNode?.play()
                             
-                            let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self] in
+                            let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self = self] in
                                 self?.animationNode?.play()
                             }, queue: Queue.mainQueue())
                             self.animationTimer = timer
@@ -286,7 +286,7 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
                         }
                     } else {
                         self.animationNode?.play()
-                        let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self] in
+                        let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self = self] in
                             self?.animationNode?.play()
                         }, queue: Queue.mainQueue())
                         self.animationTimer = timer
@@ -402,7 +402,7 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
         self.addSubnode(self.iconNode)
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self, strongSelf.isEnabled && strongSelf.highlightEnabled {
                 if highlighted {
                     strongSelf.buttonBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -537,7 +537,7 @@ public final class SolidRoundedButtonNode: ASDisplayNode {
             animation.toValue = newValue
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
 //                if let isCurrentlyInHierarchy = self?.isCurrentlyInHierarchy, isCurrentlyInHierarchy {
                     self?.setupGradientAnimations()
 //                }
@@ -1047,7 +1047,7 @@ public final class SolidRoundedButtonView: UIView {
                         Queue.mainQueue().after(1.25) {
                             self.animationNode?.play()
                             
-                            let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self] in
+                            let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self = self] in
                                 self?.animationNode?.play()
                             }, queue: Queue.mainQueue())
                             self.animationTimer = timer
@@ -1055,7 +1055,7 @@ public final class SolidRoundedButtonView: UIView {
                         }
                     } else {
                         self.animationNode?.play()
-                        let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self] in
+                        let timer = SwiftSignalKit.Timer(timeout: self.animationLoopTime, repeat: true, completion: { [weak self = self] in
                             self?.animationNode?.play()
                         }, queue: Queue.mainQueue())
                         self.animationTimer = timer
@@ -1156,7 +1156,7 @@ public final class SolidRoundedButtonView: UIView {
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -1276,7 +1276,7 @@ public final class SolidRoundedButtonView: UIView {
             animation.toValue = newValue
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
 //                if let isCurrentlyInHierarchy = self?.isCurrentlyInHierarchy, isCurrentlyInHierarchy {
                     self?.setupGradientAnimations()
 //                }

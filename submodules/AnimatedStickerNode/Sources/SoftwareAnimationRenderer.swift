@@ -31,7 +31,7 @@ final class SoftwareAnimationRenderer: ASDisplayNode, AnimationRenderer {
     func render(queue: Queue, width: Int, height: Int, bytesPerRow: Int, data: Data, type: AnimationRendererFrameType, mulAlpha: Bool, completion: @escaping () -> Void, averageColor: ((UIColor) -> Void)?) {
         assert(bytesPerRow > 0)
         let renderAsTemplateImage = self.renderAsTemplateImage
-        queue.async { [weak self] in
+        queue.async { [weak self = self] in
             switch type {
             case .argb:
                 let calculatedBytesPerRow = DeviceGraphicsContextSettings.shared.bytesPerRow(forWidth: Int(width))
@@ -248,7 +248,7 @@ final class SoftwareAnimationRenderer: ASDisplayNode, AnimationRenderer {
             self.updateHighlightedContentNode()
         } else if let highlightedContentNode = self.highlightedContentNode {
             highlightedContentNode.alpha = 0.0
-            highlightedContentNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self] completed in
+            highlightedContentNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }

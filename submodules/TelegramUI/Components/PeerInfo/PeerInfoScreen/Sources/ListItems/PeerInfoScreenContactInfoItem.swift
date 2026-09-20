@@ -115,7 +115,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -137,7 +137,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
        
         self.addSubnode(self.activateArea)
                 
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -145,7 +145,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
             contextAction(strongSelf.contextSourceNode, gesture, nil)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let theme = strongSelf.theme else {
                 return
             }
@@ -171,7 +171,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             guard let strongSelf = self else {
                 return .keepWithSingleTap
             }
@@ -180,7 +180,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
             }
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -246,7 +246,7 @@ private final class PeerInfoScreenContactInfoItemNode: PeerInfoScreenItemNode {
         self.theme = presentationData.theme
         
 //        if let action = item.action {
-//            self.selectionNode.pressed = { [weak self] in
+//            self.selectionNode.pressed = { [weak self = self] in
 //                if let strongSelf = self {
 //                    action(strongSelf.contextSourceNode)
 //                }

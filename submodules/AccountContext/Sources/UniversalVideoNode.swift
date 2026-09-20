@@ -152,7 +152,7 @@ public final class UniversalVideoNode: ASDisplayNode {
                     let audioSession = self.audioSession
                     self.contentRequestIndex = self.manager.attachUniversalVideoContent(content: self.content, priority: self.priority, create: {
                         return content.makeContentNode(context: context, postbox: postbox, audioSession: audioSession)
-                    }, update: { [weak self] contentNodeAndFlags in
+                    }, update: { [weak self = self] contentNodeAndFlags in
                         if let strongSelf = self {
                             strongSelf.updateContentNode(contentNodeAndFlags)
                         }
@@ -185,7 +185,7 @@ public final class UniversalVideoNode: ASDisplayNode {
         
         super.init()
         
-        self.playbackCompletedIndex = self.manager.addPlaybackCompleted(id: self.content.id, { [weak self] in
+        self.playbackCompletedIndex = self.manager.addPlaybackCompleted(id: self.content.id, { [weak self = self] in
             self?.playbackCompleted?()
         })
         

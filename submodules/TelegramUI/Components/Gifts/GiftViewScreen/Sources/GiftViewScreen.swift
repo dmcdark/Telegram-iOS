@@ -218,13 +218,13 @@ private final class GiftViewSheetContent: CombinedComponent {
                     
                     if let _ = arguments.resellAmounts, !isOwn {
                         self.buyFormDisposable = (context.engine.payments.fetchBotPaymentForm(source: .starGiftResale(slug: gift.slug, toPeerId: context.account.peerId, ton: gift.resellForTonOnly), themeParams: nil)
-                        |> deliverOnMainQueue).start(next: { [weak self] paymentForm in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] paymentForm in
                             guard let self else {
                                 return
                             }
                             self.buyForm = paymentForm
                             self.updated()
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             guard let self else {
                                 return
                             }
@@ -238,7 +238,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                     if self.testUpgradeAnimation {
                         if gift.giftId != 0 {
                             self.upgradePreviewDisposable.add((context.engine.payments.starGiftUpgradePreview(giftId: gift.giftId)
-                            |> deliverOnMainQueue).start(next: { [weak self] upgradePreview in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] upgradePreview in
                                 guard let self, let upgradePreview else {
                                     return
                                 }
@@ -265,7 +265,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                     }
                     if arguments.canUpgrade || arguments.upgradeStars != nil || arguments.prepaidUpgradeHash != nil {
                         self.upgradePreviewDisposable.add((context.engine.payments.starGiftUpgradePreview(giftId: gift.id)
-                        |> deliverOnMainQueue).start(next: { [weak self] upgradePreview in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] upgradePreview in
                             guard let self, let upgradePreview else {
                                 return
                             }
@@ -287,7 +287,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                             if arguments.upgradeStars == nil {
                                 let currentTime = Int32(CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970)
                                 if let _ = upgradePreview.nextPrices.first(where: { currentTime < $0.date }) {
-                                    self.upgradePreviewTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                                    self.upgradePreviewTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                                         self?.upgradePreviewTimerTick()
                                     }, queue: Queue.mainQueue())
                                     self.upgradePreviewTimer?.start()
@@ -333,7 +333,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                         ))
                     },
                     .single(nil) |> then(context.engine.payments.cachedStarGifts())
-                ).startStrict(next: { [weak self] peers, starGifts in
+                ).startStrict(next: { [weak self = self] peers, starGifts in
                     if let strongSelf = self {
                         var peersMap: [EnginePeer.Id: EnginePeer] = [:]
                         for (peerId, maybePeer) in peers {
@@ -364,7 +364,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 
             } else {
                 self.starsTopUpOptionsDisposable = (context.engine.payments.starsTopUpOptions()
-                |> deliverOnMainQueue).start(next: { [weak self] options in
+                |> deliverOnMainQueue).start(next: { [weak self = self] options in
                     guard let self else {
                         return
                     }
@@ -703,7 +703,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 peers: self.peerMap,
                 removeInfoStars: price,
                 navigationController: controller.navigationController as? NavigationController,
-                commit: { [weak self] in
+                commit: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -828,7 +828,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 let _ = (self.starsTopUpOptionsPromise.get()
                 |> filter { $0 != nil }
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                     guard let self, let controller = self.getController() else {
                         return
                     }
@@ -869,7 +869,7 @@ private final class GiftViewSheetContent: CombinedComponent {
             
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
             let _ = (self.context.engine.payments.getUniqueStarGiftValueInfo(slug: uniqueGift.slug)
-            |> deliverOnMainQueue).start(next: { [weak self] valueInfo in
+            |> deliverOnMainQueue).start(next: { [weak self = self] valueInfo in
                 guard let self else {
                     return
                 }
@@ -1481,7 +1481,7 @@ private final class GiftViewSheetContent: CombinedComponent {
             
             self.giftVariantsDisposable.set((self.context.engine.payments.getStarGiftUpgradeAttributes(giftId: gift.giftId)
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] attributes in
+            |> deliverOnMainQueue).start(next: { [weak self = self] attributes in
                 guard let self, let attributes else {
                     return
                 }
@@ -1533,7 +1533,7 @@ private final class GiftViewSheetContent: CombinedComponent {
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: arguments.peerId ?? context.account.peerId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let controller = self.getController() as? GiftViewScreen else {
                     return
                 }
@@ -1541,7 +1541,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 let strings = presentationData.strings
                 
                 if let reference = arguments.reference, case .unique = arguments.gift, let togglePinnedToTop = controller.togglePinnedToTop, let pinnedToTop = arguments.pinnedToTop {
-                    items.append(.action(ContextMenuActionItem(text: pinnedToTop ? strings.PeerInfo_Gifts_Context_Unpin : strings.PeerInfo_Gifts_Context_Pin , icon: { theme in generateTintedImage(image: UIImage(bundleImageName: pinnedToTop ? "Chat/Context Menu/Unpin" : "Chat/Context Menu/Pin"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+                    items.append(.action(ContextMenuActionItem(text: pinnedToTop ? strings.PeerInfo_Gifts_Context_Unpin : strings.PeerInfo_Gifts_Context_Pin , icon: { theme in generateTintedImage(image: UIImage(bundleImageName: pinnedToTop ? "Chat/Context Menu/Unpin" : "Chat/Context Menu/Pin"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                         c?.dismiss(completion: { [weak self, weak controller] in
                             guard let self, let controller else {
                                 return
@@ -1567,7 +1567,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                     if arguments.reference != nil || gift.owner?.peerId == self.context.account.peerId {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_ChangePrice, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/PriceTag"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] c, _ in
+                        }, action: { [weak self = self] c, _ in
                             c?.dismiss(completion: nil)
                             
                             self?.resellGift(update: true)
@@ -1587,7 +1587,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_Share, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     self?.shareGift()
@@ -1596,7 +1596,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 if let _ = arguments.canCraftDate {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_Craft, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Premium/Craft/Craft"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] c, _ in
+                    }, action: { [weak self = self] c, _ in
                         c?.dismiss(completion: nil)
                         
                         self?.craftGift()
@@ -1606,7 +1606,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 if case let .unique(uniqueGift) = arguments.gift, case let .peerId(ownerPeerId) = uniqueGift.owner, ownerPeerId != self.context.account.peerId, uniqueGift.minOfferStars != nil {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_BuyOffer, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Media Grid/Paid"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] c, _ in
+                    }, action: { [weak self = self] c, _ in
                         c?.dismiss(completion: nil)
                         
                         self?.openGiftBuyOffer()
@@ -1616,7 +1616,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 if gift.flags.contains(.isThemeAvailable) {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_SetAsTheme, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ApplyTheme"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] c, _ in
+                    }, action: { [weak self = self] c, _ in
                         c?.dismiss(completion: nil)
                         
                         self?.setAsGiftTheme()
@@ -1629,7 +1629,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                     } else {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_Transfer, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Replace"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] c, _ in
+                        }, action: { [weak self = self] c, _ in
                             c?.dismiss(completion: nil)
                             
                             self?.transferGift()
@@ -1640,14 +1640,14 @@ private final class GiftViewSheetContent: CombinedComponent {
                 if let _ = arguments.resellAmounts, case let .uniqueGift(uniqueGift, recipientPeerId) = subject, let _ = recipientPeerId {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_View_Context_ViewInProfile, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/ShowIcon"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] c, _ in
+                    }, action: { [weak self = self] c, _ in
                         c?.dismiss(completion: nil)
                         
                         guard let self,  case let .peerId(peerId) = uniqueGift.owner else {
                             return
                         }
                         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-                        |> deliverOnMainQueue).start(next: { [weak self] peer in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                             guard let self, let peer else {
                                 return
                             }
@@ -1718,7 +1718,7 @@ private final class GiftViewSheetContent: CombinedComponent {
             }
             self.upgradeForm = nil
             self.upgradeFormDisposable = (self.context.engine.payments.fetchBotPaymentForm(source: .starGiftUpgrade(keepOriginalInfo: false, reference: reference), themeParams: nil)
-            |> deliverOnMainQueue).start(next: { [weak self] paymentForm in
+            |> deliverOnMainQueue).start(next: { [weak self = self] paymentForm in
                 guard let self else {
                     return
                 }
@@ -1754,7 +1754,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                         }
                         if upgradePreview.nextPrices[upgradePreview.nextPrices.count - 2] == price {
                             self.upgradePreviewDisposable.add((context.engine.payments.starGiftUpgradePreview(giftId: gift.id)
-                            |> deliverOnMainQueue).start(next: { [weak self] nextUpgradePreview in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] nextUpgradePreview in
                                 guard let self, let nextUpgradePreview else {
                                     return
                                 }
@@ -1852,7 +1852,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 starsTopUpOptions: self.starsTopUpOptionsPromise.get(),
                 buyGift: controller.buyGift,
                 getController: self.getController,
-                updateProgress: { [weak self] progress in
+                updateProgress: { [weak self = self] progress in
                     guard let self else {
                         return
                     }
@@ -2010,7 +2010,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 return
             }
                         
-            let proceed: (Int64?) -> Void = { [weak self] formId in
+            let proceed: (Int64?) -> Void = { [weak self = self] formId in
                 guard let self, let controller = self.getController() as? GiftViewScreen else {
                     return
                 }
@@ -2106,7 +2106,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                     let _ = (self.starsTopUpOptionsPromise.get()
                     |> filter { $0 != nil }
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                         guard let self, let controller = self.getController() else {
                             return
                         }
@@ -2318,11 +2318,11 @@ private final class GiftViewSheetContent: CombinedComponent {
             }
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: ownerPeerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
-                let buyController = self.context.sharedContext.makeStarsWithdrawalScreen(context: self.context, subject: .starGiftOffer(peer: peer, gift: uniqueGift, completion: { [weak self] amount, duration in
+                let buyController = self.context.sharedContext.makeStarsWithdrawalScreen(context: self.context, subject: .starGiftOffer(peer: peer, gift: uniqueGift, completion: { [weak self = self] amount, duration in
                     guard let self else {
                         return
                     }
@@ -2387,7 +2387,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 let _ = (self.starsTopUpOptionsPromise.get()
                  |> filter { $0 != nil }
                  |> take(1)
-                 |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                 |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                     guard let self, let controller = self.getController() else {
                         return
                     }
@@ -2411,11 +2411,11 @@ private final class GiftViewSheetContent: CombinedComponent {
                             
                             starsContext.add(balance: StarsAmount(value: stars, nanos: 0))
                             let _ = (starsContext.onUpdate
-                            |> deliverOnMainQueue).start(next: { [weak self] in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
-                                Queue.mainQueue().after(0.1, { [weak self] in
+                                Queue.mainQueue().after(0.1, { [weak self = self] in
                                     guard let self, let starsContext = self.context.starsContext, let starsState = starsContext.currentState else {
                                         return
                                     }
@@ -2445,7 +2445,7 @@ private final class GiftViewSheetContent: CombinedComponent {
                 controller.push(BalanceNeededScreen(
                     context: self.context,
                     amount: needed,
-                    buttonAction: { [weak self] in
+                    buttonAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -5823,7 +5823,7 @@ public class GiftViewScreen: ViewControllerComponentContainer {
             statusBarStyle: .ignore,
             theme: forceDark ? .dark : .default
         )
-        dismissTooltipsImpl = { [weak self] in
+        dismissTooltipsImpl = { [weak self = self] in
             self?.dismissAllTooltips()
         }
         
@@ -5833,7 +5833,7 @@ public class GiftViewScreen: ViewControllerComponentContainer {
         if let gift = subject.arguments?.gift, case .generic = gift {
             let upgradableGiftsContext = ProfileGiftsContext(account: context.account, peerId: context.account.peerId, collectionId: nil, sorting: .date, filter: [.displayed, .hidden, .limitedUpgradable], limit: 50)
             self.upgradableDisposable = (upgradableGiftsContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -5893,7 +5893,7 @@ public class GiftViewScreen: ViewControllerComponentContainer {
                 items: items,
                 index: 0,
                 itemSpacing: 10.0,
-                updated: { [weak self] _, _ in
+                updated: { [weak self = self] _, _ in
                     self?.dismissAllTooltips()
                 }
             )),
@@ -5985,7 +5985,7 @@ public class GiftViewScreen: ViewControllerComponentContainer {
                         peerId: context.account.peerId,
                         theme: context.sharedContext.currentPresentationData.with { $0 }.theme,
                         currency: self.balanceCurrency,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let starsContext = context.starsContext, let navigationController = self.navigationController as? NavigationController else {
                                 return
                             }

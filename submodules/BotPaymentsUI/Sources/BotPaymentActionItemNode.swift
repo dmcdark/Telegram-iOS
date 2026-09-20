@@ -34,7 +34,7 @@ final class BotPaymentActionItemNode: BotPaymentItemNode {
         self.addSubnode(self.titleNode)
         self.addSubnode(self.buttonNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     if let supernode = strongSelf.supernode {

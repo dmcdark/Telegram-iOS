@@ -218,13 +218,13 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
             }
             var didJoin = false
             self.actionDisposable.set((context.peerChannelMemberCategoriesContextsManager.join(engine: context.engine, peerId: peer.id, hash: nil)
-            |> afterDisposed { [weak self] in
+            |> afterDisposed { [weak self = self] in
                 Queue.mainQueue().async {
                     if let strongSelf = self {
                         strongSelf.isJoining = false
                     }
                 }
-            }).startStrict(next: { [weak self] result in
+            }).startStrict(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
@@ -236,7 +236,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
                         context.sharedContext.openJoinChatWebView(context: context, parentController: controller, updatedPresentationData: nil, webView: webView, chatTitle: EnginePeer(peer).compactDisplayTitle)
                     }
                 }
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let strongSelf = self, let presentationInterfaceState = strongSelf.presentationInterfaceState, let peer = presentationInterfaceState.renderedPeer?.peer else {
                     return
                 }
@@ -263,7 +263,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
                     }
                 }
                 strongSelf.interfaceInteraction?.presentController(textAlertController(context: context, title: nil, text: text, actions: [TextAlertAction(type: .defaultAction, title: presentationInterfaceState.strings.Common_OK, action: {})]), nil)
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -321,7 +321,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
         let _ = (combineLatest(queue: .mainQueue(),
             ApplicationSpecificNotice.getChannelSendGiftTooltip(accountManager: context.sharedContext.accountManager),
             ApplicationSpecificNotice.getChannelSuggestTooltip(accountManager: context.sharedContext.accountManager)
-        |> deliverOnMainQueue)).start(next: { [weak self] giftCount, suggestCount in
+        |> deliverOnMainQueue)).start(next: { [weak self = self] giftCount, suggestCount in
             guard let self else {
                 return
             }
@@ -457,7 +457,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
             leftPanelItems.append(GlassControlGroupComponent.Item(
                 id: "suggestPost",
                 content: .icon("Chat/Input/Accessory Panels/SuggestPost"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.suggestedPostPressed()
                 }
             ))
@@ -466,7 +466,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
             leftPanelItems.append(GlassControlGroupComponent.Item(
                 id: "gift",
                 content: .icon("Chat/Input/Accessory Panels/Gift"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.giftPressed()
                 }
             ))
@@ -475,7 +475,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
             leftPanelItems.append(GlassControlGroupComponent.Item(
                 id: "help",
                 content: .icon("Chat/Input/Accessory Panels/Help"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.helpPressed()
                 }
             ))
@@ -487,7 +487,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
                 items: [GlassControlGroupComponent.Item(
                     id: 0,
                     content: .text(centerAction.title),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.buttonPressed()
                     }
                 )],
@@ -501,7 +501,7 @@ public final class ChatChannelSubscriberInputPanelNode: ChatInputPanelNode {
             rightPanelItems.append(GlassControlGroupComponent.Item(
                 id: "search",
                 content: .icon("Chat List/SearchIcon"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }

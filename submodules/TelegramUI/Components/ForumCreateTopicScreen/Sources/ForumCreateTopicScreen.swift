@@ -118,7 +118,7 @@ private final class TitleFieldComponent: Component {
             self.addSubview(self.textField)
             self.addSubview(self.iconButton)
             
-            self.iconButton.highligthedChanged = { [weak self] highlighted in
+            self.iconButton.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self, let iconView = strongSelf.iconView.view {
                     if highlighted {
                         iconView.layer.animateScale(from: 1.0, to: 0.8, duration: 0.25, removeOnCompletion: false)
@@ -523,7 +523,7 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                     topicTitle: self.title,
                     topicColor: self.iconColor
                 )
-            |> deliverOnMainQueue).start(next: { [weak self] content in
+            |> deliverOnMainQueue).start(next: { [weak self = self] content in
                 self?.emojiContent = content
                 self?.updated(transition: .immediate)
             }))
@@ -535,12 +535,12 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                 }
                 return user.isPremium
             }
-            |> distinctUntilChanged).start(next: { [weak self] hasPremium in
+            |> distinctUntilChanged).start(next: { [weak self = self] hasPremium in
                 self?.hasPremium = hasPremium
             })
             
             self.defaultIconFilesDisposable = (context.engine.stickers.loadedStickerPack(reference: .iconTopicEmoji, forceActualized: false)
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
@@ -589,7 +589,7 @@ private final class ForumCreateTopicScreenComponent: CombinedComponent {
                     topicTitle: self.title,
                     topicColor: self.iconColor
                 )
-            |> deliverOnMainQueue).start(next: { [weak self] content in
+            |> deliverOnMainQueue).start(next: { [weak self = self] content in
                 self?.emojiContent = content
                 self?.updated(transition: .immediate)
                 
@@ -1037,7 +1037,7 @@ public class ForumCreateTopicScreen: ViewControllerComponentContainer {
             self.doneBarItem?.isEnabled = true
         }
         
-        titleUpdatedImpl = { [weak self] title in
+        titleUpdatedImpl = { [weak self = self] title in
             guard let strongSelf = self else {
                 return
             }
@@ -1046,28 +1046,28 @@ public class ForumCreateTopicScreen: ViewControllerComponentContainer {
             strongSelf.state = (title, strongSelf.state.icon, strongSelf.state.iconColor, strongSelf.state.isHidden)
         }
         
-        iconUpdatedImpl = { [weak self] fileId in
+        iconUpdatedImpl = { [weak self = self] fileId in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.state = (strongSelf.state.title, fileId, strongSelf.state.iconColor, strongSelf.state.isHidden)
         }
         
-        iconColorUpdatedImpl = { [weak self] iconColor in
+        iconColorUpdatedImpl = { [weak self = self] iconColor in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.state = (strongSelf.state.title, strongSelf.state.icon, iconColor, strongSelf.state.isHidden)
         }
         
-        isHiddenUpdatedImpl = { [weak self] isHidden in
+        isHiddenUpdatedImpl = { [weak self = self] isHidden in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.state = (strongSelf.state.title, strongSelf.state.icon, strongSelf.state.iconColor, isHidden)
         }
         
-        openPremiumImpl = { [weak self] in
+        openPremiumImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

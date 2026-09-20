@@ -298,7 +298,7 @@ private final class AudioPlayerRendererContext {
         }))
         self.bufferContextId = registerPlayerRendererBufferContext(self.bufferContext)
         
-        notifyLowWater = { [weak self] in
+        notifyLowWater = { [weak self = self] in
             audioPlayerRendererQueue.async {
                 if let strongSelf = self {
                     strongSelf.checkBuffer()
@@ -377,7 +377,7 @@ private final class AudioPlayerRendererContext {
                 AUGraphStop(audioGraph)
             }
         }
-        self.audioSessionControl?.setType(self.ambient ? .ambient : (self.playAndRecord ? .playWithPossiblePortOverride : .play(mixWithOthers: self.mixWithOthers)), completion: { [weak self] in
+        self.audioSessionControl?.setType(self.ambient ? .ambient : (self.playAndRecord ? .playWithPossiblePortOverride : .play(mixWithOthers: self.mixWithOthers)), completion: { [weak self = self] in
             audioPlayerRendererQueue.async {
                 guard let self else {
                     return
@@ -433,7 +433,7 @@ private final class AudioPlayerRendererContext {
     private func acquireAudioSession() {
         switch self.audioSession {
             case let .manager(manager):
-                self.audioSessionDisposable.set(manager.push(audioSessionType: self.ambient ? .ambient : (self.playAndRecord ? .playWithPossiblePortOverride : .play(mixWithOthers: self.mixWithOthers)), outputMode: self.forceAudioToSpeaker ? .speakerIfNoHeadphones : .system, once: self.ambient, manualActivate: { [weak self] control in
+                self.audioSessionDisposable.set(manager.push(audioSessionType: self.ambient ? .ambient : (self.playAndRecord ? .playWithPossiblePortOverride : .play(mixWithOthers: self.mixWithOthers)), outputMode: self.forceAudioToSpeaker ? .speakerIfNoHeadphones : .system, once: self.ambient, manualActivate: { [weak self = self] control in
                     audioPlayerRendererQueue.async {
                         if let strongSelf = self {
                             strongSelf.audioSessionControl = control
@@ -450,7 +450,7 @@ private final class AudioPlayerRendererContext {
                             }
                         }
                     }
-                }, deactivate: { [weak self] temporary in
+                }, deactivate: { [weak self = self] temporary in
                     return Signal { subscriber in
                         audioPlayerRendererQueue.async {
                             if let strongSelf = self {
@@ -465,7 +465,7 @@ private final class AudioPlayerRendererContext {
                         
                         return EmptyDisposable
                     }
-                }, headsetConnectionStatusChanged: { [weak self] value in
+                }, headsetConnectionStatusChanged: { [weak self = self] value in
                     audioPlayerRendererQueue.async {
                         if let strongSelf = self, !value {
                             strongSelf.audioPaused()
@@ -473,7 +473,7 @@ private final class AudioPlayerRendererContext {
                     }
                 }))
             case let .custom(request):
-                self.audioSessionDisposable.set(request(MediaPlayerAudioSessionCustomControl(activate: { [weak self] in
+                self.audioSessionDisposable.set(request(MediaPlayerAudioSessionCustomControl(activate: { [weak self = self] in
                     audioPlayerRendererQueue.async {
                         if let strongSelf = self {
                             if !strongSelf.paused {
@@ -481,7 +481,7 @@ private final class AudioPlayerRendererContext {
                             }
                         }
                     }
-                }, deactivate: { [weak self] in
+                }, deactivate: { [weak self = self] in
                     audioPlayerRendererQueue.async {
                         if let strongSelf = self {
                             strongSelf.audioSessionControl = nil
@@ -749,7 +749,7 @@ private final class AudioPlayerRendererContext {
             }
             
             if let requestingFramesContext = self.requestingFramesContext {
-                requestingFramesContext.queue.async { [weak self] in
+                requestingFramesContext.queue.async { [weak self = self] in
                     let takenFrame = requestingFramesContext.takeFrame()
                     audioPlayerRendererQueue.async {
                         guard let strongSelf = self else {

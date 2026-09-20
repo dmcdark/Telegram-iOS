@@ -39,7 +39,7 @@ final class ResultPreviewView: UIView {
         
         self.layer.addSublayer(self.playerLayer)
         
-        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self] notification in
+        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self = self] notification in
             guard let self else {
                 return
             }
@@ -106,7 +106,7 @@ final class ResultPreviewView: UIView {
         }
         self.updatingTimePosition = true
         
-        self.player.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self] _ in
+        self.player.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self = self] _ in
             if let self {
                 if let (currentTargetPosition, play) = self.targetTimePosition, currentTargetPosition == targetPosition {
                     self.updatingTimePosition = false

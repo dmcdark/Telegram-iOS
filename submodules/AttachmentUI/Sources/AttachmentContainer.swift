@@ -121,7 +121,7 @@ final class AttachmentContainer: ASDisplayNode, ASGestureRecognizerDelegate {
         self.bottomClipNode.addSubnode(self.container)
         
         self.isReady = self.container.isReady
-        self.container.isReadyUpdated = { [weak self] in
+        self.container.isReadyUpdated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -135,7 +135,7 @@ final class AttachmentContainer: ASDisplayNode, ASGestureRecognizerDelegate {
         
         //applySmoothRoundedCorners(self.container.layer)
         
-        controllerRemovedImpl = { [weak self] c in
+        controllerRemovedImpl = { [weak self = self] c in
             self?.controllerRemoved?(c)
         }
     }
@@ -648,7 +648,7 @@ final class AttachmentContainer: ASDisplayNode, ASGestureRecognizerDelegate {
         } else {
             if transition.isAnimated {
                 let positionTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
-                positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0 + self.bounds.height), beginWithCurrentState: true, completion: { [weak self] _ in
+                positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0 + self.bounds.height), beginWithCurrentState: true, completion: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }

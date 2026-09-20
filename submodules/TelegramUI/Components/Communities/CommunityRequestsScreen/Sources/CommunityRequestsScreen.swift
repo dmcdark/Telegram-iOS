@@ -312,7 +312,7 @@ private final class CommunityRequestsScreenComponent: Component {
             self.communityDisposable = (component.context.engine.data.subscribe(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: component.communityId)
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                 guard let self else {
                     return
                 }
@@ -330,7 +330,7 @@ private final class CommunityRequestsScreenComponent: Component {
                 return
             }
             self.loadDisposable = (component.requestsContext.state
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -380,7 +380,7 @@ private final class CommunityRequestsScreenComponent: Component {
             self.cachedDataDisposable = (component.context.engine.data.subscribe(
                 EngineDataMap(orderedPeerIds.map(TelegramEngine.EngineData.Item.Peer.CachedData.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] cachedDataById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] cachedDataById in
                 guard let self else {
                     return
                 }
@@ -460,7 +460,7 @@ private final class CommunityRequestsScreenComponent: Component {
                 ],
                 actions: [
                     AlertScreen.Action(title: environment.strings.Common_Cancel),
-                    AlertScreen.Action(title: actionTitle, type: actionType, action: { [weak self] in
+                    AlertScreen.Action(title: actionTitle, type: actionType, action: { [weak self = self] in
                         self?.performBulkApproval(approve: approve)
                     })
                 ]
@@ -556,7 +556,7 @@ private final class CommunityRequestsScreenComponent: Component {
                 ),
                 elevatedLayout: false,
                 animateInAsReplacement: animateInAsReplacement,
-                action: { [weak self] action in
+                action: { [weak self = self] action in
                     guard let self else {
                         return false
                     }
@@ -629,13 +629,13 @@ private final class CommunityRequestsScreenComponent: Component {
                 declineDisplaysProgress: false,
                 addDisplaysProgress: false,
                 hasNext: hasNext,
-                open: { [weak self] _ in
+                open: { [weak self = self] _ in
                     self?.openRequest(row: row)
                 },
-                add: { [weak self] _ in
+                add: { [weak self = self] _ in
                     self?.setRequestApproval(request: row.request, peer: row.peer, approve: true)
                 },
-                decline: { [weak self] _ in
+                decline: { [weak self = self] _ in
                     self?.setRequestApproval(request: row.request, peer: row.peer, approve: false)
                 }
             )))
@@ -706,7 +706,7 @@ private final class CommunityRequestsScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             if let _ = attributes[linkAttributeKey] {
                                 self?.openCommunitySettings()
                             }
@@ -882,7 +882,7 @@ private final class CommunityRequestsScreenComponent: Component {
                         ),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.presentBulkConfirmation(approve: false, count: rows.count)
                         }
                     )),
@@ -911,7 +911,7 @@ private final class CommunityRequestsScreenComponent: Component {
                         ),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.presentBulkConfirmation(approve: true, count: rows.count)
                         }
                     )),
@@ -950,7 +950,7 @@ private final class CommunityRequestsScreenComponent: Component {
                         addButtonView?.removeFromSuperview()
                     })
                 }
-                transition.setAlpha(view: self.bottomEdgeEffectView, alpha: 0.0, completion: { [weak self] _ in
+                transition.setAlpha(view: self.bottomEdgeEffectView, alpha: 0.0, completion: { [weak self = self] _ in
                     self?.bottomEdgeEffectView.removeFromSuperview()
                 })
             }
@@ -1001,7 +1001,7 @@ public final class CommunityRequestsScreen: ViewControllerComponentContainer {
         self.title = presentationData.strings.Community_Request_Title
         self.navigationItem.title = presentationData.strings.Community_Request_Title
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? CommunityRequestsScreenComponent.View else {
                 return
             }

@@ -24,7 +24,7 @@ private final class AccountPresenceManagerImpl {
         
         self.shouldKeepOnlinePresenceDisposable = (shouldKeepOnlinePresence
         |> distinctUntilChanged
-        |> deliverOn(self.queue)).start(next: { [weak self] value in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] value in
             guard let `self` = self else {
                 return
             }
@@ -45,7 +45,7 @@ private final class AccountPresenceManagerImpl {
     private func updatePresence(_ isOnline: Bool) {
         let request: Signal<Api.Bool, MTRpcError>
         if isOnline {
-            let timer = SignalKitTimer(timeout: 30.0, repeat: false, completion: { [weak self] in
+            let timer = SignalKitTimer(timeout: 30.0, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -64,7 +64,7 @@ private final class AccountPresenceManagerImpl {
         |> `catch` { _ -> Signal<Api.Bool, NoError> in
             return .single(.boolFalse)
         }
-        |> deliverOn(self.queue)).start(completed: { [weak self] in
+        |> deliverOn(self.queue)).start(completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

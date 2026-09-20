@@ -35,7 +35,7 @@ extension ChatControllerImpl {
                 initialTimestamp: initialTimestamp,
                 enableMessageRangeDeletion: enableMessageRangeDeletion,
                 canNavigateToEmptyDays: true,
-                navigateToDay: { [weak self] c, index, timestamp in
+                navigateToDay: { [weak self = self] c, index, timestamp in
                     guard let strongSelf = self else {
                         c.dismiss()
                         return
@@ -73,7 +73,7 @@ extension ChatControllerImpl {
                         }
                     }))
                 },
-                previewDay: { [weak self] timestamp, _, sourceNode, sourceRect, gesture in
+                previewDay: { [weak self = self] timestamp, _, sourceNode, sourceRect, gesture in
                     guard let strongSelf = self else {
                         return
                     }
@@ -139,7 +139,7 @@ extension ChatControllerImpl {
                 }
             )
             
-            calendarScreen.completedWithRemoveMessagesInRange = { [weak self] range, type, dayCount, calendarSource in
+            calendarScreen.completedWithRemoveMessagesInRange = { [weak self = self] range, type, dayCount, calendarSource in
                 guard let strongSelf = self else {
                     return
                 }
@@ -196,7 +196,7 @@ extension ChatControllerImpl {
                 currentRepeatPeriod: nil,
                 minimalTime: nil,
                 isDark: false,
-                completion: { [weak self] result in
+                completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -222,7 +222,7 @@ extension ChatControllerImpl {
                         return
                     }
                     
-                    self.messageIndexDisposable.set((self.context.engine.messages.searchMessageIdByTimestamp(peerId: peerId, threadId: threadId, timestamp: result.time) |> deliverOnMainQueue).startStrict(next: { [weak self] messageId in
+                    self.messageIndexDisposable.set((self.context.engine.messages.searchMessageIdByTimestamp(peerId: peerId, threadId: threadId, timestamp: result.time) |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageId in
                         guard let self else {
                             return
                         }

@@ -66,17 +66,17 @@ public final class OverlayUniversalVideoNode: OverlayMediaItemNode, AVPictureInP
         
         super.init()
         
-        expandImpl = { [weak self] in
+        expandImpl = { [weak self = self] in
             self?.expand()
         }
         
-        unminimizeImpl = { [weak self] in
+        unminimizeImpl = { [weak self = self] in
             self?.unminimize?()
         }
-        togglePlayPauseImpl = { [weak self] in
+        togglePlayPauseImpl = { [weak self = self] in
             self?.videoNode.togglePlayPause()
         }
-        closeImpl = { [weak self] in
+        closeImpl = { [weak self = self] in
             if let strongSelf = self {
                 if let customClose = strongSelf.customClose {
                     customClose()
@@ -93,7 +93,7 @@ public final class OverlayUniversalVideoNode: OverlayMediaItemNode, AVPictureInP
             }
         }
         
-        controlsAreShowingUpdatedImpl = { [weak self] value in
+        controlsAreShowingUpdatedImpl = { [weak self = self] value in
             self?.controlsAreShowingUpdated?(value)
         }
 
@@ -101,7 +101,7 @@ public final class OverlayUniversalVideoNode: OverlayMediaItemNode, AVPictureInP
         self.cornerRadius = 4.0
         
         self.addSubnode(self.videoNode)
-        self.videoNode.ownsContentNodeUpdated = { [weak self] value in
+        self.videoNode.ownsContentNodeUpdated = { [weak self = self] value in
             if let strongSelf = self {
                 let previous = strongSelf.hasAttachedContext
                 strongSelf.hasAttachedContext = value
@@ -120,7 +120,7 @@ public final class OverlayUniversalVideoNode: OverlayMediaItemNode, AVPictureInP
         
         self.shouldBeDismissedDisposable = (shouldBeDismissed
         |> filter { $0 }
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -129,7 +129,7 @@ public final class OverlayUniversalVideoNode: OverlayMediaItemNode, AVPictureInP
         })
         
         self.statusDisposable = (self.videoNode.status
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             self?.status = status
         })
     }

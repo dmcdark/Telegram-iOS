@@ -65,7 +65,7 @@ final class LiveMicrophoneButtonComponent: Component {
         func update(component: LiveMicrophoneButtonComponent, availableSize: CGSize, state: EmptyComponentState, environment: Environment<Empty>, transition: ComponentTransition) -> CGSize {
             if self.callStateDisposable == nil, let call = component.call as? PresentationGroupCall {
                 self.callStateDisposable = (call.state
-                |> deliverOnMainQueue).startStrict(next: { [weak self] callState in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] callState in
                     guard let self else {
                         return
                     }
@@ -80,7 +80,7 @@ final class LiveMicrophoneButtonComponent: Component {
             
             if self.muteStateDisposable == nil, let call = component.call as? PresentationGroupCall {
                 self.muteStateDisposable = (call.isMuted
-                |> deliverOnMainQueue).startStrict(next: { [weak self] isMuted in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] isMuted in
                     guard let self else {
                         return
                     }
@@ -133,7 +133,7 @@ final class LiveMicrophoneButtonComponent: Component {
                     isCollapsed: true,
                     isCompact: true,
                     customIconScale: 0.45,
-                    updateUnmutedStateIsPushToTalk: { [weak self] unmutedStateIsPushToTalk in
+                    updateUnmutedStateIsPushToTalk: { [weak self = self] unmutedStateIsPushToTalk in
                         guard let self, let component = self.component, let call = component.call as? PresentationGroupCall else {
                             return
                         }

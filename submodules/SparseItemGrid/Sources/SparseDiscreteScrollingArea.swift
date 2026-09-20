@@ -149,13 +149,13 @@ public final class SparseDiscreteScrollingArea: ASDisplayNode {
         self.view.addSubview(self.lineIndicator)
 
         let dragGesture = DragGesture(
-            shouldBegin: { [weak self] point in
+            shouldBegin: { [weak self = self] point in
                 guard let _ = self else {
                     return false
                 }
                 return true
             },
-            began: { [weak self] in
+            began: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -187,7 +187,7 @@ public final class SparseDiscreteScrollingArea: ASDisplayNode {
 
                 strongSelf.updateActivityTimer(isScrolling: false)
             },
-            ended: { [weak self] in
+            ended: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -228,7 +228,7 @@ public final class SparseDiscreteScrollingArea: ASDisplayNode {
 
                 strongSelf.updateActivityTimer(isScrolling: false)
             },
-            moved: { [weak self] relativeOffset in
+            moved: { [weak self = self] relativeOffset in
                 guard let strongSelf = self else {
                     return
                 }
@@ -488,7 +488,7 @@ public final class SparseDiscreteScrollingArea: ASDisplayNode {
             transition.updateAlpha(layer: self.lineIndicator.layer, alpha: 1.0)
         } else {
             if self.activityTimer == nil {
-                self.activityTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+                self.activityTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

@@ -115,7 +115,7 @@ private final class ChatManagingBotTitlePanelComponent: Component {
                     )),
                     effectAlignment: .center,
                     contentInsets: UIEdgeInsets(top: 5.0, left: 12.0, bottom: 5.0, right: 12.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -139,7 +139,7 @@ private final class ChatManagingBotTitlePanelComponent: Component {
                     effectAlignment: .center,
                     minSize: CGSize(width: 1.0, height: 40.0),
                     contentInsets: UIEdgeInsets(top: 0.0, left: 2.0, bottom: 0.0, right: 2.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -296,7 +296,7 @@ final class ChatManagingBotTitlePanelNode: ChatTitleAccessoryPanelNode {
         
         items.append(.action(ContextMenuActionItem(text: strings.Chat_BusinessBotPanel_Menu_RemoveBot, textColor: .destructive, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.destructiveColor)
-        }, action: { [weak self] _, a in
+        }, action: { [weak self = self] _, a in
             a(.default)
             
             guard let self else {
@@ -307,14 +307,14 @@ final class ChatManagingBotTitlePanelNode: ChatTitleAccessoryPanelNode {
         if let url = managingBot.settingsUrl {
             items.append(.action(ContextMenuActionItem(text: strings.Chat_BusinessBotPanel_Menu_ManageBot, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Settings"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, a in
+            }, action: { [weak self = self] _, a in
                 a(.default)
                 
                 guard let self else {
                     return
                 }
                 let _ = (self.context.sharedContext.resolveUrl(context: self.context, peerId: nil, url: url, skipUrlAuth: false)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -328,7 +328,7 @@ final class ChatManagingBotTitlePanelNode: ChatTitleAccessoryPanelNode {
                         navigationController: chatController.navigationController as? NavigationController,
                         forceExternal: false,
                         forceUpdate: false,
-                        openPeer: { [weak self] peer, navigation in
+                        openPeer: { [weak self = self] peer, navigation in
                             guard let self, let chatController = interfaceInteraction.chatController() else {
                                 return
                             }
@@ -346,7 +346,7 @@ final class ChatManagingBotTitlePanelNode: ChatTitleAccessoryPanelNode {
                                 self.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: self.context, chatLocation: .peer(peer), botAppStart: botAppStart))
                             case .info:
                                 let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peer.id))
-                                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                     guard let self, let peer, let chatController = interfaceInteraction.chatController() else {
                                         return
                                     }
@@ -407,13 +407,13 @@ final class ChatManagingBotTitlePanelNode: ChatTitleAccessoryPanelNode {
                     peer: managingBot.bot,
                     managesChat: managingBot.canReply || managingBot.isPaused,
                     isPaused: managingBot.isPaused,
-                    toggleIsPaused: { [weak self] in
+                    toggleIsPaused: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.toggleIsPaused()
                     },
-                    openSettings: { [weak self] sourceView in
+                    openSettings: { [weak self = self] sourceView in
                         guard let self else {
                             return
                         }

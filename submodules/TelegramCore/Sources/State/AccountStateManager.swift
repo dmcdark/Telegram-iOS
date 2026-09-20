@@ -427,7 +427,7 @@ public final class AccountStateManager {
             self.queue.async {
                 if self.updateService == nil {
                     self.updateService = UpdateMessageService(peerId: self.accountPeerId)
-                    self.updateServiceDisposable.set(self.updateService!.pipe.signal().start(next: { [weak self] groups in
+                    self.updateServiceDisposable.set(self.updateService!.pipe.signal().start(next: { [weak self = self] groups in
                         if let strongSelf = self {
                             strongSelf.addUpdateGroups(groups)
                         }
@@ -686,7 +686,7 @@ public final class AccountStateManager {
                             state: state
                         )
                     }
-                    |> deliverOn(self.queue)).start(next: { [weak self] result in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                         guard let self = self else {
                             return
                         }
@@ -769,7 +769,7 @@ public final class AccountStateManager {
                     
                     return result
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] finalState in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] finalState in
                     guard let strongSelf = self else {
                         return
                     }
@@ -841,7 +841,7 @@ public final class AccountStateManager {
                     return (state, invalidatedChannels, disableParallelChannelReset)
                 }
                 |> deliverOn(self.queue)
-                |> mapToSignal { [weak self] state, invalidatedChannels, disableParallelChannelReset -> Signal<(difference: Api.updates.Difference?, finalStatte: AccountReplayedFinalState?, skipBecauseOfError: Bool, resetState: Bool), NoError> in
+                |> mapToSignal { [weak self = self] state, invalidatedChannels, disableParallelChannelReset -> Signal<(difference: Api.updates.Difference?, finalStatte: AccountReplayedFinalState?, skipBecauseOfError: Bool, resetState: Bool), NoError> in
                     if let state = state, let authorizedState = state.state {
                         var flags: Int32 = 0
                         var ptsTotalLimit: Int32?
@@ -943,7 +943,7 @@ public final class AccountStateManager {
                 }
                 |> deliverOn(self.queue)
                 
-                let _ = signal.start(next: { [weak self] difference, finalState, skipBecauseOfError, resetState in
+                let _ = signal.start(next: { [weak self = self] difference, finalState, skipBecauseOfError, resetState in
                     guard let strongSelf = self else {
                         return
                     }
@@ -999,7 +999,7 @@ public final class AccountStateManager {
                 })
             case let .collectUpdateGroups(_, timeout):
                 self.operationTimer?.invalidate()
-                let operationTimer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self] in
+                let operationTimer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self = self] in
                     if let strongSelf = self {
                         let firstOperation = strongSelf.operations.removeFirst()
                         if case let .collectUpdateGroups(groups, _) = firstOperation.content {
@@ -1029,7 +1029,7 @@ public final class AccountStateManager {
                 let messagesRemovedContext = self.messagesRemovedContext
                 
                 let signal = initialStateWithUpdateGroups(postbox: postbox, groups: groups)
-                |> mapToSignal { [weak self] state -> Signal<(AccountReplayedFinalState?, AccountFinalState), NoError> in
+                |> mapToSignal { [weak self = self] state -> Signal<(AccountReplayedFinalState?, AccountFinalState), NoError> in
                     return finalStateWithUpdateGroups(accountPeerId: accountPeerId, postbox: postbox, network: network, state: state, groups: groups, asyncResetChannels: nil)
                     |> deliverOn(queue)
                     |> mapToSignal { finalState in
@@ -1064,7 +1064,7 @@ public final class AccountStateManager {
                         |> deliverOn(queue)
                     }
                 }
-                let _ = signal.start(next: { [weak self] replayedState, finalState in
+                let _ = signal.start(next: { [weak self = self] replayedState, finalState in
                     if let strongSelf = self {
                         if case let .processUpdateGroups(groups) = strongSelf.operations.removeFirst().content {
                             if let replayedState = replayedState, !finalState.shouldPoll {
@@ -1092,7 +1092,7 @@ public final class AccountStateManager {
                 })
             case let .custom(operationId, signal):
                 self.operationTimer?.invalidate()
-                let completed: () -> Void = { [weak self] in
+                let completed: () -> Void = { [weak self = self] in
                     if let strongSelf = self {
                         let topOperation = strongSelf.operations.removeFirst()
                         if case .custom(operationId, _) = topOperation.content {
@@ -1107,7 +1107,7 @@ public final class AccountStateManager {
                 })
             case let .processEvents(operationId, events):
                 self.operationTimer?.invalidate()
-                let completed: () -> Void = { [weak self] in
+                let completed: () -> Void = { [weak self = self] in
                     if let strongSelf = self {
                         let topOperation = strongSelf.operations.removeFirst()
                         if case .processEvents(operationId, _) = topOperation.content {
@@ -1241,7 +1241,7 @@ public final class AccountStateManager {
                 }
                 
                 let _ = (signal
-                |> deliverOn(self.queue)).start(next: { [weak self] messages in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] messages in
                     if let strongSelf = self {
                         strongSelf.notificationMessagesPipe.putNext(messages)
                     }
@@ -1300,7 +1300,7 @@ public final class AccountStateManager {
                     self.operationTimer?.invalidate()
                     let signal = self.network.request(Api.functions.help.test())
                     |> deliverOn(self.queue)
-                    let completed: () -> Void = { [weak self] in
+                    let completed: () -> Void = { [weak self = self] in
                         if let strongSelf = self {
                             let topOperation = strongSelf.operations.removeFirst()
                             if case let .pollCompletion(topPollId, messageIds, subscribers) = topOperation.content {
@@ -1358,7 +1358,7 @@ public final class AccountStateManager {
                 |> map({ ($0, finalState) })
                 |> deliverOn(self.queue)
                 
-                let _ = signal.start(next: { [weak self] replayedState, finalState in
+                let _ = signal.start(next: { [weak self = self] replayedState, finalState in
                     if let strongSelf = self {
                         if case .replayAsynchronouslyBuiltFinalState = strongSelf.operations.removeFirst().content {
                             if let replayedState = replayedState {
@@ -1434,7 +1434,7 @@ public final class AccountStateManager {
                 }
             }
             |> take(1)
-            |> mapToSignal { [weak self] state -> Signal<(difference: Api.updates.Difference?, finalStatte: AccountReplayedFinalState?, skipBecauseOfError: Bool), NoError> in
+            |> mapToSignal { [weak self = self] state -> Signal<(difference: Api.updates.Difference?, finalStatte: AccountReplayedFinalState?, skipBecauseOfError: Bool), NoError> in
                 if let authorizedState = state.state {
                     let flags: Int32 = 0
                     let ptsTotalLimit: Int32? = nil
@@ -1604,7 +1604,7 @@ public final class AccountStateManager {
         }
         
         public func pollStateUpdateCompletion() -> Signal<[MessageId], NoError> {
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 if let strongSelf = self {
                     strongSelf.queue.async {
@@ -1628,7 +1628,7 @@ public final class AccountStateManager {
         
         public func updatedWebpage(_ webpageId: MediaId) -> Signal<TelegramMediaWebpage, NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -1713,7 +1713,7 @@ public final class AccountStateManager {
                 
         public func updatedStarsBalance() -> Signal<[PeerId: StarsAmount], NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -1740,7 +1740,7 @@ public final class AccountStateManager {
                 
         public func updatedTonBalance() -> Signal<[PeerId: StarsAmount], NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -1767,7 +1767,7 @@ public final class AccountStateManager {
         
         public func updatedStarsRevenueStatus() -> Signal<[PeerId: StarsRevenueStats.Balances], NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -1794,7 +1794,7 @@ public final class AccountStateManager {
         
         public func updatedStarGiftAuctionState() -> Signal<[Int64: GiftAuctionContext.State.AuctionState], NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -1821,7 +1821,7 @@ public final class AccountStateManager {
         
         public func updatedStarGiftAuctionMyState() -> Signal<[Int64: GiftAuctionContext.State.MyState], NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
                 queue.async {
                     if let strongSelf = self {
@@ -2141,10 +2141,10 @@ public final class AccountStateManager {
             )
         })
         
-        updateConfigRequestedImpl = { [weak self] in
+        updateConfigRequestedImpl = { [weak self = self] in
             self?.updateConfigRequested?()
         }
-        isPremiumUpdatedImpl = { [weak self] in
+        isPremiumUpdatedImpl = { [weak self = self] in
             self?.isPremiumUpdated?()
         }
     }

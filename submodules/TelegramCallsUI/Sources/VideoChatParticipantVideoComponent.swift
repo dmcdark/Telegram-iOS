@@ -236,13 +236,13 @@ final class VideoChatParticipantVideoComponent: Component {
             
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
             
-            self.pinchContainerNode.activate = { [weak self] sourceNode in
+            self.pinchContainerNode.activate = { [weak self = self] sourceNode in
                 guard let self, let component = self.component else {
                     return
                 }
                 component.activatePinch?(sourceNode)
             }
-            self.pinchContainerNode.animatedOut = { [weak self] in
+            self.pinchContainerNode.animatedOut = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -250,7 +250,7 @@ final class VideoChatParticipantVideoComponent: Component {
                 component.deactivatedPinch?()
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return
@@ -357,7 +357,7 @@ final class VideoChatParticipantVideoComponent: Component {
                             }
                             if let loadSignal = result.loadSignal {
                                 self.blurredAvatarDisposable = (loadSignal
-                                |> deliverOnMainQueue).startStrict(next: { [weak self] image in
+                                |> deliverOnMainQueue).startStrict(next: { [weak self = self] image in
                                     guard let self else {
                                         return
                                     }
@@ -486,7 +486,7 @@ final class VideoChatParticipantVideoComponent: Component {
                     videoBackgroundLayer.isHidden = true
                 }
                 
-                let videoUpdated: () -> Void = { [weak self] in
+                let videoUpdated: () -> Void = { [weak self = self] in
                     guard let self, let videoSource = self.videoSource, let videoLayer = self.videoLayer else {
                         return
                     }

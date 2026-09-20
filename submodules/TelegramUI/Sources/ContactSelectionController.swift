@@ -140,7 +140,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
                 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode as? NavigationBarSearchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -150,7 +150,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         }
         
         self.presentationDataDisposable = ((params.updatedPresentationData?.signal ?? params.context.sharedContext.presentationData)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let self {
                 let previousTheme = self.presentationData.theme
                 let previousStrings = self.presentationData.strings
@@ -168,7 +168,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         })
         
         if self.multipleSelection != .always {
-            self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+            self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
                 self?.activateSearch()
             })
             self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
@@ -192,7 +192,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         
         self.updateNavigationButtons()
         
-        self.getCurrentSendMessageContextMediaPreview = { [weak self] in
+        self.getCurrentSendMessageContextMediaPreview = { [weak self = self] in
             guard let self else {
                 return nil
             }
@@ -250,7 +250,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
                         tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                     )
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.cancelPressed()
                 }
             ))
@@ -272,7 +272,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
                             tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.beginSearch()
                     }
                 ))
@@ -346,23 +346,23 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         
         self.contactsNode.navigationBar = self.navigationBar
         
-        self.contactsNode.requestDeactivateSearch = { [weak self] in
+        self.contactsNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch()
         }
         
-        self.contactsNode.requestOpenPeerFromSearch = { [weak self] peer, action in
+        self.contactsNode.requestOpenPeerFromSearch = { [weak self = self] peer, action in
             self?.openPeer(peer: peer, action: action, node: nil, gesture: nil)
         }
         
-        self.contactsNode.contactListNode.activateSearch = { [weak self] in
+        self.contactsNode.contactListNode.activateSearch = { [weak self = self] in
             self?.activateSearch()
         }
         
-        self.contactsNode.contactListNode.openPeer = { [weak self] peer, action, node, gesture in
+        self.contactsNode.contactListNode.openPeer = { [weak self = self] peer, action, node, gesture in
             self?.openPeer(peer: peer, action: action, node: node, gesture: gesture)
         }
                 
-        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self] in
+        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.presentContactsWarningSuppression(context: strongSelf.context, present: { c, a in
                     strongSelf.present(c, in: .window(.root), with: a)
@@ -370,21 +370,21 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
             }
         }
         
-        self.contactsNode.cancelSearch = { [weak self] in
+        self.contactsNode.cancelSearch = { [weak self = self] in
             self?.deactivateSearch()
         }
         
-        self.contactsNode.dismiss = { [weak self] in
+        self.contactsNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         
-        self.contactsNode.contactListNode.contentOffsetChanged = { [weak self] offset in
+        self.contactsNode.contactListNode.contentOffsetChanged = { [weak self = self] offset in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode as? NavigationBarSearchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
         }
         
-        self.contactsNode.contactListNode.contentScrollingEnded = { [weak self] listView in
+        self.contactsNode.contactListNode.contentScrollingEnded = { [weak self = self] listView in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode as? NavigationBarSearchContentNode {
                 return fixNavigationSearchableListNodeScrolling(listView, searchNode: searchContentNode)
             } else {
@@ -392,7 +392,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
             }
         }
 
-        self.contactsNode.requestMultipleAction = { [weak self] silent, scheduleTime, parameters in
+        self.contactsNode.requestMultipleAction = { [weak self = self] silent, scheduleTime, parameters in
             if let strongSelf = self {
                 let selectedPeers = strongSelf.contactsNode.contactListNode.selectedPeers
                 strongSelf._result.set(.single((selectedPeers, .generic, silent, scheduleTime, strongSelf.caption, parameters)))
@@ -454,14 +454,14 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
                     self.requestAttachmentMenuExpansion()
                     self.updateTabBarVisibility(false, .animated(duration: 0.4, curve: .spring))
                 } else {
-                    let contentNode = ContactsSearchNavigationContentNode(presentationData: self.presentationData, dismissSearch: { [weak self] in
+                    let contentNode = ContactsSearchNavigationContentNode(presentationData: self.presentationData, dismissSearch: { [weak self = self] in
                         if let strongSelf = self, let navigationBar = strongSelf.navigationBar, let searchContentNode = strongSelf.searchContentNode as? ContactsSearchNavigationContentNode {
                             searchContentNode.deactivate()
                             strongSelf.searchContentNode = nil
                             navigationBar.setContentNode(nil, animated: true)
                             strongSelf.contactsNode.deactivateOverlaySearch()
                         }
-                    }, updateSearchQuery: { [weak self] query in
+                    }, updateSearchQuery: { [weak self = self] query in
                         if let strongSelf = self {
                             strongSelf.contactsNode.searchContainerNode?.searchTextUpdated(text: query)
                         }
@@ -508,7 +508,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Premium_Gift_ContactSelection_SendMessage, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor)
-            }, iconPosition: .left, action: { [weak self] _, a in
+            }, iconPosition: .left, action: { [weak self = self] _, a in
                 a(.default)
               
                 if let self {
@@ -518,7 +518,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
             
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Premium_Gift_ContactSelection_OpenProfile, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor)
-            }, iconPosition: .left, action: { [weak self] _, a in
+            }, iconPosition: .left, action: { [weak self = self] _, a in
                 a(.default)
 
                 if let self {
@@ -532,7 +532,7 @@ class ContactSelectionControllerImpl: ViewController, ContactSelectionController
         }
         
         self.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
-        self.confirmationDisposable.set((self.confirmation(peer) |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        self.confirmationDisposable.set((self.confirmation(peer) |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             if let strongSelf = self {
                 if value {
                     strongSelf._result.set(.single(([peer], action, false, nil, nil, nil)))
@@ -574,7 +574,7 @@ final class ContactsSearchNavigationContentNode: NavigationBarContentNode {
         
         self.addSubnode(self.searchBar)
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             dismissSearch()
         }

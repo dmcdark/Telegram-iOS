@@ -25,11 +25,11 @@ final class LocationSearchNavigationContentNode: NavigationBarContentNode {
         
         self.addSubnode(self.searchBar)
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.interaction.dismissSearch()
         }
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.interaction.updateSearchQuery(query)
         }
     }

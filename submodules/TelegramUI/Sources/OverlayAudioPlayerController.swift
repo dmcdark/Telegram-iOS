@@ -71,10 +71,10 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
             initialMessageId: self.initialMessageId,
             initialOrder: self.initialOrder,
             playlistLocation: self.playlistLocation,
-            requestDismiss: { [weak self] in
+            requestDismiss: { [weak self = self] in
                 self?.dismiss()
             },
-            requestShare: { [weak self] subject in
+            requestShare: { [weak self = self] subject in
                 if let strongSelf = self {
                     var canShowInChat = false
                     if case .messages = subject {
@@ -85,14 +85,14 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                             strongSelf.context.sharedContext.navigateToChat(accountId: strongSelf.context.account.id, peerId: message.id.peerId, messageId: message.id)
                             strongSelf.dismiss()
                         }
-                    } : nil, externalShare: true, completed: { [weak self] peerIds in
+                    } : nil, externalShare: true, completed: { [weak self = self] peerIds in
                         if let strongSelf = self {
                             let _ = (strongSelf.context.engine.data.get(
                                 EngineDataList(
                                     peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                                 )
                             )
-                                     |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                                     |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                                 if let strongSelf = self {
                                     let peers = peerList.compactMap { $0 }
                                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -125,7 +125,7 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                                     strongSelf.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                                         if savedMessages, let self, action == .info {
                                             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                                 guard let self, let peer else {
                                                     return
                                                 }
@@ -145,14 +145,14 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                     strongSelf.present(shareController, in: .window(.root))
                 }
             },
-            requestSearchByArtist: { [weak self] artist in
+            requestSearchByArtist: { [weak self = self] artist in
                 guard let self else {
                     return
                 }
                 self.context.sharedContext.openSearch(filter: .music, query: artist)
                 self.dismiss()
             },
-            requestAdd: { [weak self] in
+            requestAdd: { [weak self = self] in
                 guard let self, let navigationController = self.parentNavigationController else {
                     return
                 }
@@ -160,19 +160,19 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                 let controller = makeAttachmentFileControllerImpl(
                     context: self.context,
                     mode: .audio(.savedMusic),
-                    presentFiles: { [weak self] in
+                    presentFiles: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         dismissImpl?()
                         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-                        let controller = legacyICloudFilePicker(theme: presentationData.theme, mode: .default, documentTypes: ["public.mp3", "public.mpeg-4-audio", "public.aac-audio", "org.xiph.flac"], completion: { [weak self] urls in
+                        let controller = legacyICloudFilePicker(theme: presentationData.theme, mode: .default, documentTypes: ["public.mp3", "public.mpeg-4-audio", "public.aac-audio", "org.xiph.flac"], completion: { [weak self = self] urls in
                             guard let self, let url = urls.first else {
                                 return
                             }
                             
                             let _ = (iCloudFileDescription(url)
-                            |> deliverOnMainQueue).start(next: { [weak self] item in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] item in
                                 guard let self, let item else {
                                     return
                                 }
@@ -201,7 +201,7 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                                     attributes: file.attributes,
                                     hintFileIsLarge: false
                                 )
-                                |> deliverOnMainQueue).start(next: { [weak self] value in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                                     guard let self else {
                                         return
                                     }
@@ -222,7 +222,7 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                         })
                         self.present(controller, in: .window(.root))
                     },
-                    send: { [weak self] mediaReferences, _, _, _ in
+                    send: { [weak self = self] mediaReferences, _, _, _ in
                         guard let self, let reference = mediaReferences.first?.concrete(TelegramMediaFile.self) else {
                             return
                         }
@@ -235,7 +235,7 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
                     controller?.dismiss()
                 }
             },
-            getParentController: { [weak self] in
+            getParentController: { [weak self = self] in
                 return self
             }
         )
@@ -259,7 +259,7 @@ final class OverlayAudioPlayerControllerImpl: ViewController, OverlayAudioPlayer
     }
     
     override public func dismiss(completion: (() -> Void)? = nil) {
-        self.controllerNode.animateOut(completion: { [weak self] in
+        self.controllerNode.animateOut(completion: { [weak self = self] in
             if let _ = self?.navigationController {
                 self?.dismiss(animated: false, completion: nil)
             } else {

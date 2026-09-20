@@ -225,7 +225,7 @@ public final class ChatEmptyNodeGreetingChatContent: ASDisplayNode, ChatEmptyNod
             
             self.didSetupSticker = true
             self.disposable.set((sticker
-            |> deliverOnMainQueue).startStrict(next: { [weak self] sticker in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] sticker in
                 if let strongSelf = self, let sticker = sticker {
                     let inputNodeInteraction = ChatMediaInputNodeInteraction(
                         navigateToCollectionId: { _ in
@@ -1068,7 +1068,7 @@ public final class ChatEmptyNodePremiumRequiredChatContent: ASDisplayNode, ChatE
             
             self.button.addSubnode(self.buttonStarsNode)
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -1371,7 +1371,7 @@ private final class EmptyAttachedDescriptionNode: HighlightTrackingButtonNode {
         
         self.addTarget(self, action: #selector(self.pressed), forControlEvents: .touchUpInside)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let self, self.bounds.width > 0.0 {
                 let animateScale = true
                 
@@ -1390,7 +1390,7 @@ private final class EmptyAttachedDescriptionNode: HighlightTrackingButtonNode {
                         let transition = ComponentTransition(animation: .none)
                         transition.setScale(layer: self.layer, scale: 1.0)
                         
-                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1728,7 +1728,7 @@ public final class ChatEmptyNode: ASDisplayNode {
             case .cloud:
                 let cloudNode = ChatEmptyNodeCloudChatContent()
                 node = cloudNode
-                cloudNode.shareBusinessLink = { [weak self] url in
+                cloudNode.shareBusinessLink = { [weak self = self] url in
                     guard let self, let interfaceInteraction = self.interaction else {
                         return
                     }
@@ -1799,7 +1799,7 @@ public final class ChatEmptyNode: ASDisplayNode {
                 
                 let strings = interfaceState.strings
                 
-                attachedDescriptionNode.action = { [weak self] in
+                attachedDescriptionNode.action = { [weak self = self] in
                     guard let self else {
                         return
                     }

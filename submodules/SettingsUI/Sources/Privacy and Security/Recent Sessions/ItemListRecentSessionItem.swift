@@ -359,7 +359,7 @@ class ItemListRecentSessionItemNode: ItemListRevealOptionsItemNode {
                 currentDisabledOverlayNode = nil
             }
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors)
                     

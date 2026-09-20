@@ -145,7 +145,7 @@ final class InstantPageV2AudioContentNode: ASDisplayNode {
 
         if let messageId = self.message?.id {
             self.resourceStatusDisposable = (messageMediaFileStatus(context: context, messageId: messageId, file: file)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                 self?.fetchStatus = status
                 self?.updateStreamingState()
             })
@@ -187,7 +187,7 @@ final class InstantPageV2AudioContentNode: ASDisplayNode {
     // playlistId + itemId. Mirrors InstantPageAudioNode's subscription shape.
     func setPlaybackStatusSignal(_ signal: Signal<SharedMediaPlayerItemPlaybackState?, NoError>) {
         self.playbackStatusDisposable?.dispose()   // defensive: a re-call must not leak the prior subscription
-        self.playbackStatusDisposable = (signal |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+        self.playbackStatusDisposable = (signal |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
             guard let self else { return }
             let isPlaying: Bool
             if let status = state?.status {

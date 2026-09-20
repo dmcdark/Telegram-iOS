@@ -233,7 +233,7 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
         
         let entriesSignal: Signal<[InstantPageGalleryEntry], NoError> = .single(entries)
         
-        self.disposable.set((entriesSignal |> deliverOnMainQueue).start(next: { [weak self] entries in
+        self.disposable.set((entriesSignal |> deliverOnMainQueue).start(next: { [weak self = self] entries in
             if let strongSelf = self {
                 strongSelf.entries = entries
                 strongSelf.centralEntryIndex = centralIndex
@@ -250,15 +250,15 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
             }
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self] title in
+        self.centralItemAttributesDisposable.add(self.centralItemTitle.get().start(next: { [weak self = self] title in
             self?.navigationItem.title = title
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemTitleView.get().start(next: { [weak self] titleView in
+        self.centralItemAttributesDisposable.add(self.centralItemTitleView.get().start(next: { [weak self = self] titleView in
             self?.navigationItem.titleView = titleView
         }))
         
-        self.centralItemAttributesDisposable.add(combineLatest(self.centralItemRightBarButtonItem.get(), self.centralItemRightBarButtonItems.get()).start(next: { [weak self] rightBarButtonItem, rightBarButtonItems in
+        self.centralItemAttributesDisposable.add(combineLatest(self.centralItemRightBarButtonItem.get(), self.centralItemRightBarButtonItems.get()).start(next: { [weak self = self] rightBarButtonItem, rightBarButtonItems in
             if let rightBarButtonItem = rightBarButtonItem {
                 self?.navigationItem.rightBarButtonItem = rightBarButtonItem
             } else if let rightBarButtonItems = rightBarButtonItems {
@@ -269,20 +269,20 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
             }
         }))
         
-        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self] footerContentNode, _ in
+        self.centralItemAttributesDisposable.add(self.centralItemFooterContentNode.get().start(next: { [weak self = self] footerContentNode, _ in
             self?.galleryNode.updatePresentationState({
                 $0.withUpdatedFooterContentNode(footerContentNode)
             }, transition: .immediate)
         }))
         
-        openLinkImpl = { [weak self] url in
+        openLinkImpl = { [weak self = self] url in
             if let strongSelf = self {
                 strongSelf.dismiss(forceAway: false)
                 strongSelf.openUrl?(url)
             }
         }
         
-        openLinkOptionsImpl = { [weak self] url in
+        openLinkOptionsImpl = { [weak self = self] url in
             if let strongSelf = self {
                 var presentationData = strongSelf.presentationData
                 if !presentationData.theme.overallDarkAppearance {
@@ -335,7 +335,7 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
         var animatedOutNode = true
         var animatedOutInterface = false
         
-        let completion = { [weak self] in
+        let completion = { [weak self = self] in
             if animatedOutNode && animatedOutInterface {
                 self?._hiddenMedia.set(.single(nil))
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
@@ -361,21 +361,21 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
     }
     
     override public func loadDisplayNode() {
-        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self] controller, arguments in
+        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self = self] controller, arguments in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root), with: arguments, blockInteraction: true)
             }
         }, pushController: { _ in
-        }, dismissController: { [weak self] in
+        }, dismissController: { [weak self = self] in
             self?.dismiss(forceAway: true)
-        }, replaceRootController: { [weak self] controller, ready in
+        }, replaceRootController: { [weak self = self] controller, ready in
             if let strongSelf = self {
                 strongSelf.replaceRootController(controller, ready)
             }
         }, editMedia: { _ in
-        }, controller: { [weak self] in
+        }, controller: { [weak self = self] in
             return self
-        }, currentItemNode: { [weak self] in
+        }, currentItemNode: { [weak self = self] in
             return self?.galleryNode.pager.centralItemNode()
         })
         self.displayNode = GalleryControllerNode(context: self.context,controllerInteraction: controllerInteraction, titleView: nil)
@@ -384,7 +384,7 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
         self.galleryNode.statusBar = self.statusBar
         self.galleryNode.navigationBar = self.navigationBar
         
-        self.galleryNode.transitionDataForCentralItem = { [weak self] in
+        self.galleryNode.transitionDataForCentralItem = { [weak self = self] in
             if let strongSelf = self {
                 if let centralItemNode = strongSelf.galleryNode.pager.centralItemNode(), let presentationArguments = strongSelf.presentationArguments as? InstantPageGalleryControllerPresentationArguments {
                     if let transitionArguments = presentationArguments.transitionArguments(strongSelf.entries[centralItemNode.index]) {
@@ -394,12 +394,12 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
             }
             return nil
         }
-        self.galleryNode.dismiss = { [weak self] in
+        self.galleryNode.dismiss = { [weak self = self] in
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
-        self.galleryNode.completeCustomDismiss = { [weak self] _ in
+        self.galleryNode.completeCustomDismiss = { [weak self = self] _ in
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
@@ -408,7 +408,7 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
             $0.item(context: self.context, userLocation: self.userLocation, webPage: self.webPage, message: self.message, presentationData: self.presentationData, fromPlayingVideo: self.fromPlayingVideo, landscape: self.landscape, openUrl: self.innerOpenUrl, openUrlOptions: self.openUrlOptions, getPreloadedResource: self.getPreloadedResource)
         }), centralItemIndex: self.centralEntryIndex)
         
-        self.galleryNode.pager.centralItemIndexUpdated = { [weak self] index in
+        self.galleryNode.pager.centralItemIndexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 var hiddenItem: InstantPageGalleryEntry?
                 if let index = index {
@@ -434,7 +434,7 @@ public class InstantPageGalleryController: ViewController, StandalonePresentable
             return baseNavigationController
         }
         
-        let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self] _ in
+        let ready = self.galleryNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self = self] _ in
             self?.didSetReady = true
         }
         self._ready.set(ready |> map { true })

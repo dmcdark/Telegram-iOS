@@ -425,11 +425,11 @@ private final class TimeSelectionControlComponent: Component {
                     safeInsets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: component.bottomInset, right: 0.0),
                     leadingAction: ChatTimerPickerContentComponent.LeadingAction(
                         icon: .back,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.component?.cancel()
                         }
                     ),
-                    completion: { [weak self] value in
+                    completion: { [weak self = self] value in
                         guard let self, let value else {
                             return
                         }
@@ -615,7 +615,7 @@ final class EmojiStatusPreviewScreenComponent: Component {
             for duration in delayDurations {
                 menuItems.append(AnyComponentWithIdentity(id: duration, component: AnyComponent(ContextMenuActionItem(
                     title: setTimeoutForIntervalString(strings: component.strings, value: Int32(duration)),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let strongSelf = self, let component = strongSelf.component else {
                             return .none
                         }
@@ -629,7 +629,7 @@ final class EmojiStatusPreviewScreenComponent: Component {
             }
             menuItems.append(AnyComponentWithIdentity(id: "Other", component: AnyComponent(ContextMenuActionItem(
                 title: component.strings.EmojiStatusSetup_TimerOther,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.toggleState()
                     return .clearHighlight
                 }
@@ -653,7 +653,7 @@ final class EmojiStatusPreviewScreenComponent: Component {
                     dateTimeFormat: component.dateTimeFormat,
                     bottomInset: component.bottomInset,
                     screenCornerRadius: component.screenCornerRadius,
-                    apply: { [weak self] timestamp in
+                    apply: { [weak self = self] timestamp in
                         guard let strongSelf = self, let component = strongSelf.component else {
                             return
                         }
@@ -662,7 +662,7 @@ final class EmojiStatusPreviewScreenComponent: Component {
                         }
                         component.dismiss(StatusResult(timestamp: timestamp, sourceView: itemComponentView))
                     },
-                    cancel: { [weak self] in
+                    cancel: { [weak self = self] in
                         self?.toggleState()
                     }
                 )),

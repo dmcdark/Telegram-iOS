@@ -51,7 +51,7 @@ public class CameraSimplePreviewView: UIView {
         }
         let statusBarOrientation: UIInterfaceOrientation
         if #available(iOS 13.0, *) {
-            statusBarOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
+            statusBarOrientation = self.window?.windowScene?.interfaceOrientation ?? UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.interfaceOrientation }.first ?? .portrait
         } else {
             statusBarOrientation = UIApplication.shared.statusBarOrientation
         }
@@ -171,7 +171,7 @@ public class CameraSimplePreviewView: UIView {
     
     @available(iOS 13.0, *)
     public var isPreviewing: Signal<Bool, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }

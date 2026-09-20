@@ -505,7 +505,7 @@ public final class OngoingCallVideoCapturer {
             }
             let image = UIGraphicsGetImageFromCurrentImageContext()
             UIGraphicsEndImageContext()
-            self.simulatedVideoTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true, block: { [weak self] _ in
+            self.simulatedVideoTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true, block: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -633,7 +633,7 @@ public final class OngoingCallVideoCapturer {
 
     public func video() -> Signal<OngoingGroupCallContext.VideoFrameData, NoError> {
         let queue = Queue.mainQueue()
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
 
             queue.async {
@@ -935,7 +935,7 @@ public final class OngoingCallContext {
         self.audioSessionDisposable.set((audioSessionActive
         |> filter { $0 }
         |> take(1)
-        |> deliverOn(queue)).start(next: { [weak self] _ in
+        |> deliverOn(queue)).start(next: { [weak self = self] _ in
             if let strongSelf = self {
                 var allowP2P = allowP2P
                 
@@ -1102,7 +1102,7 @@ public final class OngoingCallContext {
                     enableStunMarking: enableStunMarking,
                     logPath: logPath,
                     statsLogPath: tempStatsLogPath,
-                    sendSignalingData: { [weak callSessionManager] data in
+                    sendSignalingData: { [weak callSessionManager = callSessionManager] data in
                         queue.async {
                             guard let strongSelf = self else {
                                 return
@@ -1126,7 +1126,7 @@ public final class OngoingCallContext {
                 )
                 
                 strongSelf.contextRef = Unmanaged.passRetained(OngoingCallThreadLocalContextHolder(context))
-                context.stateChanged = { [weak callSessionManager] state, videoState, remoteVideoState, remoteAudioState, remoteBatteryLevel, _ in
+                context.stateChanged = { [weak callSessionManager = callSessionManager] state, videoState, remoteVideoState, remoteAudioState, remoteBatteryLevel, _ in
                     queue.async {
                         guard let strongSelf = self else {
                             return
@@ -1206,7 +1206,7 @@ public final class OngoingCallContext {
                     }
                 })
 
-                strongSelf.signalingDataDisposable = callSessionManager.beginReceivingCallSignalingData(internalId: internalId, { [weak self] dataList in
+                strongSelf.signalingDataDisposable = callSessionManager.beginReceivingCallSignalingData(internalId: internalId, { [weak self = self] dataList in
                     queue.async {
                         guard let self else {
                             return
@@ -1365,7 +1365,7 @@ public final class OngoingCallContext {
     
     public func video(isIncoming: Bool) -> Signal<OngoingGroupCallContext.VideoFrameData, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
 
             queue.async {
@@ -1395,7 +1395,7 @@ public final class OngoingCallContext {
     }
     
     public func sendSignalingData(data: Data) {
-        self.queue.async { [weak self] in
+        self.queue.async { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1510,7 +1510,7 @@ private final class CallDirectConnectionImpl: NSObject, OngoingCallDirectConnect
         
         private func receive() {
             let queue = self.queue
-            self.connection?.receiveMessage(completion: { [weak self] data, _, _, error in
+            self.connection?.receiveMessage(completion: { [weak self = self] data, _, _, error in
                 assert(queue.isCurrent())
                 
                 guard let `self` = self else {
@@ -1640,7 +1640,7 @@ private final class CallSignalingConnectionImpl: CallSignalingConnection {
         
         self.connection = NWConnection(host: self.host, port: self.port, using: .tcp)
         
-        self.connection.stateUpdateHandler = { [weak self] state in
+        self.connection.stateUpdateHandler = { [weak self = self] state in
             queue.async {
                 self?.stateUpdated(state: state)
             }
@@ -1681,7 +1681,7 @@ private final class CallSignalingConnectionImpl: CallSignalingConnection {
     }
     
     private func beginPingTimer() {
-        self.pingTimer = SwiftSignalKit.Timer(timeout: self.isConnected ? 2.0 : 0.15, repeat: false, completion: { [weak self] in
+        self.pingTimer = SwiftSignalKit.Timer(timeout: self.isConnected ? 2.0 : 0.15, repeat: false, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1693,7 +1693,7 @@ private final class CallSignalingConnectionImpl: CallSignalingConnection {
     }
     
     private func receivePacketHeader() {
-        self.connection.receive(minimumIncompleteLength: 4, maximumLength: 4, completion: { [weak self] data, _, _, error in
+        self.connection.receive(minimumIncompleteLength: 4, maximumLength: 4, completion: { [weak self = self] data, _, _, error in
             guard let strongSelf = self else {
                 return
             }
@@ -1714,7 +1714,7 @@ private final class CallSignalingConnectionImpl: CallSignalingConnection {
     }
     
     private func receivePacketPayload(size: Int) {
-        self.connection.receive(minimumIncompleteLength: size, maximumLength: size, completion: { [weak self] data, _, _, error in
+        self.connection.receive(minimumIncompleteLength: size, maximumLength: size, completion: { [weak self = self] data, _, _, error in
             guard let strongSelf = self else {
                 return
             }
@@ -1887,7 +1887,7 @@ private final class CallSignalingConnectionManager {
             let dataReceived = self.dataReceived
             let connection = CallSignalingConnectionImpl(queue: queue, host: host, port: port, peerTag: self.peerTag, dataReceived: { data in
                 dataReceived(data)
-            }, isClosed: { [weak self] in
+            }, isClosed: { [weak self = self] in
                 guard let `self` = self else {
                     return
                 }

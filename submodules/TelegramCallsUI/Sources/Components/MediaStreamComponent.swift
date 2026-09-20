@@ -103,7 +103,7 @@ public final class MediaStreamComponent: CombinedComponent {
                 }
             }
             |> filter { $0 }
-            |> take(1)).start(next: { [weak self] _ in
+            |> take(1)).start(next: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -119,7 +119,7 @@ public final class MediaStreamComponent: CombinedComponent {
             }
             
             self.infoDisposable = (combineLatest(queue: .mainQueue(), call.state, call.members, callPeer)
-            |> deliverOnMainQueue).start(next: { [weak self] state, members, callPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state, members, callPeer in
                 guard let strongSelf = self, let members = members, let callPeer = callPeer else {
                     return
                 }
@@ -169,7 +169,7 @@ public final class MediaStreamComponent: CombinedComponent {
             })
             
             self.isVisibleInHierarchyDisposable = (call.accountContext.sharedContext.applicationBindings.applicationInForeground
-            |> deliverOnMainQueue).start(next: { [weak self] inForeground in
+            |> deliverOnMainQueue).start(next: { [weak self = self] inForeground in
                 guard let strongSelf = self else {
                     return
                 }
@@ -210,7 +210,7 @@ public final class MediaStreamComponent: CombinedComponent {
         
         func scheduleDismissUI() {
             if self.scheduledDismissUITimer == nil {
-                self.scheduledDismissUITimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self] in
+                self.scheduledDismissUITimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1059,7 +1059,7 @@ public final class MediaStreamComponentController: ViewControllerComponentContai
         
         self.view.layer.allowsGroupOpacity = true
         
-        self.backgroundDimView.layer.animateAlpha(from: 0, to: 1, duration: 0.3, completion: { [weak self] _ in
+        self.backgroundDimView.layer.animateAlpha(from: 0, to: 1, duration: 0.3, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1106,7 +1106,7 @@ public final class MediaStreamComponentController: ViewControllerComponentContai
         self.view.layer.allowsGroupOpacity = true
         
         self.backgroundDimView.layer.animateAlpha(from: 1.0, to: 0, duration: 0.3, removeOnCompletion: false)
-        self.view.layer.animatePosition(from: self.view.center, to: CGPoint(x: self.view.center.x, y: self.view.bounds.maxY + self.view.bounds.height / 2), duration: 0.4, removeOnCompletion: false, completion: { [weak self] _ in
+        self.view.layer.animatePosition(from: self.view.center, to: CGPoint(x: self.view.center.x, y: self.view.bounds.maxY + self.view.bounds.height / 2), duration: 0.4, removeOnCompletion: false, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 completion?()
                 return
@@ -1132,7 +1132,7 @@ public final class MediaStreamComponentController: ViewControllerComponentContai
     func presentShare() {
         let _ = (self.inviteLinksPromise.get()
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] inviteLinks in
+        |> deliverOnMainQueue).start(next: { [weak self = self] inviteLinks in
             guard let strongSelf = self else {
                 return
             }
@@ -1193,7 +1193,7 @@ public final class MediaStreamComponentController: ViewControllerComponentContai
             }
         }
         let _ = (combineLatest(queue: .mainQueue(), sharedPeerSignal, self.callImpl.state |> take(1))
-        |> deliverOnMainQueue).start(next: { [weak self] peer, callState in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer, callState in
             if let strongSelf = self {
                 var inviteLinks = inviteLinks
 
@@ -1209,19 +1209,19 @@ public final class MediaStreamComponentController: ViewControllerComponentContai
                 
                 var segmentedValues: [ShareControllerSegmentedValue]?
                 segmentedValues = nil
-                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), segmentedValues: segmentedValues, forceTheme: defaultDarkPresentationTheme, forcedActionTitle: presentationData.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self] in
+                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .url(inviteLinks.listenerLink), segmentedValues: segmentedValues, forceTheme: defaultDarkPresentationTheme, forcedActionTitle: presentationData.strings.VoiceChat_CopyInviteLink, actionCompleted: { [weak self = self] in
                     if let strongSelf = self {
                         let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                         strongSelf.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.VoiceChat_InviteLinkCopiedText), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
                     }
-                }, completed: { [weak self] peerIds in
+                }, completed: { [weak self = self] peerIds in
                     if let strongSelf = self {
                         let _ = (strongSelf.context.engine.data.get(
                             EngineDataList(
                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                             )
                         )
-                        |> deliverOnMainQueue).start(next: { [weak self] peerList in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
                             if let strongSelf = self {
                                 let peers = peerList.compactMap { $0 }
                                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -1502,7 +1502,7 @@ private final class StreamTitleComponent: Component {
             self.addSubview(self.titleLabel)
             self.addSubview(self.liveIndicatorView)
             
-            self.trackingLayer.didEnterHierarchy = { [weak self] in
+            self.trackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

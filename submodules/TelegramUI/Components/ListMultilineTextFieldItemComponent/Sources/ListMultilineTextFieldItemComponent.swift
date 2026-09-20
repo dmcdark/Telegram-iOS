@@ -267,7 +267,7 @@ public final class ListMultilineTextFieldItemComponent: Component {
         public override init(frame: CGRect) {
             super.init(frame: CGRect())
             
-            self.textFieldExternalState.updated = { [weak self] in
+            self.textFieldExternalState.updated = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -458,13 +458,13 @@ public final class ListMultilineTextFieldItemComponent: Component {
                     },
                     paste: { _ in
                     },
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.returnKeyAction?()
                     },
-                    backspaceKeyAction: { [weak self] in
+                    backspaceKeyAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -615,7 +615,7 @@ public final class ListMultilineTextFieldItemComponent: Component {
                             size: modeSelectorSize
                         )),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

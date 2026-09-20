@@ -40,21 +40,21 @@ private final class UniversalVideoContentHolder {
         self.content = content
         self.contentNode = contentNode
         
-        self.statusDisposable = (contentNode.status |> deliverOnMainQueue).start(next: { [weak self] value in
+        self.statusDisposable = (contentNode.status |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.statusValue = value
                 statusUpdated(value)
             }
         })
         
-        self.bufferingStatusDisposable = (contentNode.bufferingStatus |> deliverOnMainQueue).start(next: { [weak self] value in
+        self.bufferingStatusDisposable = (contentNode.bufferingStatus |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.bufferingStatusValue = value
                 bufferingStatusUpdated(value)
             }
         })
         
-        self.isNativePictureInPictureActiveDisposable = (contentNode.isNativePictureInPictureActive |> deliverOnMainQueue).start(next: { [weak self] value in
+        self.isNativePictureInPictureActiveDisposable = (contentNode.isNativePictureInPictureActive |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isNativePictureInPictureActiveValue = value
                 isNativePictureInPictureActiveUpdated(value)
@@ -178,7 +178,7 @@ public final class UniversalVideoManagerImpl: UniversalVideoManager {
                 holder = foundHolder
             } else {
                 initiatedCreation = true
-                holder = UniversalVideoContentHolder(content: content, contentNode: create(), statusUpdated: { [weak self] value in
+                holder = UniversalVideoContentHolder(content: content, contentNode: create(), statusUpdated: { [weak self = self] value in
                     if let strongSelf = self {
                         if let current = strongSelf.holderCallbacks[content.id] {
                             for subscriber in current.status.copyItems() {
@@ -186,7 +186,7 @@ public final class UniversalVideoManagerImpl: UniversalVideoManager {
                             }
                         }
                     }
-                }, bufferingStatusUpdated: { [weak self] value in
+                }, bufferingStatusUpdated: { [weak self = self] value in
                     if let strongSelf = self {
                         if let current = strongSelf.holderCallbacks[content.id] {
                             for subscriber in current.bufferingStatus.copyItems() {
@@ -194,7 +194,7 @@ public final class UniversalVideoManagerImpl: UniversalVideoManager {
                             }
                         }
                     }
-                }, playbackCompleted: { [weak self] in
+                }, playbackCompleted: { [weak self = self] in
                     if let strongSelf = self {
                         if let current = strongSelf.holderCallbacks[content.id] {
                             for subscriber in current.playbackCompleted.copyItems() {
@@ -202,7 +202,7 @@ public final class UniversalVideoManagerImpl: UniversalVideoManager {
                             }
                         }
                     }
-                }, isNativePictureInPictureActiveUpdated: { [weak self] value in
+                }, isNativePictureInPictureActiveUpdated: { [weak self = self] value in
                     if let strongSelf = self {
                         if let current = strongSelf.holderCallbacks[content.id] {
                             for subscriber in current.isNativePictureInPictureActive.copyItems() {

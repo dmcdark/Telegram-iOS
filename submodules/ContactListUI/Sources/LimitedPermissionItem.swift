@@ -111,7 +111,7 @@ public class LimitedPermissionItemNode: ListViewItemNode {
         self.addSubnode(self.actionButtonTitleNode)
         self.addSubnode(self.actionButton)
         
-        self.actionButton.highligthedChanged = { [weak self] highlighted in
+        self.actionButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.actionButtonBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -167,7 +167,7 @@ public class LimitedPermissionItemNode: ListViewItemNode {
             let contentSize = CGSize(width: params.width, height: textLayout.size.height + 20.0)
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

@@ -132,7 +132,7 @@ public final class PrivacyIntroController: ViewController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -185,7 +185,7 @@ public final class PrivacyIntroController: ViewController {
         if !self.isDismissed {
             self.isDismissed = true
             if self.arguments.animateIn {
-                self.controllerNode.animateOut(completion: { [weak self] in
+                self.controllerNode.animateOut(completion: { [weak self = self] in
                     self?.presentingViewController?.dismiss(animated: false, completion: nil)
                     completion?()
                 })

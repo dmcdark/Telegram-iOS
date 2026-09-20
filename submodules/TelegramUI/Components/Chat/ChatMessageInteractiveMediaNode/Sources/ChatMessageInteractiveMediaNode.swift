@@ -274,7 +274,7 @@ private class ExtendedMediaOverlayNode: ASDisplayNode {
         self.buttonNode.addSubnode(self.iconNode)
         self.buttonNode.addSubnode(self.textNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.highlightedBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -348,7 +348,7 @@ private class ExtendedMediaOverlayNode: ASDisplayNode {
             self.blurredImageNode.isHidden = false
 
             self.isRevealed = self.dustNode.isRevealed
-            self.dustNode.revealed = { [weak self] in
+            self.dustNode.revealed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -356,7 +356,7 @@ private class ExtendedMediaOverlayNode: ASDisplayNode {
                 self.blurredImageNode.removeFromSupernode()
                 self.buttonNode.removeFromSupernode()
             }
-            self.dustNode.tapped = { [weak self] in
+            self.dustNode.tapped = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -556,14 +556,14 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
         self.imageNode.displaysAsynchronously = false
         self.pinchContainerNode.contentNode.addSubnode(self.imageNode)
         
-        self.pinchContainerNode.activate = { [weak self] sourceNode in
+        self.pinchContainerNode.activate = { [weak self = self] sourceNode in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.activatePinch?(sourceNode)
         }
 
-        self.pinchContainerNode.scaleUpdated = { [weak self] scale, transition in
+        self.pinchContainerNode.scaleUpdated = { [weak self = self] scale, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -879,7 +879,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
         let testDeferHLSMedia = self.testDeferHLSMedia
         #endif
         
-        return { [weak self] context, presentationData, dateTimeFormat, message, associatedData, attributes, media, mediaIndex, dateAndStatus, automaticDownload, peerType, peerId, sizeCalculation, layoutConstants, contentMode, presentationContext in
+        return { [weak self = self] context, presentationData, dateTimeFormat, message, associatedData, attributes, media, mediaIndex, dateAndStatus, automaticDownload, peerType, peerId, sizeCalculation, layoutConstants, contentMode, presentationContext in
             let _ = peerType
             
             #if DEBUG && false
@@ -2027,7 +2027,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
                                     let videoNode = UniversalVideoNode(context: context, postbox: context.account.postbox, audioSession: mediaManager.audioSession, manager: mediaManager.universalVideoManager, decoration: decoration, content: videoContent, priority: .embedded)
                                     videoNode.isUserInteractionEnabled = false
                                     var firstTime = true
-                                    videoNode.ownsContentNodeUpdated = { [weak self] owns in
+                                    videoNode.ownsContentNodeUpdated = { [weak self = self] owns in
                                         /*#if DEBUG
                                         // Debug memory leak
                                         let _ = videoNode.videoQualityState()
@@ -2052,7 +2052,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
                                             }
                                         }
                                     }
-                                    videoNode.playbackCompleted = { [weak self] in
+                                    videoNode.playbackCompleted = { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -2537,7 +2537,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
     
     private func ensureHasTimer() {
         if self.playerUpdateTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.updateStatus(animated: false)
                 }, queue: Queue.mainQueue())
             self.playerUpdateTimer = timer
@@ -3023,7 +3023,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
                 }
                 
                 badgeNode.frame = CGRect(origin: CGPoint(x: inset, y: 6.0), size: CGSize(width: radialStatusSize, height: radialStatusSize))
-                badgeNode.pressed = { [weak self] in
+                badgeNode.pressed = { [weak self = self] in
                     guard let strongSelf = self, let fetchStatus = strongSelf.fetchStatus else {
                         return
                     }
@@ -3092,7 +3092,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
             } else {
                 let enableAnimations = context.sharedContext.energyUsageSettings.fullTranslucency && !isPreview
                 extendedMediaOverlayNode = ExtendedMediaOverlayNode(context: context, hasImageOverlay: !isSecretMedia, icon: icon,  enableAnimations: enableAnimations)
-                extendedMediaOverlayNode.tapped = { [weak self] in
+                extendedMediaOverlayNode.tapped = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -3150,7 +3150,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
              
         if isSecretMedia, secretBeginTimeAndTimeout?.0 != nil {
             if self.secretTimer == nil {
-                self.secretTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: true, completion: { [weak self] in
+                self.secretTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: true, completion: { [weak self = self] in
                     self?.updateStatus(animated: false)
                 }, queue: Queue.mainQueue())
                 self.secretTimer?.start()
@@ -3312,7 +3312,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
         } else {
             bounds = self.bounds
         }
-        return (adjustRect ? self.imageNode : self, bounds, { [weak self] in
+        return (adjustRect ? self.imageNode : self, bounds, { [weak self = self] in
             var badgeNodeHidden: Bool?
             if let badgeNode = self?.badgeNode {
                 badgeNodeHidden = badgeNode.isHidden
@@ -3553,7 +3553,7 @@ public final class ChatMessageInteractiveMediaNode: ASDisplayNode, GalleryItemTr
         content = GalleryItemScrubberTransition.Content(
             sourceView: self.imageNode.view,
             sourceRect: sourceContentRect,
-            makeView: { [weak self] in
+            makeView: { [weak self = self] in
                 guard let self else {
                     return UIView()
                 }

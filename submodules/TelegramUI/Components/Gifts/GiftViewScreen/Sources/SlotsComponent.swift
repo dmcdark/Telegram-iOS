@@ -299,7 +299,7 @@ final class SlotsComponent<ChildEnvironment: Equatable>: Component {
             guard self.animationLink == nil else {
                 return
             }
-            self.animationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+            self.animationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                 self?.tick()
             })
         }

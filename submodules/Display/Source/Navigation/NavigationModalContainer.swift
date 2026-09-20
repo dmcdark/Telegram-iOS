@@ -61,7 +61,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
         self.scrollNode.addSubnode(self.container)
         
         self.isReady = self.container.isReady
-        self.container.isReadyUpdated = { [weak self] in
+        self.container.isReadyUpdated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -93,7 +93,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
         self.scrollNode.view.tag = 0x5C4011
         self.scrollNode.view.scrollsToTop = false
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let strongSelf = self, !strongSelf.isDismissed else {
                 return []
             }
@@ -189,7 +189,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
                 let transition: ContainedViewLayoutTransition = .animated(duration: 0.5, curve: .spring)
                 transition.updateFrame(node: self.scrollNode, frame: CGRect(origin: CGPoint(x: self.bounds.width, y: 0.0), size: self.scrollNode.bounds.size))
                 self.container.updateAdditionalKeyboardLeftEdgeOffset(self.bounds.width, transition: transition)
-                self.applyDismissProgress(transition: transition, completion: { [weak self] in
+                self.applyDismissProgress(transition: transition, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -231,7 +231,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
         let deltaY = targetOffset - scrollView.contentOffset.y
         scrollView.setContentOffset(scrollView.contentOffset, animated: false)
         scrollView.setContentOffset(CGPoint(x: 0.0, y: targetOffset), animated: false)
-        transition.animateOffsetAdditive(layer: self.scrollNode.layer, offset: -deltaY, completion: { [weak self] in
+        transition.animateOffsetAdditive(layer: self.scrollNode.layer, offset: -deltaY, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -307,7 +307,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
         let deltaY = targetOffset - scrollView.contentOffset.y
         scrollView.setContentOffset(scrollView.contentOffset, animated: false)
         scrollView.setContentOffset(CGPoint(x: 0.0, y: targetOffset), animated: false)
-        transition.animateOffsetAdditive(layer: self.scrollNode.layer, offset: -deltaY, completion: { [weak self] in
+        transition.animateOffsetAdditive(layer: self.scrollNode.layer, offset: -deltaY, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -522,7 +522,7 @@ final class NavigationModalContainer: ASDisplayNode, ASScrollViewDelegate, ASGes
                 if let lastController = self.container.controllers.last as? MinimizableController, lastController.isMinimized {
                     self.dim.layer.removeAllAnimations()
                 }
-                positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0 + self.bounds.height), beginWithCurrentState: true, completion: { [weak self] _ in
+                positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0 + self.bounds.height), beginWithCurrentState: true, completion: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }

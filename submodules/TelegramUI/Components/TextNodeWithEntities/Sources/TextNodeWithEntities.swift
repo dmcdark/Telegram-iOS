@@ -325,7 +325,7 @@ public final class TextNodeWithEntities {
         if self.highlightAttributeAction != nil {
             if self.tapRecognizer == nil {
                 let tapRecognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapAction(_:)))
-                tapRecognizer.highlight = { [weak self] point in
+                tapRecognizer.highlight = { [weak self = self] point in
                     if let strongSelf = self, let cachedLayout = strongSelf.textNode.cachedLayout {
                         var rects: [CGRect]?
                         if let point = point {
@@ -716,7 +716,7 @@ public class ImmediateTextNodeWithEntities: TextNode {
         if self.highlightAttributeAction != nil {
             if self.tapRecognizer == nil {
                 let tapRecognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapAction(_:)))
-                tapRecognizer.highlight = { [weak self] point in
+                tapRecognizer.highlight = { [weak self = self] point in
                     if let strongSelf = self {
                         var rects: [CGRect]?
                         if let point = point {

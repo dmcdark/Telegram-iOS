@@ -236,7 +236,7 @@ public final class ChatListHeaderComponent: Component {
             
             self.addSubview(self.arrowView)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -470,7 +470,7 @@ public final class ChatListHeaderComponent: Component {
                     backButtonView = current
                 } else {
                     backButtonTransition = .immediate
-                    backButtonView = BackButtonView(onPressed: { [weak self] in
+                    backButtonView = BackButtonView(onPressed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -680,13 +680,13 @@ public final class ChatListHeaderComponent: Component {
                 let centerOffset = sideContentWidth * 0.5
                 centerContentOffsetX = -max(0.0, centerOffset + titleContentRect.maxX - 2.0 - (size.width - sideInset - nextRightButtonX))
                 
-                chatListTitleView.openStatusSetup = { [weak self] sourceView in
+                chatListTitleView.openStatusSetup = { [weak self = self] sourceView in
                     guard let self else {
                         return
                     }
                     self.openStatusSetup(sourceView)
                 }
-                chatListTitleView.toggleIsLocked = { [weak self] in
+                chatListTitleView.toggleIsLocked = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -841,19 +841,19 @@ public final class ChatListHeaderComponent: Component {
                 } else {
                     primaryContentTransition = .immediate
                     primaryContentView = ContentView(
-                        backPressed: { [weak self] in
+                        backPressed: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.primaryContent?.backPressed?()
                         },
-                        openStatusSetup: { [weak self] sourceView in
+                        openStatusSetup: { [weak self = self] sourceView in
                             guard let self else {
                                 return
                             }
                             self.component?.openStatusSetup(sourceView)
                         },
-                        toggleIsLocked: { [weak self] in
+                        toggleIsLocked: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -943,31 +943,31 @@ public final class ChatListHeaderComponent: Component {
                         collapseFraction: 1.0 - component.storiesFraction,
                         unlocked: component.storiesUnlocked,
                         uploadProgress: component.uploadProgress,
-                        peerAction: { [weak self] peer in
+                        peerAction: { [weak self = self] peer in
                             guard let self else {
                                 return
                             }
                             self.storyPeerAction?(peer)
                         },
-                        contextPeerAction: { [weak self] sourceNode, gesture, peer in
+                        contextPeerAction: { [weak self = self] sourceNode, gesture, peer in
                             guard let self else {
                                 return
                             }
                             self.storyContextPeerAction?(sourceNode, gesture, peer)
                         },
-                        openStatusSetup: { [weak self] sourceView in
+                        openStatusSetup: { [weak self = self] sourceView in
                             guard let self else {
                                 return
                             }
                             self.component?.openStatusSetup(sourceView)
                         },
-                        lockAction: { [weak self] in
+                        lockAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.component?.toggleIsLocked()
                         },
-                        composeAction: { [weak self] offset in
+                        composeAction: { [weak self = self] offset in
                             guard let self else {
                                 return
                             }
@@ -990,19 +990,19 @@ public final class ChatListHeaderComponent: Component {
                     secondaryContentTransition = .immediate
                     secondaryContentIsAnimatingIn = true
                     secondaryContentView = ContentView(
-                        backPressed: { [weak self] in
+                        backPressed: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.secondaryContent?.backPressed?()
                         },
-                        openStatusSetup: { [weak self] sourceView in
+                        openStatusSetup: { [weak self = self] sourceView in
                             guard let self else {
                                 return
                             }
                             self.component?.openStatusSetup(sourceView)
                         },
-                        toggleIsLocked: { [weak self] in
+                        toggleIsLocked: { [weak self = self] in
                             guard let self else {
                                 return
                             }

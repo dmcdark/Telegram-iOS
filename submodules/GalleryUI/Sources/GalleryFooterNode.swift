@@ -80,7 +80,7 @@ public final class GalleryFooterNode: ASDisplayNode {
             if let footerContentNode = footerContentNode {
                 footerContentNode.setVisibilityAlpha(self.visibilityAlpha, animated: false)
                 footerContentNode.controllerInteraction = self.controllerInteraction
-                footerContentNode.requestLayout = { [weak self] transition in
+                footerContentNode.requestLayout = { [weak self = self] transition in
                     if let strongSelf = self, let (currentLayout, navigationBarHeight, currentThumbnailPanelHeight, isHidden) = strongSelf.currentLayout {
                         strongSelf.updateLayout(currentLayout, navigationBarHeight: navigationBarHeight, footerContentNode: strongSelf.currentFooterContentNode, overlayContentNode: strongSelf.currentOverlayContentNode, thumbnailPanelHeight: currentThumbnailPanelHeight, isHidden: isHidden, transition: transition)
                     }

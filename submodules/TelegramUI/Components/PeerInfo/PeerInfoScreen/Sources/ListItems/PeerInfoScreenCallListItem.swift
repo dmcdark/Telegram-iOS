@@ -48,7 +48,7 @@ private final class PeerInfoScreenCallListItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         

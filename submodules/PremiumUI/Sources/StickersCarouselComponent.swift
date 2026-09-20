@@ -161,7 +161,7 @@ private class StickerNode: ASDisplayNode {
         self.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -172,7 +172,7 @@ private class StickerNode: ASDisplayNode {
         }
             
         if let animationNode = self.animationNode {
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -201,7 +201,7 @@ private class StickerNode: ASDisplayNode {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -366,7 +366,7 @@ private class StickersCarouselNode: ASDisplayNode, ASScrollViewDelegate {
         
         if self.timer == nil {
             self.previousInteractionTimestamp = CACurrentMediaTime()
-            self.timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: true, completion: { [weak self = self] in
                 if let strongSelf = self {
                     let currentTimestamp = CACurrentMediaTime()
                     if currentTimestamp > strongSelf.previousInteractionTimestamp + 2.0 {
@@ -415,7 +415,7 @@ private class StickersCarouselNode: ASDisplayNode, ASScrollViewDelegate {
             self.playSelectedSticker(index: index)
         }
         
-        self.animator = DisplayLinkAnimator(duration: duration * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self] t in
+        self.animator = DisplayLinkAnimator(duration: duration * UIView.animationDurationFactor(), from: 0.0, to: 1.0, update: { [weak self = self] t in
             let t = listViewAnimationCurveSystem(t)
             var updatedPosition = startPosition + change * t
             while updatedPosition >= 1.0 {
@@ -428,7 +428,7 @@ private class StickersCarouselNode: ASDisplayNode, ASScrollViewDelegate {
             if let size = self?.validLayout {
                 self?.updateLayout(size: size, transition: .immediate)
             }
-        }, completion: { [weak self] in
+        }, completion: { [weak self = self] in
             self?.animator = nil
             if playAnimation && !immediately {
                 self?.playSelectedSticker(index: index)

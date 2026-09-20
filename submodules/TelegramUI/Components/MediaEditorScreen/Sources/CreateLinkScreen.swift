@@ -389,7 +389,7 @@ private final class CreateLinkSheetComponent: CombinedComponent {
             
             self.linkDisposable.set((self.linkPromise.get()
             |> delay(1.5, queue: Queue.mainQueue())
-            |> deliverOnMainQueue).startStrict(next: { [weak self] link in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] link in
                 guard let self else {
                     return
                 }
@@ -410,7 +410,7 @@ private final class CreateLinkSheetComponent: CombinedComponent {
                 }
                 self.previewDisposable.set(
                     (webpagePreview(account: context.account, urls: [link])
-                     |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                     |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                          guard let self else {
                              return
                          }
@@ -441,13 +441,13 @@ private final class CreateLinkSheetComponent: CombinedComponent {
                 name = self.link
             }
                         
-            presentLinkOptionsController(context: self.context, selfController: controller, snapshotImage: controller.snapshotImage, isDark: self.isDark, sourceNode: sourceNode, url: link, name: name, positionBelowText: self.positionBelowText, largeMedia: self.largeMedia, webPage: webpage, completion: { [weak self] positionBelowText, largeMedia in
+            presentLinkOptionsController(context: self.context, selfController: controller, snapshotImage: controller.snapshotImage, isDark: self.isDark, sourceNode: sourceNode, url: link, name: name, positionBelowText: self.positionBelowText, largeMedia: self.largeMedia, webPage: webpage, completion: { [weak self = self] positionBelowText, largeMedia in
                 guard let self else {
                     return
                 }
                 self.positionBelowText = positionBelowText
                 self.largeMedia = largeMedia
-            }, remove: { [weak self] in
+            }, remove: { [weak self = self] in
                 guard let self else {
                     return
                 }

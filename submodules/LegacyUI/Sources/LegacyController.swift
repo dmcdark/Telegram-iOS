@@ -593,7 +593,7 @@ open class LegacyController: ViewController, PresentableController {
     public func bind(controller: UIViewController) {
         self.legacyController = controller
         if let controller = controller as? TGViewController {
-            controller.customRemoveFromParentViewController = { [weak self] in
+            controller.customRemoveFromParentViewController = { [weak self = self] in
                 self?.dismiss()
             }
         }
@@ -669,7 +669,7 @@ open class LegacyController: ViewController, PresentableController {
         switch self.presentation {
             case let .modal(animateIn):
                 if animateIn {
-                    self.controllerNode.animateModalIn(completion: { [weak self] in
+                    self.controllerNode.animateModalIn(completion: { [weak self = self] in
                         self?.presentationCompleted?()
                         completion()
                     })
@@ -742,7 +742,7 @@ open class LegacyController: ViewController, PresentableController {
         self.view.endEditing(true)
         switch self.presentation {
         case .modal:
-            self.controllerNode.animateModalOut { [weak self] in
+            self.controllerNode.animateModalOut { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: completion)
             }
         case .custom:
@@ -757,7 +757,7 @@ open class LegacyController: ViewController, PresentableController {
     }
     
     public func dismissWithAnimation() {
-        self.controllerNode.animateModalOut { [weak self] in
+        self.controllerNode.animateModalOut { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
     }

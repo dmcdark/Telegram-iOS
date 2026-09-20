@@ -100,7 +100,7 @@ final class HorizontalStickerGridItemNode: GridItemNode {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -165,7 +165,7 @@ final class HorizontalStickerGridItemNode: GridItemNode {
                     } else {
                         self.imageNode.setSignal(chatMessageAnimatedSticker(postbox: context.account.postbox, userLocation: .other, file: item.file, small: true, size: fittedDimensions, synchronousLoad: false))
                     }
-                    animationNode.started = { [weak self] in
+                    animationNode.started = { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }

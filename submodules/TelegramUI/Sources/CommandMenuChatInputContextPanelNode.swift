@@ -100,7 +100,7 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
         self.listView.view.mask = self.listMaskView
         
         self.backgroundView.isHidden = true
-        self.listView.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listView.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             guard let self else {
                 return
             }
@@ -119,7 +119,7 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
         }
         
         self.disposable.set((context.engine.peers.peerCommands(id: peerId)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] results in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] results in
             if let strongSelf = self {
                 strongSelf.updateResults(results.commands)
             }
@@ -148,7 +148,7 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
     
     private func prepareTransition(from: [CommandMenuChatInputContextPanelEntry]? , to: [CommandMenuChatInputContextPanelEntry]) {
         let firstTime = self.currentEntries == nil
-        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, fontSize: self.fontSize, commandSelected: { [weak self] command, sendImmediately in
+        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, fontSize: self.fontSize, commandSelected: { [weak self = self] command, sendImmediately in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 if sendImmediately {
                     interfaceInteraction.sendBotCommand(command.peer._asPeer(), "/" + command.command.text)
@@ -215,7 +215,7 @@ final class CommandMenuChatInputContextPanelNode: ChatInputContextPanelNode {
             
             let updateSizeAndInsets = ListViewUpdateSizeAndInsets(size: self.listView.bounds.size, insets: insets, duration: 0.0, curve: .Default(duration: nil))
             
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self, firstTime {
                     var topItemOffset: CGFloat?
                     strongSelf.listView.forEachItemNode { itemNode in

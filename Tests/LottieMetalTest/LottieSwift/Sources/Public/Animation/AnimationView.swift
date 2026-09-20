@@ -1022,7 +1022,7 @@ final public class AnimationView: AnimationViewBase {
         fontProvider: fontProvider,
         compatibilityTrackerMode: .abort)
 
-      coreAnimationLayer.didSetUpAnimation = { [weak self] issues in
+      coreAnimationLayer.didSetUpAnimation = { [weak self = self] issues in
         self?.automaticEngineLayerDidSetUpAnimation(issues)
       }
 

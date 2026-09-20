@@ -265,7 +265,7 @@ final class PasskeysScreenListComponent: Component {
                         id: "delete",
                         title: component.strings.Common_Delete,
                         color: component.theme.list.itemDisclosureActions.destructive.fillColor,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -295,7 +295,7 @@ final class PasskeysScreenListComponent: Component {
                         tintColor: component.theme.list.itemAccentColor
                     ))), false),
                     accessory: nil,
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }

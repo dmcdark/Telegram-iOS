@@ -277,7 +277,7 @@ public class ChatMessageThreadInfoNode: ASDisplayNode {
         self.contentNode.addSubnode(self.contentBackgroundNode)
         self.contentNode.addSubnode(self.arrowNode)
         
-        self.contentNode.highligthedChanged = { [weak self] highlighted in
+        self.contentNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted, !strongSelf.frame.width.isZero {
                     let scale = (strongSelf.frame.width - 10.0) / strongSelf.frame.width

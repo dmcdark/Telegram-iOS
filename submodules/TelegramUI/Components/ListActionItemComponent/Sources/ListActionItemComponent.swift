@@ -289,7 +289,7 @@ public final class ListActionItemComponent: Component {
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let animateScale = true
                     
@@ -309,7 +309,7 @@ public final class ListActionItemComponent: Component {
                             let transition = ComponentTransition(animation: .none)
                             transition.setScale(layer: self.layer, scale: 1.0)
                             
-                            self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                            self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -404,7 +404,7 @@ public final class ListActionItemComponent: Component {
             self.container.addSubview(self.button)
             
             self.button.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.button.internalHighligthedChanged = { [weak self] isHighlighted in
+            self.button.internalHighligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, component.action != nil else {
                     return
                 }
@@ -420,7 +420,7 @@ public final class ListActionItemComponent: Component {
                 }
             }
             
-            closeOtherContextOptions = { [weak self] in
+            closeOtherContextOptions = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -619,7 +619,7 @@ public final class ListActionItemComponent: Component {
                         self.leftCheckView = leftCheckView
                         self.button.addSubview(leftCheckView)
                         
-                        leftCheckView.action = { [weak self] in
+                        leftCheckView.action = { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -804,7 +804,7 @@ public final class ListActionItemComponent: Component {
                         self.switchNode = switchNode
                         self.button.addSubview(switchNode.view)
                         
-                        switchNode.valueUpdated = { [weak self] value in
+                        switchNode.valueUpdated = { [weak self = self] value in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -906,7 +906,7 @@ public final class ListActionItemComponent: Component {
                         self.iconSwitchNode = switchNode
                         self.button.addSubview(switchNode.view)
                         
-                        switchNode.valueUpdated = { [weak self] value in
+                        switchNode.valueUpdated = { [weak self = self] value in
                             guard let self, let component = self.component else {
                                 return
                             }

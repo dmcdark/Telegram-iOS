@@ -137,7 +137,7 @@ class VoiceChatActionItemNode: ListViewItemNode {
         self.addSubnode(self.titleNode)
         self.addSubnode(self.activateArea)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             self?.item?.action()
             return true
         }
@@ -183,7 +183,7 @@ class VoiceChatActionItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     
@@ -258,7 +258,7 @@ class VoiceChatActionItemNode: ListViewItemNode {
         } else {
             if self.highlightContainerNode.supernode != nil {
                 if animated {
-                    self.highlightContainerNode.layer.animateAlpha(from: self.highlightContainerNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightContainerNode.layer.animateAlpha(from: self.highlightContainerNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightContainerNode.removeFromSupernode()

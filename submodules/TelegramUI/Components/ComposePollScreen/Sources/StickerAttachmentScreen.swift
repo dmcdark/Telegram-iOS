@@ -137,7 +137,7 @@ final class StickerAttachmentScreenComponent: Component {
             self.panelClippingView.addSubview(self.panelHostView)
             
             self.interaction = ChatEntityKeyboardInputNode.Interaction(
-                sendSticker: { [weak self] file, _, _, _, _, _, _, _, _ in
+                sendSticker: { [weak self = self] file, _, _, _, _, _, _, _, _ in
                     if let self {
                         self.complete(file.abstract)
                     }
@@ -160,12 +160,12 @@ final class StickerAttachmentScreenComponent: Component {
                 },
                 backwardsDeleteText: {},
                 openStickerEditor: {},
-                presentController: { [weak self] c, a in
+                presentController: { [weak self = self] c, a in
                     if let self, let controller = self.environment?.controller() {
                         controller.present(c, in: .window(.root), with: a)
                     }
                 },
-                presentGlobalOverlayController: { [weak self] c, a in
+                presentGlobalOverlayController: { [weak self = self] c, a in
                     if let self, let controller = self.environment?.controller() {
                         controller.presentInGlobalOverlay(c, with: a)
                     }
@@ -220,7 +220,7 @@ final class StickerAttachmentScreenComponent: Component {
         
         func updateContent(component: StickerAttachmentScreenComponent) {
             self.emojiContent?.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] groupId, item, _, _, _, _ in
+                performItemAction: { [weak self = self] groupId, item, _, _, _, _ in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -232,7 +232,7 @@ final class StickerAttachmentScreenComponent: Component {
                             ChatEntityKeyboardInputNode.hasPremium(context: context, chatPeerId: context.account.peerId, premiumIfSavedMessages: false)
                         )
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] hasPremium, hasGlobalPremium in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] hasPremium, hasGlobalPremium in
                             guard let self else {
                                 return
                             }
@@ -242,7 +242,7 @@ final class StickerAttachmentScreenComponent: Component {
                                 context.engine.data.subscribe(TelegramEngine.EngineData.Item.OrderedLists.ListItems(collectionId: Namespaces.OrderedItemList.CloudFeaturedEmojiPacks))
                             )
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] installedIds, items in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] installedIds, items in
                                 guard let self else {
                                     return
                                 }
@@ -280,7 +280,7 @@ final class StickerAttachmentScreenComponent: Component {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let self, let component = self.component, let collectionId = groupId.base as? EngineItemCollectionId else {
                         return
                     }
@@ -314,7 +314,7 @@ final class StickerAttachmentScreenComponent: Component {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -361,10 +361,10 @@ final class StickerAttachmentScreenComponent: Component {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.environment?.controller()?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let self else {
                         return
                     }
@@ -372,7 +372,7 @@ final class StickerAttachmentScreenComponent: Component {
                         self.state?.updated(transition: transition)
                     }
                 },
-                updateSearchQuery: { [weak self] query in
+                updateSearchQuery: { [weak self = self] query in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -504,7 +504,7 @@ final class StickerAttachmentScreenComponent: Component {
                             self.emojiSearchStateValue.isSearching = true
                             self.emojiSearchDisposable.set((resultSignal
                             |> delay(0.15, queue: .mainQueue())
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 guard let self else {
                                     return
                                 }
@@ -560,7 +560,7 @@ final class StickerAttachmentScreenComponent: Component {
                             
                         var version = 0
                         self.emojiSearchDisposable.set((resultSignal
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -596,14 +596,14 @@ final class StickerAttachmentScreenComponent: Component {
                         }))
                     }
                 },
-                updateScrollingToItemGroup: { // [weak self] in
+                updateScrollingToItemGroup: { // [weak self = self] in
 //                    if let self, let componentView = self.hostView.componentView as? StickerSelectionComponent.View {
 //                        componentView.scrolledToItemGroup()
 //                    }
 //                    self?.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                 },
                 onScroll: {},
-                loadMore: { [weak self] in
+                loadMore: { [weak self = self] in
                     self?.emojiSearchContext?.loadMore()
                 },
                 chatPeerId: nil,
@@ -624,13 +624,13 @@ final class StickerAttachmentScreenComponent: Component {
                 forceTheme: nil,
                 interaction: nil,
                 chatPeerId: nil,
-                present: { [weak self] c, a in
+                present: { [weak self = self] c, a in
                     self?.environment?.controller()?.presentInGlobalOverlay(c, with: a)
                 }
             )
             
             self.stickerContent?.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] groupId, item, _, _, _, _ in
+                performItemAction: { [weak self = self] groupId, item, _, _, _, _ in
                     guard let self, let component = self.component, let file = item.itemFile?._parse() else {
                         return
                     }
@@ -639,7 +639,7 @@ final class StickerAttachmentScreenComponent: Component {
                     if groupId == AnyHashable("featuredTop") {
                         let _ = (context.engine.data.subscribe(TelegramEngine.EngineData.Item.OrderedLists.ListItems(collectionId: Namespaces.OrderedItemList.CloudFeaturedStickerPacks))
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] items in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] items in
                             guard let self, let controller = self.environment?.controller() else {
                                 return
                             }
@@ -650,7 +650,7 @@ final class StickerAttachmentScreenComponent: Component {
                                         highlightedPackId: featuredStickerPack.info.id,
                                         forceTheme: nil,
                                         stickerActionTitle: presentationData.strings.StickerPack_AddSticker,
-                                        sendSticker: { [weak self] fileReference, _, _ in
+                                        sendSticker: { [weak self = self] fileReference, _, _ in
                                             if let self {
                                                 self.complete(fileReference.abstract)
                                             }
@@ -677,7 +677,7 @@ final class StickerAttachmentScreenComponent: Component {
                 deleteBackwards: nil,
                 openStickerSettings: nil,
                 openFeatured: nil,
-                openSearch: { [weak self] in
+                openSearch: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -685,7 +685,7 @@ final class StickerAttachmentScreenComponent: Component {
                         pagerView.openSearch()
                     }
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let strongSelf = self, let component = strongSelf.component, let collectionId = groupId.base as? EngineItemCollectionId else {
                         return
                     }
@@ -719,7 +719,7 @@ final class StickerAttachmentScreenComponent: Component {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let strongSelf = self, let component = strongSelf.component else {
                         return
                     }
@@ -758,10 +758,10 @@ final class StickerAttachmentScreenComponent: Component {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.environment?.controller()?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let self else {
                         return
                     }
@@ -769,7 +769,7 @@ final class StickerAttachmentScreenComponent: Component {
                         self.state?.updated(transition: transition)
                     }
                 },
-                updateSearchQuery: { [weak self] query in
+                updateSearchQuery: { [weak self = self] query in
                     guard let self = self, let component = self.component else {
                         return
                     }
@@ -828,7 +828,7 @@ final class StickerAttachmentScreenComponent: Component {
                             
                         var version = 0
                         self.stickerSearchDisposable.set((resultSignal
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -897,7 +897,7 @@ final class StickerAttachmentScreenComponent: Component {
                     self.stickerSearchState.get(),
                     self.emojiSearchState.get()
                 )
-                self.contentDisposable.set(data.start(next: { [weak self] stickerSearchState, emojiSearchState in
+                self.contentDisposable.set(data.start(next: { [weak self = self] stickerSearchState, emojiSearchState in
                     guard let self else {
                         return
                     }
@@ -979,7 +979,7 @@ final class StickerAttachmentScreenComponent: Component {
                     displayTopPanelBackground: .blur,
                     topPanelExtensionUpdated: { _, _ in
                     },
-                    topPanelScrollingOffset: { [weak self] offset, transition in
+                    topPanelScrollingOffset: { [weak self = self] offset, transition in
                         if let self {
                             if self.ignoreNextZeroScrollingOffset && offset == 0.0 {
                             } else {
@@ -988,7 +988,7 @@ final class StickerAttachmentScreenComponent: Component {
                             }
                         }
                     },
-                    hideInputUpdated: { [weak self] _, searchVisible, transition in
+                    hideInputUpdated: { [weak self = self] _, searchVisible, transition in
                         guard let self else {
                             return
                         }
@@ -1011,7 +1011,7 @@ final class StickerAttachmentScreenComponent: Component {
                     switchToTextInput: {},
                     switchToGifSubject: { _ in },
                     reorderItems: { _, _ in },
-                    makeSearchContainerNode: { [weak self] content in
+                    makeSearchContainerNode: { [weak self = self] content in
                         guard let self, let interaction = self.interaction, let inputNodeInteraction = self.inputNodeInteraction else {
                             return nil
                         }
@@ -1041,7 +1041,7 @@ final class StickerAttachmentScreenComponent: Component {
                         )
                         return searchContainerNode
                     },
-                    contentIdUpdated: { [weak self] id in
+                    contentIdUpdated: { [weak self = self] id in
                         guard let self else {
                             return
                         }
@@ -1097,7 +1097,7 @@ final class StickerAttachmentScreenComponent: Component {
                             tintColor: theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }

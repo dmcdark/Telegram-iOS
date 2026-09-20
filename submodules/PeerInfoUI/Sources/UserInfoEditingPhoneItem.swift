@@ -140,7 +140,7 @@ class UserInfoEditingPhoneItemNode: ItemListRevealOptionsItemNode, ItemListItemN
         self.addSubnode(self.phoneNode)
         self.addSubnode(self.clearButton)
         
-        self.labelButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.labelButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.labelNode.layer.removeAnimation(forKey: "opacity")
@@ -153,23 +153,23 @@ class UserInfoEditingPhoneItemNode: ItemListRevealOptionsItemNode, ItemListItemN
         }
         self.labelButtonNode.addTarget(self, action: #selector(self.labelPressed), forControlEvents: .touchUpInside)
         
-        self.editableControlNode.tapped = { [weak self] in
+        self.editableControlNode.tapped = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setRevealOptionsOpened(true, animated: true)
                 strongSelf.revealOptionsInteractivelyOpened()
             }
         }
         
-        self.phoneNode.numberUpdated = { [weak self] number in
+        self.phoneNode.numberUpdated = { [weak self = self] number in
             self?.item?.updated(number)
             self?.updateClearButtonVisibility()
         }
         
-        self.phoneNode.beginEditing = { [weak self] in
+        self.phoneNode.beginEditing = { [weak self = self] in
             self?.updateClearButtonVisibility()
         }
         
-        self.phoneNode.endEditing = { [weak self] in
+        self.phoneNode.endEditing = { [weak self = self] in
             self?.updateClearButtonVisibility()
         }
         
@@ -223,7 +223,7 @@ class UserInfoEditingPhoneItemNode: ItemListRevealOptionsItemNode, ItemListItemN
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

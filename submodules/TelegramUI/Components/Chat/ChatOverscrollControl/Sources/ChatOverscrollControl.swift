@@ -281,12 +281,12 @@ final class CheckComponent: Component {
             if let currentValue = self.currentValue, currentValue != component.value, case .curve = transition.animation {
                 self.animator?.invalidate()
 
-                let animator = DisplayLinkAnimator(duration: 0.15, from: currentValue, to: component.value, update: { [weak self] value in
+                let animator = DisplayLinkAnimator(duration: 0.15, from: currentValue, to: component.value, update: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.updateContent(size: availableSize, color: component.color, lineWidth: component.lineWidth, value: value)
-                }, completion: { [weak self] in
+                }, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

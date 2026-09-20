@@ -161,7 +161,7 @@ public final class AdInfoScreen: ViewController {
                 }
             }
 
-            openUrl = { [weak self] url in
+            openUrl = { [weak self = self] url in
                 guard let strongSelf = self else {
                     return
                 }

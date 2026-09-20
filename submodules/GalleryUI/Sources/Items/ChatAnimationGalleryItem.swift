@@ -150,7 +150,7 @@ final class ChatAnimationGalleryItemNode: ZoomableContentGalleryItemNode {
                     return .complete()
                 }
             }
-            self.disposable.set((signal |> deliverOnMainQueue).start(next: { [weak self] next in
+            self.disposable.set((signal |> deliverOnMainQueue).start(next: { [weak self = self] next in
                 guard let strongSelf = self else {
                     return
                 }
@@ -196,7 +196,7 @@ final class ChatAnimationGalleryItemNode: ZoomableContentGalleryItemNode {
     
     private func setupStatus(resource: MediaResource) {
         self.statusDisposable.set((self.context.engine.resources.status(resource: EngineMediaResource(resource))
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 let previousStatus = strongSelf.status
                 strongSelf.status = status

@@ -69,7 +69,7 @@ private final class SheetContent: CombinedComponent {
             super.init()
             
             self.disposable = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }

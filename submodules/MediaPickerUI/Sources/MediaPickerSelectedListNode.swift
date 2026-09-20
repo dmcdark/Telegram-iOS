@@ -97,7 +97,7 @@ private class MediaPickerSelectedItemNode: ASDisplayNode {
                 }
                 
                 self.adjustmentsDisposable = (adjustmentsChangedSignal(editingState: editingState)
-                                              |> deliverOnMainQueue).start(next: { [weak self] adjustments in
+                                              |> deliverOnMainQueue).start(next: { [weak self = self] adjustments in
                     if let strongSelf = self {
                         let duration: Double
                         if let adjustments = adjustments as? TGVideoEditAdjustments, adjustments.trimApplied() {
@@ -147,7 +147,7 @@ private class MediaPickerSelectedItemNode: ASDisplayNode {
             }
             
             self.spoilerDisposable.set((combineLatest(spoilerSignal, priceSignal)
-            |> deliverOnMainQueue).start(next: { [weak self] hasSpoiler, price in
+            |> deliverOnMainQueue).start(next: { [weak self = self] hasSpoiler, price in
                 guard let strongSelf = self else {
                     return
                 }
@@ -155,7 +155,7 @@ private class MediaPickerSelectedItemNode: ASDisplayNode {
             }))
         }
         
-        self.imageNode.contentUpdated = { [weak self] image in
+        self.imageNode.contentUpdated = { [weak self = self] image in
             self?.spoilerNode?.setImage(image)
         }
     }
@@ -275,7 +275,7 @@ private class MediaPickerSelectedItemNode: ASDisplayNode {
     func updateSelectionState() {
         if self.checkNode == nil, let _ = self.interaction?.selectionState, let theme = self.theme {
             let checkNode = InteractiveCheckNode(theme: CheckNodeTheme(theme: theme, style: .overlay))
-            checkNode.valueChanged = { [weak self] value in
+            checkNode.valueChanged = { [weak self = self] value in
                 if let strongSelf = self, let interaction = strongSelf.interaction, let selectableItem = strongSelf.asset as? TGMediaSelectableItem {
                     if !interaction.toggleSelection(selectableItem, value, true) {
                         strongSelf.checkNode?.setSelected(false, animated: false)
@@ -665,7 +665,7 @@ final class MediaPickerSelectedListNode: ASDisplayNode, ASScrollViewDelegate, AS
         self.scrollNode.view.showsVerticalScrollIndicator = false
         self.scrollNode.view.scrollsToTop = false
         
-        self.view.addGestureRecognizer(ReorderingGestureRecognizer(animateOnTouch: !self.persistentItems, shouldBegin: { [weak self] point in
+        self.view.addGestureRecognizer(ReorderingGestureRecognizer(animateOnTouch: !self.persistentItems, shouldBegin: { [weak self = self] point in
             if let strongSelf = self, !strongSelf.scrollNode.view.isDragging && strongSelf.itemNodes.count > 1 {
                 let point = strongSelf.view.convert(point, to: strongSelf.scrollNode.view)
                 for (_, itemNode) in strongSelf.itemNodes {
@@ -678,9 +678,9 @@ final class MediaPickerSelectedListNode: ASDisplayNode, ASScrollViewDelegate, AS
             return (false, false, nil)
         }, willBegin: { _ in
 
-        }, began: { [weak self] itemNode in
+        }, began: { [weak self = self] itemNode in
             self?.beginReordering(itemNode: itemNode)
-        }, ended: { [weak self] point in
+        }, ended: { [weak self = self] point in
             if let strongSelf = self {
                 if var point = point {
                     point = strongSelf.view.convert(point, to: strongSelf.scrollNode.view)
@@ -689,7 +689,7 @@ final class MediaPickerSelectedListNode: ASDisplayNode, ASScrollViewDelegate, AS
                     strongSelf.endReordering(point: nil)
                 }
             }
-        }, moved: { [weak self] offset in
+        }, moved: { [weak self = self] offset in
             self?.updateReordering(offset: offset)
         }))
         
@@ -703,7 +703,7 @@ final class MediaPickerSelectedListNode: ASDisplayNode, ASScrollViewDelegate, AS
     func animateIn(transition: ContainedViewLayoutTransition, initiated: @escaping () -> Void, completion: @escaping () -> Void = {}) {
         let _ = (self.ready.get()
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -765,7 +765,7 @@ final class MediaPickerSelectedListNode: ASDisplayNode, ASScrollViewDelegate, AS
     
     func animateOut(transition: ContainedViewLayoutTransition, completion: @escaping () -> Void = {}) {
         if let wallpaperBackgroundNode = self.wallpaperBackgroundNode {
-            wallpaperBackgroundNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.25, removeOnCompletion: false, completion: { [weak self] _ in
+            wallpaperBackgroundNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.25, removeOnCompletion: false, completion: { [weak self = self] _ in
                 completion()
                 
                 if let strongSelf = self {
@@ -1395,7 +1395,7 @@ private class ReorderingGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

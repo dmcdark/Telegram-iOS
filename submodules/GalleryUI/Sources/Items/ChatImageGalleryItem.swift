@@ -293,7 +293,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         
         self.clipsToBounds = true
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         
@@ -307,7 +307,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         
         self.statusNodeContainer.isUserInteractionEnabled = false
         
-        self.recognitionOverlayContentNode.action = { [weak self] active in
+        self.recognitionOverlayContentNode.action = { [weak self = self] active in
             if let strongSelf = self {
                 let transition = ContainedViewLayoutTransition.animated(duration: 0.2, curve: .easeInOut)
                 if let recognizedContentNode = strongSelf.recognizedContentNode {
@@ -325,7 +325,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         }
         
         self.moreBarButton.addTarget(self, action: #selector(self.moreButtonPressed), forControlEvents: .touchUpInside)
-        self.moreBarButton.contextAction = { [weak self] sourceNode, gesture in
+        self.moreBarButton.contextAction = { [weak self = self] sourceNode, gesture in
             self?.openMoreMenu(sourceNode: sourceNode, gesture: gesture)
         }
     }
@@ -365,16 +365,16 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         let displaySize = dimensions.cgSize.fitted(CGSize(width: 1280.0, height: 1280.0)).dividedByScreenScale().integralFloor
         
         self.recognitionDisposable.set((recognizedContent(context: self.context, image: { return generate(TransformImageArguments(corners: ImageCorners(), imageSize: displaySize, boundingSize: displaySize, intrinsicInsets: UIEdgeInsets()))?.generateImage() }, messageId: message.id)
-        |> deliverOnMainQueue).start(next: { [weak self] results in
+        |> deliverOnMainQueue).start(next: { [weak self = self] results in
             if let strongSelf = self {
                 strongSelf.recognizedContentNode?.removeFromSupernode()
                 if !results.isEmpty {
                     let size = strongSelf.imageNode.bounds.size
-                    let recognizedContentNode = RecognizedContentContainer(size: size, recognitions: results, presentationData: strongSelf.context.sharedContext.currentPresentationData.with { $0 }, present: { [weak self] c, a in
+                    let recognizedContentNode = RecognizedContentContainer(size: size, recognitions: results, presentationData: strongSelf.context.sharedContext.currentPresentationData.with { $0 }, present: { [weak self = self] c, a in
                         if let strongSelf = self {
                             strongSelf.galleryController()?.presentInGlobalOverlay(c, with: a)
                         }
-                    }, performAction: { [weak self] string, action in
+                    }, performAction: { [weak self = self] string, action in
                         guard let strongSelf = self else {
                             return
                         }
@@ -431,7 +431,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                             }
                         }
                     })
-                    recognizedContentNode.barcodeAction = { [weak self] payload, rect in
+                    recognizedContentNode.barcodeAction = { [weak self = self] payload, rect in
                         guard let strongSelf = self, let message = strongSelf.message else {
                             return
                         }
@@ -470,7 +470,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             title = self.presentationData.strings.Items_NOfM("\(location.index + 1)", "\(location.count)").string
         }
         
-        self._titleContent.set(.single(GalleryTitleView.Content(message: EngineMessage(message), title: title, action: message.adAttribute == nil ? { [weak self] in
+        self._titleContent.set(.single(GalleryTitleView.Content(message: EngineMessage(message), title: title, action: message.adAttribute == nil ? { [weak self = self] in
             guard let self else {
                 return
             }
@@ -494,7 +494,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 let displaySize = largestSize.dimensions.cgSize.fitted(CGSize(width: 1280.0, height: 1280.0)).dividedByScreenScale().integralFloor
                 self.imageNode.asyncLayout()(TransformImageArguments(corners: ImageCorners(), imageSize: displaySize, boundingSize: displaySize, intrinsicInsets: UIEdgeInsets()))()
                 let signal: Signal<(TransformImageArguments) -> DrawingContext?, NoError> = chatMessagePhotoInternal(photoData: chatMessagePhotoDatas(postbox: self.context.account.postbox, userLocation: userLocation, photoReference: imageReference, tryAdditionalRepresentations: true, synchronousLoad: false), synchronousLoad: false)
-                |> map { [weak self] _, quality, generate -> (TransformImageArguments) -> DrawingContext? in
+                |> map { [weak self = self] _, quality, generate -> (TransformImageArguments) -> DrawingContext? in
                     Queue.mainQueue().async {
                         guard let strongSelf = self else {
                             return
@@ -587,7 +587,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         if adAttribute.canReport {
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_AboutAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
                 if let navigationController = self?.baseNavigationController() as? NavigationController {
                     navigationController.pushViewController(AdsInfoScreen(context: context, mode: .channel))
@@ -596,11 +596,11 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_ReportAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.default)
                 
                 let _ = (context.engine.messages.reportAdMessage(opaqueId: adAttribute.opaqueId, option: nil)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     if case let .options(title, options) = result {
                         if let navigationController = self?.baseNavigationController() as? NavigationController {
                             navigationController.pushViewController(
@@ -626,7 +626,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                            
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Chat_ContextMenu_RemoveAd, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] c, _ in
+            }, iconSource: nil, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: {
                     var replaceImpl: ((ViewController) -> Void)?
                     let controller = context.sharedContext.makePremiumDemoController(context: context, subject: .noAds, forceDark: true, action: {
@@ -644,7 +644,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
         } else {
             actions.append(.action(ContextMenuActionItem(text: presentationData.strings.SponsoredMessageMenu_Info, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.actionSheet.primaryTextColor)
-            }, iconSource: nil, action: { [weak self] _, f in
+            }, iconSource: nil, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
                 if let navigationController = self?.baseNavigationController() as? NavigationController {
                     navigationController.pushViewController(AdInfoScreen(context: context, forceDark: true))
@@ -655,7 +655,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             if !context.isPremium && !premiumConfiguration.isPremiumDisabled {
                 actions.append(.action(ContextMenuActionItem(text: presentationData.strings.SponsoredMessageMenu_Hide, textColor: .primary, textLayout: .twoLinesMax, textFont: .custom(font: Font.regular(presentationData.listsFontSize.baseDisplaySize - 1.0), height: nil, verticalOffset: nil), badge: nil, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
-                }, iconSource: nil, action: { [weak self] c, _ in
+                }, iconSource: nil, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: {
                         var replaceImpl: ((ViewController) -> Void)?
                         let controller = context.sharedContext.makePremiumDemoController(context: context, subject: .noAds, forceDark: true, action: {
@@ -676,7 +676,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 actions.append(.separator)
                 actions.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     var messageEntities: [MessageTextEntity]?
                     for attribute in message.attributes {
                         if let attribute = attribute as? TextEntitiesMessageAttribute {
@@ -711,13 +711,13 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
     
         let context = self.context
         return peer
-        |> map { [weak self] peer -> [ContextMenuItem] in
+        |> map { [weak self = self] peer -> [ContextMenuItem] in
             guard let self else {
                 return []
             }
             var items: [ContextMenuItem] = []
             if let message = self.message {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor)}, action: { [weak self] _, f in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor)}, action: { [weak self = self] _, f in
                     if let self, let peer, let navigationController = self.baseNavigationController() {
                         self.beginCustomDismiss(.simpleAnimation)
                         
@@ -735,13 +735,13 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 })))
                 
                 if !message.isCopyProtected() && !self.peerIsCopyProtected && message.paidContent == nil, let media = self.contextAndMedia?.1 {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Gallery_CreateSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Gallery_CreateSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
                         }
                         let _ = (fetchMediaData(context: context, userLocation: .other, mediaReference: media)
-                        |> deliverOnMainQueue).start(next: { [weak self] (value, isImage) in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] (value, isImage) in
                             guard let self, case let .data(data) = value, data.isComplete, isImage, let image = UIImage(contentsOfFile: data.path) else {
                                 return
                             }
@@ -763,11 +763,11 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                         })
                     })))
                     
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Gallery_SaveImage, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Download"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self] _, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Gallery_SaveImage, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Download"), color: theme.actionSheet.primaryTextColor) }, action: { [weak self = self] _, f in
                         f(.default)
                                                 
                         let _ = (SaveToCameraRoll.saveToCameraRoll(context: context, userLocation: .peer(message.id.peerId), mediaReference: media)
-                        |> deliverOnMainQueue).start(completed: { [weak self] in
+                        |> deliverOnMainQueue).start(completed: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -781,7 +781,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             }
             
             if let peer, let message = self.message, canSendMessagesToPeer(peer) {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuReply, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.contextMenu.primaryColor)}, action: { [weak self] _, f in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuReply, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.contextMenu.primaryColor)}, action: { [weak self = self] _, f in
                     if let self, let navigationController = self.baseNavigationController() {
                         self.beginCustomDismiss(.simpleAnimation)
                         
@@ -800,7 +800,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             }
             
             if self.canDelete() {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Common_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] _, f in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Common_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] _, f in
                     f(.default)
 
                     if let strongSelf = self {
@@ -863,7 +863,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
             }
         }
         let _ = (signal
-        |> deliverOnMainQueue).start(next: { [weak self] packs in
+        |> deliverOnMainQueue).start(next: { [weak self = self] packs in
             guard let strongSelf = self, !packs.isEmpty else {
                 return
             }
@@ -908,7 +908,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 
                 /*if largestSize.width > 2600 || largestSize.height > 2600 {
                     self.dataDisposable.set((self.context.account.postbox.mediaBox.resourceData(fileReference.media.resource)
-                    |> deliverOnMainQueue).start(next: { [weak self] data in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] data in
                         guard let strongSelf = self else {
                             return
                         }
@@ -920,7 +920,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 } else {*/
                 
                 let signal = chatMessageImageFile(account: context.account, userLocation: userLocation, fileReference: fileReference, thumbnail: false)
-                |> afterNext({ [weak self] generate in
+                |> afterNext({ [weak self = self] generate in
                     guard let self else {
                         return
                     }
@@ -952,7 +952,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                     }
                     return .complete()
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] image in
+                |> deliverOnMainQueue).start(next: { [weak self = self] image in
                     if let self, let image {
                         self.fetchedDimensions = PixelDimensions(image.size)
                         self.setFile(context: context, userLocation: userLocation, fileReference: fileReference, force: true)
@@ -969,7 +969,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
     
     private func setupStatus(resource: MediaResource) {
         self.statusDisposable.set((self.context.engine.resources.status(resource: EngineMediaResource(resource))
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 let previousStatus = strongSelf.status
                 strongSelf.status = status
@@ -1260,7 +1260,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 title: strings.KeyCommand_Share,
                 input: "S",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.footerContentNode.actionButtonPressed()
                 }
             )
@@ -1270,7 +1270,7 @@ final class ChatImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 KeyShortcut(
                     input: "\u{8}",
                     modifiers: [],
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.footerContentNode.deleteButtonPressed()
                     }
                 )

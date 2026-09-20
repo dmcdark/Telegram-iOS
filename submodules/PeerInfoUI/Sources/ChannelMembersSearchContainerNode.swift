@@ -419,7 +419,7 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
         }
         
         let removeMemberDisposable = self.removeMemberDisposable
-        let interaction = ChannelMembersSearchContainerInteraction(peerSelected: { [weak self] peer, participant in
+        let interaction = ChannelMembersSearchContainerInteraction(peerSelected: { [weak self = self] peer, participant in
             openPeer(peer, participant)
             self?.listNode.clearHighlightAnimated(true)
         }, setPeerIdWithRevealedOptions: { peerId, fromPeerId in
@@ -1211,7 +1211,7 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
         let previousEmptyQueryItems = Atomic<[ChannelMembersSearchEntry]?>(value: nil)
         
         self.emptyQueryDisposable.set((combineLatest(emptyQueryItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] entries, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousEmptyQueryItems.swap(entries)
                 let firstTime = previousEntries == nil
@@ -1227,7 +1227,7 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
         }))
 
         self.searchDisposable.set((combineLatest(self.searchQuery.get(), foundItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] query, entries, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] query, entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousSearchItems.swap(entries)
                 updateActivity(false)
@@ -1238,7 +1238,7 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 var presentationData = presentationData
                 
@@ -1257,10 +1257,10 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
             }
         })
         
-        self.emptyQueryListNode.beganInteractiveDragging = { [weak self] _ in
+        self.emptyQueryListNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -1321,7 +1321,7 @@ public final class ChannelMembersSearchContainerNode: SearchDisplayControllerCon
             }
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

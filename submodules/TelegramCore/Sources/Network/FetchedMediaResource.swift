@@ -393,7 +393,7 @@ private final class MediaReferenceRevalidationContextImpl {
             let disposable = MetaDisposable()
             context = MediaReferenceRevalidationItemContext(disposable: disposable)
             self.itemContexts[itemKey] = context
-            disposable.set(request({ [weak self] result in
+            disposable.set(request({ [weak self = self] result in
                 queue.async {
                     guard let strongSelf = self else {
                         return

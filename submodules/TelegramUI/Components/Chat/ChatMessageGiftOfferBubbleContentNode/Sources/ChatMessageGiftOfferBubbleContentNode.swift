@@ -199,7 +199,7 @@ public class ChatMessageGiftOfferBubbleContentNode: ChatMessageBubbleContentNode
                 let backgroundSize = CGSize(width: giftSize.width, height: giftSize.height + 4.0)
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (backgroundSize, { [weak self] animation, synchronousLoads, info in
+                    return (backgroundSize, { [weak self = self] animation, synchronousLoads, info in
                         if let strongSelf = self {
                             strongSelf.item = item
                                                               

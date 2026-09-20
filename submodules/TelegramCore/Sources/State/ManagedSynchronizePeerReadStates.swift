@@ -38,7 +38,7 @@ private final class SynchronizePeerReadStatesContextImpl {
         self.stateManager = stateManager
         
         self.disposable = (postbox.synchronizePeerReadStatesView()
-        |> deliverOn(self.queue)).start(next: { [weak self] view in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] view in
             guard let strongSelf = self else {
                 return
             }

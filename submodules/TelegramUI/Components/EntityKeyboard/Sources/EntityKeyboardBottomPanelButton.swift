@@ -105,7 +105,7 @@ final class EntityKeyboardBottomPanelButton: Component {
 //                self.component?.action()
 //                
 //                self.holdActionTimer?.invalidate()
-//                let holdActionTimer = Timer(timeInterval: 0.5, repeats: false, block: { [weak self] _ in
+//                let holdActionTimer = Timer(timeInterval: 0.5, repeats: false, block: { [weak self = self] _ in
 //                    guard let strongSelf = self else {
 //                        return
 //                    }
@@ -122,7 +122,7 @@ final class EntityKeyboardBottomPanelButton: Component {
         
 //        private func beginExecuteHoldActionTimer() {
 //            self.holdActionTimer?.invalidate()
-//            let holdActionTimer = Timer(timeInterval: 0.1, repeats: true, block: { [weak self] _ in
+//            let holdActionTimer = Timer(timeInterval: 0.1, repeats: true, block: { [weak self = self] _ in
 //                guard let strongSelf = self else {
 //                    return
 //                }

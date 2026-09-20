@@ -189,7 +189,7 @@ private final class ProxySettingsServerItemNode: ItemListRevealOptionsItemNode {
         self.addSubnode(self.infoButtonNode)
         self.addSubnode(self.activateArea)
         
-        self.infoButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.infoButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.infoIconNode.layer.removeAnimation(forKey: "opacity")
@@ -202,7 +202,7 @@ private final class ProxySettingsServerItemNode: ItemListRevealOptionsItemNode {
         }
         self.infoButtonNode.addTarget(self, action: #selector(self.infoButtonPressed), forControlEvents: .touchUpInside)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             self?.item?.action()
             return true
         }
@@ -284,7 +284,7 @@ private final class ProxySettingsServerItemNode: ItemListRevealOptionsItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

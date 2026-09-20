@@ -92,7 +92,7 @@ extension DocumentCanvasView {
         }
         dismissEditMenu()
         setCaret(global: occurrence.globalOffset + 1)
-        formulaEditRequested(occurrence.latex, { [weak self] updatedLatex in
+        formulaEditRequested(occurrence.latex, { [weak self = self] updatedLatex in
             guard let self else {
                 return
             }

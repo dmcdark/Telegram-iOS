@@ -147,7 +147,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
 
         if self.inputMediaNodeDataDisposable == nil {
             self.inputMediaNodeDataDisposable = (keyboardInputData
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -156,24 +156,24 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
         }
 
         self.inputMediaInteraction = ChatEntityKeyboardInputNode.Interaction(
-            sendSticker: { [weak self] fileReference, _, _, _, _, _, _, _, _ in
+            sendSticker: { [weak self = self] fileReference, _, _, _, _, _, _, _, _ in
                 if let self, let view = self.view {
                     self.performSendStickerAction(view: view, fileReference: fileReference)
                 }
                 return false
             },
-            sendEmoji: { [weak self] text, attribute, _ in
+            sendEmoji: { [weak self = self] text, attribute, _ in
                 if let self {
                     let _ = self
                 }
             },
-            sendGif: { [weak self] fileReference, _, _, _, _ in
+            sendGif: { [weak self = self] fileReference, _, _, _, _ in
                 if let self, let view = self.view {
                     self.performSendStickerAction(view: view, fileReference: fileReference)
                 }
                 return false
             },
-            sendBotContextResultAsGif: { [weak self] results, result, _, _, _, _ in
+            sendBotContextResultAsGif: { [weak self = self] results, result, _, _, _, _ in
                 if let self, let view = self.view {
                     self.performSendContextResultAction(view: view, results: results, result: result)
                 }
@@ -182,7 +182,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
             editGif: { _, _ in
             },
             updateChoosingSticker: { _ in },
-            switchToTextInput: { [weak self] in
+            switchToTextInput: { [weak self = self] in
                 if let self {
                     self.currentInputMode = .text
                     if let view = self.view, !hasFirstResponder(view) {
@@ -195,35 +195,35 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
             dismissTextInput: {
 
             },
-            insertText: { [weak self] text in
+            insertText: { [weak self = self] text in
                 if let self {
                     self.inputPanelExternalState?.insertText(text)
                 }
             },
-            backwardsDeleteText: { [weak self] in
+            backwardsDeleteText: { [weak self = self] in
                 if let self {
                     self.inputPanelExternalState?.deleteBackward()
                 }
             },
             openStickerEditor: {},
-            presentController: { [weak self] c, a in
+            presentController: { [weak self = self] c, a in
                 if let self {
                     self.view?.component?.controller()?.present(c, in: .window(.root), with: a)
                 }
             },
-            presentGlobalOverlayController: { [weak self] c, a in
+            presentGlobalOverlayController: { [weak self = self] c, a in
                 if let self {
                     self.view?.component?.controller()?.presentInGlobalOverlay(c, with: a)
                 }
             },
-            getNavigationController: { [weak self] in
+            getNavigationController: { [weak self = self] in
                 if let self {
                     return self.view?.component?.controller()?.navigationController as? NavigationController
                 } else {
                     return nil
                 }
             },
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 if let self {
                     self.view?.state?.updated(transition: ComponentTransition(transition))
                 }
@@ -1012,7 +1012,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
         guard let component = view.component else {
             return
         }
-        self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+        self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1071,7 +1071,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                 let media = TelegramMediaFile(fileId: EngineMedia.Id(namespace: Namespaces.Media.LocalFile, id: Int64.random(in: Int64.min ... Int64.max)), partialReference: nil, resource: resource, previewRepresentations: [], videoThumbnails: [], immediateThumbnailData: nil, mimeType: "image/webp", size: Int64(data.count), attributes: fileAttributes, alternativeRepresentations: [])
                 let message = EnqueueMessage.message(text: "", attributes: [], inlineStickers: [:], mediaReference: .standalone(media: media), threadId: nil, replyToMessageId: nil, replyToStoryId: nil, localGroupingKey: nil, correlationId: nil, bubbleUpEmojiOrStickersets: [])
 
-                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1135,7 +1135,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                                         self.sendMessages(view: view, peer: peer, messages: [updatedMessage])
                                     })
                                 })
-                            }, displaySlowmodeTooltip: { [weak self] view, rect in
+                            }, displaySlowmodeTooltip: { [weak self = self] view, rect in
                                 //self?.interfaceInteraction?.displaySlowmodeTooltip(view, rect)
                                 let _ = self
                             }, presentSchedulePicker: { [weak self, weak view] done in
@@ -1996,7 +1996,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                                     return
                                 }
                                 let message: EnqueueMessage = .message(text: "", attributes: [], inlineStickers: [:], mediaReference: .standalone(media: location), threadId: nil, replyToMessageId: nil, replyToStoryId: focusedStoryId, localGroupingKey: nil, correlationId: nil, bubbleUpEmojiOrStickersets: [])
-                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -2071,7 +2071,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                                     }
                                 }
 
-                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -2131,7 +2131,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                                         }
                                         enqueueMessages.append(.message(text: "", attributes: [], inlineStickers: [:], mediaReference: .standalone(media: media), threadId: nil, replyToMessageId: nil, replyToStoryId: focusedStoryId, localGroupingKey: nil, correlationId: nil, bubbleUpEmojiOrStickersets: []))
 
-                                        self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                                        self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                                             guard let self else {
                                                 return
                                             }
@@ -2155,7 +2155,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                                                 }
                                                 enqueueMessages.append(.message(text: "", attributes: [], inlineStickers: [:], mediaReference: .standalone(media: media), threadId: nil, replyToMessageId: nil, replyToStoryId: focusedStoryId, localGroupingKey: nil, correlationId: nil, bubbleUpEmojiOrStickersets: []))
 
-                                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                                                self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                                                     guard let self else {
                                                         return
                                                     }
@@ -2463,7 +2463,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                             }
 
                             if !messages.isEmpty {
-                                strongSelf.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+                                strongSelf.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -2504,7 +2504,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
 //            updatedPresentationData: updatedPresentationData,
 //            peer: peer,
 //            subjects: subjects,
-//            presentMediaPicker: { [weak self] subject, saveEditedPhotos, bannedSendPhotos, bannedSendVideos, present in
+//            presentMediaPicker: { [weak self = self] subject, saveEditedPhotos, bannedSendPhotos, bannedSendVideos, present in
 //                if let self {
 //                    self.presentMediaPicker(
 //                        view: view,
@@ -2529,7 +2529,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
 //                            if !inputText.string.isEmpty {
 //                                self.clearInputText(view: view)
 //                            }
-//                            self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self] in
+//                            self.presentPaidMessageAlertIfNeeded(view: view, completion: { [weak self = self] in
 //                                guard let self else {
 //                                    return
 //                                }
@@ -2718,12 +2718,12 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                 return self.getCaptionPanelView(view: view, peer: peer)
             }, photoToolbarView: { [context = component.context] backButton, doneButton, solidBackground, hasSendStarsButton in
                 return makeMediaPickerPhotoToolbarView(context: context, backButton: backButton, doneButton: doneButton, solidBackground: solidBackground, hasSendStarsButton: hasSendStarsButton)
-            }, dismissedWithResult: { [weak self] in
+            }, dismissedWithResult: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.attachmentController?.dismiss(animated: false, completion: nil)
-            }, finishedTransitionIn: { [weak self] in
+            }, finishedTransitionIn: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -3089,7 +3089,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                 progressDisposable.dispose()
             }
         }
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -3178,7 +3178,7 @@ final class StoryItemSetContainerSendMessage: @unchecked(Sendable) {
                 progressDisposable.dispose()
             }
         }
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             guard let self else {
                 return
             }

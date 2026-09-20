@@ -133,7 +133,7 @@ class BaseChartRenderer: ChartViewRenderer {
     }
     
     var refreshClosure: () -> Void {
-        return { [weak self] in
+        return { [weak self = self] in
             self?.setNeedsDisplay()
         }
     }

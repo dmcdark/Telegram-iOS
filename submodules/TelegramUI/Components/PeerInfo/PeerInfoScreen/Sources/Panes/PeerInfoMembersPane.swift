@@ -352,7 +352,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             self.presentationDataPromise.get(),
             context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state, presentationData, enclosingPeer in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state, presentationData, enclosingPeer in
             guard let strongSelf = self, let enclosingPeer = enclosingPeer else {
                 return
             }
@@ -362,7 +362,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             strongSelf.updateState(enclosingPeer: enclosingPeer, state: state, presentationData: presentationData)
         })
         
-        self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self, let state = strongSelf.currentState, case .ready(true) = state.dataState else {
                 return
             }
@@ -371,7 +371,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
         }
         
-        self.listNode.visibleContentOffsetChanged = { [weak self] _, transition in
+        self.listNode.visibleContentOffsetChanged = { [weak self = self] _, transition in
             guard let self else {
                 return
             }
@@ -379,7 +379,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 self.updateListBackground(transition: transition)
             }
         }
-        self.listNode.displayedItemRangeChanged = { [weak self] _, _ in
+        self.listNode.displayedItemRangeChanged = { [weak self = self] _, _ in
             guard let self else {
                 return
             }
@@ -447,9 +447,9 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             entries.append(.member(theme: presentationData.theme, index: entries.count, member: member))
         }
         
-        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, enclosingPeer: enclosingPeer, addMemberAction: { [weak self] in
+        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, enclosingPeer: enclosingPeer, addMemberAction: { [weak self = self] in
             self?.addMemberAction()
-        }, action: { [weak self] member, action in
+        }, action: { [weak self = self] member, action in
             guard let self else {
                 return
             }
@@ -459,7 +459,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
             
             self.action(member, action)
-        }, contextAction: { [weak self] member, sourceNode, gesture in
+        }, contextAction: { [weak self = self] member, sourceNode, gesture in
             guard let self else {
                 return
             }
@@ -501,7 +501,7 @@ final class PeerInfoMembersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             options.insert(.Synchronous)
         }
         
-        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

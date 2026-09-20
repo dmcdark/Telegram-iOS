@@ -73,15 +73,15 @@ final class AuthorizationSequencePasswordEntryController: ViewController {
         
         self.controllerNode.view.disableAutomaticKeyboardHandling = [.forward, .backward]
         
-        self.controllerNode.loginWithCode = { [weak self] _ in
+        self.controllerNode.loginWithCode = { [weak self = self] _ in
             self?.nextPressed()
         }
         
-        self.controllerNode.forgot = { [weak self] in
+        self.controllerNode.forgot = { [weak self = self] in
             self?.forgotPressed()
         }
         
-        self.controllerNode.reset = { [weak self] in
+        self.controllerNode.reset = { [weak self = self] in
             self?.resetPressed()
         }
         

@@ -116,7 +116,7 @@ final class TextAlertWithEntitiesContentNode: AlertContentNode {
             self.addSubnode(actionNode)
             
             let index = i
-            actionNode.highlightedUpdated = { [weak self] highlighted in
+            actionNode.highlightedUpdated = { [weak self = self] highlighted in
                 if highlighted {
                     self?.highlightedItemIndex = index
                 }

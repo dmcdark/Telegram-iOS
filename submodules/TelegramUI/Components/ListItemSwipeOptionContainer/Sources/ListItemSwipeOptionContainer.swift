@@ -509,7 +509,7 @@ open class ListItemSwipeOptionContainer: UIView, UIGestureRecognizerDelegate {
         
         self.disablesInteractiveTransitionGestureRecognizer = self.allowAnyDirection
         
-        self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let self else {
                 return false
             }
@@ -721,9 +721,9 @@ open class ListItemSwipeOptionContainer: UIView, UIGestureRecognizerDelegate {
     
     private func setupAndAddLeftRevealNode() {
         if !self.revealOptions.left.isEmpty {
-            let revealView = OptionsView(optionSelected: { [weak self] option in
+            let revealView = OptionsView(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected?(option, false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                 self?.hapticImpact()
             })
             revealView.setOptions(self.revealOptions.left, isLeft: true)
@@ -743,9 +743,9 @@ open class ListItemSwipeOptionContainer: UIView, UIGestureRecognizerDelegate {
     
     private func setupAndAddRightRevealNode() {
         if !self.revealOptions.right.isEmpty {
-            let revealView = OptionsView(optionSelected: { [weak self] option in
+            let revealView = OptionsView(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected?(option, false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                 self?.hapticImpact()
             })
             revealView.setOptions(self.revealOptions.right, isLeft: false)

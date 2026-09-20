@@ -46,7 +46,7 @@ final class LegacyCallControllerStatusNode: ASDisplayNode {
                 self.statusTimer?.invalidate()
                 
                 if case .timer = self.status {
-                    self.statusTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                    self.statusTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                         if let strongSelf = self, let validLayoutWidth = strongSelf.validLayoutWidth {
                             let _ = strongSelf.updateLayout(constrainedWidth: validLayoutWidth, transition: .immediate)
                         }

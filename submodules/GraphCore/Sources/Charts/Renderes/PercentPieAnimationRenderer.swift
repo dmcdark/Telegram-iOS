@@ -31,7 +31,7 @@ class PercentPieAnimationRenderer: BaseChartRenderer {
         assert(visiblePercentageData.components.count == visiblePieComponents.count)
         
         isEnabled = true
-        transitionAnimator.completionClosure = { [weak self] in
+        transitionAnimator.completionClosure = { [weak self = self] in
             self?.isEnabled = false
             completion()
         }

@@ -147,7 +147,7 @@ private final class StoryStatsContextImpl {
         assert(Queue.mainQueue().isCurrent())
         
         self.disposable.set((requestStoryStats(accountPeerId: self.accountPeerId, postbox: self.postbox, network: self.network, peerId: self.peerId, storyId: self.storyId)
-        |> deliverOnMainQueue).start(next: { [weak self] stats in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stats in
             if let strongSelf = self {
                 strongSelf._state = StoryStatsContextState(stats: stats)
                 strongSelf._statePromise.set(.single(strongSelf._state))
@@ -370,7 +370,7 @@ private final class StoryStatsPublicForwardsContextImpl {
                 return .single(([], 0, nil))
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] forwards, updatedCount, nextOffset in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] forwards, updatedCount, nextOffset in
             guard let strongSelf = self else {
                 return
             }

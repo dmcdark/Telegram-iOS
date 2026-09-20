@@ -96,12 +96,12 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
             }
         }
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
             self?.updateState(state: state)
         }).strict()
         
         self.applicationStateDisposable = (self.sharedContext.applicationBindings.applicationIsActive
-        |> deliverOnMainQueue).start(next: { [weak self] isActive in
+        |> deliverOnMainQueue).start(next: { [weak self = self] isActive in
             guard let self else {
                 return
             }
@@ -141,7 +141,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
             controller = currentController
         } else {
             controller = AuthorizationSequenceSplashController(accountManager: self.sharedContext.accountManager, account: self.account, theme: self.presentationData.theme)
-            controller.nextPressed = { [weak self] strings in
+            controller.nextPressed = { [weak self = self] strings in
                 if let strongSelf = self {
                     if let strings = strings {
                         strongSelf.presentationData = strongSelf.presentationData.withStrings(strings)
@@ -170,9 +170,9 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequencePhoneEntryController(sharedContext: self.sharedContext, account: self.account, apiId: self.apiId, apiHash: self.apiHash, isTestingEnvironment: self.account.testingEnvironment, otherAccountPhoneNumbers: self.otherAccountPhoneNumbers, network: self.account.network, presentationData: self.presentationData, openUrl: { [weak self] url in
+            controller = AuthorizationSequencePhoneEntryController(sharedContext: self.sharedContext, account: self.account, apiId: self.apiId, apiHash: self.apiHash, isTestingEnvironment: self.account.testingEnvironment, otherAccountPhoneNumbers: self.otherAccountPhoneNumbers, network: self.account.network, presentationData: self.presentationData, openUrl: { [weak self = self] url in
                 self?.openUrl(url)
-            }, back: { [weak self] in
+            }, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -187,7 +187,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
             if let splashController = splashController {
                 controller.animateWithSplashController(splashController)
             }
-            controller.accountUpdated = { [weak self] updatedAccount in
+            controller.accountUpdated = { [weak self = self] updatedAccount in
                 guard let strongSelf = self else {
                     return
                 }
@@ -205,14 +205,14 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 |> take(1)
                 |> timeout(2.0, queue: .mainQueue(), alternate: .single(nil))
                 let _ = (authorizationPushConfiguration
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] authorizationPushConfiguration in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] authorizationPushConfiguration in
                     if let strongSelf = self {
                         strongSelf.actionDisposable.set((sendAuthorizationCode(accountManager: strongSelf.sharedContext.accountManager, account: strongSelf.account, phoneNumber: number, apiId: strongSelf.apiId, apiHash: strongSelf.apiHash, pushNotificationConfiguration: authorizationPushConfiguration, firebaseSecretStream: strongSelf.sharedContext.firebaseSecretStream, syncContacts: syncContacts, disableAuthTokens: disableAuthTokens, forcedPasswordSetupNotice: { value in
                             guard let entry = EngineCodableEntry(ApplicationSpecificCounterNotice(value: value)) else {
                                 return nil
                             }
                             return (ApplicationSpecificNotice.forcedPasswordSetupKey(), entry)
-                        }) |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                        }) |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                             if let strongSelf = self {
                                 switch result {
                                 case let .sentCode(account):
@@ -333,7 +333,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                     },
                     syncContacts: syncContacts
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -376,7 +376,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequenceCodeEntryController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self] in
+            controller = AuthorizationSequenceCodeEntryController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -384,7 +384,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 
                 let _ = strongSelf.engine.auth.setState(state: UnauthorizedAccountState(isTestingEnvironment: strongSelf.account.testingEnvironment, masterDatacenterId: strongSelf.account.masterDatacenterId, contents: .phoneEntry(countryCode: countryCode, number: ""))).startStandalone()
             })
-            controller.retryResetEmail = { [weak self] in
+            controller.retryResetEmail = { [weak self = self] in
                 if let self {
                     self.actionDisposable.set(
                         resetLoginEmail(account: self.account, phoneNumber: number, phoneCodeHash: phoneCodeHash).startStandalone()
@@ -398,7 +398,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                     if let _ = resetPendingDate {
                         self.actionDisposable.set(
                             (resetLoginEmail(account: self.account, phoneNumber: number, phoneCodeHash: phoneCodeHash)
-                            |> deliverOnMainQueue).startStrict(error: { [weak self] error in
+                            |> deliverOnMainQueue).startStrict(error: { [weak self = self] error in
                                 if let self, case .alreadyInProgress = error {
                                     let formattedNumber = formatPhoneNumber(number)
                                     let title = NSAttributedString(string: self.presentationData.strings.Login_Email_PremiumRequiredTitle, font: Font.semibold(self.presentationData.listsFontSize.baseDisplaySize), textColor: self.presentationData.theme.actionSheet.primaryTextColor, paragraphAlignment: .center)
@@ -426,13 +426,13 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                                 }
                             }
                             
-                            let alertController = textWithEntitiesAlertController(theme: AlertControllerTheme(presentationData: self.presentationData), title: title, text: text, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_Email_Reset, action: { [weak self] in
+                            let alertController = textWithEntitiesAlertController(theme: AlertControllerTheme(presentationData: self.presentationData), title: title, text: text, actions: [TextAlertAction(type: .genericAction, title: self.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_Email_Reset, action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
                                 self.actionDisposable.set(
                                     (resetLoginEmail(account: self.account, phoneNumber: number, phoneCodeHash: phoneCodeHash)
-                                     |> deliverOnMainQueue).startStrict(error: { [weak self] error in
+                                     |> deliverOnMainQueue).startStrict(error: { [weak self = self] error in
                                          Queue.mainQueue().async {
                                              guard let self, let controller = controller else {
                                                  return
@@ -687,19 +687,19 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 }
             }
         }
-        controller.requestPreviousOption = { [weak self] in
+        controller.requestPreviousOption = { [weak self = self] in
             guard let self else {
                 return
             }
             self.actionDisposable.set(togglePreviousCodeEntry(account: self.account).start())
         }
-        controller.reset = { [weak self] in
+        controller.reset = { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = self.engine.auth.setState(state: UnauthorizedAccountState(isTestingEnvironment: self.account.testingEnvironment, masterDatacenterId: self.account.masterDatacenterId, contents: .empty)).startStandalone()
         }
-        controller.signInWithApple = { [weak self] in
+        controller.signInWithApple = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -718,7 +718,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 authorizationController.performRequests()
             }
         }
-        controller.openFragment = { [weak self] url in
+        controller.openFragment = { [weak self = self] url in
             if let strongSelf = self {
                 strongSelf.sharedContext.applicationBindings.openUrl(url)
             }
@@ -743,7 +743,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequenceEmailEntryController(presentationData: self.presentationData, mode: .setup, back: { [weak self] in
+            controller = AuthorizationSequenceEmailEntryController(presentationData: self.presentationData, mode: .setup, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -786,7 +786,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 controller?.inProgress = false
             }))
         }
-        controller.signInWithApple = { [weak self] in
+        controller.signInWithApple = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -810,7 +810,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
     }
     
     private func paymentController(number: String, phoneCodeHash: String, storeProduct: String, premiumDays: Int32, supportEmailAddress: String, supportEmailSubject: String) -> AuthorizationSequencePaymentScreen {
-        let controller = AuthorizationSequencePaymentScreen(sharedContext: self.sharedContext, engine: self.engine, presentationData: self.presentationData, inAppPurchaseManager: self.inAppPurchaseManager, phoneNumber: number, phoneCodeHash: phoneCodeHash, storeProduct: storeProduct, premiumDays: premiumDays, supportEmailAddress: supportEmailAddress, supportEmailSubject: supportEmailSubject, back: { [weak self] in
+        let controller = AuthorizationSequencePaymentScreen(sharedContext: self.sharedContext, engine: self.engine, presentationData: self.presentationData, inAppPurchaseManager: self.inAppPurchaseManager, phoneNumber: number, phoneCodeHash: phoneCodeHash, storeProduct: storeProduct, premiumDays: premiumDays, supportEmailAddress: supportEmailAddress, supportEmailSubject: supportEmailSubject, back: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -860,7 +860,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                             return nil
                         }
                         return (ApplicationSpecificNotice.forcedPasswordSetupKey(), entry)
-                    }).startStrict(next: { [weak self] result in
+                    }).startStrict(next: { [weak self = self] result in
                         guard let strongSelf = self else {
                             return
                         }
@@ -927,7 +927,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequencePasswordEntryController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self] in
+            controller = AuthorizationSequencePasswordEntryController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1041,7 +1041,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
             controller = TwoFactorDataInputScreen(sharedContext: self.sharedContext, engine: .unauthorized(self.engine), mode: .passwordRecoveryEmail(emailPattern: emailPattern, mode: .notAuthorized(syncContacts: syncContacts), doneText: self.presentationData.strings.TwoFactorSetup_Done_Action), stateUpdated: { _ in
             }, presentation: .default)
         }
-        controller.passwordRecoveryFailed = { [weak self] in
+        controller.passwordRecoveryFailed = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1072,7 +1072,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequenceAwaitingAccountResetController(strings: self.presentationData.strings, theme: self.presentationData.theme, back: { [weak self] in
+            controller = AuthorizationSequenceAwaitingAccountResetController(strings: self.presentationData.strings, theme: self.presentationData.theme, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1109,7 +1109,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                         })]), in: .window(.root))
                 }
             }
-            controller.logout = { [weak self] in
+            controller.logout = { [weak self = self] in
                 if let strongSelf = self {
                     let account = strongSelf.account
                     let _ = strongSelf.engine.auth.setState(state: UnauthorizedAccountState(isTestingEnvironment: account.testingEnvironment, masterDatacenterId: account.masterDatacenterId, contents: .empty)).startStandalone()
@@ -1132,7 +1132,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
         if let currentController = currentController {
             controller = currentController
         } else {
-            controller = AuthorizationSequenceSignUpController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self] in
+            controller = AuthorizationSequenceSignUpController(sharedContext: self.sharedContext, presentationData: self.presentationData, back: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1140,7 +1140,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
                 
                 let _ = strongSelf.engine.auth.setState(state: UnauthorizedAccountState(isTestingEnvironment: strongSelf.account.testingEnvironment, masterDatacenterId: strongSelf.account.masterDatacenterId, contents: .phoneEntry(countryCode: countryCode, number: ""))).startStandalone()
             }, displayCancel: displayCancel)
-            controller.openUrl = { [weak self] url in
+            controller.openUrl = { [weak self = self] url in
                 guard let self else {
                     return
                 }
@@ -1428,7 +1428,7 @@ public final class AuthorizationSequenceController: NavigationController, ASAuth
     }
     
     public func dismiss() {
-        self.animateOut(completion: { [weak self] in
+        self.animateOut(completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         })
     }

@@ -155,7 +155,7 @@ private class BundleManager {
     private func onDemandRegistration(mathFont: MathFont) {
         guard threadSafeQueue.sync(execute: { cgFonts[mathFont] }) == nil else { return }
         // Note: resourceLoading is now serialized.
-        threadSafeQueue.sync(flags: .barrier, execute: { [weak self] in
+        threadSafeQueue.sync(flags: .barrier, execute: { [weak self = self] in
             if self?.cgFonts[mathFont] == nil {
                 do {
                     try BundleManager.manager.registerCGFont(mathFont: mathFont)

@@ -81,7 +81,7 @@ public final class OngoingCallVideoCapturer {
     }
     
     public func video() -> Signal<OngoingGroupCallContext.VideoFrameData, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
 
             guard let strongSelf = self else {

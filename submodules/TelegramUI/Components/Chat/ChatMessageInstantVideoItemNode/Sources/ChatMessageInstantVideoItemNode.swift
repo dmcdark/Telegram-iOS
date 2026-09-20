@@ -96,7 +96,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
         
         super.init(rotated: rotated)
         
-        self.interactiveVideoNode.shouldOpen = { [weak self] in
+        self.interactiveVideoNode.shouldOpen = { [weak self = self] in
             if let strongSelf = self {
                 if let item = strongSelf.item, (item.message.id.namespace == Namespaces.Message.Local || item.message.id.namespace == Namespaces.Message.ScheduledLocal || item.message.id.namespace == Namespaces.Message.QuickReplyLocal) {
                     return false
@@ -107,7 +107,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
             }
         }
         
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self else {
                 return false
             }
@@ -133,7 +133,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
             return true
         }
         
-        self.containerNode.activated = { [weak self] gesture, location in
+        self.containerNode.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -152,7 +152,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
             }
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] extracted, _ in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] extracted, _ in
             guard let strongSelf = self, let _ = strongSelf.item else {
                 return
             }
@@ -168,7 +168,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
         self.contextSourceNode.contentNode.addSubnode(self.interactiveVideoNode)
         self.addSubnode(self.messageAccessibilityArea)
         
-        self.messageAccessibilityArea.activate = { [weak self] in
+        self.messageAccessibilityArea.activate = { [weak self = self] in
             guard let strongSelf = self, let _ = strongSelf.accessibilityData else {
                 return false
             }
@@ -176,7 +176,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
             return strongSelf.interactiveVideoNode.accessibilityActivate()
         }
         
-        self.messageAccessibilityArea.focused = { [weak self] in
+        self.messageAccessibilityArea.focused = { [weak self = self] in
             self?.accessibilityElementDidBecomeFocused()
         }
     }
@@ -190,7 +190,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
         self.recognizer = recognizer
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 if let shareButtonNode = strongSelf.shareButtonNode, shareButtonNode.frame.contains(point) {
                     return .fail
@@ -211,7 +211,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
         self.view.addGestureRecognizer(recognizer)
         
         let replyRecognizer = ChatSwipeToReplyRecognizer(target: self, action: #selector(self.swipeToReplyGesture(_:)))
-        replyRecognizer.shouldBegin = { [weak self] in
+        replyRecognizer.shouldBegin = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 if strongSelf.selectionNode != nil {
                     return false
@@ -1226,7 +1226,7 @@ public class ChatMessageInstantVideoItemNode: ChatMessageItemView, ASGestureReco
                 selectionNode.updateSelected(selected, animated: animated)
                 self.subnodeTransform = CATransform3DMakeTranslation(offset, 0.0, 0.0);
             } else {
-                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self] value in
+                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self = self] value in
                     if let strongSelf = self, let item = strongSelf.item {
                         item.controllerInteraction.toggleMessagesSelection([item.message.id], value)
                     }

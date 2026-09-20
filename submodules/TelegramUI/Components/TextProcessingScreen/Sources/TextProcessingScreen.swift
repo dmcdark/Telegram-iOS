@@ -158,34 +158,34 @@ final class TextProcessingContentComponent: Component {
             
             self.addSubview(self.currentContentContainer)
             
-            self.translateState.resultUpdated = { [weak self] _ in
+            self.translateState.resultUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.translateState.isProcessingUpdated = { [weak self] _ in
+            self.translateState.isProcessingUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.translateState.nonPremiumFloodTriggeredUpdated = { [weak self] _ in
+            self.translateState.nonPremiumFloodTriggeredUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.stylizeState.resultUpdated = { [weak self] _ in
+            self.stylizeState.resultUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.stylizeState.promptTextUpdated = { [weak self] in
+            self.stylizeState.promptTextUpdated = { [weak self = self] in
                 self?.externalStatesUpdated()
             }
-            self.stylizeState.isProcessingUpdated = { [weak self] _ in
+            self.stylizeState.isProcessingUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.stylizeState.nonPremiumFloodTriggeredUpdated = { [weak self] _ in
+            self.stylizeState.nonPremiumFloodTriggeredUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.fixState.resultUpdated = { [weak self] _ in
+            self.fixState.resultUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.fixState.isProcessingUpdated = { [weak self] _ in
+            self.fixState.isProcessingUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
-            self.fixState.nonPremiumFloodTriggeredUpdated = { [weak self] _ in
+            self.fixState.nonPremiumFloodTriggeredUpdated = { [weak self = self] _ in
                 self?.externalStatesUpdated()
             }
         }
@@ -268,7 +268,7 @@ final class TextProcessingContentComponent: Component {
             }
             let shareController = component.context.sharedContext.makeShareController(context: component.context, params: ShareControllerParams(
                 subject: .url("https://t.me/addstyle/\(slug)"),
-                completed: { [weak self] peerIds in
+                completed: { [weak self = self] peerIds in
                     Task { @MainActor in
                         guard let self, let component = self.component, let environment = self.environment, let peerId = peerIds.first else {
                             return
@@ -290,7 +290,7 @@ final class TextProcessingContentComponent: Component {
         }
         
         private func requestEditStyle(id: TelegramComposeAIMessageMode.StyleReference) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -303,13 +303,13 @@ final class TextProcessingContentComponent: Component {
                 environment.controller()?.push(await TextStyleEditScreen(
                     context: component.context,
                     mode: .edit(style.cloudStyle),
-                    completion: { [weak self] style in
+                    completion: { [weak self = self] style in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.styleUpdated(style)
                     },
-                    styleDeleted: { [weak self] in
+                    styleDeleted: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -337,7 +337,7 @@ final class TextProcessingContentComponent: Component {
                     text: environment.strings.TextProcessing_AlertCreatorDeleteStyle_Text,
                     actions: [
                         TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self] in
+                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -353,7 +353,7 @@ final class TextProcessingContentComponent: Component {
                     text: environment.strings.TextProcessing_AlertDeleteStyle_Text,
                     actions: [
                         TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self] in
+                        TextAlertAction(type: .destructiveAction, title: environment.strings.Common_Delete, action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -381,8 +381,8 @@ final class TextProcessingContentComponent: Component {
                     icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor)
                     },
-                    action: { [weak self] c, _ in
-                        c?.dismiss(completion: { [weak self] in
+                    action: { [weak self = self] c, _ in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -396,8 +396,8 @@ final class TextProcessingContentComponent: Component {
                 icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
                 },
-                action: { [weak self] c, _ in
-                    c?.dismiss(completion: { [weak self] in
+                action: { [weak self = self] c, _ in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -411,8 +411,8 @@ final class TextProcessingContentComponent: Component {
                 icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
                 },
-                action: { [weak self] c, _ in
-                    c?.dismiss(completion: { [weak self] in
+                action: { [weak self = self] c, _ in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -473,7 +473,7 @@ final class TextProcessingContentComponent: Component {
             }
             
             self.currentStylePreviewDisposable?.dispose()
-            self.currentStylePreviewDisposable = (component.context.engine.messages.requestAIMessageStylePreview(reference: TelegramComposeAIMessageMode.CloudStyle(content: .custom(style)).reference, index: index) |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            self.currentStylePreviewDisposable = (component.context.engine.messages.requestAIMessageStylePreview(reference: TelegramComposeAIMessageMode.CloudStyle(content: .custom(style)).reference, index: index) |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self, let result else {
                     return
                 }
@@ -709,7 +709,7 @@ final class TextProcessingContentComponent: Component {
                         title: environment.strings.TextProcessing_TabTranslate,
                         icon: .bundleIcon(name: "TextProcessing/TabTranslate")
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -731,7 +731,7 @@ final class TextProcessingContentComponent: Component {
                         title: environment.strings.TextProcessing_TabStylize,
                         icon: .bundleIcon(name: "TextProcessing/TabStylize")
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -754,7 +754,7 @@ final class TextProcessingContentComponent: Component {
                         title: environment.strings.TextProcessing_TabFix,
                         icon: .bundleIcon(name: "TextProcessing/TabFix")
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -840,10 +840,10 @@ final class TextProcessingContentComponent: Component {
                     },
                     openStyleContextMenu: { _, _, _ in
                     },
-                    present: { [weak self] c, a in
+                    present: { [weak self = self] c, a in
                         self?.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    rootViewForTextSelection: { [weak self] in
+                    rootViewForTextSelection: { [weak self = self] in
                         return self?.environment?.controller()?.view
                     },
                     openPeer: { _ in
@@ -896,7 +896,7 @@ final class TextProcessingContentComponent: Component {
                     appliedPrompt: mappedAppliedPrompt,
                     copyAction: component.copyCurrentResult,
                     displayLanguageSelectionMenu: component.displayLanguageSelectionMenu,
-                    createStyle: { [weak self] in
+                    createStyle: { [weak self = self] in
                         Task { @MainActor in
                             guard let self else {
                                 return
@@ -953,7 +953,7 @@ final class TextProcessingContentComponent: Component {
                             environment.controller()?.push(await TextStyleEditScreen(
                                 context: component.context,
                                 mode: .create,
-                                completion: { [weak self] style in
+                                completion: { [weak self = self] style in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -969,19 +969,19 @@ final class TextProcessingContentComponent: Component {
                             ))
                         }
                     },
-                    openStyleContextMenu: { [weak self] styleId, gesture, sourceView in
+                    openStyleContextMenu: { [weak self = self] styleId, gesture, sourceView in
                         guard let self else {
                             return
                         }
                         self.openStyleContextMenu(id: styleId, gesture: gesture, sourceView: sourceView)
                     },
-                    present: { [weak self] c, a in
+                    present: { [weak self = self] c, a in
                         self?.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    rootViewForTextSelection: { [weak self] in
+                    rootViewForTextSelection: { [weak self = self] in
                         return self?.environment?.controller()?.view
                     },
-                    openPeer: { [weak self] peer in
+                    openPeer: { [weak self = self] peer in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -998,7 +998,7 @@ final class TextProcessingContentComponent: Component {
                             }
                         })
                     },
-                    requestAnotherPreviewExample: { [weak self] in
+                    requestAnotherPreviewExample: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1022,10 +1022,10 @@ final class TextProcessingContentComponent: Component {
                     },
                     openStyleContextMenu: { _, _, _ in
                     },
-                    present: { [weak self] c, a in
+                    present: { [weak self = self] c, a in
                         self?.environment?.controller()?.present(c, in: .window(.root), with: a)
                     },
-                    rootViewForTextSelection: { [weak self] in
+                    rootViewForTextSelection: { [weak self = self] in
                         return self?.environment?.controller()?.view
                     },
                     openPeer: { _ in
@@ -1220,7 +1220,7 @@ final class TextProcessingContentComponent: Component {
                             )
                         ),
                         leftIcon: .custom(AnyComponentWithIdentity(id: "icon", component: AnyComponent(BundleIconComponent(name: "Chat/Context Menu/Translate", tintColor: theme.list.itemAccentColor))), false),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self, let language = self.translateState.result?.language else {
                                 return
                             }
@@ -1257,7 +1257,7 @@ final class TextProcessingContentComponent: Component {
             
             contentHeight += 106.0
             
-            component.externalState.refreshResult = { [weak self] in
+            component.externalState.refreshResult = { [weak self = self] in
                 guard let self, case .stylize = self.currentMode else {
                     return
                 }
@@ -1278,7 +1278,7 @@ final class TextProcessingContentComponent: Component {
             if let previousEnvironment {
                 if (environment.inputHeight == 0.0) != (previousEnvironment.inputHeight == 0.0) {
                     if let editingFieldView = self.firstResponderTextFieldView(in: self) {
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1450,7 +1450,7 @@ private final class TextProcessingSheetComponent: Component {
                         isScheduledMessages: false,
                         mediaPreview: nil,
                         mediaCaptionIsAbove: nil,
-                        messageEffect: (nil, { [weak self] updatedEffect in
+                        messageEffect: (nil, { [weak self = self] updatedEffect in
                             guard let self else {
                                 return
                             }
@@ -1471,13 +1471,13 @@ private final class TextProcessingSheetComponent: Component {
                     sourceSendButton: sourceSendButton,
                     textInputSource: nil,
                     emojiViewProvider: nil,
-                    completion: { [weak self] in
+                    completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.environment?.controller()?.supportedOrientations = previousSupportedOrientations
                     },
-                    sendMessage: { [weak self] mode, parameters in
+                    sendMessage: { [weak self = self] mode, parameters in
                         guard let self, let result = self.contentExternalState.result else {
                             return
                         }
@@ -1489,7 +1489,7 @@ private final class TextProcessingSheetComponent: Component {
                             }
                         })
                     },
-                    schedule: { [weak self] params in
+                    schedule: { [weak self = self] params in
                         guard let self, let result = self.contentExternalState.result else {
                             return
                         }
@@ -1501,7 +1501,7 @@ private final class TextProcessingSheetComponent: Component {
                             }
                         })
                     }, editPrice: { _ in
-                    }, openPremiumPaywall: { [weak self] c in
+                    }, openPremiumPaywall: { [weak self = self] c in
                         guard let self else {
                             return
                         }
@@ -1533,7 +1533,7 @@ private final class TextProcessingSheetComponent: Component {
             let controller = environmentValue.controller
             let theme = environmentValue.theme.withModalBlocksBackground()
 
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 if animated {
                     self?.animateOut.invoke(Action { _ in
                         if let controller = controller() {
@@ -1559,7 +1559,7 @@ private final class TextProcessingSheetComponent: Component {
                 isMainActionEnabled = true
                 actionButtonTitle = environmentValue.strings.TextProcessing_ActionTitleNonPremium
                 actionButtonShowsIncreaseLimit = true
-                performMainAction = { [weak self] in
+                performMainAction = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -1589,7 +1589,7 @@ private final class TextProcessingSheetComponent: Component {
                         }
                         isMainActionEnabled = !self.contentExternalState.isProcessing
                         hasLongPressActions = sendContextActions != nil
-                        performMainAction = { [weak self] in
+                        performMainAction = { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1603,7 +1603,7 @@ private final class TextProcessingSheetComponent: Component {
                     if let applyResult {
                         actionButtonTitle = environmentValue.strings.TextProcessing_ActionApply
                         isMainActionEnabled = !self.contentExternalState.isProcessing && self.contentExternalState.result != nil
-                        performMainAction = { [weak self] in
+                        performMainAction = { [weak self = self] in
                             guard let self, let result = self.contentExternalState.result else {
                                 return
                             }
@@ -1620,7 +1620,7 @@ private final class TextProcessingSheetComponent: Component {
                 case let .preview(style, _, _, isAlreadyAdded, added):
                     actionButtonTitle = isAlreadyAdded ? environmentValue.strings.TextProcessing_StyleMenu_ButtonClose : environmentValue.strings.TextProcessing_StyleMenu_ButtonAdd
                     isMainActionEnabled = !self.isPerformingMainAction
-                    performMainAction = { [weak self] in
+                    performMainAction = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1633,7 +1633,7 @@ private final class TextProcessingSheetComponent: Component {
                             dismiss(true)
                         } else {
                             self.actionDisposable?.dispose()
-                            self.actionDisposable = (component.context.engine.messages.installAIMessageStyle(style: style) |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+                            self.actionDisposable = (component.context.engine.messages.installAIMessageStyle(style: style) |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1669,7 +1669,7 @@ private final class TextProcessingSheetComponent: Component {
                             secondaryActionIcon = .refresh
                         }
                     }
-                    performMainAction = { [weak self] in
+                    performMainAction = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1696,7 +1696,7 @@ private final class TextProcessingSheetComponent: Component {
                         }
                     }
                     if self.contentExternalState.result != nil && !self.contentExternalState.isProcessing && !self.contentExternalState.promptText.isEmpty {
-                        performSecondaryAction = { [weak self] _ in
+                        performSecondaryAction = { [weak self = self] _ in
                             guard let self else {
                                 return false
                             }
@@ -1713,7 +1713,7 @@ private final class TextProcessingSheetComponent: Component {
                 }
             }
             let copyCurrentResult = component.copyCurrentResult
-            let copyCurrentResultImpl: () -> Void = { [weak self] in
+            let copyCurrentResultImpl: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1762,14 +1762,14 @@ private final class TextProcessingSheetComponent: Component {
                                 dismiss(true)
                             }
                         },
-                        displayLanguageSelectionMenu: { [weak self] sourceView, currentLanguage, currentStyle, displayStyle, completion in
+                        displayLanguageSelectionMenu: { [weak self = self] sourceView, currentLanguage, currentStyle, displayStyle, completion in
                             guard let self else {
                                 return
                             }
                             self.languageSelectionMenuData = LanguageSelectionMenuData(sourceView: sourceView, currentLanguage: currentLanguage, currentStyle: currentStyle, displayStyle: displayStyle, completion: completion)
                             self.state?.updated(transition: .immediate)
                         },
-                        newStyleAdded: { [weak self] style in
+                        newStyleAdded: { [weak self = self] style in
                             Task { @MainActor in
                                 guard let self, let component = self.component else {
                                     return
@@ -1785,7 +1785,7 @@ private final class TextProcessingSheetComponent: Component {
                                     let emojiFile = await component.context.engine.stickers.resolveInlineStickersLocal(fileIds: [emojiFileId]).get().first?.value
                                     
                                     if let emojiFile {
-                                        self.styleCreatedToastData = (Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+                                        self.styleCreatedToastData = (Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
                                             guard let self else {
                                                 return
                                             }
@@ -1799,7 +1799,7 @@ private final class TextProcessingSheetComponent: Component {
                                 self.state?.updated(transition: .spring(duration: 0.4))
                             }
                         },
-                        styleUpdated: { [weak self] style in
+                        styleUpdated: { [weak self = self] style in
                             Task { @MainActor in
                                 guard let self, let component = self.component else {
                                     return
@@ -1817,7 +1817,7 @@ private final class TextProcessingSheetComponent: Component {
                                 self.state?.updated(transition: .immediate)
                             }
                         },
-                        styleDeleted: { [weak self] id in
+                        styleDeleted: { [weak self = self] id in
                             guard let self else {
                                 return
                             }
@@ -1827,11 +1827,11 @@ private final class TextProcessingSheetComponent: Component {
                             self.styles.remove(at: index)
                             self.state?.updated(transition: .spring(duration: 0.4))
                         },
-                        displayToast: { [weak self] text in
+                        displayToast: { [weak self = self] text in
                             guard let self else {
                                 return
                             }
-                            self.customToastData = (Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+                            self.customToastData = (Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1840,7 +1840,7 @@ private final class TextProcessingSheetComponent: Component {
                             }), text)
                             self.state?.updated(transition: .spring(duration: 0.4))
                         },
-                        dismiss: { [weak self] completion in
+                        dismiss: { [weak self = self] completion in
                             self?.animateOut.invoke(Action { _ in
                                 if let controller = controller() {
                                     controller.dismiss(completion: nil)
@@ -1883,7 +1883,7 @@ private final class TextProcessingSheetComponent: Component {
                                     tintColor: theme.chat.inputPanel.panelControlColor
                                 )
                             )),
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self, let component = self.component, let environment = self.environment else {
                                     return
                                 }
@@ -1899,7 +1899,7 @@ private final class TextProcessingSheetComponent: Component {
                             actionTitle: actionButtonTitle,
                             actionButtonShowsIncreaseLimit: actionButtonShowsIncreaseLimit,
                             action: isMainActionEnabled ? performMainAction : nil,
-                            sendAction: performSecondaryAction.flatMap { [weak self] performSecondaryAction in
+                            sendAction: performSecondaryAction.flatMap { [weak self = self] performSecondaryAction in
                                 return {
                                     guard let self else {
                                         return
@@ -1912,7 +1912,7 @@ private final class TextProcessingSheetComponent: Component {
                                 }
                             },
                             secondaryActionIcon: (performSecondaryAction != nil || secondaryActionIcon == .refresh) ? secondaryActionIcon : nil,
-                            longPressSendAction: (performSecondaryAction != nil && hasLongPressActions) ? { [weak self] sourceView in
+                            longPressSendAction: (performSecondaryAction != nil && hasLongPressActions) ? { [weak self = self] sourceView in
                                 guard let self else {
                                     return
                                 }
@@ -2159,7 +2159,7 @@ private final class TextProcessingSheetComponent: Component {
                         currentStyle: languageSelectionMenuDataValue.currentStyle,
                         displayStyles: languageSelectionMenuDataValue.displayStyle ? self.styles : nil,
                         completion: languageSelectionMenuDataValue.completion,
-                        dismissed: { [weak self] in
+                        dismissed: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2643,7 +2643,7 @@ private final class ActionButtonsComponent: Component {
                     restrictContentAnimations: true,
                     isEnabled: component.action != nil,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -2682,13 +2682,13 @@ private final class ActionButtonsComponent: Component {
                     contentInsets: UIEdgeInsets(),
                     isEnabled: component.sendAction != nil,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.sendAction?()
                     },
-                    longPressAction: component.longPressSendAction == nil ? nil : { [weak self] in
+                    longPressAction: component.longPressSendAction == nil ? nil : { [weak self = self] in
                         guard let self else {
                             return
                         }

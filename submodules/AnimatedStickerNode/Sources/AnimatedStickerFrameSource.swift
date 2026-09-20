@@ -374,7 +374,7 @@ private final class AnimatedStickerDirectFrameSourceCache {
         let frameCompressor = self.frameCompressor
         let width = self.width
         let height = self.height
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             frameCompressor?.compress(image: AnimationCompressor.ImageData(width: width, height: height, bytesPerRow: width * 4, data: rgbData), completion: { compressedData in
                 queue.async {
                     guard let strongSelf = self else {
@@ -413,7 +413,7 @@ private final class AnimatedStickerDirectFrameSourceCache {
         let height = self.height
         
         let queue = self.queue
-        self.storeQueue.async { [weak self] in
+        self.storeQueue.async { [weak self = self] in
             let compressedData = compressFrame(width: width, height: height, rgbData: rgbData, unpremultiply: true)
             
             queue.async {

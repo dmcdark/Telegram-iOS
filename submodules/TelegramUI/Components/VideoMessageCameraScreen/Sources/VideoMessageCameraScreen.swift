@@ -266,7 +266,7 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
             
             super.init()
             
-            self.startRecording.connect({ [weak self] _ in
+            self.startRecording.connect({ [weak self = self] _ in
                 if let self, let controller = getController() {
                     self.startVideoRecording(pressing: !controller.scheduledLock)
                     controller.scheduledLock = false
@@ -275,11 +275,11 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
                     }
                 }
             })
-            self.stopRecording.connect({ [weak self] _ in
+            self.stopRecording.connect({ [weak self = self] _ in
                 self?.stopVideoRecording()
             })
             
-            self.cancelRecording.connect({ [weak self] _ in
+            self.cancelRecording.connect({ [weak self = self] _ in
                 self?.cancelVideoRecording()
             })
         }
@@ -371,7 +371,7 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
         
         private func animateBrightnessChange() {
             if self.brightnessAnimator == nil {
-                self.brightnessAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.brightnessAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.animateBrightnessChange()
                 })
                 self.brightnessAnimator?.isPaused = true
@@ -421,13 +421,13 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
         
             controller.updatePreviewState({ _ in return nil }, transition: .spring(duration: 0.4))
             
-            controller.node.withReadyCamera(isFirstTime: !controller.node.cameraIsActive) { [weak self] in
+            controller.node.withReadyCamera(isFirstTime: !controller.node.cameraIsActive) { [weak self = self] in
                 Queue.mainQueue().after(0.15) {
                     guard let self else {
                         return
                     }
                     self.resultDisposable.set((camera.startRecording()
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] recordingData in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] recordingData in
                         let duration = initialDuration + recordingData.duration
                         if let self, let controller = self.getController() {
                             controller.updateCameraState({ $0.updatedDuration(duration) }, transition: .easeInOut(duration: 0.1))
@@ -438,7 +438,7 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
                                 controller.onStop()
                             }
                         }
-                    }, error: { [weak self] _ in
+                    }, error: { [weak self = self] _ in
                         if let self, let controller = self.getController() {
                             controller.completion(nil, nil, nil, nil)
                         }
@@ -466,7 +466,7 @@ private final class VideoMessageCameraScreenComponent: CombinedComponent {
             controller.lastActionTimestamp = currentTimestamp
             
             self.resultDisposable.set((camera.stopRecording()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 if let self, let controller = self.getController(), case let .finished(mainResult, _, duration, _, _) = result {
                     self.completion.invoke(
                         .video(VideoMessageCameraScreen.CaptureResult.Video(
@@ -999,7 +999,7 @@ public class VideoMessageCameraScreen: ViewController {
             self.previewContainerContentView.addSubview(self.previewBlurView)
             self.previewContainerContentView.addSubview(self.loadingView)
             
-            self.completion.connect { [weak self] result in
+            self.completion.connect { [weak self = self] result in
                 if let self {
                     self.addCaptureResult(result)
                 }
@@ -1007,7 +1007,7 @@ public class VideoMessageCameraScreen: ViewController {
             if isDualCameraEnabled {
                 self.mainPreviewView.removePlaceholder(delay: 0.0)
             }
-            self.withReadyCamera(isFirstTime: true, { [weak self] in
+            self.withReadyCamera(isFirstTime: true, { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1087,7 +1087,7 @@ public class VideoMessageCameraScreen: ViewController {
                 queue: Queue.mainQueue(),
                 camera.flashMode,
                 camera.position
-            ).startStrict(next: { [weak self] flashMode, position in
+            ).startStrict(next: { [weak self = self] flashMode, position in
                 guard let self else {
                     return
                 }
@@ -1140,7 +1140,7 @@ public class VideoMessageCameraScreen: ViewController {
             
             UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.2, animations: {
                 self.previewContainerView.center = targetPosition
-            }, completion: { [weak self] _ in
+            }, completion: { [weak self = self] _ in
                 self?.animatingIn = false
             })
             
@@ -1154,7 +1154,7 @@ public class VideoMessageCameraScreen: ViewController {
                                     
             UIView.animate(withDuration: 0.25, animations: {
                 self.backgroundView.alpha = 0.0
-            }, completion: { [weak self] _ in
+            }, completion: { [weak self = self] _ in
                 self?.backgroundView.removeFromSuperview()
                 completion()
             })
@@ -1168,13 +1168,13 @@ public class VideoMessageCameraScreen: ViewController {
                 self.previewContainerContentView.insertSubview(snapshotView, belowSubview: self.progressView)
                 self.previewSnapshotView = snapshotView
                 
-                let action = { [weak self] in
+                let action = { [weak self = self] in
                     guard let self else {
                         return
                     }
                     UIView.animate(withDuration: 0.2, animations: {
                         self.previewSnapshotView?.alpha = 0.0
-                    }, completion: { [weak self] _ in
+                    }, completion: { [weak self = self] _ in
                         self?.previewSnapshotView?.removeFromSuperview()
                         self?.previewSnapshotView = nil
                     })
@@ -1212,14 +1212,14 @@ public class VideoMessageCameraScreen: ViewController {
                     self.previewBlurView.effect = UIBlurEffect(style: .dark)
                 })
                 
-                let action = { [weak self] in
+                let action = { [weak self = self] in
                     guard let self else {
                         return
                     }
                     UIView.animate(withDuration: 0.4, animations: {
                         self.previewBlurView.effect = nil
                         self.previewSnapshotView?.alpha = 0.0
-                    }, completion: { [weak self] _ in
+                    }, completion: { [weak self = self] _ in
                         self?.previewSnapshotView?.removeFromSuperview()
                         self?.previewSnapshotView = nil
                     })
@@ -1309,14 +1309,14 @@ public class VideoMessageCameraScreen: ViewController {
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
             
             let _ = (ApplicationSpecificNotice.getVideoMessagesPauseSuggestion(accountManager: self.context.sharedContext.accountManager)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] pauseCounter in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] pauseCounter in
                 guard let self else {
                     return
                 }
                 
                 if pauseCounter >= 3 {
                     let _ = (ApplicationSpecificNotice.getVideoMessagesPlayOnceSuggestion(accountManager: self.context.sharedContext.accountManager)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] counter in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] counter in
                         guard let self else {
                             return
                         }
@@ -1472,7 +1472,7 @@ public class VideoMessageCameraScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -1564,13 +1564,13 @@ public class VideoMessageCameraScreen: ViewController {
                         isPreviewing: self.previewState != nil || self.transitioningToPreview,
                         isMuted: self.previewState?.isMuted ?? true,
                         totalDuration: self.previewState?.composition.duration.seconds ?? 0.0,
-                        getController: { [weak self] in
+                        getController: { [weak self = self] in
                             return self?.controller
                         },
-                        present: { [weak self] c in
+                        present: { [weak self = self] c in
                             self?.controller?.present(c, in: .window(.root))
                         },
-                        push: { [weak self] c in
+                        push: { [weak self = self] c in
                             self?.controller?.push(c)
                         },
                         startRecording: self.startRecording,
@@ -1605,7 +1605,7 @@ public class VideoMessageCameraScreen: ViewController {
                     resultPreviewView = current
                 } else {
                     resultPreviewView = ResultPreviewView(composition: previewState.composition)
-                    resultPreviewView.onLoop = { [weak self] in
+                    resultPreviewView.onLoop = { [weak self = self] in
                         if let self, let controller = self.controller {
                             controller.updatePreviewState({ state in
                                 if let state {
@@ -1875,7 +1875,7 @@ public class VideoMessageCameraScreen: ViewController {
         
         let _ = (self.currentResults
         |> take(1)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] results in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] results in
             guard let self, let firstResult = results.first, case let .video(video) = firstResult else {
                 return
             }
@@ -1936,7 +1936,7 @@ public class VideoMessageCameraScreen: ViewController {
             }
             
             let _ = (thumbnailImage
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] thumbnailImage in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] thumbnailImage in
                 guard let self else {
                     return
                 }
@@ -2111,7 +2111,7 @@ public class VideoMessageCameraScreen: ViewController {
             audioSessionType = .record(speaker: false, video: false, withOthers: true)
         }
       
-        self.audioSessionDisposable = self.context.sharedContext.mediaManager.audioSession.push(audioSessionType: audioSessionType, activate: { [weak self] _ in
+        self.audioSessionDisposable = self.context.sharedContext.mediaManager.audioSession.push(audioSessionType: audioSessionType, activate: { [weak self = self] _ in
             if let self {
                 Queue.mainQueue().after(0.05) {
                     self.node.setupCamera()

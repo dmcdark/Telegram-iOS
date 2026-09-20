@@ -91,7 +91,7 @@ class InviteLinkInviteManageItemNode: ListViewItemNode {
             let contentSize = CGSize(width: params.width, height: 70.0)
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

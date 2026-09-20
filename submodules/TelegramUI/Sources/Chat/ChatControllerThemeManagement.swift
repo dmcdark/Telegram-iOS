@@ -159,7 +159,7 @@ extension ChatControllerImpl {
         }
         
         let _ = (combineLatest(queue: Queue.mainQueue(), self.chatThemePromise.get(), animatedEmojiStickers)
-        |> take(1)).startStandalone(next: { [weak self] chatTheme, animatedEmojiStickers in
+        |> take(1)).startStandalone(next: { [weak self = self] chatTheme, animatedEmojiStickers in
             guard let strongSelf = self, let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer else {
                 return
             }
@@ -176,13 +176,13 @@ extension ChatControllerImpl {
                 initiallySelectedTheme: chatTheme,
                 peerName: strongSelf.presentationInterfaceState.renderedPeer?.chatMainPeer.flatMap(EnginePeer.init)?.compactDisplayTitle ?? "",
                 canResetWallpaper: canResetWallpaper,
-                previewTheme: { [weak self] chatTheme, dark in
+                previewTheme: { [weak self = self] chatTheme, dark in
                     if let strongSelf = self {
                         strongSelf.presentCrossfadeSnapshot()
                         strongSelf.chatThemeAndDarkAppearancePreviewPromise.set(.single((chatTheme, dark)))
                     }
                 },
-                changeWallpaper: { [weak self] in
+                changeWallpaper: { [weak self = self] in
                     guard let self, let peerId else {
                         return
                     }
@@ -190,7 +190,7 @@ extension ChatControllerImpl {
                         self.themeScreen = nil
                         themeController.dimTapped()
                     }                    
-                    let dismissControllers = { [weak self] in
+                    let dismissControllers = { [weak self = self] in
                         if let self, let navigationController = self.navigationController as? NavigationController {
                             let controllers = navigationController.viewControllers.filter({ controller in
                                 if controller is WallpaperGalleryController || controller is AttachmentController {
@@ -202,7 +202,7 @@ extension ChatControllerImpl {
                         }
                     }
                     var openWallpaperPickerImpl: ((Bool) -> Void)?
-                    let openWallpaperPicker = { [weak self] animateAppearance in
+                    let openWallpaperPicker = { [weak self = self] animateAppearance in
                         guard let self else {
                             return
                         }
@@ -211,7 +211,7 @@ extension ChatControllerImpl {
                             updatedPresentationData: self.updatedPresentationData,
                             peer: EnginePeer(peer),
                             animateAppearance: animateAppearance,
-                            completion: { [weak self] _, result in
+                            completion: { [weak self = self] _, result in
                                 guard let self, let asset = result as? PHAsset else {
                                     return
                                 }
@@ -226,11 +226,11 @@ extension ChatControllerImpl {
                                 }
                                 self.push(controller)
                             },
-                            openColors: { [weak self] in
+                            openColors: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
-                                let controller = standaloneColorPickerController(context: context, peer: EnginePeer(peer), push: { [weak self] controller in
+                                let controller = standaloneColorPickerController(context: context, peer: EnginePeer(peer), push: { [weak self = self] controller in
                                     if let self {
                                         self.push(controller)
                                     }
@@ -247,13 +247,13 @@ extension ChatControllerImpl {
                     openWallpaperPickerImpl = openWallpaperPicker
                     openWallpaperPicker(true)
                 },
-                resetWallpaper: { [weak self] in
+                resetWallpaper: { [weak self = self] in
                     guard let self, let peerId else {
                         return
                     }
                     let _ = self.context.engine.themes.setChatWallpaper(peerId: peerId, wallpaper: nil, forBoth: false).startStandalone()
                 },
-                completion: { [weak self] chatTheme in
+                completion: { [weak self = self] chatTheme in
                     guard let self, let peerId else {
                         return
                     }
@@ -261,7 +261,7 @@ extension ChatControllerImpl {
                         let _ = context.engine.themes.setChatWallpaper(peerId: peerId, wallpaper: nil, forBoth: true).startStandalone()
                     }
                     strongSelf.chatThemeAndDarkAppearancePreviewPromise.set(.single((chatTheme ?? .emoticon(""), nil)))
-                    let _ = context.engine.themes.setChatTheme(peerId: peerId, chatTheme: chatTheme ?? .emoticon("")).startStandalone(completed: { [weak self] in
+                    let _ = context.engine.themes.setChatTheme(peerId: peerId, chatTheme: chatTheme ?? .emoticon("")).startStandalone(completed: { [weak self = self] in
                         if let self {
                             self.chatThemeAndDarkAppearancePreviewPromise.set(.single((nil, nil)))
                         }
@@ -269,14 +269,14 @@ extension ChatControllerImpl {
                 }
             )
             controller.navigationPresentation = .flatModal
-            controller.passthroughHitTestImpl = { [weak self] _ in
+            controller.passthroughHitTestImpl = { [weak self = self] _ in
                 if let strongSelf = self {
                     return strongSelf.chatDisplayNode.historyNode.view
                 } else {
                     return nil
                 }
             }
-            controller.dismissed = { [weak self] in
+            controller.dismissed = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.chatDisplayNode.historyNode.tapped = nil
                 }
@@ -301,11 +301,11 @@ extension ChatControllerImpl {
         }
         
         let presentationData = self.presentationData
-        let controller = StickerPackScreen(context: self.context, updatedPresentationData: self.updatedPresentationData, mainStickerPack: packReference, stickerPacks: Array(references), previewIconFile: previewIconFile, parentNavigationController: self.effectiveNavigationController, sendEmoji: canSendMessagesToChat(self.presentationInterfaceState) ? { [weak self] text, attribute in
+        let controller = StickerPackScreen(context: self.context, updatedPresentationData: self.updatedPresentationData, mainStickerPack: packReference, stickerPacks: Array(references), previewIconFile: previewIconFile, parentNavigationController: self.effectiveNavigationController, sendEmoji: canSendMessagesToChat(self.presentationInterfaceState) ? { [weak self = self] text, attribute in
             if let strongSelf = self {
                 strongSelf.controllerInteraction?.sendEmoji(text, attribute, false)
             }
-        } : nil, actionPerformed: { [weak self] actions in
+        } : nil, actionPerformed: { [weak self = self] actions in
             guard let strongSelf = self else {
                 return
             }

@@ -187,14 +187,14 @@ public final class EmojiSelectionComponent: Component {
                 transition: transition,
                 component: AnyComponent(Button(
                     content: AnyComponent(HStack([], spacing: 0.0)),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.backspace?()
                         AudioServicesPlaySystemSound(1155)
                     }
-                ).withHoldAction({ [weak self] _ in
+                ).withHoldAction({ [weak self = self] _ in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -262,7 +262,7 @@ public final class EmojiSelectionComponent: Component {
                     topPanelExtensionUpdated: { _, _ in },
                     topPanelScrollingOffset: { _, _ in },
                     hideInputUpdated: { _, _, _ in },
-                    hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                    hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                         guard let self else {
                             return
                         }

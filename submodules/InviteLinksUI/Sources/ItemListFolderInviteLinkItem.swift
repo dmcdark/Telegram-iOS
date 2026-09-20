@@ -220,13 +220,13 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
         
         self.addSubnode(self.activateArea)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             if let strongSelf = self, let item = strongSelf.item {
                 item.contextAction?(strongSelf.referenceContainerNode, gesture)
             }
         }
         
-        self.fieldButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.fieldButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.addressNode.layer.removeAnimation(forKey: "opacity")
@@ -240,7 +240,7 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
         self.fieldButtonNode.addTarget(self, action: #selector(self.fieldButtonPressed), forControlEvents: .touchUpInside)
         
         self.addressButtonNode.addTarget(self, action: #selector(self.addressButtonPressed), forControlEvents: .touchUpInside)
-        self.addressButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.addressButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.addressButtonIconNode.layer.removeAnimation(forKey: "opacity")
@@ -251,7 +251,7 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
                 }
             }
         }
-        self.avatarsButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.avatarsButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.avatarsNode.layer.removeAnimation(forKey: "opacity")
@@ -364,7 +364,7 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.avatarsContent = avatarsContent
@@ -497,7 +497,7 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
                             content: AnyComponentWithIdentity(id: AnyHashable(item.buttonTitle), component: AnyComponent(Text(text: item.buttonTitle, font: Font.semibold(17.0), color: buttonForegroundColor))),
                             isEnabled: item.enableButton,
                             tintWhenDisabled: false,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 self?.item?.shareAction?()
                             }
                         )),
@@ -524,7 +524,7 @@ public class ItemListFolderInviteLinkItemNode: ListViewItemNode, ItemListItemNod
                                 background: buttonBackground,
                                 content: AnyComponentWithIdentity(id: AnyHashable(secondaryButtonTitle), component: AnyComponent(Text(text: secondaryButtonTitle, font: Font.semibold(17.0), color: buttonForegroundColor))),
                                 tintWhenDisabled: false,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     self?.item?.secondaryAction?()
                                 }
                             )),

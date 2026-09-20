@@ -163,7 +163,7 @@ private final class VoiceChatRecordingContextItemNode: ASDisplayNode, ContextMen
         }, willExit: {
         })
         
-        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
             self?.updateTime(transition: .immediate)
         }, queue: Queue.mainQueue())
         self.timer = timer
@@ -254,7 +254,7 @@ private final class VoiceChatRecordingContextItemNode: ASDisplayNode, ContextMen
         guard let controller = self.getController() else {
             return
         }
-        self.item.action(controller, { [weak self] result in
+        self.item.action(controller, { [weak self = self] result in
             self?.actionSelected(result)
         })
     }

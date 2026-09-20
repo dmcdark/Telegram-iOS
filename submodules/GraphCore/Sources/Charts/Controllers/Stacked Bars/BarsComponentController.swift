@@ -226,7 +226,7 @@ class BarsComponentController: GeneralChartComponentController {
         var viewModel = super.chartDetailsViewModel(closestDate: closestDate, pointIndex: pointIndex, currency: currency, rate: rate)
         let visibleChartValues = self.visibleChartValues
         let totalSumm: CGFloat = visibleChartValues.map { CGFloat($0.values[pointIndex]) }.reduce(0, +)
-        viewModel.hideAction = { [weak self] in
+        viewModel.hideAction = { [weak self = self] in
             self?.hideDetailsView(animated: true)
         }
         if !self.step {

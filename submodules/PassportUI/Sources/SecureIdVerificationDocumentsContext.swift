@@ -38,7 +38,7 @@ final class SecureIdVerificationDocumentsContext {
                         let disposable = MetaDisposable()
                         self.contexts[info.id] = DocumentContext(disposable: disposable)
                         disposable.set((uploadSecureIdFile(context: self.context, engine: self.engine, resource: EngineMediaResource(info.resource))
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             if let strongSelf = self {
                                 switch result {
                                     case let .progress(value):

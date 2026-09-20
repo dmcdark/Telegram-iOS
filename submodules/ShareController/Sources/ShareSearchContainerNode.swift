@@ -261,21 +261,21 @@ final class ShareSearchContainerNode: ASDisplayNode, ShareContentContainerNode {
         self.addSubnode(self.cancelButtonNode)
         self.addSubnode(self.contentSeparatorNode)
         
-        self.recentGridNode.scrollingInitiated = { [weak self] in
+        self.recentGridNode.scrollingInitiated = { [weak self = self] in
             self?.contentDidBeginDragging?()
         }
         
-        self.contentGridNode.scrollingInitiated = { [weak self] in
+        self.contentGridNode.scrollingInitiated = { [weak self = self] in
             self?.contentDidBeginDragging?()
         }
         
-        self.recentGridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.recentGridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             if let strongSelf = self, !strongSelf.recentGridNode.isHidden {
                 strongSelf.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
             }
         }
         
-        self.contentGridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.contentGridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             if let strongSelf = self, !strongSelf.contentGridNode.isHidden {
                 strongSelf.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
             }
@@ -425,7 +425,7 @@ final class ShareSearchContainerNode: ASDisplayNode, ShareContentContainerNode {
         
         let previousSearchItemsAndIsPlaceholder = Atomic<([ShareSearchPeerEntry]?, Bool)>(value: (nil, false))
         self.searchDisposable.set((foundItems
-        |> deliverOnMainQueue).start(next: { [weak self] entriesAndIsPlaceholder in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entriesAndIsPlaceholder in
             if let strongSelf = self {
                 let (entries, isPlaceholder) = entriesAndIsPlaceholder
                 let previousEntries = previousSearchItemsAndIsPlaceholder.swap(entriesAndIsPlaceholder)
@@ -451,7 +451,7 @@ final class ShareSearchContainerNode: ASDisplayNode, ShareContentContainerNode {
             }
         }))
         
-        self.searchNode.textUpdated = { [weak self] text in
+        self.searchNode.textUpdated = { [weak self = self] text in
             self?.searchQuery.set(text)
         }
         
@@ -483,7 +483,7 @@ final class ShareSearchContainerNode: ASDisplayNode, ShareContentContainerNode {
         }
         let previousRecentItems = Atomic<[ShareSearchRecentEntry]?>(value: nil)
         self.recentDisposable.set((recentItems
-        |> deliverOnMainQueue).start(next: { [weak self] entries in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entries in
             if let strongSelf = self {
                 let previousEntries = previousRecentItems.swap(entries)
                 strongSelf.recentEntries = entries

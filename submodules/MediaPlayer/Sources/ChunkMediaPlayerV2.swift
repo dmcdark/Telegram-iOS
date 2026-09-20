@@ -275,7 +275,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
             self.source = ChunkMediaPlayerDirectFetchSourceImpl(resource: resource)
         }
         
-        self.updateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self] _ in
+        self.updateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -283,7 +283,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
         })
         
         self.partsStateDisposable = (self.source.partsState
-        |> deliverOnMainQueue).startStrict(next: { [weak self] partsState in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] partsState in
             guard let self else {
                 return
             }
@@ -326,7 +326,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
                 self.audioSessionDisposable = self.audioSessionManager.push(params: ManagedAudioSessionClientParams(
                     audioSessionType: self.isAmbientMode ? .ambient : .play(mixWithOthers: false),
                     activateImmediately: false,
-                    manualActivate: { [weak self] control in
+                    manualActivate: { [weak self = self] control in
                         control.setupAndActivate(synchronous: false, { state in
                             Queue.mainQueue().async {
                                 guard let self else {
@@ -337,7 +337,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
                             }
                         })
                     },
-                    deactivate: { [weak self] _ in
+                    deactivate: { [weak self = self] _ in
                         return Signal { subscriber in
                             guard let self else {
                                 subscriber.putCompletion()
@@ -520,7 +520,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
             let loadedParts = self.loadedParts
             let dataQueue = self.dataQueue
             let isSoundEnabled = self.isSoundEnabled
-            self.loadedPartsMediaData.with { [weak self] loadedPartsMediaData in
+            self.loadedPartsMediaData.with { [weak self = self] loadedPartsMediaData in
                 loadedPartsMediaData.ids = loadedParts.map(\.part.id)
                 
                 for part in loadedParts {
@@ -614,7 +614,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
             }
             
             let dataQueue = self.dataQueue
-            self.loadedPartsMediaData.with { [weak self] loadedPartsMediaData in
+            self.loadedPartsMediaData.with { [weak self = self] loadedPartsMediaData in
                 if !loadedPartsMediaData.ids.isEmpty {
                     loadedPartsMediaData.ids = []
                 }
@@ -914,7 +914,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
         self.didSetSourceSeek = true
         self.source.seek(id: self.seekId, position: timestamp)
         
-        self.loadedPartsMediaData.with { [weak self] loadedPartsMediaData in
+        self.loadedPartsMediaData.with { [weak self = self] loadedPartsMediaData in
             loadedPartsMediaData.parts.removeAll()
             loadedPartsMediaData.seekFromMinTimestamp = timestamp
             loadedPartsMediaData.directMediaData = nil
@@ -962,7 +962,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
             }
         
             let didNotifySentVideoFrames = self.didNotifySentVideoFrames
-            videoTarget.requestMediaDataWhenReady(on: self.dataQueue.queue, using: { [weak self] in
+            videoTarget.requestMediaDataWhenReady(on: self.dataQueue.queue, using: { [weak self = self] in
                 if let loadedPartsMediaData = loadedPartsMediaData.unsafeGet() {
                     let bufferFillResult = ChunkMediaPlayerV2.fillRendererBuffer(bufferTarget: videoTarget, loadedPartsMediaData: loadedPartsMediaData, isVideo: true)
                     if bufferFillResult.bufferIsReadyForMoreData {
@@ -998,7 +998,7 @@ public final class ChunkMediaPlayerV2: ChunkMediaPlayer {
             self.audioIsRequestingMediaData = true
             let loadedPartsMediaData = self.loadedPartsMediaData
             let audioTarget = audioRenderer
-            audioTarget.requestMediaDataWhenReady(on: self.dataQueue.queue, using: { [weak self] in
+            audioTarget.requestMediaDataWhenReady(on: self.dataQueue.queue, using: { [weak self = self] in
                 if let loadedPartsMediaData = loadedPartsMediaData.unsafeGet() {
                     let bufferFillResult = ChunkMediaPlayerV2.fillRendererBuffer(bufferTarget: audioTarget, loadedPartsMediaData: loadedPartsMediaData, isVideo: false)
                     if bufferFillResult.bufferIsReadyForMoreData {

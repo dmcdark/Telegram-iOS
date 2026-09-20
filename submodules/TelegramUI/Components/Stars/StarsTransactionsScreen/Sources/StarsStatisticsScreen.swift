@@ -379,7 +379,7 @@ final class StarsStatisticsScreenComponent: Component {
             
             if self.stateDisposable == nil {
                 self.stateDisposable = (component.revenueContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -554,7 +554,7 @@ final class StarsStatisticsScreenComponent: Component {
                             actionIsEnabled: true,
                             actionCooldownUntilTimestamp: self.starsState?.balances.nextWithdrawalTimestamp,
                             actionIcon: PresentationResourcesItemList.itemListRoundWithdrawIcon(environment.theme),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -589,7 +589,7 @@ final class StarsStatisticsScreenComponent: Component {
                             actionAvailable: true,
                             actionIsEnabled: self.starsState?.balances.withdrawEnabled ?? true,
                             actionCooldownUntilTimestamp: self.starsState?.balances.nextWithdrawalTimestamp,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -608,7 +608,7 @@ final class StarsStatisticsScreenComponent: Component {
                                 }
                             },
                             secondaryActionTitle: strings.Stars_BotRevenue_Withdraw_BuyAds,
-                            secondaryAction: { [weak self] in
+                            secondaryAction: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -644,7 +644,7 @@ final class StarsStatisticsScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             if let controller = self?.controller?() as? StarsStatisticsScreen, let navigationController = controller.navigationController as? NavigationController {
                                 component.context.sharedContext.openExternalUrl(context: component.context, urlContext: .generic, url: strings.Stars_BotRevenue_Withdraw_Info_URL, forceExternal: false, presentationData: presentationData, navigationController: navigationController, dismissInput: {})
                             }
@@ -752,7 +752,7 @@ final class StarsStatisticsScreenComponent: Component {
                         dateTimeFormat: environment.dateTimeFormat,
                         insets: UIEdgeInsets(top: 0.0, left: environment.safeInsets.left + panelContainerInset, bottom: environment.safeInsets.bottom, right: environment.safeInsets.right + panelContainerInset),
                         items: panelItems,
-                        currentPanelUpdated: { [weak self] id, transition in
+                        currentPanelUpdated: { [weak self = self] id, transition in
                             guard let self else {
                                 return
                             }
@@ -855,12 +855,12 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .modalInLargeLayout
                 
-        openTransactionImpl = { [weak self] transaction in
+        openTransactionImpl = { [weak self = self] transaction in
             guard let self else {
                 return
             }
             let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
@@ -873,17 +873,17 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
             self.options.set(.single([]) |> then(context.engine.payments.starsTopUpOptions()))
         }
         
-        buyImpl = { [weak self] in
+        buyImpl = { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (self.options.get()
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] options in
+            |> deliverOnMainQueue).start(next: { [weak self = self] options in
                 guard let self, let starsContext = context.starsContext else {
                     return
                 }
-                let controller = context.sharedContext.makeStarsPurchaseScreen(context: context, starsContext: starsContext, options: options, purpose: .generic, targetPeerId: nil, customTheme: nil, completion: { [weak self] stars in
+                let controller = context.sharedContext.makeStarsPurchaseScreen(context: context, starsContext: starsContext, options: options, purpose: .generic, targetPeerId: nil, customTheme: nil, completion: { [weak self = self] stars in
                     guard let self else {
                         return
                     }
@@ -909,13 +909,13 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
             })
         }
         
-        withdrawImpl = { [weak self] in
+        withdrawImpl = { [weak self = self] in
             guard let self else {
                 return
             }
             
             let _ = (context.engine.peers.checkStarsRevenueWithdrawalAvailability()
-            |> deliverOnMainQueue).start(error: { [weak self] error in
+            |> deliverOnMainQueue).start(error: { [weak self = self] error in
                 guard let self else {
                     return
                 }
@@ -925,15 +925,15 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
                 case .requestPassword:
                     let _ = (revenueContext.state
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] state in
                         guard let self, let stats = state.stats else {
                             return
                         }
-                        let controller = self.context.sharedContext.makeStarsWithdrawalScreen(context: context, stats: stats, completion: { [weak self] amount in
+                        let controller = self.context.sharedContext.makeStarsWithdrawalScreen(context: context, stats: stats, completion: { [weak self = self] amount in
                             guard let self else {
                                 return
                             }
-                            let controller = confirmStarsRevenueWithdrawalController(context: context, peerId: peerId, amount: amount, present: { [weak self] c, a in
+                            let controller = confirmStarsRevenueWithdrawalController(context: context, peerId: peerId, amount: amount, present: { [weak self = self] c, a in
                                 self?.present(c, in: .window(.root))
                             }, completion: { url in
                                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
@@ -950,7 +950,7 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
                         self.push(controller)
                     })
                 default:
-                    let controller = starsRevenueWithdrawalController(context: context, peerId: peerId, amount: 0, initialError: error, present: { [weak self] c, a in
+                    let controller = starsRevenueWithdrawalController(context: context, peerId: peerId, amount: 0, initialError: error, present: { [weak self = self] c, a in
                         self?.present(c, in: .window(.root))
                     }, completion: { _ in
                         
@@ -960,7 +960,7 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
             })
         }
         
-        showTimeoutTooltipImpl = { [weak self] cooldownUntilTimestamp in
+        showTimeoutTooltipImpl = { [weak self = self] cooldownUntilTimestamp in
             guard let self, self.tooltipScreen == nil else {
                 return
             }
@@ -985,7 +985,7 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
             
             if remainingCooldownSeconds < 3600 {
                 if self.timer == nil {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1024,7 +1024,7 @@ public final class StarsStatisticsScreen: ViewControllerComponentContainer {
             })
         }
                 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? StarsStatisticsScreenComponent.View else {
                 return
             }

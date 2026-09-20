@@ -86,7 +86,7 @@ final class StickerPreviewControllerNode: ASDisplayNode, ASScrollViewDelegate {
         var dimCompleted = false
         var itemCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && itemCompleted {
                 strongSelf.dismiss?()
             }

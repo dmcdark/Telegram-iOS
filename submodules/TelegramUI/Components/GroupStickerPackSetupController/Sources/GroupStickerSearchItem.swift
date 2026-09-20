@@ -34,7 +34,7 @@ final class GroupStickerSearchItem: ItemListControllerSearch {
             } else {
                 return .single(value)
             }
-        }).start(next: { [weak self] value in
+        }).start(next: { [weak self = self] value in
             self?.updateActivity?(value)
         }))
     }
@@ -60,14 +60,14 @@ final class GroupStickerSearchItem: ItemListControllerSearch {
             current.updateTheme(presentationData.theme)
             return current
         } else {
-            return GroupStickerSearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, cancel: self.cancel, updateActivity: { [weak self] value in
+            return GroupStickerSearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, cancel: self.cancel, updateActivity: { [weak self = self] value in
                 self?.updateActivity = value
             })
         }
     }
     
     func node(current: ItemListControllerSearchNode?, titleContentNode: (NavigationBarContentNode & ItemListControllerSearchNavigationContentNode)?) -> ItemListControllerSearchNode {
-        return GroupStickerSearchItemNode(context: self.context, packSelected: self.select, cancel: self.cancel, updateActivity: { [weak self] value in
+        return GroupStickerSearchItemNode(context: self.context, packSelected: self.select, cancel: self.cancel, updateActivity: { [weak self = self] value in
             self?.activity.set(value)
         }, pushController: { c in
             

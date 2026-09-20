@@ -298,7 +298,7 @@ final class BlurComponent: Component {
                 containerSize: availableSize
             )
             
-            let isTrackingUpdated: (Bool) -> Void = { [weak self] isTracking in
+            let isTrackingUpdated: (Bool) -> Void = { [weak self = self] isTracking in
                 component.isTrackingUpdated(isTracking)
                 
                 if let self {

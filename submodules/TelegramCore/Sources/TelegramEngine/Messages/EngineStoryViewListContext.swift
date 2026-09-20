@@ -376,7 +376,7 @@ public final class EngineStoryViewListContext {
                         }
                     }
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] state in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] state in
                     guard let `self` = self else {
                         return
                     }
@@ -789,7 +789,7 @@ public final class EngineStoryViewListContext {
                 }
             }
             self.disposable.set((signal
-            |> deliverOn(self.queue)).start(next: { [weak self] state in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] state in
                 guard let `self` = self else {
                     return
                 }
@@ -844,7 +844,7 @@ public final class EngineStoryViewListContext {
             
             let statsKey: PostboxViewKey = .peerStoryStats(peerIds: Set(currentState.items.map(\.peer.id)))
             self.storyStatsDisposable.set((self.account.postbox.combinedView(keys: [statsKey])
-            |> deliverOn(self.queue)).start(next: { [weak self] views in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] views in
                 guard let `self` = self, var state = self.state else {
                     return
                 }

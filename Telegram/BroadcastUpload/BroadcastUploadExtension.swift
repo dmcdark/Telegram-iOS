@@ -39,7 +39,7 @@ private final class InProcessBroadcastUploadImpl: BroadcastUploadImpl {
 
         var wasRunning = false
         self.statusDisposable = (screencastBufferClientContext.status
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -131,7 +131,7 @@ private final class EmbeddedBroadcastUploadImpl: BroadcastUploadImpl {
         
         var wasRunning = false
         self.statusDisposable = (clientContext.status
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -175,7 +175,7 @@ private final class EmbeddedBroadcastUploadImpl: BroadcastUploadImpl {
                         )
                         self.callContext = callContext
                         self.joinPayloadDisposable = (callContext.joinPayload
-                        |> deliverOnMainQueue).start(next: { [weak self] joinPayload in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] joinPayload in
                             guard let self else {
                                 return
                             }

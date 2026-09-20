@@ -52,7 +52,7 @@ public final class PermissionController: ViewController {
         self.updateThemeAndStrings()
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -120,12 +120,12 @@ public final class PermissionController: ViewController {
                 case let .contacts(status):
                     self.splitTest?.addEvent(.ContactsModalRequest)
                     
-                    self.allow = { [weak self] in
+                    self.allow = { [weak self = self] in
                         if let strongSelf = self {
                             switch status {
                                 case .requestable:
                                     strongSelf.splitTest?.addEvent(.ContactsRequest)
-                                    DeviceAccess.authorizeAccess(to: .contacts, { [weak self] result in
+                                    DeviceAccess.authorizeAccess(to: .contacts, { [weak self = self] result in
                                         if let strongSelf = self {
                                             if result {
                                                 strongSelf.splitTest?.addEvent(.ContactsAllowed)
@@ -146,7 +146,7 @@ public final class PermissionController: ViewController {
                 case let .notifications(status):
                     self.splitTest?.addEvent(.NotificationsModalRequest)
                     
-                    self.allow = { [weak self] in
+                    self.allow = { [weak self = self] in
                         if let strongSelf = self {
                             switch status {
                                 case .requestable:
@@ -154,7 +154,7 @@ public final class PermissionController: ViewController {
                                     let context = strongSelf.context
                                     DeviceAccess.authorizeAccess(to: .notifications, registerForNotifications: { [weak context] result in
                                         context?.sharedContext.applicationBindings.registerForNotifications(result)
-                                    }, { [weak self] result in
+                                    }, { [weak self = self] result in
                                         if let strongSelf = self {
                                             if result {
                                                 strongSelf.splitTest?.addEvent(.NotificationsAllowed)
@@ -173,11 +173,11 @@ public final class PermissionController: ViewController {
                         }
                     }
                 case .siri:
-                    self.allow = { [weak self] in
+                    self.allow = { [weak self = self] in
                         self?.proceed?(true)
                     }
                 case .cellularData:
-                    self.allow = { [weak self] in
+                    self.allow = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.openAppSettings()
                             strongSelf.proceed?(true)
@@ -188,14 +188,14 @@ public final class PermissionController: ViewController {
             if case .animation = icon, case .modal = self.navigationPresentation {
                 self.navigationItem.leftBarButtonItem = UIBarButtonItem(customDisplayNode: ASDisplayNode())
             }
-            self.allow = { [weak self] in
+            self.allow = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.proceed?(true)
                 }
             }
         }
         
-        self.skip = { [weak self] in
+        self.skip = { [weak self = self] in
             self?.proceed?(false)
         }
         self.controllerNode.setState(state, transition: animated ? .animated(duration: 0.4, curve: .spring) : .immediate)
@@ -207,13 +207,13 @@ public final class PermissionController: ViewController {
         
         self.navigationBar?.updateBackgroundAlpha(0.0, transition: .immediate)
         
-        self.controllerNode.allow = { [weak self] in
+        self.controllerNode.allow = { [weak self = self] in
             self?.allow?()
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.dismiss()
         }
-        self.controllerNode.openPrivacyPolicy = { [weak self] in
+        self.controllerNode.openPrivacyPolicy = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: "https://telegram.org/privacy", forceExternal: true, presentationData: strongSelf.context.sharedContext.currentPresentationData.with { $0 }, navigationController: nil, dismissInput: {})
             }

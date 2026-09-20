@@ -122,7 +122,7 @@ public final class BlockedPeersContext {
                 }
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] (peers, canLoadMore, totalCount) in
+        |> deliverOnMainQueue).start(next: { [weak self = self] (peers, canLoadMore, totalCount) in
             guard let strongSelf = self else {
                 return
             }
@@ -211,7 +211,7 @@ public final class BlockedPeersContext {
             return peers
         }
         |> castError(BlockedPeersContextAddError.self)
-        |> mapToSignal { [weak self] peers -> Signal<Never, BlockedPeersContextAddError> in
+        |> mapToSignal { [weak self = self] peers -> Signal<Never, BlockedPeersContextAddError> in
             Queue.mainQueue().async {
                 if let strongSelf = self {
                     strongSelf._state = BlockedPeersContextState(isLoadingMore: strongSelf._state.isLoadingMore, canLoadMore: strongSelf._state.canLoadMore, totalCount: peers.count, peers: peers.map(RenderedPeer.init))
@@ -244,7 +244,7 @@ public final class BlockedPeersContext {
             return transaction.getPeer(peerId).flatMap(apiInputPeer)
         }
         |> castError(BlockedPeersContextAddError.self)
-        |> mapToSignal { [weak self] inputPeer -> Signal<Never, BlockedPeersContextAddError> in
+        |> mapToSignal { [weak self = self] inputPeer -> Signal<Never, BlockedPeersContextAddError> in
             guard let inputPeer = inputPeer else {
                 return .fail(.generic)
             }
@@ -316,7 +316,7 @@ public final class BlockedPeersContext {
             return transaction.getPeer(peerId).flatMap(apiInputPeer)
         }
         |> castError(BlockedPeersContextRemoveError.self)
-        |> mapToSignal { [weak self] inputPeer -> Signal<Never, BlockedPeersContextRemoveError> in
+        |> mapToSignal { [weak self = self] inputPeer -> Signal<Never, BlockedPeersContextRemoveError> in
             guard let inputPeer = inputPeer else {
                 return .fail(.generic)
             }

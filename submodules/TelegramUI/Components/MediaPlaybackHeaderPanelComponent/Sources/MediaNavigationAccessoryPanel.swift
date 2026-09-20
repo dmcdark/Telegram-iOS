@@ -35,36 +35,36 @@ public final class MediaNavigationAccessoryPanel: ASDisplayNode {
         
         self.addSubnode(self.containerNode)
         
-        self.containerNode.headerNode.close = { [weak self] in
+        self.containerNode.headerNode.close = { [weak self = self] in
             if let strongSelf = self, let close = strongSelf.close {
                 close()
             }
         }
-        self.containerNode.headerNode.setRate = { [weak self] rate, type in
+        self.containerNode.headerNode.setRate = { [weak self = self] rate, type in
             self?.setRate?(rate, type)
         }
-        self.containerNode.headerNode.togglePlayPause = { [weak self] in
+        self.containerNode.headerNode.togglePlayPause = { [weak self = self] in
             if let strongSelf = self, let togglePlayPause = strongSelf.togglePlayPause {
                 togglePlayPause()
             }
         }
-        self.containerNode.headerNode.tapAction = { [weak self] in
+        self.containerNode.headerNode.tapAction = { [weak self = self] in
             if let strongSelf = self, let tapAction = strongSelf.tapAction {
                 tapAction()
             }
         }
-        self.containerNode.headerNode.playPrevious = { [weak self] in
+        self.containerNode.headerNode.playPrevious = { [weak self = self] in
             if let strongSelf = self, let playPrevious = strongSelf.playPrevious {
                 playPrevious()
             }
         }
-        self.containerNode.headerNode.playNext = { [weak self] in
+        self.containerNode.headerNode.playNext = { [weak self = self] in
             if let strongSelf = self, let playNext = strongSelf.playNext {
                 playNext()
             }
         }
         
-        self.containerNode.headerNode.getController = { [weak self] in
+        self.containerNode.headerNode.getController = { [weak self = self] in
             if let strongSelf = self, let getController = strongSelf.getController {
                 return getController()
             } else {
@@ -72,7 +72,7 @@ public final class MediaNavigationAccessoryPanel: ASDisplayNode {
             }
         }
         
-        self.containerNode.headerNode.presentInGlobalOverlay = { [weak self] c in
+        self.containerNode.headerNode.presentInGlobalOverlay = { [weak self = self] c in
             if let strongSelf = self, let presentInGlobalOverlay = strongSelf.presentInGlobalOverlay {
                 presentInGlobalOverlay(c)
             }

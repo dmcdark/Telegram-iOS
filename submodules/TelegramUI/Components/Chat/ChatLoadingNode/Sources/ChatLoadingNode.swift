@@ -227,7 +227,7 @@ public final class ChatLoadingPlaceholderNode: ASDisplayNode {
         self.borderNode.view.mask = self.borderMaskNode.view
         
         if self.context.sharedContext.energyUsageSettings.fullTranslucency {
-            Queue.mainQueue().after(0.3) { [weak self] in
+            Queue.mainQueue().after(0.3) { [weak self = self] in
                 guard let self else {
                     return
                 }

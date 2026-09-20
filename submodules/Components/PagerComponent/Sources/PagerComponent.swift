@@ -528,7 +528,7 @@ public final class PagerComponent<ChildEnvironmentType: Equatable, TopPanelEnvir
             self.component = component
             self.state = state
             
-            let navigateToContentId: (AnyHashable) -> Void = { [weak self] id in
+            let navigateToContentId: (AnyHashable) -> Void = { [weak self = self] id in
                 guard let strongSelf = self else {
                     return
                 }
@@ -651,7 +651,7 @@ public final class PagerComponent<ChildEnvironmentType: Equatable, TopPanelEnvir
                             activeContentId: effectivePanelActiveContentId,
                             navigateToContentId: navigateToContentId,
                             visibilityFractionUpdated: self.topPanelVisibilityFractionUpdated,
-                            isExpandedUpdated: { [weak self] isExpanded, transition in
+                            isExpandedUpdated: { [weak self = self] isExpanded, transition in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -914,13 +914,13 @@ public final class PagerComponent<ChildEnvironmentType: Equatable, TopPanelEnvir
                         
                         let pagerChildEnvironment = PagerComponentChildEnvironment(
                             containerInsets: childContentInsets,
-                            onChildScrollingUpdate: { [weak self] update in
+                            onChildScrollingUpdate: { [weak self = self] update in
                                 guard let strongSelf = self else {
                                     return
                                 }
                                 strongSelf.onChildScrollingUpdate(id: id, update: update)
                             },
-                            onWantsExclusiveModeUpdated: { [weak self] wantsExclusiveMode in
+                            onWantsExclusiveModeUpdated: { [weak self = self] wantsExclusiveMode in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -965,7 +965,7 @@ public final class PagerComponent<ChildEnvironmentType: Equatable, TopPanelEnvir
                                 if let referenceDirectionIsRight = referenceDirectionIsRight {
                                     contentView.view.frame = contentFrame.offsetBy(dx: referenceDirectionIsRight ? contentFrame.width : (-contentFrame.width), dy: 0.0)
                                     contentView.tintMaskContainer.frame = contentView.view.frame
-                                    transition.setFrame(view: contentView.view, frame: contentFrame, completion: { [weak self] completed in
+                                    transition.setFrame(view: contentView.view, frame: contentFrame, completion: { [weak self = self] completed in
                                         if completed && !isInBounds && isPartOfTransition {
                                             DispatchQueue.main.async {
                                                 self?.state?.updated(transition: .immediate)
@@ -978,7 +978,7 @@ public final class PagerComponent<ChildEnvironmentType: Equatable, TopPanelEnvir
                                 }
                             }
                         } else {
-                            transition.setFrame(view: contentView.view, frame: contentFrame, completion: { [weak self] completed in
+                            transition.setFrame(view: contentView.view, frame: contentFrame, completion: { [weak self = self] completed in
                                 if completed && !isInBounds && isPartOfTransition {
                                     DispatchQueue.main.async {
                                         self?.state?.updated(transition: .immediate)

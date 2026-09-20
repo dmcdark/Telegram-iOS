@@ -222,7 +222,7 @@ final class ManagedAudioRecorderContext {
         
         if beginWithTone, let toneData = audioRecordingToneData {
             self.processSamples = false
-            let toneRenderer = MediaPlayerAudioRenderer(audioSession: .custom({ [weak self] control in
+            let toneRenderer = MediaPlayerAudioRenderer(audioSession: .custom({ [weak self = self] control in
                 queue.async {
                     if let strongSelf = self {
                         strongSelf.toneRendererAudioSession = control
@@ -285,7 +285,7 @@ final class ManagedAudioRecorderContext {
                 }
             })
             toneRenderer.start()
-            let toneTimer = SwiftSignalKit.Timer(timeout: 0.05, repeat: true, completion: { [weak self] in
+            let toneTimer = SwiftSignalKit.Timer(timeout: 0.05, repeat: true, completion: { [weak self = self] in
                 if let strongSelf = self {
                     var wait = false
                     
@@ -312,12 +312,12 @@ final class ManagedAudioRecorderContext {
         
         /*if beginWithTone, let beginToneData = beginToneData {
          self.tonePlayer = TonePlayer()
-         self.tonePlayer?.play(data: beginToneData, completed: { [weak self] in
+         self.tonePlayer?.play(data: beginToneData, completed: { [weak self = self] in
          queue.async {
          guard let strongSelf = self else {
          return
          }
-         let toneTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self] in
+         let toneTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self = self] in
          guard let strongSelf = self else {
          return
          }
@@ -437,7 +437,7 @@ final class ManagedAudioRecorderContext {
     
         if self.audioSessionDisposable == nil {
             let queue = self.queue
-            self.audioSessionDisposable = self.mediaManager.audioSession.push(audioSessionType: .record(speaker: self.beginWithTone, video: false, withOthers: false), activate: { [weak self] state in
+            self.audioSessionDisposable = self.mediaManager.audioSession.push(audioSessionType: .record(speaker: self.beginWithTone, video: false, withOthers: false), activate: { [weak self = self] state in
                 queue.async {
                     if let strongSelf = self, !strongSelf.paused {
                         strongSelf.hasAudioSession = true
@@ -445,7 +445,7 @@ final class ManagedAudioRecorderContext {
                         strongSelf.audioSessionAcquired(headset: state.isHeadsetConnected)
                     }
                 }
-            }, deactivate: { [weak self] _ in
+            }, deactivate: { [weak self = self] _ in
                 return Signal { subscriber in
                     queue.async {
                         if let strongSelf = self {

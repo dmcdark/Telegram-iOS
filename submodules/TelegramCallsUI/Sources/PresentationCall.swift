@@ -267,7 +267,7 @@ public final class PresentationCallImpl: PresentationCall {
                     TelegramEngine.EngineData.Item.Messages.Message(id: incomingConferenceSource)
                 )
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] isRinging, message in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] isRinging, message in
                 guard let self else {
                     return
                 }
@@ -335,7 +335,7 @@ public final class PresentationCallImpl: PresentationCall {
             |> then(callSessionManager.callState(internalId: internalId))
             
             self.sessionStateDisposable = (callSessionState
-            |> deliverOnMainQueue).start(next: { [weak self] sessionState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] sessionState in
                 if let strongSelf = self {
                     strongSelf.updateSessionState(sessionState: sessionState, callContextState: strongSelf.callContextState, reception: strongSelf.reception, audioSessionControl: strongSelf.audioSessionControl)
                 }
@@ -350,7 +350,7 @@ public final class PresentationCallImpl: PresentationCall {
         
         if let _ = self.sharedAudioContext {
         } else {
-            self.audioSessionDisposable = audioSession.push(audioSessionType: .voiceCall, manualActivate: { [weak self] control in
+            self.audioSessionDisposable = audioSession.push(audioSessionType: .voiceCall, manualActivate: { [weak self = self] control in
                 Queue.mainQueue().async {
                     if let strongSelf = self {
                         if let sessionState = strongSelf.sessionState {
@@ -360,7 +360,7 @@ public final class PresentationCallImpl: PresentationCall {
                         }
                     }
                 }
-            }, deactivate: { [weak self] _ in
+            }, deactivate: { [weak self = self] _ in
                 return Signal { subscriber in
                     Queue.mainQueue().async {
                         if let strongSelf = self {
@@ -375,7 +375,7 @@ public final class PresentationCallImpl: PresentationCall {
                     }
                     return EmptyDisposable
                 }
-            }, availableOutputsChanged: { [weak self] availableOutputs, currentOutput in
+            }, availableOutputsChanged: { [weak self = self] availableOutputs, currentOutput in
                 Queue.mainQueue().async {
                     guard let strongSelf = self else {
                         return
@@ -402,7 +402,7 @@ public final class PresentationCallImpl: PresentationCall {
             })
             
             self.audioSessionShouldBeActiveDisposable = (self.audioSessionShouldBeActive.get()
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 if let strongSelf = self {
                     if value {
                         if let audioSessionControl = strongSelf.audioSessionControl {
@@ -424,7 +424,7 @@ public final class PresentationCallImpl: PresentationCall {
             })
             
             self.audioSessionActiveDisposable = (self.audioSessionActive.get()
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 if let strongSelf = self {
                     strongSelf.updateIsAudioSessionActive(value)
                 }
@@ -586,7 +586,7 @@ public final class PresentationCallImpl: PresentationCall {
                 var canUpdate = false
                 self.receptionDisposable = (ongoingContext.reception
                 |> delay(1.0, queue: .mainQueue())
-                |> deliverOnMainQueue).start(next: { [weak self] reception in
+                |> deliverOnMainQueue).start(next: { [weak self = self] reception in
                     if let strongSelf = self {
                         if let sessionState = strongSelf.sessionState {
                             if canUpdate {
@@ -612,7 +612,7 @@ public final class PresentationCallImpl: PresentationCall {
                 var canUpdate = false
                 self.receptionDisposable = (conferenceCallContext.signalBars
                 |> delay(1.0, queue: .mainQueue())
-                |> deliverOnMainQueue).start(next: { [weak self] reception in
+                |> deliverOnMainQueue).start(next: { [weak self = self] reception in
                     if let strongSelf = self {
                         if let sessionState = strongSelf.sessionState {
                             if canUpdate {
@@ -761,7 +761,7 @@ public final class PresentationCallImpl: PresentationCall {
                             phoneNumber: phoneNumber,
                             isVideo: sessionState.type == .video,
                             displayTitle: self.peer?.debugDisplayTitle ?? "Unknown",
-                            completion: { [weak self] error in
+                            completion: { [weak self = self] error in
                                 if let error = error {
                                     if error.domain == "com.apple.CallKit.error.incomingcall" && (error.code == -3 || error.code == 3) {
                                         Logger.shared.log("PresentationCall", "reportIncomingCall device in DND mode")
@@ -852,7 +852,7 @@ public final class PresentationCallImpl: PresentationCall {
             if self.conferenceCallDisposable == nil {
                 let conferenceCallSignal = self.context.engine.calls.getCurrentGroupCall(reference: conferenceCallData)
                 self.conferenceCallDisposable = (conferenceCallSignal
-                |> deliverOnMainQueue).startStrict(next: { [weak self] groupCall in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] groupCall in
                     guard let self else {
                         return
                     }
@@ -981,7 +981,7 @@ public final class PresentationCallImpl: PresentationCall {
                         return Void()
                     }
                     |> take(1)
-                    |> timeout(10.0, queue: .mainQueue(), alternate: .single(Void()))).start(next: { [weak self] _ in
+                    |> timeout(10.0, queue: .mainQueue(), alternate: .single(Void()))).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -996,7 +996,7 @@ public final class PresentationCallImpl: PresentationCall {
                             f(conferenceCall)
                         }
                     })
-                }, error: { [weak self] _ in
+                }, error: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -1039,7 +1039,7 @@ public final class PresentationCallImpl: PresentationCall {
                             if self.conferenceCallDisposable == nil {
                                 let conferenceCallSignal = self.context.engine.calls.getCurrentGroupCall(reference: .link(slug: inlineConferenceSlug))
                                 self.conferenceCallDisposable = (conferenceCallSignal
-                                |> deliverOnMainQueue).startStrict(next: { [weak self] groupCall in
+                                |> deliverOnMainQueue).startStrict(next: { [weak self = self] groupCall in
                                     guard let self else {
                                         return
                                     }
@@ -1098,7 +1098,7 @@ public final class PresentationCallImpl: PresentationCall {
                                     self.ongoingContextStateDisposable = (combineLatest(queue: .mainQueue(),
                                         conferenceCallContext.state,
                                         conferenceCallContext.members
-                                    ) |> deliverOnMainQueue).start(next: { [weak self] contextState, contextMembers in
+                                    ) |> deliverOnMainQueue).start(next: { [weak self = self] contextState, contextMembers in
                                         guard let self else {
                                             return
                                         }
@@ -1155,7 +1155,7 @@ public final class PresentationCallImpl: PresentationCall {
                                     })
                                     
                                     self.audioLevelDisposable = (conferenceCallContext.audioLevels
-                                    |> deliverOnMainQueue).start(next: { [weak self] levels in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] levels in
                                         guard let self else {
                                             return
                                         }
@@ -1190,7 +1190,7 @@ public final class PresentationCallImpl: PresentationCall {
                                             }
                                         }
                                     }
-                                }, error: { [weak self] _ in
+                                }, error: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -1226,7 +1226,7 @@ public final class PresentationCallImpl: PresentationCall {
                             self.debugInfoValue.set(ongoingContext.debugInfo())
                             
                             self.ongoingContextStateDisposable = (ongoingContext.state
-                            |> deliverOnMainQueue).start(next: { [weak self] contextState in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] contextState in
                                 if let strongSelf = self {
                                     if let sessionState = strongSelf.sessionState {
                                         strongSelf.updateSessionState(sessionState: sessionState, callContextState: contextState, reception: strongSelf.reception, audioSessionControl: strongSelf.audioSessionControl)
@@ -1237,7 +1237,7 @@ public final class PresentationCallImpl: PresentationCall {
                             })
                             
                             self.audioLevelDisposable = (ongoingContext.audioLevel
-                            |> deliverOnMainQueue).start(next: { [weak self] level in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] level in
                                 if let strongSelf = self {
                                     strongSelf.audioLevelPromise.set(level)
                                 }
@@ -1266,7 +1266,7 @@ public final class PresentationCallImpl: PresentationCall {
                             }
                             
                             self.batteryLevelDisposable = (batteryLevelIsLowSignal()
-                            |> deliverOnMainQueue).start(next: { [weak self] batteryLevelIsLow in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] batteryLevelIsLow in
                                 if let strongSelf = self, let ongoingContext = strongSelf.ongoingContext {
                                     ongoingContext.setIsLowBatteryLevel(batteryLevelIsLow)
                                 }
@@ -1321,7 +1321,7 @@ public final class PresentationCallImpl: PresentationCall {
             self.hungUpPromise.set(true)
             if sessionState.isOutgoing {
                 if !self.droppedCall && self.dropCallKitCallTimer == nil {
-                    let dropCallKitCallTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self] in
+                    let dropCallKitCallTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.dropCallKitCallTimer = nil
                             if !strongSelf.droppedCall {
@@ -1445,7 +1445,7 @@ public final class PresentationCallImpl: PresentationCall {
             present(c, a)
         }, openSettings: {
             openSettings()
-        }, { [weak self] value in
+        }, { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1638,7 +1638,7 @@ public final class PresentationCallImpl: PresentationCall {
             screencastCapturer.injectSampleBuffer(sampleBuffer, rotation: screencastFrame.1, completion: {})
         }))
         self.screencastAudioDataDisposable.set((screencastBufferServerContext.audioData
-        |> deliverOnMainQueue).start(next: { [weak self] data in
+        |> deliverOnMainQueue).start(next: { [weak self = self] data in
             guard let strongSelf = self else {
                 return
             }
@@ -1650,7 +1650,7 @@ public final class PresentationCallImpl: PresentationCall {
         }))
         self.screencastStateDisposable.set((screencastBufferServerContext.isActive
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] isActive in
+        |> deliverOnMainQueue).start(next: { [weak self = self] isActive in
             guard let strongSelf = self else {
                 return
             }
@@ -1720,7 +1720,7 @@ public final class PresentationCallImpl: PresentationCall {
         self.conferenceStateValue = .preparing
         self.callSessionManager.createConferenceIfNecessary(internalId: self.internalId)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             Queue.mainQueue().async {
                 guard let self else {
                     return

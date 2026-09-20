@@ -22,7 +22,7 @@ extension PeerInfoScreenNode {
         case .message:
             if let navigationController = controller.navigationController as? NavigationController, let peer = self.data?.peer {
                 if case let .channel(channel) = peer, case let .broadcast(info) = channel.info, info.flags.contains(.hasMonoforum), let linkedMonoforumId = channel.linkedMonoforumId {
-                    Task { @MainActor [weak self] in
+                    Task { @MainActor [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -40,7 +40,7 @@ extension PeerInfoScreenNode {
         case .discussion:
             if let cachedData = self.data?.cachedData as? CachedChannelData, case let .known(maybeLinkedDiscussionPeerId) = cachedData.linkedDiscussionPeerId, let linkedDiscussionPeerId = maybeLinkedDiscussionPeerId {
                 let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: linkedDiscussionPeerId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] linkedDiscussionPeer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] linkedDiscussionPeer in
                     guard let self, let linkedDiscussionPeer else {
                         return
                     }
@@ -90,7 +90,7 @@ extension PeerInfoScreenNode {
                 
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_MuteFor, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Mute2d"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     guard let strongSelf = self else {
                         return
                     }
@@ -150,7 +150,7 @@ extension PeerInfoScreenNode {
                     if !isSoundEnabled {
                         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_EnableSound, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/SoundOn"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.default)
                             
                             guard let strongSelf = self else {
@@ -163,7 +163,7 @@ extension PeerInfoScreenNode {
                     } else {
                         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_DisableSound, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/SoundOff"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.default)
                             
                             guard let strongSelf = self else {
@@ -179,7 +179,7 @@ extension PeerInfoScreenNode {
                 let context = self.context
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_NotificationsCustomize, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Customize"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
                     
                     let _ = (context.engine.data.get(
@@ -289,7 +289,7 @@ extension PeerInfoScreenNode {
                 if chatIsMuted {
                     items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_ButtonUnmute, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unmute"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         
                         guard let self else {
@@ -310,7 +310,7 @@ extension PeerInfoScreenNode {
                 } else {
                     items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_MuteForever, textColor: .destructive, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Muted"), color: theme.contextMenu.destructiveColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         
                         guard let strongSelf = self else {
@@ -346,12 +346,12 @@ extension PeerInfoScreenNode {
                         icon: { _ in
                             return nil
                         },
-                        action: { [weak self] _, f in
+                        action: { [weak self = self] _, f in
                             guard let self else {
                                 return
                             }
                             f(.default)
-                            self.controller?.push(threadNotificationExceptionsScreen(context: self.context, peerId: self.peerId, notificationExceptions: self.forumTopicNotificationExceptions, updated: { [weak self] value in
+                            self.controller?.push(threadNotificationExceptionsScreen(context: self.context, peerId: self.peerId, notificationExceptions: self.forumTopicNotificationExceptions, updated: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -365,7 +365,7 @@ extension PeerInfoScreenNode {
                 
                 if let sourceNode = self.headerNode.buttonNodes[.mute]?.referenceNode {
                     let contextController = makeContextController(presentationData: self.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: sourceNode)), items: .single(ContextController.Items(content: .list(items), tip: tip)), gesture: gesture)
-                    contextController.dismissed = { [weak self] in
+                    contextController.dismissed = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.state = strongSelf.state.withHighlightedButton(nil)
                             if let (layout, navigationHeight) = strongSelf.validLayout {
@@ -387,7 +387,7 @@ extension PeerInfoScreenNode {
             }
             
             var mainItemsImpl: (() -> Signal<[ContextMenuItem], NoError>)?
-            mainItemsImpl = { [weak self] in
+            mainItemsImpl = { [weak self = self] in
                 var items: [ContextMenuItem] = []
                 guard let strongSelf = self else {
                     return .single(items)
@@ -444,7 +444,7 @@ extension PeerInfoScreenNode {
                 if filteredButtons.contains(.call) {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.PeerInfo_ButtonCall, icon: { theme in
                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Call"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         self?.requestCall(isVideo: false)
                     })))
@@ -452,7 +452,7 @@ extension PeerInfoScreenNode {
                 if filteredButtons.contains(.search) {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChatSearch_SearchPlaceholder, icon: { theme in
                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Search"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         self?.openChatWithMessageSearch()
                     })))
@@ -470,7 +470,7 @@ extension PeerInfoScreenNode {
                 if !headerButtons.contains(.discussion) && hasDiscussion {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.PeerInfo_ViewDiscussion, icon: { theme in
                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         self?.performButtonAction(key: .discussion, buttonNode: nil, gesture: nil)
                     })))
@@ -491,7 +491,7 @@ extension PeerInfoScreenNode {
                         if user.addressName != nil {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.UserInfo_ShareBot, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 self?.openShareBot()
                             })))
@@ -511,7 +511,7 @@ extension PeerInfoScreenNode {
                         if let privacyPolicyUrl {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.UserInfo_BotPrivacy, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 guard let self else {
@@ -526,21 +526,21 @@ extension PeerInfoScreenNode {
                                 if command.text == "settings" {
                                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.UserInfo_BotSettings, icon: { theme in
                                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Bots"), color: theme.contextMenu.primaryColor)
-                                    }, action: { [weak self] _, f in
+                                    }, action: { [weak self = self] _, f in
                                         f(.dismissWithoutContent)
                                         self?.performBotCommand(command: .settings)
                                     })))
                                 } else if command.text == "help" {
                                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.UserInfo_BotHelp, icon: { theme in
                                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Help"), color: theme.contextMenu.primaryColor)
-                                    }, action: { [weak self] _, f in
+                                    }, action: { [weak self = self] _, f in
                                         f(.dismissWithoutContent)
                                         self?.performBotCommand(command: .help)
                                     })))
                                 } else if command.text == "privacy" && !addedPrivacy {
                                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.UserInfo_BotPrivacy, icon: { theme in
                                         generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.contextMenu.primaryColor)
-                                    }, action: { [weak self] _, f in
+                                    }, action: { [weak self = self] _, f in
                                         f(.dismissWithoutContent)
                                         self?.performBotCommand(command: .privacy)
                                     })))
@@ -566,19 +566,19 @@ extension PeerInfoScreenNode {
                     if user.botInfo == nil && data.isContact, case let .user(peer) = strongSelf.data?.peer, let phone = peer.phone {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Profile_ShareContactButton, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             if let strongSelf = self {
                                 let contact = TelegramMediaContact(firstName: peer.firstName ?? "", lastName: peer.lastName ?? "", phoneNumber: phone, peerId: peer.id, vCardData: nil)
-                                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .media(.standalone(media: contact), nil), updatedPresentationData: strongSelf.controller?.updatedPresentationData, completed: { [weak self] peerIds in
+                                let shareController = strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .media(.standalone(media: contact), nil), updatedPresentationData: strongSelf.controller?.updatedPresentationData, completed: { [weak self = self] peerIds in
                                     if let strongSelf = self {
                                         let _ = (strongSelf.context.engine.data.get(
                                             EngineDataList(
                                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                                             )
                                         )
-                                        |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                                             guard let strongSelf = self else {
                                                 return
                                             }
@@ -611,7 +611,7 @@ extension PeerInfoScreenNode {
                                             strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                                                 if savedMessages, let self, action == .info {
                                                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                                         guard let self, let peer else {
                                                             return
                                                         }
@@ -636,7 +636,7 @@ extension PeerInfoScreenNode {
                         } else {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Profile_SendGift, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Gift"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 if let self {
@@ -649,7 +649,7 @@ extension PeerInfoScreenNode {
                     if let cachedData = data.cachedData as? CachedUserData, canTranslateChats(context: strongSelf.context), cachedData.flags.contains(.translationHidden) {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuTranslate, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             if let strongSelf = self {
@@ -659,7 +659,7 @@ extension PeerInfoScreenNode {
                                 
                                 Queue.mainQueue().after(0.2, {
                                     let _ = (strongSelf.context.engine.messages.togglePeerMessagesTranslationHidden(peerId: strongSelf.peerId, hidden: false)
-                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                         self?.openChatForTranslation()
                                     })
                                 })
@@ -677,7 +677,7 @@ extension PeerInfoScreenNode {
                         if !hasPaidFee {
                             items.append(.action(ContextMenuActionItem(text: "Return Fee", icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Media Grid/Paid"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.default)
                                 
                                 guard let self, let peer = self.data?.peer else {
@@ -704,7 +704,7 @@ extension PeerInfoScreenNode {
                             } else {
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Timer"), color: theme.contextMenu.primaryColor)
                             }
-                        }, action: { [weak self] c, _ in
+                        }, action: { [weak self = self] c, _ in
                             var subItems: [ContextMenuItem] = []
                             
                             subItems.append(.action(ContextMenuActionItem(text: strings.Common_Back, icon: { theme in
@@ -758,7 +758,7 @@ extension PeerInfoScreenNode {
                                 guard let self else {
                                     return
                                 }
-                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self] in
+                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -774,7 +774,7 @@ extension PeerInfoScreenNode {
                         let copyProtectionEnabled = cachedData.flags.contains(.myCopyProtectionEnabled) || cachedData.flags.contains(.copyProtectionEnabled)
                         items.append(.action(ContextMenuActionItem(text: !copyProtectionEnabled ? strongSelf.presentationData.strings.PeerInfo_DisableSharing : strongSelf.presentationData.strings.PeerInfo_EnableSharing, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: !copyProtectionEnabled ? "Chat/Context Menu/ForwardDisable" : "Chat/Context Menu/ForwardEnable"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.default)
                             
                             guard let self, let peer = self.data?.peer, let navigationController = self.controller?.navigationController as? NavigationController else {
@@ -794,7 +794,7 @@ extension PeerInfoScreenNode {
                                     }
                                     self.controller?.push(demoController)
                                 } else {
-                                    let action = { [weak self] in
+                                    let action = { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -803,14 +803,14 @@ extension PeerInfoScreenNode {
                                         self.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: self.context, chatLocation: .peer(peer), keepStack: .default, completion: { _ in }))
                                     }
                                     let _ = (ApplicationSpecificNotice.getCopyProtectionTips(accountManager: self.context.sharedContext.accountManager)
-                                    |> deliverOnMainQueue).start(next: { [weak self] count in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] count in
                                         guard let self else {
                                             return
                                         }
                                         if count > 3 {
                                             action()
                                         } else {
-                                            let infoController = self.context.sharedContext.makePeerCopyProtectionInfoScreen(context: self.context, completion: { [weak self] in
+                                            let infoController = self.context.sharedContext.makePeerCopyProtectionInfoScreen(context: self.context, completion: { [weak self = self] in
                                                 guard let self else {
                                                     return
                                                 }
@@ -876,7 +876,7 @@ extension PeerInfoScreenNode {
                         } else {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_BlockUser, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.updateBlocked(block: true)
@@ -894,7 +894,7 @@ extension PeerInfoScreenNode {
                         if case .broadcast = channel.info, cachedData.flags.contains(.starGiftsAvailable) {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Profile_SendGift, badge: nil, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Gift"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openPremiumGift()
@@ -910,7 +910,7 @@ extension PeerInfoScreenNode {
                         }
                         items.append(.action(ContextMenuActionItem(text: boostTitle, badge: nil, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Boost"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             self?.openBoost()
@@ -919,7 +919,7 @@ extension PeerInfoScreenNode {
                         if channel.hasPermission(.editStories) {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.PeerInfo_Channel_ArchivedStories, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Archive"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openStoryArchive()
@@ -928,7 +928,7 @@ extension PeerInfoScreenNode {
                         if cachedData.flags.contains(.canViewStats) {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChannelInfo_Stats, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Statistics"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openStats(section: .stats)
@@ -937,7 +937,7 @@ extension PeerInfoScreenNode {
                         if cachedData.flags.contains(.translationHidden) {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuTranslate, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 if let strongSelf = self {
@@ -947,7 +947,7 @@ extension PeerInfoScreenNode {
                                     
                                     Queue.mainQueue().after(0.2, {
                                         let _ = (strongSelf.context.engine.messages.togglePeerMessagesTranslationHidden(peerId: strongSelf.peerId, hidden: false)
-                                        |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                        |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                             self?.openChatForTranslation()
                                         })
                                     })
@@ -966,7 +966,7 @@ extension PeerInfoScreenNode {
                     if canReport {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.ReportPeer_Report, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Report"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] c, f in
+                        }, action: { [weak self = self] c, f in
                             self?.openReport(type: .default, contextController: c, backAction: { c in
                                 if let mainItemsImpl = mainItemsImpl {
                                     c.setItems(mainItemsImpl() |> map { ContextController.Items(content: .list($0)) }, minHeight: nil, animated: true)
@@ -990,7 +990,7 @@ extension PeerInfoScreenNode {
                             } else {
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Timer"), color: theme.contextMenu.primaryColor)
                             }
-                        }, action: { [weak self] c, _ in
+                        }, action: { [weak self = self] c, _ in
                             var subItems: [ContextMenuItem] = []
                             
                             subItems.append(.action(ContextMenuActionItem(text: strings.Common_Back, icon: { theme in
@@ -1051,7 +1051,7 @@ extension PeerInfoScreenNode {
                                 guard let self else {
                                     return
                                 }
-                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self] in
+                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1082,7 +1082,7 @@ extension PeerInfoScreenNode {
                             }
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Channel_LeaveChannel, textColor: .destructive, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Logout"), color: theme.contextMenu.destructiveColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openLeavePeer(delete: false)
@@ -1095,7 +1095,7 @@ extension PeerInfoScreenNode {
                             }
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Group_LeaveGroup, textColor: .primary, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Logout"), color: theme.contextMenu.primaryColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openLeavePeer(delete: false)
@@ -1103,7 +1103,7 @@ extension PeerInfoScreenNode {
                             if let cachedData = data.cachedData as? CachedChannelData, cachedData.flags.contains(.canDeleteHistory) {
                                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.Group_DeleteGroup, textColor: .destructive, icon: { theme in
                                     generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.destructiveColor)
-                                }, action: { [weak self] _, f in
+                                }, action: { [weak self = self] _, f in
                                     f(.dismissWithoutContent)
                                     
                                     self?.openLeavePeer(delete: true)
@@ -1127,7 +1127,7 @@ extension PeerInfoScreenNode {
                             } else {
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Timer"), color: theme.contextMenu.primaryColor)
                             }
-                        }, action: { [weak self] c, _ in
+                        }, action: { [weak self = self] c, _ in
                             var subItems: [ContextMenuItem] = []
                             
                             subItems.append(.action(ContextMenuActionItem(text: strings.Common_Back, icon: { theme in
@@ -1181,7 +1181,7 @@ extension PeerInfoScreenNode {
                                 guard let self else {
                                     return
                                 }
-                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self] in
+                                self.context.sharedContext.openResolvedUrl(.settings(.legacy(.autoremoveMessages)), context: self.context, urlContext: .generic, navigationController: self.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { _, _ in }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { _, _ in }, dismissInput: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1196,7 +1196,7 @@ extension PeerInfoScreenNode {
                     if let cachedData = data.cachedData as? CachedGroupData, cachedData.flags.contains(.translationHidden) {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuTranslate, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             if let strongSelf = self {
@@ -1206,7 +1206,7 @@ extension PeerInfoScreenNode {
                                 
                                 Queue.mainQueue().after(0.2, {
                                     let _ = (strongSelf.context.engine.messages.togglePeerMessagesTranslationHidden(peerId: strongSelf.peerId, hidden: false)
-                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                                    |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                         self?.openChatForTranslation()
                                     })
                                 })
@@ -1221,7 +1221,7 @@ extension PeerInfoScreenNode {
                     if canReport {
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.ReportPeer_Report, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Report"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] c, f in
+                        }, action: { [weak self = self] c, f in
                             self?.openReport(type: .default, contextController: c, backAction: { c in
                                 if let mainItemsImpl = mainItemsImpl {
                                     c.setItems(mainItemsImpl() |> map { ContextController.Items(content: .list($0)) }, minHeight: nil, animated: true)
@@ -1247,7 +1247,7 @@ extension PeerInfoScreenNode {
                         }
                         items.append(.action(ContextMenuActionItem(text: presentationData.strings.Group_LeaveGroup, textColor: .destructive, icon: { theme in
                             generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Logout"), color: theme.contextMenu.destructiveColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             f(.dismissWithoutContent)
                             
                             self?.openLeavePeer(delete: false)
@@ -1256,7 +1256,7 @@ extension PeerInfoScreenNode {
                         if case .creator = group.role {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Group_DeleteGroup, textColor: .destructive, icon: { theme in
                                 generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.destructiveColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.dismissWithoutContent)
                                 
                                 self?.openLeavePeer(delete: true)
@@ -1276,7 +1276,7 @@ extension PeerInfoScreenNode {
                 let sourceView = sourceNode.view
                 
                 let contextController = makeContextController(presentationData: self.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceView: sourceView)), items: items |> map { ContextController.Items(content: .list($0)) }, gesture: gesture)
-                contextController.dismissed = { [weak self] in
+                contextController.dismissed = { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.state = strongSelf.state.withHighlightedButton(nil)
                         if let (layout, navigationHeight) = strongSelf.validLayout {

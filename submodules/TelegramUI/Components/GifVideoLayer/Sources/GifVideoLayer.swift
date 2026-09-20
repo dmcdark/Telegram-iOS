@@ -45,7 +45,7 @@ open class GifVideoLayer: AVSampleBufferDisplayLayer, BatchVideoRenderingContext
         if let file = self.file {
             if let dimensions = file.media.dimensions {
                 self.thumbnailDisposable = (mediaGridMessageVideo(postbox: context.account.postbox, userLocation: userLocation, videoReference: file, synchronousLoad: synchronousLoad, nilForEmptyResult: true)
-                |> deliverOnMainQueue).start(next: { [weak self] transform in
+                |> deliverOnMainQueue).start(next: { [weak self = self] transform in
                     guard let strongSelf = self else {
                         return
                     }

@@ -291,20 +291,20 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
         
         switch self.contentNode {
         case let .contacts(contactsNode):
-            contactsNode.openPeer = { [weak self] peer, action, sourceNode, gesture in
+            contactsNode.openPeer = { [weak self = self] peer, action, sourceNode, gesture in
                 if case .more = action {
                     self?.openPeerMore?(peer, sourceNode, gesture)
                 } else {
                     self?.openPeer?(peer)
                 }
             }
-            contactsNode.openDisabledPeer = { [weak self] peer, reason in
+            contactsNode.openDisabledPeer = { [weak self = self] peer, reason in
                 guard let self else {
                     return
                 }
                 self.openDisabledPeer?(peer, reason)
             }
-            contactsNode.suppressPermissionWarning = { [weak self] in
+            contactsNode.suppressPermissionWarning = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.context.sharedContext.presentContactsWarningSuppression(context: strongSelf.context, present: { c, a in
                         present(c, a)
@@ -312,10 +312,10 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
                 }
             }
         case let .chats(chatsNode):
-            chatsNode.peerSelected = { [weak self] peer, _, _, _, _ in
+            chatsNode.peerSelected = { [weak self = self] peer, _, _, _, _ in
                 self?.openPeer?(.peer(peer: peer, isGlobal: false, participantCount: nil))
             }
-            chatsNode.additionalCategorySelected = { [weak self] id in
+            chatsNode.additionalCategorySelected = { [weak self = self] id in
                 guard let strongSelf = self else {
                     return
                 }
@@ -325,7 +325,7 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
         
         let searchText = ValuePromise<String>()
         
-        self.tokenListNode.deleteToken = { [weak self] id in
+        self.tokenListNode.deleteToken = { [weak self = self] id in
             if let id = id as? EnginePeer.Id {
                 self?.removeSelectedPeer?(ContactListPeerId.peer(id))
             } else if let id = id as? Int {
@@ -333,7 +333,7 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
             }
         }
         
-        self.tokenListNode.textUpdated = { [weak self] text in
+        self.tokenListNode.textUpdated = { [weak self = self] text in
             if let strongSelf = self {
                 searchText.set(text)
                 if text.isEmpty {
@@ -430,12 +430,12 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
                 }
             }
         }
-        self.tokenListNode.textReturned = { [weak self] in
+        self.tokenListNode.textReturned = { [weak self = self] in
             self?.complete?()
         }
         
         if let footerPanelNode = self.footerPanelNode {
-            proceedImpl = { [weak self] in
+            proceedImpl = { [weak self = self] in
                 self?.complete?()
             }
             self.addSubnode(footerPanelNode)
@@ -534,7 +534,7 @@ final class ContactMultiselectionControllerNode: ASDisplayNode {
     }
     
     func animateOut(completion: (() -> Void)?) {
-        self.layer.animatePosition(from: CGPoint(), to: CGPoint(x: 0.0, y: self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, additive: true, completion: { [weak self] _ in
+        self.layer.animatePosition(from: CGPoint(), to: CGPoint(x: 0.0, y: self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, additive: true, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.dismiss?()
                 completion?()

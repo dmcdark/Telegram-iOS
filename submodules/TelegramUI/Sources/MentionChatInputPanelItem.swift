@@ -160,7 +160,7 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
         
         let previousItem = self.item
         
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let primaryFont = Font.medium(floor(item.presentationData.fontSize.baseDisplaySize * 14.0 / 17.0))
             let secondaryFont = Font.regular(floor(item.presentationData.fontSize.baseDisplaySize * 14.0 / 17.0))
             
@@ -254,7 +254,7 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -399,9 +399,9 @@ final class MentionChatInputPanelItemNode: ListViewItemNode {
     
     private func setupAndAddRevealNode() {
         if !self.revealOptions.isEmpty {
-            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self] option in
+            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected(option, animated: false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                 self?.hapticImpact()
             })
             revealNode.setOptions(self.revealOptions, isLeft: false, enableAnimations: true)

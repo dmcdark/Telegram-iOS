@@ -138,7 +138,7 @@ public class PercentPieChartController: BaseChartController {
             percentController.previewPercentChartRenderer.setup(horizontalRange: toHorizontalRange, animated: animated)
             percentController.setConponentsVisible(visible: false, animated: animated)
             
-            transitionRenderer.animate(fromDataToPie: true, animated: animated) { [weak self] in
+            transitionRenderer.animate(fromDataToPie: true, animated: animated) { [weak self = self] in
                 self?.pieController.pieChartRenderer.drawPie = true
                 self?.percentController.mainPecentChartRenderer.isEnabled = true
             }
@@ -283,7 +283,7 @@ public class PercentPieChartController: BaseChartController {
     }
     
     public override func didTapZoomOut() {
-        self.pieController.deselectSegment(completion: { [weak self] in
+        self.pieController.deselectSegment(completion: { [weak self = self] in
             guard let self = self else { return }
             self.switchToChart(chartsCollection: self.percentController.chartsCollection, isZoomed: false, animated: true)
         })

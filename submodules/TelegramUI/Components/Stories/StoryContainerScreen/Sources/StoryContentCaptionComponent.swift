@@ -655,7 +655,7 @@ final class StoryContentCaptionComponent: Component {
                 let disposable = MetaDisposable()
                 self.codeHighlightState = (codeSpec, disposable)
                 disposable.set((asyncStanaloneSyntaxHighlight(current: self.codeHighlight, specs: codeSpec)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -750,7 +750,7 @@ final class StoryContentCaptionComponent: Component {
                                     file: music
                                 )
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -841,7 +841,7 @@ final class StoryContentCaptionComponent: Component {
                                         fillsWidth: false
                                     )
                                 ),
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     if let self, case let .known(peer, _, _) = forwardInfo {
                                         self.component?.openStory(peer, self.forwardInfoStory)
                                     } else if let controller = self?.component?.controller() as? StoryContainerScreen {
@@ -964,7 +964,7 @@ final class StoryContentCaptionComponent: Component {
                     self.textSelectionKnobContainer.addSubview(textSelectionKnobSurface)
                 }
                 
-                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: component.theme.list.itemAccentColor, isDark: true), strings: component.strings, textNodeOrView: .node(textNode), updateIsActive: { [weak self] value in
+                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: component.theme.list.itemAccentColor, isDark: true), strings: component.strings, textNodeOrView: .node(textNode), updateIsActive: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -975,14 +975,14 @@ final class StoryContentCaptionComponent: Component {
                             self.state?.updated(transition: transition)
                         }
                     }
-                }, present: { [weak self] c, a in
+                }, present: { [weak self = self] c, a in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.controller()?.presentInGlobalOverlay(c, with: a)
                 }, rootView: { [weak controller] in
                     return controller?.displayNode.view
-                }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self] text, action in
+                }, externalKnobSurface: self.textSelectionKnobSurface, performAction: { [weak self = self] text, action in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -993,7 +993,7 @@ final class StoryContentCaptionComponent: Component {
                 self.scrollView.addSubview(textSelectionNode.view)
                 self.scrollView.insertSubview(textSelectionNode.highlightAreaNode.view, at: 0)
                 
-                textSelectionNode.canBeginSelection = { [weak self] location in
+                textSelectionNode.canBeginSelection = { [weak self = self] location in
                     guard let self else {
                         return false
                     }
@@ -1042,7 +1042,7 @@ final class StoryContentCaptionComponent: Component {
                 recognizer.tapActionAtPoint = { point in
                     return .waitForSingleTap
                 }
-                recognizer.highlight = { [weak self] point in
+                recognizer.highlight = { [weak self = self] point in
                     guard let self else {
                         return
                     }

@@ -414,7 +414,7 @@ public final class PaymentCardEntryScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .modal
         
-        updateModelKeyImpl = { [weak self] key, value in
+        updateModelKeyImpl = { [weak self = self] key, value in
             self?.updateModelKey(key: key, value: value)
         }
     }
@@ -434,7 +434,7 @@ public final class PaymentCardEntryScreen: ViewControllerComponentContainer {
     
     private func updateModelKey(key: WritableKeyPath<CardEntryModel, String>, value: String) {
         self.model[keyPath: key] = value
-        self.updateComponent(component: AnyComponent(PaymentCardEntryScreenComponent(context: self.context, model: self.model, updateModelKey: { [weak self] key, value in
+        self.updateComponent(component: AnyComponent(PaymentCardEntryScreenComponent(context: self.context, model: self.model, updateModelKey: { [weak self = self] key, value in
             self?.updateModelKey(key: key, value: value)
         })), transition: .immediate)
         

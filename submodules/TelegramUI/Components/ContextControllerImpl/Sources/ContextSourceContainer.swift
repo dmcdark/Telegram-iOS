@@ -76,19 +76,19 @@ final class ContextSourceContainer: ASDisplayNode {
                 
                 let presentationNode = ContextControllerExtractedPresentationNode(
                     context: self.context,
-                    getController: { [weak self] in
+                    getController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
                         return self.controller
                     },
-                    requestUpdate: { [weak self] transition in
+                    requestUpdate: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.update(transition: transition)
                     },
-                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -96,14 +96,14 @@ final class ContextSourceContainer: ASDisplayNode {
                             controller.overlayWantsToBeBelowKeyboardUpdated(transition: transition)
                         }
                     },
-                    requestDismiss: { [weak self] result in
+                    requestDismiss: { [weak self = self] result in
                         guard let self, let controller = self.controller else {
                             return
                         }
                         controller.controllerNode.dismissedForCancel?()
                         controller.controllerNode.beginDismiss(result)
                     },
-                    requestAnimateOut: { [weak self] result, completion in
+                    requestAnimateOut: { [weak self = self] result, completion in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -117,19 +117,19 @@ final class ContextSourceContainer: ASDisplayNode {
                 
                 let presentationNode = ContextControllerExtractedPresentationNode(
                     context: self.context,
-                    getController: { [weak self] in
+                    getController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
                         return self.controller
                     },
-                    requestUpdate: { [weak self] transition in
+                    requestUpdate: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.update(transition: transition)
                     },
-                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -137,14 +137,14 @@ final class ContextSourceContainer: ASDisplayNode {
                             controller.overlayWantsToBeBelowKeyboardUpdated(transition: transition)
                         }
                     },
-                    requestDismiss: { [weak self] result in
+                    requestDismiss: { [weak self = self] result in
                         guard let self, let controller = self.controller else {
                             return
                         }
                         controller.controllerNode.dismissedForCancel?()
                         controller.controllerNode.beginDismiss(result)
                     },
-                    requestAnimateOut: { [weak self] result, completion in
+                    requestAnimateOut: { [weak self = self] result, completion in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -158,19 +158,19 @@ final class ContextSourceContainer: ASDisplayNode {
                 
                 let presentationNode = ContextControllerExtractedPresentationNode(
                     context: self.context,
-                    getController: { [weak self] in
+                    getController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
                         return self.controller
                     },
-                    requestUpdate: { [weak self] transition in
+                    requestUpdate: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.update(transition: transition)
                     },
-                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -178,7 +178,7 @@ final class ContextSourceContainer: ASDisplayNode {
                             controller.overlayWantsToBeBelowKeyboardUpdated(transition: transition)
                         }
                     },
-                    requestDismiss: { [weak self] result in
+                    requestDismiss: { [weak self = self] result in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -188,7 +188,7 @@ final class ContextSourceContainer: ASDisplayNode {
                             controller.controllerNode.beginDismiss(result)
                         }
                     },
-                    requestAnimateOut: { [weak self] result, completion in
+                    requestAnimateOut: { [weak self = self] result, completion in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -202,19 +202,19 @@ final class ContextSourceContainer: ASDisplayNode {
                 
                 let presentationNode = ContextControllerExtractedPresentationNode(
                     context: self.context,
-                    getController: { [weak self] in
+                    getController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
                         return self.controller
                     },
-                    requestUpdate: { [weak self] transition in
+                    requestUpdate: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.update(transition: transition)
                     },
-                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -222,14 +222,14 @@ final class ContextSourceContainer: ASDisplayNode {
                             controller.overlayWantsToBeBelowKeyboardUpdated(transition: transition)
                         }
                     },
-                    requestDismiss: { [weak self] result in
+                    requestDismiss: { [weak self = self] result in
                         guard let self, let controller = self.controller else {
                             return
                         }
                         controller.controllerNode.dismissedForCancel?()
                         controller.controllerNode.beginDismiss(result)
                     },
-                    requestAnimateOut: { [weak self] result, completion in
+                    requestAnimateOut: { [weak self = self] result, completion in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -240,7 +240,7 @@ final class ContextSourceContainer: ASDisplayNode {
                 self._presentationNode = presentationNode
             }
             
-            self.itemsDisposables.add((items |> deliverOnMainQueue).start(next: { [weak self] items in
+            self.itemsDisposables.add((items |> deliverOnMainQueue).start(next: { [weak self = self] items in
                 guard let self else {
                     return
                 }
@@ -291,7 +291,7 @@ final class ContextSourceContainer: ASDisplayNode {
             self.itemsDisposables.dispose()
             self.itemsDisposables = DisposableSet()
             self.itemsDisposables.add((items
-            |> deliverOnMainQueue).start(next: { [weak self] items in
+            |> deliverOnMainQueue).start(next: { [weak self = self] items in
                 guard let self else {
                     return
                 }
@@ -305,7 +305,7 @@ final class ContextSourceContainer: ASDisplayNode {
         
         func pushItems(items: Signal<ContextController.Items, NoError>) {
             self.itemsDisposables.add((items
-            |> deliverOnMainQueue).start(next: { [weak self] items in
+            |> deliverOnMainQueue).start(next: { [weak self = self] items in
                 guard let self else {
                     return
                 }
@@ -421,7 +421,7 @@ final class ContextSourceContainer: ASDisplayNode {
         
         self.ready.set(self.sources[self.activeIndex].ready.get())
         
-        self.view.addGestureRecognizer(InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        self.view.addGestureRecognizer(InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let self else {
                 return []
             }
@@ -687,7 +687,7 @@ final class ContextSourceContainer: ASDisplayNode {
                     ),
                     items: mappedItems,
                     selectedId: self.activeSource?.id,
-                    setSelectedId: { [weak self] id in
+                    setSelectedId: { [weak self = self] id in
                         guard let self else {
                             return
                         }

@@ -264,7 +264,7 @@ private final class CraftGiftPageContent: Component {
                 component.externalState.giftsMap = self.giftMap
                 
                 self.craftStateDisposable = (component.craftContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -306,7 +306,7 @@ private final class CraftGiftPageContent: Component {
                 })
                 
                 self.upgradePreviewDisposable.add((component.context.engine.payments.getStarGiftUpgradeAttributes(giftId: initialGiftItem.gift.giftId)
-                |> deliverOnMainQueue).start(next: { [weak self] attributes in
+                |> deliverOnMainQueue).start(next: { [weak self = self] attributes in
                     guard let self, let attributes else {
                         return
                     }
@@ -325,7 +325,7 @@ private final class CraftGiftPageContent: Component {
                 }))
                 
                 self.upgradePreviewDisposable.add((.single(nil) |> then(component.context.engine.payments.cachedStarGifts())
-                |> deliverOnMainQueue).start(next: { [weak self] starGifts in
+                |> deliverOnMainQueue).start(next: { [weak self = self] starGifts in
                     guard let self, let component = self.component, let starGifts else {
                         return
                     }
@@ -669,7 +669,7 @@ private final class CraftGiftPageContent: Component {
                                     suffix: "%"
                                 )
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -827,7 +827,7 @@ private final class CraftGiftPageContent: Component {
                                         BundleIconComponent(name: "Item List/InlineTextRightArrow", tintColor: .white)
                                     ))
                                 ], spacing: 3.0))),
-                                action: { [weak self] _ in
+                                action: { [weak self = self] _ in
                                     HapticFeedback().impact(.light)
                                     
                                     self?.openUpgradeVariants()
@@ -1153,7 +1153,7 @@ private final class CraftGiftPageContent: Component {
                         buttonColor: component.colors.3,
                         isCrafting: isCrafting,
                         result: component.result,
-                        select: { [weak self] index in
+                        select: { [weak self = self] index in
                             guard let self, let component = self.component, let environment = self.environment, let genericGift = self.starGiftsMap[component.gift.giftId], let resaleContext = component.resaleContext() else {
                                 return
                             }
@@ -1169,7 +1169,7 @@ private final class CraftGiftPageContent: Component {
                                 selectedGiftIds: Set(component.selectedGiftIds.values),
                                 selectingMainGift: index == 0,
                                 starsTopUpOptions: component.starsTopUpOptionsPromise.get(),
-                                selectGift: { [weak self] item in
+                                selectGift: { [weak self = self] item in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1181,7 +1181,7 @@ private final class CraftGiftPageContent: Component {
                             )
                             environment.controller()?.push(selectController)
                         },
-                        remove: { [weak self] index in
+                        remove: { [weak self = self] index in
                             guard let self else {
                                 return
                             }
@@ -1189,7 +1189,7 @@ private final class CraftGiftPageContent: Component {
                             
                             self.component?.removeGift(index)
                         },
-                        willFinish: { [weak self] success in
+                        willFinish: { [weak self = self] success in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1198,7 +1198,7 @@ private final class CraftGiftPageContent: Component {
                             }
                             self.state?.updated(transition: .easeInOut(duration: 0.5))
                         },
-                        finished: { [weak self] view in
+                        finished: { [weak self = self] view in
                             guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() as? GiftCraftScreen else {
                                 return
                             }
@@ -1500,7 +1500,7 @@ private final class SheetContainerComponent: CombinedComponent {
             super.init()
                         
             let _ = (ApplicationSpecificNotice.getGiftCraftingTips(accountManager: context.sharedContext.accountManager)
-            |> deliverOnMainQueue).start(next: { [weak self] count in
+            |> deliverOnMainQueue).start(next: { [weak self = self] count in
                 guard let self else {
                     return
                 }

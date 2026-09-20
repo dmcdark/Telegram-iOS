@@ -121,7 +121,7 @@ final class InstantImageGalleryItemNode: ZoomableContentGalleryItemNode {
         
         super.init()
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         

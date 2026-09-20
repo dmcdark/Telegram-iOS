@@ -117,7 +117,7 @@ final class InstantPageAudioNode: ASDisplayNode, InstantPageNode {
 
         self.statusNode.transitionToState(RadialStatusNodeState.customIcon(self.playImage), animated: false, completion: {})
         
-        self.scrubbingNode.seek = { [weak self] timestamp in
+        self.scrubbingNode.seek = { [weak self = self] timestamp in
             if let strongSelf = self {
                 if let _ = strongSelf.playbackState {
                     strongSelf.context.sharedContext.mediaManager.playlistControl(.seek(timestamp), type: strongSelf.playlistType)
@@ -140,7 +140,7 @@ final class InstantPageAudioNode: ASDisplayNode, InstantPageNode {
                         return .single(nil)
                     }
                 }*/
-            /*self.playbackStatusDisposable = (playbackStatus |> deliverOnMainQueue).start(next: { [weak self] status in
+            /*self.playbackStatusDisposable = (playbackStatus |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let strongSelf = self {
                     var isPlaying = false
                     if let status = status {
@@ -170,7 +170,7 @@ final class InstantPageAudioNode: ASDisplayNode, InstantPageNode {
         }
             
         self.playerStatusDisposable = (context.sharedContext.mediaManager.filteredPlaylistState(accountId: context.account.id, playlistId: playlistId, itemId: InstantPageMediaPlaylistItemId(index: self.media.index), type: playlistType)
-        |> deliverOnMainQueue).start(next: { [weak self] playbackState in
+        |> deliverOnMainQueue).start(next: { [weak self = self] playbackState in
             guard let strongSelf = self else {
                 return
             }

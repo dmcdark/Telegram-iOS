@@ -171,7 +171,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
         
         if self.innerState.data.state == nil {
             self.actionDisposable.set((self.context.engine.auth.twoStepAuthData()
-            |> deliverOnMainQueue).start(next: { [weak self] data in
+            |> deliverOnMainQueue).start(next: { [weak self = self] data in
                 guard let strongSelf = self else {
                     return
                 }
@@ -330,7 +330,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                         switch confirmState {
                             case let .create(password, hint, email):
                                 emailPattern = email
-                                leftAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ChangeEmail, action: { [weak self] in
+                                leftAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ChangeEmail, action: { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -365,7 +365,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                                 })
                             case let .add(password, hadRecoveryEmail, hasSecureValues, email):
                                 emailPattern = email
-                                leftAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ChangeEmail, action: { [weak self] in
+                                leftAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ChangeEmail, action: { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -383,7 +383,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                         inputPlaceholder = self.presentationData.strings.TwoStepAuth_ConfirmEmailCodePlaceholder
                         inputText = code
                         isPassword = true
-                        rightAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ConfirmEmailResendCode, action: { [weak self] in
+                        rightAction = SetupTwoStepVerificationContentAction(title: self.presentationData.strings.TwoStepAuth_ConfirmEmailResendCode, action: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -422,7 +422,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                             }))
                         })
                 }
-                let contentNode = SetupTwoStepVerificationContentNode(theme: self.presentationData.theme, kind: dataState.kind, title: title, subtitle: subtitle, inputType: inputType, placeholder: inputPlaceholder, text: inputText, isPassword: isPassword, textUpdated: { [weak self] text in
+                let contentNode = SetupTwoStepVerificationContentNode(theme: self.presentationData.theme, kind: dataState.kind, title: title, subtitle: subtitle, inputType: inputType, placeholder: inputPlaceholder, text: inputText, isPassword: isPassword, textUpdated: { [weak self = self] text in
                     guard let strongSelf = self else {
                         return
                     }
@@ -438,7 +438,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                     if inplicitelyActivateNextAction {
                         strongSelf.activateNextAction()
                     }
-                }, returnPressed: { [weak self] in
+                }, returnPressed: { [weak self = self] in
                     self?.activateNextAction()
                 }, leftAction: leftAction, rightAction: rightAction)
                 self.insertSubnode(contentNode, at: 0)
@@ -462,7 +462,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
                     contentNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3)
                 }
                 if self.activityIndicator.supernode != nil {
-                    transition.updateAlpha(node: self.activityIndicator, alpha: 0.0, completion: { [weak self] _ in
+                    transition.updateAlpha(node: self.activityIndicator, alpha: 0.0, completion: { [weak self = self] _ in
                         self?.activityIndicator.removeFromSupernode()
                     })
                 }
@@ -508,7 +508,7 @@ final class SetupTwoStepVerificationControllerNode: ViewControllerTracingNode {
         if self.innerState.data.activity {
             return
         }
-        let continueImpl: () -> Void = { [weak self] in
+        let continueImpl: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

@@ -94,7 +94,7 @@ final class VoiceChatPeerProfileNode: ASDisplayNode {
         self.avatarListContainerNode.addSubnode(self.avatarListNode.controlsClippingOffsetNode)
         self.avatarListWrapperNode.contentNode.addSubnode(self.avatarListContainerNode)
         
-        self.avatarListWrapperNode.activate = { [weak self] sourceNode in
+        self.avatarListWrapperNode.activate = { [weak self = self] sourceNode in
             guard let strongSelf = self else {
                 return
             }
@@ -104,14 +104,14 @@ final class VoiceChatPeerProfileNode: ASDisplayNode {
             })
             context.sharedContext.mainWindow?.presentInGlobalOverlay(pinchController)
         }
-        self.avatarListWrapperNode.deactivated = { [weak self] in
+        self.avatarListWrapperNode.deactivated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.avatarListWrapperNode.contentNode.layer.animate(from: 0.0 as NSNumber, to: backgroundCornerRadius as NSNumber, keyPath: "cornerRadius", timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, duration: 0.3, completion: { _ in
             })
         }
-        self.avatarListWrapperNode.animatedOut = { [weak self] in
+        self.avatarListWrapperNode.animatedOut = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -249,7 +249,7 @@ final class VoiceChatPeerProfileNode: ASDisplayNode {
             }
             
             self.avatarListWrapperNode.layer.animateSpring(from: initialScale as NSNumber, to: 1.0 as NSNumber, keyPath: "transform.scale", duration: springDuration, initialVelocity: 0.0, damping: springDamping)
-            self.avatarListWrapperNode.layer.animateSpring(from: NSValue(cgPoint: initialRect.center), to: NSValue(cgPoint: self.avatarListWrapperNode.position), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, completion: { [weak self] _ in
+            self.avatarListWrapperNode.layer.animateSpring(from: NSValue(cgPoint: initialRect.center), to: NSValue(cgPoint: self.avatarListWrapperNode.position), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.avatarListNode.updateCustomItemsOnlySynchronously = false
                     strongSelf.avatarListNode.currentItemNode?.addSubnode(sourceNode.videoContainerNode)
@@ -343,7 +343,7 @@ final class VoiceChatPeerProfileNode: ASDisplayNode {
             self.insertSubnode(sourceNode.videoContainerNode, belowSubnode: self.avatarListWrapperNode)
             
             self.avatarListWrapperNode.layer.animateSpring(from: initialScale as NSNumber, to: 1.0 as NSNumber, keyPath: "transform.scale", duration: springDuration, initialVelocity: 0.0, damping: springDamping)
-            self.avatarListWrapperNode.layer.animateSpring(from: NSValue(cgPoint: initialRect.center), to: NSValue(cgPoint: self.avatarListWrapperNode.position), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, completion: { [weak self] _ in
+            self.avatarListWrapperNode.layer.animateSpring(from: NSValue(cgPoint: initialRect.center), to: NSValue(cgPoint: self.avatarListWrapperNode.position), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.avatarListNode.updateCustomItemsOnlySynchronously = false
                     strongSelf.avatarListNode.currentItemNode?.addSubnode(sourceNode.videoContainerNode)

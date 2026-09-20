@@ -74,7 +74,7 @@ final class RichTextEmojiKeyboardController {
             sendGif: nil
         ))
         self.dataDisposable = (self.dataPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] data in
+        |> deliverOnMainQueue).start(next: { [weak self = self] data in
             guard let self else { return }
             self.currentData = data
             if self.isEmojiMode {
@@ -89,15 +89,15 @@ final class RichTextEmojiKeyboardController {
             sendBotContextResultAsGif: { _, _, _, _, _, _ in return false },
             editGif: { _, _ in },
             updateChoosingSticker: { _ in },
-            switchToTextInput: { [weak self] in self?.setEmojiMode(false) },
+            switchToTextInput: { [weak self = self] in self?.setEmojiMode(false) },
             dismissTextInput: { },
-            insertText: { [weak self] attributedText in self?.handleInsert(attributedText) },
-            backwardsDeleteText: { [weak self] in self?.editor?.deleteBackward() },
+            insertText: { [weak self = self] attributedText in self?.handleInsert(attributedText) },
+            backwardsDeleteText: { [weak self = self] in self?.editor?.deleteBackward() },
             openStickerEditor: { },
             presentController: { _, _ in },
             presentGlobalOverlayController: { _, _ in },
             getNavigationController: { return nil },
-            requestLayout: { [weak self] _ in self?.requestLayout() }
+            requestLayout: { [weak self = self] _ in self?.requestLayout() }
         )
     }
 

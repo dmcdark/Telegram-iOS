@@ -118,7 +118,7 @@ private final class PremiumGiftScreenContentComponent: CombinedComponent {
                 TelegramEngine.EngineData.Item.Configuration.App(),
                 TelegramEngine.EngineData.Item.Configuration.PremiumPromo()
             )
-            |> deliverOnMainQueue).start(next: { [weak self] appConfiguration, promoConfiguration in
+            |> deliverOnMainQueue).start(next: { [weak self = self] appConfiguration, promoConfiguration in
                 if let strongSelf = self {
                     strongSelf.configuration = PremiumIntroConfiguration.with(appConfiguration: appConfiguration)
                     strongSelf.promoConfiguration = promoConfiguration
@@ -154,7 +154,7 @@ private final class PremiumGiftScreenContentComponent: CombinedComponent {
             
             let stickersKey: EngineRawPostboxViewKey = .orderedItemList(id: Namespaces.OrderedItemList.CloudPremiumStickers)
             self.stickersDisposable = (self.context.account.postbox.combinedView(keys: [stickersKey])
-            |> deliverOnMainQueue).start(next: { [weak self] views in
+            |> deliverOnMainQueue).start(next: { [weak self = self] views in
                 guard let strongSelf = self else {
                     return
                 }
@@ -627,7 +627,7 @@ private final class PremiumGiftScreenContentComponent: CombinedComponent {
                             let _ = (signal
                             |> deliverOnMainQueue).start(next: { resolvedUrl in
                                 context.sharedContext.openResolvedUrl(resolvedUrl, context: context, urlContext: .generic, navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { peer, navigation in
-                                }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak controller] c, arguments in
+                                }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak controller = controller] c, arguments in
                                     controller?.push(c)
                                 }, dismissInput: {}, contentContext: nil, progress: nil, completion: nil)
                             })
@@ -823,7 +823,7 @@ private final class PremiumGiftScreenComponent: CombinedComponent {
                 context.engine.data.get(
                     EngineDataMap(peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
                 )
-            ).start(next: { [weak self] products, peers in
+            ).start(next: { [weak self = self] products, peers in
                 if let strongSelf = self {
                     var gifts: [PremiumGiftProduct] = []
                     for option in strongSelf.options {
@@ -849,7 +849,7 @@ private final class PremiumGiftScreenComponent: CombinedComponent {
                 }
             })
             
-            self.buttonAction.connect({ [weak self] in
+            self.buttonAction.connect({ [weak self = self] in
                 self?.buy()
             })
         }
@@ -916,12 +916,12 @@ private final class PremiumGiftScreenComponent: CombinedComponent {
             }
             
             let _ = (self.context.engine.payments.canPurchasePremium(purpose: purpose)
-            |> deliverOnMainQueue).start(next: { [weak self] available in
+            |> deliverOnMainQueue).start(next: { [weak self = self] available in
                 if let strongSelf = self {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     if available {
                         strongSelf.paymentDisposable.set((inAppPurchaseManager.buyProduct(product.storeProduct, quantity: quantity, purpose: purpose)
-                        |> deliverOnMainQueue).start(next: { [weak self] status in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] status in
                             if let self, case .purchased = status {
                                 if case .settings = self.source {
                                     self.inProgress = false
@@ -942,7 +942,7 @@ private final class PremiumGiftScreenComponent: CombinedComponent {
                                     }
                                 }
                             }
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             if let strongSelf = self {
                                 strongSelf.inProgress = false
                                 strongSelf.updateInProgress(false)
@@ -1363,7 +1363,7 @@ open class PremiumGiftScreen: ViewControllerComponentContainer {
         self.navigationItem.setLeftBarButton(cancelItem, animated: false)
         self.navigationPresentation = .modal
         
-        updateInProgressImpl = { [weak self] inProgress in
+        updateInProgressImpl = { [weak self = self] inProgress in
             if let strongSelf = self {
                 strongSelf.navigationItem.leftBarButtonItem?.isEnabled = !inProgress
                 strongSelf.view.disablesInteractiveTransitionGestureRecognizer = inProgress
@@ -1371,7 +1371,7 @@ open class PremiumGiftScreen: ViewControllerComponentContainer {
             }
         }
                 
-        presentImpl = { [weak self] c in
+        presentImpl = { [weak self = self] c in
             self?.present(c, in: .window(.root))
         }
         
@@ -1379,18 +1379,18 @@ open class PremiumGiftScreen: ViewControllerComponentContainer {
             pushController(c)
         }
         
-        completionImpl = { [weak self] _ in
+        completionImpl = { [weak self = self] _ in
             completion()
             
             if let self, case .settings = source {
                 self.animateSuccess()
             }
         }
-        updateTabBarAlphaImpl = { [weak self] alpha, transition in
+        updateTabBarAlphaImpl = { [weak self = self] alpha, transition in
             self?.updateTabBarAlpha(alpha, transition)
         }
         
-        dismissImpl = { [weak self] in
+        dismissImpl = { [weak self = self] in
             if let self {
                 self.dismiss()
             }

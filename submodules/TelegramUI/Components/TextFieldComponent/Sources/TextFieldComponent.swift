@@ -387,7 +387,7 @@ public final class TextFieldComponent: Component {
                 NSAttributedString.Key.foregroundColor: UIColor.white
             ]
             
-            self.textView.toggleQuoteCollapse = { [weak self] range in
+            self.textView.toggleQuoteCollapse = { [weak self = self] range in
                 guard let self else {
                     return
                 }
@@ -692,7 +692,7 @@ public final class TextFieldComponent: Component {
             
             if case .locked = component.formatMenuAvailability {
                 var updatedActions = suggestedActions
-                let formatAction = UIAction(title: strings.TextFormat_Format, image: nil) { [weak self] action in
+                let formatAction = UIAction(title: strings.TextFormat_Format, image: nil) { [weak self = self] action in
                     if let self {
                         self.component?.lockedFormatAction()
                     }
@@ -707,49 +707,49 @@ public final class TextFieldComponent: Component {
                         
             var actions: [UIAction] = []
             if availableActions.contains(.bold) {
-                actions.append(UIAction(title: strings.TextFormat_Bold, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Bold, image: nil) { [weak self = self] action in
                     if let self {
                         self.toggleAttribute(key: ChatTextInputAttributes.bold)
                     }
                 })
             }
             if availableActions.contains(.italic) {
-                actions.append(UIAction(title: strings.TextFormat_Italic, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Italic, image: nil) { [weak self = self] action in
                     if let self {
                         self.toggleAttribute(key: ChatTextInputAttributes.italic)
                     }
                 })
             }
             if availableActions.contains(.monospace) {
-                actions.append(UIAction(title: strings.TextFormat_Monospace, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Monospace, image: nil) { [weak self = self] action in
                     if let self {
                         self.toggleAttribute(key: ChatTextInputAttributes.monospace)
                     }
                 })
             }
             if availableActions.contains(.link) {
-                actions.append(UIAction(title: strings.TextFormat_Link, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Link, image: nil) { [weak self = self] action in
                     if let self {
                         self.openLinkEditing()
                     }
                 })
             }
             if availableActions.contains(.strikethrough) {
-                actions.append(UIAction(title: strings.TextFormat_Strikethrough, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Strikethrough, image: nil) { [weak self = self] action in
                     if let self {
                         self.toggleAttribute(key: ChatTextInputAttributes.strikethrough)
                     }
                 })
             }
             if availableActions.contains(.underline) {
-                actions.append(UIAction(title: strings.TextFormat_Underline, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Underline, image: nil) { [weak self = self] action in
                     if let self {
                         self.toggleAttribute(key: ChatTextInputAttributes.underline)
                     }
                 })
             }
             if availableActions.contains(.spoiler) {
-                actions.append(UIAction(title: strings.TextFormat_Spoiler, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Spoiler, image: nil) { [weak self = self] action in
                     if let self {
                         var animated = false
                         let attributedText = self.inputState.inputText
@@ -766,7 +766,7 @@ public final class TextFieldComponent: Component {
                 })
             }
             if availableActions.contains(.quote) {
-                actions.insert(UIAction(title: strings.TextFormat_Quote, image: nil) { [weak self] action in
+                actions.insert(UIAction(title: strings.TextFormat_Quote, image: nil) { [weak self = self] action in
                     if let self {
                         var animated = false
                         let attributedText = self.inputState.inputText
@@ -783,7 +783,7 @@ public final class TextFieldComponent: Component {
                 }, at: 0)
             }
             if availableActions.contains(.code) {
-                actions.append(UIAction(title: strings.TextFormat_Code, image: nil) { [weak self] action in
+                actions.append(UIAction(title: strings.TextFormat_Code, image: nil) { [weak self = self] action in
                     if let self {
                         var animated = false
                         let attributedText = self.inputState.inputText
@@ -1035,7 +1035,7 @@ public final class TextFieldComponent: Component {
             
             let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: component.theme)
             let updatedPresentationData: (initial: PresentationData, signal: Signal<PresentationData, NoError>) = (presentationData, .single(presentationData))
-            let controller = component.context.sharedContext.makeLinkEditController(context: component.context, updatedPresentationData: updatedPresentationData, text: text.string, link: link, apply: { [weak self] link, _ in
+            let controller = component.context.sharedContext.makeLinkEditController(context: component.context, updatedPresentationData: updatedPresentationData, text: text.string, link: link, apply: { [weak self = self] link, _ in
                 if let self {
                     if let link {
                         if !link.isEmpty {
@@ -1256,7 +1256,7 @@ public final class TextFieldComponent: Component {
                 if let current = self.customEmojiContainerView {
                     customEmojiContainerView = current
                 } else {
-                    customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self] emoji in
+                    customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self = self] emoji in
                         guard let strongSelf = self, let emojiViewProvider = strongSelf.emojiViewProvider else {
                             return nil
                         }
@@ -1483,7 +1483,7 @@ public final class TextFieldComponent: Component {
             }
             
             if self.emojiViewProvider == nil {
-                self.emojiViewProvider = { [weak self] emoji in
+                self.emojiViewProvider = { [weak self = self] emoji in
                     guard let component = self?.component else {
                         return UIView()
                     }
@@ -1640,7 +1640,7 @@ public final class TextFieldComponent: Component {
                     self.textView.inputView = inputView
                     if self.textView.isFirstResponder {
                         // Avoid layout cycle
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             self?.textView.reloadInputViews()
                         }
                     }
@@ -1650,7 +1650,7 @@ public final class TextFieldComponent: Component {
                     self.textView.inputView = EmptyInputView()
                     if self.textView.isFirstResponder {
                         // Avoid layout cycle
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             self?.textView.reloadInputViews()
                         }
                     }
@@ -1660,7 +1660,7 @@ public final class TextFieldComponent: Component {
                     self.textView.inputView = nil
                     if self.textView.isFirstResponder {
                         // Avoid layout cycle
-                        DispatchQueue.main.async { [weak self] in
+                        DispatchQueue.main.async { [weak self = self] in
                             self?.textView.reloadInputViews()
                         }
                     }

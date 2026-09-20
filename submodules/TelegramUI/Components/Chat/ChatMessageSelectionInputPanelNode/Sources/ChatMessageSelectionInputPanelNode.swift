@@ -279,7 +279,7 @@ public final class ChatMessageSelectionInputPanelNode: ChatInputPanelNode {
             self.canDeleteMessagesDisposable.set(nil)
         } else if let context = self.context {
             self.canDeleteMessagesDisposable.set((context.sharedContext.chatAvailableMessageActions(engine: context.engine, accountPeerId: context.account.peerId, messageIds: self.selectedMessages, keepUpdated: true)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] actions in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] actions in
                 if let strongSelf = self {
                     strongSelf.actions = actions
                     if let (width, leftInset, rightInset, bottomInset, additionalSideInsets, maxHeight, maxOverlayHeight: maxOverlayHeight, metrics, isSecondary, isMediaInputExpanded, deviceMetrics) = strongSelf.validLayout, let interfaceState = strongSelf.presentationInterfaceState {
@@ -339,7 +339,7 @@ public final class ChatMessageSelectionInputPanelNode: ChatInputPanelNode {
         
         let _ = (reactionItems
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] reactionItems in
+        |> deliverOnMainQueue).start(next: { [weak self = self] reactionItems in
             guard let self, let actions = self.actions, let context = self.context else {
                 return
             }
@@ -376,26 +376,26 @@ public final class ChatMessageSelectionInputPanelNode: ChatInputPanelNode {
                         premiumIfSavedMessages: false
                     )
                 },
-                isExpandedUpdated: { [weak self] transition in
+                isExpandedUpdated: { [weak self = self] transition in
                     guard let self else {
                         return
                     }
                     self.update(transition: transition)
                 },
-                requestLayout: { [weak self] transition in
+                requestLayout: { [weak self = self] transition in
                     guard let self else {
                         return
                     }
                     self.update(transition: transition)
                 },
-                requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                     guard let self else {
                         return
                     }
                     self.update(transition: transition)
                 }
             )
-            reactionContextNode.reactionSelected = { [weak self] updateReaction, _ in
+            reactionContextNode.reactionSelected = { [weak self = self] updateReaction, _ in
                 guard let self, let context = self.context, let presentationInterfaceState = self.presentationInterfaceState, let actions = self.actions else {
                     return
                 }

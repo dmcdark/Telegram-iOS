@@ -161,7 +161,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
                 self.updateDisplayPlaceholder(displayPlaceholder: true, duration: 0.0)
             }
             
-            self.started = { [weak self] in
+            self.started = { [weak self = self] in
                 let _ = self
                 //self?.updateDisplayPlaceholder(displayPlaceholder: false, duration: 0.2)
             }
@@ -303,7 +303,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
         self.addSubnode(self.contextContainerNode)
         self.contextContainerNode.addSubnode(self.scrollNode)
         
-        self.trackingNode.inHierarchyUpdated = { [weak self] value in
+        self.trackingNode.inHierarchyUpdated = { [weak self = self] value in
             if let strongSelf = self {
                 if value && !strongSelf.enableVideoNodes {
                     strongSelf.enableVideoNodes = true
@@ -323,7 +323,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
         
         var gestureLocation: CGPoint?
         
-        self.contextContainerNode.shouldBegin = { [weak self] point in
+        self.contextContainerNode.shouldBegin = { [weak self = self] point in
             guard let strongSelf = self else {
                 return false
             }
@@ -336,7 +336,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
         
-        self.contextContainerNode.customActivationProgress = { [weak self] progress, update in
+        self.contextContainerNode.customActivationProgress = { [weak self = self] progress, update in
             guard let strongSelf = self else {
                 return
             }
@@ -383,7 +383,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
         
-        self.contextContainerNode.activated = { [weak self] gesture, _ in
+        self.contextContainerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let gestureLocation = gestureLocation else {
                 return
             }
@@ -745,7 +745,7 @@ public final class MultiplexedVideoNode: ASDisplayNode, ASScrollViewDelegate {
             self.currentExtendSizeForTransition = extendSizeForTransition
             self.updateImmediatelyVisibleItems(ensureFrames: true, synchronous: synchronous)
             
-            transition.updateAlpha(node: scrollNode, alpha: 1.0, force: true, completion: { [weak self] _ in
+            transition.updateAlpha(node: scrollNode, alpha: 1.0, force: true, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

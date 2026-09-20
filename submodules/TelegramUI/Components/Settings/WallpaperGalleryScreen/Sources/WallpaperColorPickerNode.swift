@@ -334,7 +334,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
         
         self.update()
                 
-        self.colorNode.tap = { [weak self] location in
+        self.colorNode.tap = { [weak self = self] location in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }
@@ -351,7 +351,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
             strongSelf.colorChangeEnded?(strongSelf.color)
         }
         
-        self.colorNode.panBegan = { [weak self] location in
+        self.colorNode.panBegan = { [weak self = self] location in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }
@@ -371,7 +371,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
             }
         }
         
-        self.colorNode.panChanged = { [weak self] translation, ended in
+        self.colorNode.panChanged = { [weak self = self] translation, ended in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }

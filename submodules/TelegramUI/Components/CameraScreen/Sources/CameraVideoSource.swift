@@ -23,7 +23,7 @@ final class CameraVideoSource: VideoSource {
     public init() {
         self.device = MetalEngine.shared.device
                 
-        self.cameraVideoOutput = CameraVideoOutput(sink: { [weak self] buffer, mirror in
+        self.cameraVideoOutput = CameraVideoOutput(sink: { [weak self = self] buffer, mirror in
             self?.push(buffer, mirror: mirror)
         })
 
@@ -33,7 +33,7 @@ final class CameraVideoSource: VideoSource {
     public func addOnUpdated(_ f: @escaping () -> Void) -> Disposable {
         let index = self.onUpdatedListeners.add(f)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -175,7 +175,7 @@ final class LiveStreamMediaSource {
             outputsYuvBuffers: true
         )
         
-        self.mainVideoOutput = CameraVideoOutput(sink: { [weak self] buffer, mirror in
+        self.mainVideoOutput = CameraVideoOutput(sink: { [weak self = self] buffer, mirror in
             guard let self else {
                 return
             }
@@ -184,7 +184,7 @@ final class LiveStreamMediaSource {
             }
         })
         
-        self.additionalVideoOutput = CameraVideoOutput(sink: { [weak self] buffer, mirror in
+        self.additionalVideoOutput = CameraVideoOutput(sink: { [weak self = self] buffer, mirror in
             guard let self else {
                 return
             }
@@ -252,7 +252,7 @@ final class LiveStreamMediaSource {
     func addOnVideoUpdated(_ f: @escaping () -> Void) -> Disposable {
         let index = self.onVideoUpdatedListeners.add(f)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -280,7 +280,7 @@ final class LiveStreamMediaSource {
             additional: additional,
             timestamp: timestamp,
             pool: self.pool,
-            completion: { [weak self] pixelBuffer in
+            completion: { [weak self = self] pixelBuffer in
                 guard let self else {
                     return
                 }

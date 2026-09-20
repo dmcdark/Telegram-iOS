@@ -17,7 +17,7 @@ final class DemoMediaItemView: UIView, RichTextMediaItemView {
         label.textAlignment = .center
         label.alpha = 0
         addSubview(label)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self = self] in
             UIView.animate(withDuration: 0.25) { self?.label.alpha = 1 }
         }
     }

@@ -39,13 +39,13 @@ public final class MoreHeaderButton: HighlightableButtonNode {
         self.referenceNode.addSubnode(self.iconNode)
         self.addSubnode(self.containerNode)
 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.contextAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }

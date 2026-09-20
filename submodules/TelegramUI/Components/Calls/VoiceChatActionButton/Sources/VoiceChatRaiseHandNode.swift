@@ -29,7 +29,7 @@ public final class VoiceChatRaiseHandNode: ASDisplayNode {
         }
         
         guard !self.animationNode.isPlaying else {
-            self.animationNode.completion = { [weak self] in
+            self.animationNode.completion = { [weak self = self] in
                 self?.playRandomAnimation()
             }
             return

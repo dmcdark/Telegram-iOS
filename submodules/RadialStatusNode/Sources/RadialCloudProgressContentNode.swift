@@ -67,7 +67,7 @@ private final class RadialCloudProgressContentSpinnerNode: ASDisplayNode {
                 animation.toValue = CGFloat(progress) as NSNumber
                 animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
                 animation.duration = 0.2
-                animation.completionBlock = { [weak self] _, _ in
+                animation.completionBlock = { [weak self = self] _, _ in
                     self?.progressAnimationCompleted?()
                 }
                 self.pop_add(animation, forKey: "progress")
@@ -261,7 +261,7 @@ final class RadialCloudProgressContentNode: RadialStatusContentNode {
         self.addSubnode(self.spinnerNode)
         self.addSubnode(self.cancelNode)
         
-        self.spinnerNode.progressAnimationCompleted = { [weak self] in
+        self.spinnerNode.progressAnimationCompleted = { [weak self = self] in
             if let strongSelf = self {
                 if let enqueuedReadyForTransition = strongSelf.enqueuedReadyForTransition {
                     strongSelf.enqueuedReadyForTransition = nil

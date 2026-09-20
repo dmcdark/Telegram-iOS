@@ -105,7 +105,7 @@ final class BlobView: UIView {
         animation.toValue = nextPath
         animation.isRemovedOnCompletion = false
         animation.fillMode = .forwards
-        animation.completion = { [weak self] finished in
+        animation.completion = { [weak self = self] finished in
             if finished {
                 self?.animateToNewShape()
             }

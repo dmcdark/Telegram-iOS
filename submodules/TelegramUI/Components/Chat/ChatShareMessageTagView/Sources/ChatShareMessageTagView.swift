@@ -57,34 +57,34 @@ public final class ChatShareMessageTagView: UIView, UndoOverlayControllerAdditio
                     premiumIfSavedMessages: false
                 )
             },
-            isExpandedUpdated: { [weak self] transition in
+            isExpandedUpdated: { [weak self = self] transition in
                 guard let self else {
                     return
                 }
                 self.interaction?.disableTimeout()
                 self.update(transition: transition)
             },
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 guard let self else {
                     return
                 }
                 self.update(transition: transition)
             },
-            requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+            requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                 guard let self else {
                     return
                 }
                 self.update(transition: transition)
             }
         )
-        reactionContextNode.reactionSelected = { [weak self] updateReaction, _ in
+        reactionContextNode.reactionSelected = { [weak self = self] updateReaction, _ in
             guard let self else {
                 return
             }
             
             let _ = (context.engine.stickers.availableReactions()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] availableReactions in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] availableReactions in
                 guard let self, let availableReactions else {
                     return
                 }

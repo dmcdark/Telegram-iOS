@@ -20,7 +20,7 @@ extension PeerInfoScreenNode {
             let storyContent = StoryContentContextImpl(context: self.context, isHidden: false, focusedPeerId: self.peerId, singlePeer: true)
             let _ = (storyContent.state
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] storyContentState in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] storyContentState in
                 guard let self else {
                     return
                 }
@@ -49,7 +49,7 @@ extension PeerInfoScreenNode {
                     context: self.context,
                     content: storyContent,
                     transitionIn: transitionIn,
-                    transitionOut: { [weak self] peerId, _ in
+                    transitionOut: { [weak self = self] peerId, _ in
                         guard let self else {
                             return nil
                         }
@@ -81,7 +81,7 @@ extension PeerInfoScreenNode {
                                     destinationRect: subRect,
                                     destinationCornerRadius: expandedStorySetIndicatorTransitionView.bounds.height * 0.5,
                                     destinationIsAvatar: false,
-                                    completed: { [weak self] in
+                                    completed: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -120,7 +120,7 @@ extension PeerInfoScreenNode {
                             destinationRect: transitionView.bounds,
                             destinationCornerRadius: transitionView.bounds.height * 0.5,
                             destinationIsAvatar: true,
-                            completed: { [weak self] in
+                            completed: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

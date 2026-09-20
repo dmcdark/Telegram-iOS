@@ -108,7 +108,7 @@ public class ChatMessageJoinedChannelBubbleContentNode: ChatMessageBubbleContent
         self.panelNode.addSubnode(self.closeIconNode)
         self.panelNode.addSubnode(self.closeButtonNode)
         
-        self.closeButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.closeButtonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }
@@ -215,7 +215,7 @@ public class ChatMessageJoinedChannelBubbleContentNode: ChatMessageBubbleContent
                 }
                 
                 return (contentSize.width, { boundingWidth in
-                    return (contentSize, { [weak self] animation, synchronousLoads, info in
+                    return (contentSize, { [weak self = self] animation, synchronousLoads, info in
                         if let strongSelf = self {
                             let themeUpdated = strongSelf.item?.presentationData.theme !== item.presentationData.theme
                             strongSelf.item = item
@@ -347,7 +347,7 @@ public class ChatMessageJoinedChannelBubbleContentNode: ChatMessageBubbleContent
                                 presentationData: presentationData,
                                 content: .premiumPaywall(title: nil, text: item.presentationData.strings.Chat_ChannelRecommendation_PremiumTooltip, customUndoText: nil, timeout: nil, linkAction: nil),
                                 elevatedLayout: false,
-                                action: { [weak self] action in
+                                action: { [weak self = self] action in
                                     if case .info = action {
                                         if let self, let item = self.item {
                                             let controller = context.sharedContext.makePremiumIntroController(context: context, source: .ads, forceDark: false, dismissed: nil)
@@ -361,18 +361,18 @@ public class ChatMessageJoinedChannelBubbleContentNode: ChatMessageBubbleContent
                             HapticFeedback().impact(.light)
                         }
                     },
-                    openMore: { [weak self] in
+                    openMore: { [weak self = self] in
                         guard let item = self?.item else {
                             return
                         }
                         let _ = (item.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: item.message.id.peerId))
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                             if let peer = peer {
                                 self?.item?.controllerInteraction.openPeer(peer, .info(ChatControllerInteractionNavigateToPeer.InfoParams(switchToRecommendedChannels: true)), nil, .default)
                             }
                         })
                     },
-                    contextAction: { [weak self] peer, sourceView, gesture in
+                    contextAction: { [weak self = self] peer, sourceView, gesture in
                         if let item = self?.item {
                             item.controllerInteraction.openRecommendedChannelContextMenu(peer, sourceView, gesture)
                         }
@@ -648,13 +648,13 @@ private final class ChannelItemComponent: Component {
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
             self.contextContainer.animateScale = false
-            self.contextContainer.activated = { [weak self] gesture, point in
+            self.contextContainer.activated = { [weak self = self] gesture, point in
                 if let self, let component = self.component, let peer = component.peers.first {
                     component.contextAction?(peer, self.contextContainer, gesture)
                 }
             }
             
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let topScale: CGFloat = (self.bounds.width - 6.0) / self.bounds.width
                     

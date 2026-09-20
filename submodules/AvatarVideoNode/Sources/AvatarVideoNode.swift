@@ -84,7 +84,7 @@ public final class AvatarVideoNode: ASDisplayNode {
             let animationNode = DefaultAnimatedStickerNodeImpl()
             animationNode.autoplay = false
             self.animationNode = animationNode
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 if let self {
                     if !self.didAppear {
                         self.didAppear = true
@@ -125,7 +125,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                 onUpdateDisplayPlaceholder: { _, _ in
                 }
             )
-            itemLayer.onContentsUpdate = { [weak self] in
+            itemLayer.onContentsUpdate = { [weak self = self] in
                 if let self {
                     if !self.didAppear {
                         self.didAppear = true
@@ -135,7 +135,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                     }
                 }
             }
-            itemLayer.onLoop = { [weak self] in
+            itemLayer.onLoop = { [weak self = self] in
                 if let self {
                     self.videoLoopCount += 1
                     if self.videoLoopCount >= maxVideoLoopCount {
@@ -179,7 +179,7 @@ public final class AvatarVideoNode: ASDisplayNode {
         switch markup.content {
         case let .emoji(fileId):
             self.fileDisposable.set((self.context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-            |> deliverOnMainQueue).startStrict(next: { [weak self] files in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] files in
                 if let strongSelf = self, let file = files.values.first {
                     strongSelf.animationFile = file
                     strongSelf.setupAnimation()
@@ -193,7 +193,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                 }
                 return nil
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] file in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] file in
                 if let strongSelf = self, let file {
                     strongSelf.animationFile = file
                     strongSelf.setupAnimation()
@@ -267,7 +267,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                         onUpdateDisplayPlaceholder: { _, _ in
                         }
                     )
-                    videoItemLayer.onLoop = { [weak self] in
+                    videoItemLayer.onLoop = { [weak self = self] in
                         if let self {
                             self.videoLoopCount += 1
                             if self.videoLoopCount >= maxVideoLoopCount {
@@ -299,7 +299,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                     videoNode.clipsToBounds = true
                     videoNode.isUserInteractionEnabled = false
                     videoNode.isHidden = true
-                    videoNode.playbackCompleted = { [weak self] in
+                    videoNode.playbackCompleted = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.videoLoopCount += 1
                             if strongSelf.videoLoopCount >= maxVideoLoopCount {
@@ -326,7 +326,7 @@ public final class AvatarVideoNode: ASDisplayNode {
                             return playing
                         }
                         |> take(1)
-                        |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+                        |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                             if let strongSelf = self {
                                 Queue.mainQueue().after(0.15) {
                                     strongSelf.videoNode?.isHidden = false

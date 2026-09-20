@@ -45,7 +45,7 @@ public class LanguageSelectionScreen: ViewController {
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -55,7 +55,7 @@ public class LanguageSelectionScreen: ViewController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -68,7 +68,7 @@ public class LanguageSelectionScreen: ViewController {
             }
         })
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, inline: true, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, inline: true, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
@@ -92,15 +92,15 @@ public class LanguageSelectionScreen: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = LanguageSelectionScreenNode(context: self.context, presentationData: self.presentationData, navigationBar: self.navigationBar!, excludeIds: self.excludeIds, requestActivateSearch: { [weak self] in
+        self.displayNode = LanguageSelectionScreenNode(context: self.context, presentationData: self.presentationData, navigationBar: self.navigationBar!, excludeIds: self.excludeIds, requestActivateSearch: { [weak self = self] in
             self?.activateSearch()
-        }, requestDeactivateSearch: { [weak self] in
+        }, requestDeactivateSearch: { [weak self = self] in
             self?.deactivateSearch()
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, push: { [weak self] c in
+        }, push: { [weak self = self] c in
             self?.push(c)
-        }, selectLocalization: { [weak self] info in
+        }, selectLocalization: { [weak self = self] info in
             guard let self else {
                 return
             }
@@ -108,7 +108,7 @@ public class LanguageSelectionScreen: ViewController {
             self.dismiss()
         })
         
-        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateListVisibleContentOffset(offset)
@@ -135,7 +135,7 @@ public class LanguageSelectionScreen: ViewController {
             }
         }
         
-        self.controllerNode.listNode.didEndScrolling = { [weak self] _ in
+        self.controllerNode.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 let _ = fixNavigationSearchableListNodeScrolling(strongSelf.controllerNode.listNode, searchNode: searchContentNode)
             }

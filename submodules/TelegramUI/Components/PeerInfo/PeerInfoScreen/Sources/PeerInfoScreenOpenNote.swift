@@ -29,7 +29,7 @@ extension PeerInfoScreenNode {
             return
         }
         
-        let copyAction = { [weak self] in
+        let copyAction = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -40,7 +40,7 @@ extension PeerInfoScreenNode {
         }
         
         var items: [ContextMenuItem] = []
-        items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_NoteActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+        items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.PeerInfo_NoteActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
             c?.dismiss {
                 guard let self else {
                     return

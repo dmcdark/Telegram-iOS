@@ -166,7 +166,7 @@ final class VideoContainerView: HighlightTrackingButton {
             if self.video !== oldValue {
                 self.videoOnUpdatedListener?.dispose()
                 
-                self.videoOnUpdatedListener = self.video?.addOnUpdated { [weak self] in
+                self.videoOnUpdatedListener = self.video?.addOnUpdated { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -251,7 +251,7 @@ final class VideoContainerView: HighlightTrackingButton {
         self.shadowContainer.addSublayer(self.bottomShadowLayer)
         self.layer.addSublayer(self.shadowContainer)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let self, let params = self.params, !self.videoContainerLayer.bounds.isEmpty, !self.videoContainerLayerTaken else {
                 return
             }
@@ -284,7 +284,7 @@ final class VideoContainerView: HighlightTrackingButton {
                 let transition = ComponentTransition(animation: .none)
                 transition.setSublayerTransform(layer: self.videoContainerLayer, transform: CATransform3DIdentity)
                 
-                self.videoContainerLayer.animateSublayerScale(from: currentScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] completed in
+                self.videoContainerLayer.animateSublayerScale(from: currentScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] completed in
                     guard let self, completed else {
                         return
                     }
@@ -384,7 +384,7 @@ final class VideoContainerView: HighlightTrackingButton {
                 }
             }
             
-            self.dragPositionAnimatorLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] deltaTime in
+            self.dragPositionAnimatorLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] deltaTime in
                 guard let self else {
                     return
                 }
@@ -585,7 +585,7 @@ final class VideoContainerView: HighlightTrackingButton {
             if self.disappearingVideoLayer != nil {
                 self.videoContainerLayer.contentsLayer.backgroundColor = UIColor.black.cgColor
             }
-            transition.setBounds(layer: self.videoContainerLayer, bounds: CGRect(origin: CGPoint(), size: videoLayout.effectiveVideoFrame.size), completion: { [weak self] completed in
+            transition.setBounds(layer: self.videoContainerLayer, bounds: CGRect(origin: CGPoint(), size: videoLayout.effectiveVideoFrame.size), completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }
@@ -688,7 +688,7 @@ final class VideoContainerView: HighlightTrackingButton {
             if let previousParams, !previousParams.isMinimized {
                 self.videoContainerLayer.contentsLayer.cornerRadius = previousParams.cornerRadius
             }
-            transition.setCornerRadius(layer: self.videoContainerLayer.contentsLayer, cornerRadius: 18.0, completion: { [weak self] completed in
+            transition.setCornerRadius(layer: self.videoContainerLayer.contentsLayer, cornerRadius: 18.0, completion: { [weak self = self] completed in
                 guard let self, completed, let params = self.params else {
                     return
                 }
@@ -736,7 +736,7 @@ final class VideoContainerView: HighlightTrackingButton {
                 }
             }
             self.videoLayer.cornerRadius = 0.0
-            transition.setCornerRadius(layer: self.videoContainerLayer.contentsLayer, cornerRadius: params.cornerRadius, completion: { [weak self] completed in
+            transition.setCornerRadius(layer: self.videoContainerLayer.contentsLayer, cornerRadius: params.cornerRadius, completion: { [weak self = self] completed in
                 guard let self, completed, let params = self.params else {
                     return
                 }
@@ -799,7 +799,7 @@ final class VideoContainerView: HighlightTrackingButton {
         }
         
         self.shadowContainer.masksToBounds = true
-        transition.setCornerRadius(layer: self.shadowContainer, cornerRadius: params.cornerRadius, completion: { [weak self] completed in
+        transition.setCornerRadius(layer: self.shadowContainer, cornerRadius: params.cornerRadius, completion: { [weak self = self] completed in
             guard let self, completed else {
                 return
             }

@@ -228,7 +228,7 @@ private final class ManualReferenceCompareTest {
         var animationTime = 0.0
         let secondsPerFrame = 1.0 / Double(renderer.framesPerSecond)
         
-        let frameDisplayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] deltaTime in
+        let frameDisplayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] deltaTime in
             guard let self, let currentItem = self.currentItem else {
                 return
             }

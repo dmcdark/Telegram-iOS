@@ -83,20 +83,20 @@ public final class AuthorizationSequenceSplashController: ViewController {
         
         self.statusBar.statusBarStyle = theme.intro.statusBarStyle.style
         
-        self.controller.startMessaging = { [weak self] in
+        self.controller.startMessaging = { [weak self = self] in
             self?.activateLocalization("en")
         }
-        self.controller.startMessagingInAlternativeLanguage = { [weak self] code in
+        self.controller.startMessagingInAlternativeLanguage = { [weak self = self] code in
             if let code = code {
                 self?.activateLocalization(code)
             }
         }
         
-        self.startButton.pressed = { [weak self] in
+        self.startButton.pressed = { [weak self = self] in
             self?.activateLocalization("en")
         }
         
-        self.controller.createStartButton = { [weak self] width in
+        self.controller.createStartButton = { [weak self = self] width in
             let _ = self?.startButton.updateLayout(width: width, transition: .immediate)
             return self?.startButton.view
         }
@@ -203,7 +203,7 @@ public final class AuthorizationSequenceSplashController: ViewController {
         
         let _ = (combineLatest(currentCode, suggestedCode)
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] currentCode, suggestedCode in
+        |> deliverOnMainQueue).start(next: { [weak self = self] currentCode, suggestedCode in
             guard let strongSelf = self else {
                 return
             }

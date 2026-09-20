@@ -78,7 +78,7 @@ final class GreetingMessageListItemComponent: Component {
             super.init(frame: frame)
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.internalHighligthedChanged = { [weak self] isHighlighted in
+            self.internalHighligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, component.action != nil else {
                     return
                 }

@@ -180,7 +180,7 @@ extension ChatControllerImpl {
                     viewOnceAvailable: viewOnceAvailable,
                     inputPanelFrame: (currentInputPanelFrame, self.chatDisplayNode.inputNode != nil),
                     chatNode: self.chatDisplayNode.historyNode,
-                    completion: { [weak self] message, silentPosting, scheduleTime, repeatPeriod in
+                    completion: { [weak self = self] message, silentPosting, scheduleTime, repeatPeriod in
                         guard let self, let videoController = self.videoRecorderValue else {
                             return
                         }
@@ -217,7 +217,7 @@ extension ChatControllerImpl {
                             self.videoRecorder.set(.single(nil))
                         }
                         
-                        self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self] in
+                        self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self = self] in
                             if let self {
                                 self.chatDisplayNode.collapseInput()
                                 
@@ -234,7 +234,7 @@ extension ChatControllerImpl {
                         self.sendMessages(transformedMessages)
                     }
                 )
-                controller.onResume = { [weak self] in
+                controller.onResume = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -288,7 +288,7 @@ extension ChatControllerImpl {
                 self.recorderDataDisposable.set(
                     (audioRecorderValue.takenRecordedData()
                      |> deliverOnMainQueue).startStrict(
-                        next: { [weak self] data in
+                        next: { [weak self = self] data in
                             if let strongSelf = self, let data = data {
                                 if data.duration < 0.5 {
                                     strongSelf.recorderFeedback?.error()
@@ -342,7 +342,7 @@ extension ChatControllerImpl {
             case let .send(viewOnce):
                 self.chatDisplayNode.updateRecordedMediaDeleted(false)
                 self.recorderDataDisposable.set((audioRecorderValue.takenRecordedData()
-                |> deliverOnMainQueue).startStrict(next: { [weak self] data in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] data in
                     if let strongSelf = self, let data = data {
                         if data.duration < 0.5 {
                             strongSelf.recorderFeedback?.error()
@@ -416,7 +416,7 @@ extension ChatControllerImpl {
                 case .preview, .pause:
                     if videoRecorderValue.stopVideoRecording() {
                         self.recorderDataDisposable.set((videoRecorderValue.takenRecordedData()
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] data in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] data in
                             if let strongSelf = self, let data = data {
                                 if data.duration < 1.0 {
                                     strongSelf.recorderFeedback?.error()
@@ -507,7 +507,7 @@ extension ChatControllerImpl {
             }
             
             let _ = (ApplicationSpecificNotice.getVoiceMessagesResumeTrimWarning(accountManager: self.context.sharedContext.accountManager)
-            |> deliverOnMainQueue).start(next: { [weak self] count in
+            |> deliverOnMainQueue).start(next: { [weak self = self] count in
                 guard let self else {
                     return
                 }
@@ -572,7 +572,7 @@ extension ChatControllerImpl {
     
     private func maybePresentAudioPauseTooltip() {
         let _ = (ApplicationSpecificNotice.getVoiceMessagesPauseSuggestion(accountManager: self.context.sharedContext.accountManager)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] pauseCounter in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] pauseCounter in
             guard let self else {
                 return
             }
@@ -643,7 +643,7 @@ extension ChatControllerImpl {
                     self.recorderDataDisposable.set(
                         (audioRecorder.takenRecordedData()
                          |> deliverOnMainQueue).startStrict(
-                            next: { [weak self] data in
+                            next: { [weak self = self] data in
                                 if let strongSelf = self, let data = data {
                                     let audioWaveform = audio.waveform
                                    
@@ -712,7 +712,7 @@ extension ChatControllerImpl {
                 return
             }
             
-            self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self] in
+            self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.chatDisplayNode.collapseInput()
                     
@@ -758,7 +758,7 @@ extension ChatControllerImpl {
             }
             
             let _ = (enqueueMessages(account: self.context.account, peerId: peerId, messages: transformedMessages)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                 if let strongSelf = self, strongSelf.presentationInterfaceState.subject != .scheduledMessages {
                     strongSelf.chatDisplayNode.historyNode.scrollToEndOfHistory()
                 }

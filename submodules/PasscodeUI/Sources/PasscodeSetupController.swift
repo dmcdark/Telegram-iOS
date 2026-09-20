@@ -54,7 +54,7 @@ public final class PasscodeSetupController: ViewController {
         
         self.navigationBar?.updateBackgroundAlpha(0.0, transition: .immediate)
         
-        self.controllerNode.selectPasscodeMode = { [weak self] in
+        self.controllerNode.selectPasscodeMode = { [weak self = self] in
             guard let strongSelf = self, case let .setup(change, type) = strongSelf.mode else {
                 return
             }
@@ -68,7 +68,7 @@ public final class PasscodeSetupController: ViewController {
             var items: [ActionSheetButtonItem] = []
             if case .digits6 = type {
             } else {
-                items.append(ActionSheetButtonItem(title: strongSelf.presentationData.strings.PasscodeSettings_6DigitCode, action: { [weak self] in
+                items.append(ActionSheetButtonItem(title: strongSelf.presentationData.strings.PasscodeSettings_6DigitCode, action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.mode = .setup(change: change, .digits6)
                         strongSelf.controllerNode.updateMode(strongSelf.mode)
@@ -106,7 +106,7 @@ public final class PasscodeSetupController: ViewController {
             strongSelf.view.endEditing(true)
             strongSelf.present(controller, in: .window(.root))
         }
-        self.controllerNode.updateNextAction = { [weak self] visible in
+        self.controllerNode.updateNextAction = { [weak self = self] visible in
             guard let strongSelf = self else {
                 return
             }
@@ -117,12 +117,12 @@ public final class PasscodeSetupController: ViewController {
                 strongSelf.navigationItem.rightBarButtonItem = nil
             }
         }
-        self.controllerNode.complete = { [weak self] passcode, numerical in
+        self.controllerNode.complete = { [weak self = self] passcode, numerical in
             if let strongSelf = self {
                 strongSelf.complete?(passcode, numerical)
             }
         }
-        self.controllerNode.checkPasscode = { [weak self] passcode in
+        self.controllerNode.checkPasscode = { [weak self = self] passcode in
             return self?.check?(passcode) ?? false
         }
     }

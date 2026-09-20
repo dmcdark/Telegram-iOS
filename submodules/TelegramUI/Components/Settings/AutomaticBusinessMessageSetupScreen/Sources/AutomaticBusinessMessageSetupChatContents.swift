@@ -55,7 +55,7 @@ final class AutomaticBusinessMessageSetupChatContents: ChatCustomContentsProtoco
                     self.historyViewDisposable?.dispose()
                     
                     self.historyViewDisposable = (self.context.account.viewTracker.quickReplyMessagesViewForLocation(quickReplyId: shortcutId)
-                    |> deliverOn(self.queue)).start(next: { [weak self] view, update, _ in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] view, update, _ in
                         guard let self else {
                             return
                         }
@@ -82,7 +82,7 @@ final class AutomaticBusinessMessageSetupChatContents: ChatCustomContentsProtoco
                 self.historyViewDisposable = nil
                 
                 self.pendingHistoryViewDisposable = (self.context.account.viewTracker.pendingQuickReplyMessagesViewForLocation(shortcut: self.shortcut)
-                |> deliverOn(self.queue)).start(next: { [weak self] view, _, _ in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] view, _, _ in
                     guard let self else {
                         return
                     }
@@ -132,7 +132,7 @@ final class AutomaticBusinessMessageSetupChatContents: ChatCustomContentsProtoco
                     return attributes
                 }
             })
-            |> deliverOn(self.queue)).startStandalone(next: { [weak self] result in
+            |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }

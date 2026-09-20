@@ -164,9 +164,9 @@ final class TDClient {
         if case .closed = authState { return }
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             self.closingContinuations.append(continuation)
-            Task { [weak self] in
+            Task { [weak self = self] in
                 try? await Task.sleep(for: .seconds(timeout))
-                await MainActor.run { [weak self] in
+                await MainActor.run { [weak self = self] in
                     guard let self else { return }
                     if !self.closingContinuations.isEmpty {
                         self.logger.warning("awaitClosed: timed out after \(Int(timeout))s; forcing recreate")
@@ -188,7 +188,7 @@ final class TDClient {
 
         qrLinkPublisher.clear()
         let logger = self.logger
-        let client = manager.createClient { [weak self] data, callbackClient in
+        let client = manager.createClient { [weak self = self] data, callbackClient in
             let update: Update
             do {
                 update = try callbackClient.decoder.decode(Update.self, from: data)
@@ -196,7 +196,7 @@ final class TDClient {
                 logger.warning("update decode failed: \(error.localizedDescription, privacy: .public)")
                 return
             }
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async { [weak self = self] in
                 self?.handle(update)
             }
         }
@@ -284,7 +284,7 @@ final class TDClient {
                 _ = try await client.requestQrCodeAuthentication(otherUserIds: [])
             } catch {
                 logger.warning("requestQrCodeAuthentication failed: \(error.localizedDescription, privacy: .public)")
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     self?.lastError = humanMessage(error)
                     self?.authState = .failed(humanMessage(error))
                 }
@@ -314,7 +314,7 @@ final class TDClient {
     private func armStuckLoggingOutWatchdog() {
         stuckLoggingOutTask?.cancel()
         let timeout = Self.kStuckLoggingOutTimeout
-        stuckLoggingOutTask = Task { [weak self] in
+        stuckLoggingOutTask = Task { [weak self = self] in
             try? await Task.sleep(for: .seconds(timeout))
             guard !Task.isCancelled else { return }
             guard let self else { return }
@@ -343,9 +343,9 @@ final class TDClient {
                     logger.warning("destroy() failed: \(error.localizedDescription, privacy: .public)")
                 }
             }
-            Task { [weak self] in
+            Task { [weak self = self] in
                 try? await Task.sleep(for: .seconds(5))
-                await MainActor.run { [weak self] in
+                await MainActor.run { [weak self = self] in
                     guard let self else { return }
                     if !self.closingContinuations.isEmpty {
                         self.logger.warning("forceDestroy: timed out waiting for closed; forcing recreate")
@@ -394,7 +394,7 @@ final class TDClient {
                 )
             } catch {
                 logger.error("setTdlibParameters failed: \(error.localizedDescription, privacy: .public)")
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     self?.authState = .failed(humanMessage(error))
                 }
             }
@@ -406,7 +406,7 @@ final class TDClient {
         Task { [logger, client] in
             do {
                 let user = try await client.getMe()
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     guard let self else { return }
                     self.me = user
                     self.chatList?.setSelfUserId(user.id)

@@ -116,7 +116,7 @@ public final class ChatInstantVideoMessageDurationNode: ASImageNode {
         self.contentMode = .topRight
         
         self.statusDisposable = (self.statusValuePromise.get()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.statusValue = status
             }
@@ -137,7 +137,7 @@ public final class ChatInstantVideoMessageDurationNode: ASImageNode {
     
     private func ensureHasTimer() {
         if self.updateTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.updateTimestamp()
             }, queue: Queue.mainQueue())
             self.updateTimer = timer

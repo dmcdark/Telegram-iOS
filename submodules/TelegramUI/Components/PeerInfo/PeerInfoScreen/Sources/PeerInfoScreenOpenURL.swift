@@ -15,7 +15,7 @@ extension PeerInfoScreenNode {
         guard let navigationController = self.controller?.navigationController as? NavigationController else {
             return
         }
-        self.context.sharedContext.openResolvedUrl(result, context: self.context, urlContext: .chat(peerId: self.peerId, message: nil, updatedPresentationData: self.controller?.updatedPresentationData), navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { [weak self] peer, navigation in
+        self.context.sharedContext.openResolvedUrl(result, context: self.context, urlContext: .chat(peerId: self.peerId, message: nil, updatedPresentationData: self.controller?.updatedPresentationData), navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { [weak self = self] peer, navigation in
             guard let strongSelf = self else {
                 return
             }
@@ -44,17 +44,17 @@ extension PeerInfoScreenNode {
         requestMessageActionUrlAuth: nil,
         joinVoiceChat: { peerId, invite, call in
             
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.controller?.present(c, in: .window(.root), with: a)
-        }, dismissInput: { [weak self] in
+        }, dismissInput: { [weak self = self] in
             self?.view.endEditing(true)
         }, contentContext: nil, progress: nil, completion: nil)
     }
     
     func openUrl(url: String, concealed: Bool, external: Bool, forceExternal: Bool = false, commit: @escaping () -> Void = {}) {
-        let _ = self.context.sharedContext.openUserGeneratedUrl(context: self.context, peerId: self.peerId, url: url, webpage: nil, concealed: concealed, forceConcealed: false, skipUrlAuth: false, skipConcealedAlert: false, forceDark: false, present: { [weak self] c in
+        let _ = self.context.sharedContext.openUserGeneratedUrl(context: self.context, peerId: self.peerId, url: url, webpage: nil, concealed: concealed, forceConcealed: false, skipUrlAuth: false, skipConcealedAlert: false, forceDark: false, present: { [weak self = self] c in
             self?.controller?.present(c, in: .window(.root))
-        }, openResolved: { [weak self] tempResolved in
+        }, openResolved: { [weak self = self] tempResolved in
             guard let strongSelf = self else {
                 return
             }
@@ -80,7 +80,7 @@ extension PeerInfoScreenNode {
     }
     
     func openUrlIn(_ url: String) {
-        let actionSheet = OpenInOptionsScreen(context: self.context, updatedPresentationData: self.controller?.updatedPresentationData, item: .url(url: url), openUrl: { [weak self] url in
+        let actionSheet = OpenInOptionsScreen(context: self.context, updatedPresentationData: self.controller?.updatedPresentationData, item: .url(url: url), openUrl: { [weak self = self] url in
             if let strongSelf = self, let navigationController = strongSelf.controller?.navigationController as? NavigationController {
                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: true, presentationData: strongSelf.presentationData, navigationController: navigationController, dismissInput: {
                 })
@@ -107,7 +107,7 @@ extension PeerInfoScreenNode {
         
         var cancelImpl: (() -> Void)?
         let presentationData = self.presentationData
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -128,12 +128,12 @@ extension PeerInfoScreenNode {
                 progressDisposable.dispose()
             }
         }
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             self?.resolvePeerByNameDisposable?.set(nil)
         }
         disposable.set((resolveSignal
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             if let strongSelf = self {
                 if let peer = peer {
                     var navigation = navigation
@@ -176,7 +176,7 @@ extension PeerInfoScreenNode {
         }
         var cancelImpl: (() -> Void)?
         let presentationData = self.presentationData
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme,  type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -197,11 +197,11 @@ extension PeerInfoScreenNode {
                 progressDisposable.dispose()
             }
         }
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             self?.resolvePeerByNameDisposable?.set(nil)
         }
         self.resolvePeerByNameDisposable?.set((resolveSignal
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             if let strongSelf = self, !hashtag.isEmpty {
                 let searchController = HashtagSearchController(context: strongSelf.context, peer: peer, query: hashtag)
                 strongSelf.controller?.push(searchController)
@@ -217,16 +217,16 @@ extension PeerInfoScreenNode {
             url = "https://t.me/\(value)"
         }
         
-        let openShare: (TelegramCollectibleItemInfo?) -> Void = { [weak self] collectibleItemInfo in
+        let openShare: (TelegramCollectibleItemInfo?) -> Void = { [weak self = self] collectibleItemInfo in
             guard let self else {
                 return
             }
-            let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), updatedPresentationData: self.controller?.updatedPresentationData, collectibleItemInfo: collectibleItemInfo, actionCompleted: { [weak self] in
+            let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), updatedPresentationData: self.controller?.updatedPresentationData, collectibleItemInfo: collectibleItemInfo, actionCompleted: { [weak self = self] in
                 if let strongSelf = self {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
                 }
-            }, completed: { [weak self] peerIds in
+            }, completed: { [weak self = self] peerIds in
                 guard let strongSelf = self else {
                     return
                 }
@@ -235,7 +235,7 @@ extension PeerInfoScreenNode {
                         peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                     )
                 )
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                     guard let strongSelf = self else {
                         return
                     }
@@ -267,7 +267,7 @@ extension PeerInfoScreenNode {
                     strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                         if savedMessages, let self, action == .info {
                             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                            |> deliverOnMainQueue).start(next: { [weak self] peer in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                 guard let self, let peer else {
                                     return
                                 }
@@ -289,7 +289,7 @@ extension PeerInfoScreenNode {
             let namePart = pathComponents[1]
             progress?.set(.single(true))
             let _ = (self.context.sharedContext.makeCollectibleItemInfoScreenInitialData(context: self.context, peerId: self.peerId, subject: .username(namePart))
-            |> deliverOnMainQueue).start(next: { [weak self] initialData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] initialData in
                 guard let self else {
                     return
                 }

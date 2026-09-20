@@ -62,7 +62,7 @@ public final class ChatMessageCommentFooterContentNode: ChatMessageBubbleContent
         self.buttonNode.addSubnode(self.avatarsNode)
         self.addSubnode(self.buttonNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 let nodes: [ASDisplayNode] = [
                     strongSelf.buttonNode
@@ -250,7 +250,7 @@ public final class ChatMessageCommentFooterContentNode: ChatMessageBubbleContent
                     boundingSize.width += layoutConstants.text.bubbleInsets.left + layoutConstants.text.bubbleInsets.right
                     boundingSize.height = 40.0 + topOffset
                     
-                    return (boundingSize, { [weak self] animation, synchronousLoad, _ in
+                    return (boundingSize, { [weak self = self] animation, synchronousLoad, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             

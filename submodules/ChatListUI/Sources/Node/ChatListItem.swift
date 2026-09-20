@@ -1251,7 +1251,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
                 makeExistingTopicLayouts[topicId] = TopicItemNode.asyncLayout(topicNode)
             }
             
-            return { [weak self] context, constrainedWidth, theme, authorTitle, topics, arrowColor in
+            return { [weak self = self] context, constrainedWidth, theme, authorTitle, topics, arrowColor in
                 var maxTitleWidth = constrainedWidth
                 if !topics.isEmpty {
                     maxTitleWidth = floor(constrainedWidth * 0.7)
@@ -1771,14 +1771,14 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
         self.mainContentContainerNode.addSubnode(self.hiddenPeerIconNode)
         self.mainContentContainerNode.addSubnode(self.mutedIconNode)
         
-        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self] in
+        self.peerPresenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
             if let strongSelf = self, let layoutParams = strongSelf.layoutParams {
                 let (_, apply) = strongSelf.asyncLayout()(layoutParams.0, layoutParams.6, layoutParams.1, layoutParams.2, layoutParams.3, layoutParams.4, layoutParams.5)
                 let _ = apply(false, false)
             }
         })
         
-        self.contextContainer.shouldBegin = { [weak self] location in
+        self.contextContainer.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return false
             }
@@ -1801,7 +1801,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             return true
         }
         
-        self.contextContainer.activated = { [weak self] gesture, location in
+        self.contextContainer.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -1814,7 +1814,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             item.interaction.activateChatPreview?(item, threadId, strongSelf.contextContainer, gesture, nil)
         }
         
-        self.onDidLoad { [weak self] _  in
+        self.onDidLoad { [weak self = self] _  in
             guard let self else {
                 return
             }
@@ -2054,7 +2054,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             if peer.isPremium && peer.id != item.context.account.peerId {
                 let context = item.context
                 self.cachedDataDisposable.set((context.account.postbox.peerView(id: peer.id)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerView in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView in
                     guard let strongSelf = self else {
                         return
                     }
@@ -2093,14 +2093,14 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
                             
                             if strongSelf.hierarchyTrackingLayer == nil {
                                 let hierarchyTrackingLayer = HierarchyTrackingLayer()
-                                hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+                                hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
                                     strongSelf.trackingIsInHierarchy = true
                                 }
                                 
-                                hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+                                hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -2199,7 +2199,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             }
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
-                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self] completed in
+                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self = self] completed in
                     if let strongSelf = self {
                         if completed {
                             strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -4062,7 +4062,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
                 customActions.append(ChatListItemAccessibilityCustomAction(name: option.title, target: nil, selector: #selector(ChatListItemNode.performLocalAccessibilityCustomAction(_:)), key: option.key))
             }
             
-            return (layout, { [weak self] synchronousLoads, animated in
+            return (layout, { [weak self = self] synchronousLoads, animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, first, last, firstWithHeader, nextIsPinned, nextHasActiveRevealControls, params, countersSize)
                     strongSelf.nextHasActiveRevealControls = nextHasActiveRevealControls
@@ -5773,7 +5773,7 @@ public class ChatListItemNode: ItemListRevealOptionsItemNode {
             self.highlightedBackgroundNode.alpha = 0.0
         }
         self.highlightedBackgroundNode.layer.removeAllAnimations()
-        self.highlightedBackgroundNode.layer.animate(from: 1.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "opacity", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.3, delay: 0.7, completion: { [weak self] _ in
+        self.highlightedBackgroundNode.layer.animate(from: 1.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "opacity", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.3, delay: 0.7, completion: { [weak self = self] _ in
             self?.updateIsHighlighted(transition: .immediate)
         })
     }

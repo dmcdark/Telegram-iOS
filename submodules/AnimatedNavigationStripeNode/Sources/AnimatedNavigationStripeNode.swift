@@ -296,7 +296,7 @@ public final class AnimatedNavigationStripeNode: ASDisplayNode {
             if transition.isAnimated && isCycledJump {
                 let duration: Double = 0.18
                 let maxOffset: CGFloat = -8.0
-                let offsetAnimation0 = self.layer.makeAnimation(from: 0.0 as NSNumber, to: maxOffset as NSNumber, keyPath: "bounds.origin.y", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: duration / 2.0, removeOnCompletion: false, additive: true, completion: { [weak self] _ in
+                let offsetAnimation0 = self.layer.makeAnimation(from: 0.0 as NSNumber, to: maxOffset as NSNumber, keyPath: "bounds.origin.y", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: duration / 2.0, removeOnCompletion: false, additive: true, completion: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }

@@ -440,7 +440,7 @@ public final class MediaEditor {
             self.audioPlayerPromise.get(),
             self.valuesPromise.get(),
             self.playerPlaybackStatePromise.get()
-        ) |> map { [weak self] mainPlayerAndThumbnails, additionalPlayerAndThumbnails, audioPlayer, values, playbackState in
+        ) |> map { [weak self = self] mainPlayerAndThumbnails, additionalPlayerAndThumbnails, audioPlayer, values, playbackState in
             let isCollage = !values.collage.isEmpty
             
             var tracks: [MediaEditorPlayerState.Track] = []
@@ -602,7 +602,7 @@ public final class MediaEditor {
             self.renderer.addRenderPass(self.histogramCalculationPass)
         }
         
-        self.histogramCalculationPass.updated = { [weak self] data in
+        self.histogramCalculationPass.updated = { [weak self = self] data in
             if let self {
                 self.histogramPromise.set(.single(data))
             }
@@ -681,7 +681,7 @@ public final class MediaEditor {
         }
                 
         func textureSourceResult(for asset: AVAsset, gradientColors: GradientColors? = nil, rect: CGRect? = nil, scale: CGFloat = 1.0, offset: CGPoint = .zero) -> Signal<TextureSourceResult, NoError> {
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 guard let self else {
                     subscriber.putCompletion()
                     return EmptyDisposable
@@ -720,7 +720,7 @@ public final class MediaEditor {
         }
         
         func textureSourceResult(for asset: PHAsset, rect: CGRect? = nil, scale: CGFloat = 1.0, offset: CGPoint = .zero) -> Signal<TextureSourceResult, NoError> {
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let isVideo = asset.mediaType == .video
                                 
                 let targetSize = isVideo ? CGSize(width: 128.0, height: 128.0) : CGSize(width: 1920.0, height: 1920.0)
@@ -734,7 +734,7 @@ public final class MediaEditor {
                     targetSize: targetSize,
                     contentMode: .aspectFit,
                     options: options,
-                    resultHandler: { [weak self] image, info in
+                    resultHandler: { [weak self = self] image, info in
                         if let image {
                             var degraded = false
                             if let info {
@@ -886,9 +886,9 @@ public final class MediaEditor {
         }
         
         self.textureSourceDisposable = (textureSource
-        |> deliverOnMainQueue).start(next: { [weak self] textureSourceResult in
+        |> deliverOnMainQueue).start(next: { [weak self = self] textureSourceResult in
             if let self {
-                self.renderer.onNextRender = { [weak self] in
+                self.renderer.onNextRender = { [weak self = self] in
                     self?.onFirstDisplay()
                 }
                 
@@ -929,7 +929,7 @@ public final class MediaEditor {
                                     return .single(.known(canCutout: false, availability: .unavailable, hasTransparency: false))
                                 }
                             }
-                            |> deliverOnMainQueue).start(next: { [weak self] status in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                                 guard let self else {
                                     return
                                 }
@@ -944,7 +944,7 @@ public final class MediaEditor {
                             }
                         }
                         let _ = (classifyImage(image)
-                        |> deliverOnMainQueue).start(next: { [weak self] classes in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] classes in
                             self?.classificationUpdated(classes)
                         })
                     }
@@ -1077,7 +1077,7 @@ public final class MediaEditor {
         }
 
         if self.didPlayToEndTimeObserver == nil {
-            self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: observedPlayer.currentItem, queue: nil, using: { [weak self] notification in
+            self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: observedPlayer.currentItem, queue: nil, using: { [weak self = self] notification in
                 if let self {
                     var start: Double = 0.0
                     if self.player != nil {
@@ -1349,7 +1349,7 @@ public final class MediaEditor {
                 if let _ = self.audioPlayer {
                     let audioTime = self.audioTime(for: targetPosition)
                     if let audioDelay = self.audioDelay(for: targetPosition) {
-                        self.audioDelayTimer = SwiftSignalKit.Timer(timeout: audioDelay, repeat: false, completion: { [weak self] in
+                        self.audioDelayTimer = SwiftSignalKit.Timer(timeout: audioDelay, repeat: false, completion: { [weak self = self] in
                             self?.audioPlayer?.seek(to: audioTime, toleranceBefore: .zero, toleranceAfter: .zero)
                             self?.audioPlayer?.play()
                         }, queue: Queue.mainQueue())
@@ -1629,7 +1629,7 @@ public final class MediaEditor {
                 let audioTime = self.audioTime(for: itemTime)
                 if rate > 0.0 {
                     if let audioDelay = self.audioDelay(for: itemTime) {
-                        self.audioDelayTimer = SwiftSignalKit.Timer(timeout: audioDelay, repeat: false, completion: { [weak self] in
+                        self.audioDelayTimer = SwiftSignalKit.Timer(timeout: audioDelay, repeat: false, completion: { [weak self = self] in
                             self?.audioPlayer?.seek(to: audioTime, toleranceBefore: .zero, toleranceAfter: .zero)
                             self?.audioPlayer?.play()
                         }, queue: Queue.mainQueue())
@@ -1684,7 +1684,7 @@ public final class MediaEditor {
         self.updatingTimePosition = true
         
         if self.player == nil && self.additionalPlayers.isEmpty, let audioPlayer = self.audioPlayer {
-            audioPlayer.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self] _ in
+            audioPlayer.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self = self] _ in
                 if let self {
                     if let (currentTargetPosition, _) = self.targetTimePosition, currentTargetPosition == targetPosition {
                         self.updatingTimePosition = false
@@ -1695,7 +1695,7 @@ public final class MediaEditor {
                 }
             })
         } else {
-            self.player?.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self] _ in
+            self.player?.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self = self] _ in
                 if let self {
                     if let (currentTargetPosition, _) = self.targetTimePosition, currentTargetPosition == targetPosition {
                         self.updatingTimePosition = false
@@ -1717,7 +1717,7 @@ public final class MediaEditor {
                         index += 1
                     }
                 } else {
-                    additionalPlayer.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self] _ in
+                    additionalPlayer.seek(to: targetPosition, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { [weak self = self] _ in
                         if let self {
                             if let (currentTargetPosition, _) = self.targetTimePosition, currentTargetPosition == targetPosition {
                                 self.updatingTimePosition = false
@@ -1890,7 +1890,7 @@ public final class MediaEditor {
                             options.isNetworkAccessAllowed = true
                             options.deliveryMode = .highQualityFormat
             
-                            PHImageManager.default().requestAVAsset(forVideo: asset, options: options, resultHandler: { [weak self] avAsset, _, _ in
+                            PHImageManager.default().requestAVAsset(forVideo: asset, options: options, resultHandler: { [weak self = self] avAsset, _, _ in
                                 guard let self, let avAsset else {
                                     subscriber.putCompletion()
                                     return
@@ -1909,7 +1909,7 @@ public final class MediaEditor {
             }
             
             let _ = (combineLatest(signals)
-            |> deliverOnMainQueue).start(next: { [weak self] results in
+            |> deliverOnMainQueue).start(next: { [weak self = self] results in
                 guard let self else {
                     return
                 }
@@ -2317,10 +2317,10 @@ public final class MediaEditor {
     
     private func maybeGeneratePersonSegmentation(_ image: UIImage?) {
         if #available(iOS 15.0, *), let cgImage = image?.cgImage {
-            let faceRequest = VNDetectFaceRectanglesRequest { [weak self] request, _ in
+            let faceRequest = VNDetectFaceRectanglesRequest { [weak self = self] request, _ in
                 guard let _ = request.results?.first as? VNFaceObservation else { return }
                 
-                let personRequest = VNGeneratePersonSegmentationRequest(completionHandler: { [weak self] request, error in
+                let personRequest = VNGeneratePersonSegmentationRequest(completionHandler: { [weak self = self] request, error in
                     if let self, let result = (request as? VNGeneratePersonSegmentationRequest)?.results?.first {
                         Queue.mainQueue().async {
                             self.renderChain.blurPass.maskTexture = pixelBufferToMTLTexture(pixelBuffer: result.pixelBuffer, textureCache: self.textureCache)

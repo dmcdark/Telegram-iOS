@@ -365,7 +365,7 @@ private final class PollResultsOptionContext {
                 return nil
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] cachedPeersAndCanLoadMore in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] cachedPeersAndCanLoadMore in
             guard let strongSelf = self else {
                 return
             }
@@ -462,7 +462,7 @@ private final class PollResultsOptionContext {
                 return .single(([], 0, nil))
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] peers, updatedCount, nextOffset in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] peers, updatedCount, nextOffset in
             guard let strongSelf = self else {
                 return
             }

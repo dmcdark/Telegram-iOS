@@ -137,7 +137,7 @@ private final class StickerSelectionComponent: Component {
             self.addSubview(self.panelHostView)
             
             self.interaction = ChatEntityKeyboardInputNode.Interaction(
-                sendSticker: { [weak self] file, silent, schedule, query, clearInput, sourceView, sourceRect, sourceLayer, _ in
+                sendSticker: { [weak self = self] file, silent, schedule, query, clearInput, sourceView, sourceRect, sourceLayer, _ in
                     if let self, let controller = self.component?.getController() {
                         controller.forEachController { c in
                             if let c = c as? (ViewController & StickerPackScreen) {
@@ -158,7 +158,7 @@ private final class StickerSelectionComponent: Component {
                 },
                 sendEmoji: { _, _, _ in
                 },
-                sendGif: { [weak self] file, _, _, _, _ in
+                sendGif: { [weak self = self] file, _, _, _, _ in
                     if let self, let controller = self.component?.getController() {
                         if controller.completion(.video(file.media)) {
                             controller.dismiss(animated: true)
@@ -166,7 +166,7 @@ private final class StickerSelectionComponent: Component {
                     }
                     return false
                 },
-                sendBotContextResultAsGif: { [weak self] collection, result, _, _, _, _ in
+                sendBotContextResultAsGif: { [weak self = self] collection, result, _, _, _, _ in
                     if let self, let controller = self.component?.getController() {
                         if case let .internalReference(reference) = result {
                             if let file = reference.file {
@@ -187,12 +187,12 @@ private final class StickerSelectionComponent: Component {
                 },
                 backwardsDeleteText: {},
                 openStickerEditor: {},
-                presentController: { [weak self] c, a in
+                presentController: { [weak self = self] c, a in
                     if let self, let controller = self.component?.getController() {
                         controller.present(c, in: .window(.root), with: a)
                     }
                 },
-                presentGlobalOverlayController: { [weak self] c, a in
+                presentGlobalOverlayController: { [weak self = self] c, a in
                     if let self, let controller = self.component?.getController() {
                         controller.presentInGlobalOverlay(c, with: a)
                     }
@@ -289,7 +289,7 @@ private final class StickerSelectionComponent: Component {
                     displayTopPanelBackground: .blur,
                     topPanelExtensionUpdated: { _, _ in
                     },
-                    topPanelScrollingOffset: { [weak self] offset, transition in
+                    topPanelScrollingOffset: { [weak self = self] offset, transition in
                         if let self {
                             if self.ignoreNextZeroScrollingOffset && offset == 0.0 {
                             } else {
@@ -298,7 +298,7 @@ private final class StickerSelectionComponent: Component {
                             }
                         }
                     },
-                    hideInputUpdated: { [weak self] _, searchVisible, transition in
+                    hideInputUpdated: { [weak self = self] _, searchVisible, transition in
                         guard let self else {
                             return
                         }
@@ -311,7 +311,7 @@ private final class StickerSelectionComponent: Component {
                     switchToTextInput: {},
                     switchToGifSubject: { _ in },
                     reorderItems: { _, _ in },
-                    makeSearchContainerNode: { [weak self] content in
+                    makeSearchContainerNode: { [weak self = self] content in
                         guard let self, let interaction = self.interaction, let inputNodeInteraction = self.inputNodeInteraction, let component = self.component, let controller = component.getController() else {
                             return nil
                         }
@@ -342,7 +342,7 @@ private final class StickerSelectionComponent: Component {
                             },
                             peekBehavior: stickerPeekBehavior
                         )
-                        searchContainerNode.openGifContextMenu = { [weak self] item, sourceNode, sourceRect, gesture, isSaved in
+                        searchContainerNode.openGifContextMenu = { [weak self = self] item, sourceNode, sourceRect, gesture, isSaved in
                             guard let self, let node = self.component?.getController()?.node else {
                                 return
                             }
@@ -350,7 +350,7 @@ private final class StickerSelectionComponent: Component {
                         }
                         return searchContainerNode
                     },
-                    contentIdUpdated: { [weak self] id in
+                    contentIdUpdated: { [weak self = self] id in
                         guard let self else {
                             return
                         }
@@ -545,16 +545,16 @@ public class StickerPickerScreen: ViewController {
                     context: context,
                     weather: controller.weather
                 )
-                self.storyStickersContentView?.locationAction = { [weak self] in
+                self.storyStickersContentView?.locationAction = { [weak self = self] in
                     self?.controller?.presentLocationPicker()
                 }
-                self.storyStickersContentView?.audioAction = { [weak self] in
+                self.storyStickersContentView?.audioAction = { [weak self = self] in
                     self?.controller?.presentAudioPicker()
                 }
-                self.storyStickersContentView?.reactionAction = { [weak self] in
+                self.storyStickersContentView?.reactionAction = { [weak self = self] in
                     self?.controller?.addReaction()
                 }
-                self.storyStickersContentView?.linkAction = { [weak self] in
+                self.storyStickersContentView?.linkAction = { [weak self = self] in
                     guard let self, let controller = self.controller else {
                         return
                     }
@@ -564,7 +564,7 @@ public class StickerPickerScreen: ViewController {
                         self.presentLinkPremiumSuggestion()
                     }
                 }
-                self.storyStickersContentView?.weatherAction = { [weak self] in
+                self.storyStickersContentView?.weatherAction = { [weak self = self] in
                     self?.controller?.addWeather()
                 }
             }
@@ -577,7 +577,7 @@ public class StickerPickerScreen: ViewController {
                 }
                 
                 self.hasRecentGifsDisposable = (hasRecentGifs
-                |> deliverOnMainQueue).start(next: { [weak self] hasRecentGifs in
+                |> deliverOnMainQueue).start(next: { [weak self = self] hasRecentGifs in
                     guard let strongSelf = self else {
                         return
                     }
@@ -602,7 +602,7 @@ public class StickerPickerScreen: ViewController {
                 })
                 
                 let gifInputInteraction = GifPagerContentComponent.InputInteraction(
-                    performItemAction: { [weak self] item, view, rect in
+                    performItemAction: { [weak self = self] item, view, rect in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -610,19 +610,19 @@ public class StickerPickerScreen: ViewController {
                             controller.dismiss(animated: true)
                         }
                     },
-                    openGifContextMenu: { [weak self] item, sourceView, sourceRect, gesture, isSaved in
+                    openGifContextMenu: { [weak self = self] item, sourceView, sourceRect, gesture, isSaved in
                         guard let self else {
                             return
                         }
                         self.openGifContextMenu(file: item.file, contextResult: item.contextResult, sourceView: sourceView, sourceRect: sourceRect, gesture: gesture, isSaved: isSaved)
                     },
-                    loadMore: { [weak self] token in
+                    loadMore: { [weak self = self] token in
                         guard let strongSelf = self, let gifContext = strongSelf.gifContext else {
                             return
                         }
                         gifContext.loadMore(token: token)
                     },
-                    openSearch: { [weak self] in
+                    openSearch: { [weak self = self] in
                         if let self, let componentView = self.hostView.componentView as? StickerSelectionComponent.View {
                             if let pagerView = componentView.keyboardView.view as? EntityKeyboardComponent.View {
                                 pagerView.openSearch()
@@ -630,7 +630,7 @@ public class StickerPickerScreen: ViewController {
                             self.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                         }
                     },
-                    updateSearchQuery: { [weak self] query in
+                    updateSearchQuery: { [weak self = self] query in
                         guard let self else {
                             return
                         }
@@ -673,7 +673,7 @@ public class StickerPickerScreen: ViewController {
                 self.emojiSearchState.get()
             )
                         
-            self.contentDisposable.set(data.start(next: { [weak self] inputData, gifData, stickerSearchState, emojiSearchState in
+            self.contentDisposable.set(data.start(next: { [weak self = self] inputData, gifData, stickerSearchState, emojiSearchState in
                 if let strongSelf = self {
                     guard var inputData = inputData as? StickerPickerInputData else {
                         return
@@ -748,7 +748,7 @@ public class StickerPickerScreen: ViewController {
             }
             
             let _ = (context.engine.stickers.isGifSaved(id: file.media.fileId)
-            |> deliverOnMainQueue).start(next: { [weak self] isGifSaved in
+            |> deliverOnMainQueue).start(next: { [weak self = self] isGifSaved in
                 var isGifSaved = isGifSaved
                 if !canSaveGif {
                     isGifSaved = false
@@ -762,7 +762,7 @@ public class StickerPickerScreen: ViewController {
                 var items: [ContextMenuItem] = []
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaEditor_AddGif, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Add"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     if let self, let controller = self.controller {
                         if isSaved {
@@ -792,7 +792,7 @@ public class StickerPickerScreen: ViewController {
                 } else if canSaveGif && !isGifSaved {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Preview_SaveGif, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.actionSheet.primaryTextColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.dismissWithoutContent)
                         
                         guard let self else {
@@ -801,7 +801,7 @@ public class StickerPickerScreen: ViewController {
                         
                         let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                         let _ = (toggleGifSaved(account: context.account, fileReference: file, saved: true)
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let controller = self?.controller else {
                                 return
                             }
@@ -842,7 +842,7 @@ public class StickerPickerScreen: ViewController {
             }
                         
             content.emoji?.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] groupId, item, _, _, _, _ in
+                performItemAction: { [weak self = self] groupId, item, _, _, _, _ in
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
@@ -854,7 +854,7 @@ public class StickerPickerScreen: ViewController {
                             ChatEntityKeyboardInputNode.hasPremium(context: context, chatPeerId: controller.context.account.peerId, premiumIfSavedMessages: false)
                         )
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] hasPremium, hasGlobalPremium in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] hasPremium, hasGlobalPremium in
                             guard let self else {
                                 return
                             }
@@ -865,7 +865,7 @@ public class StickerPickerScreen: ViewController {
                                 context.account.postbox.combinedView(keys: [viewKey])
                             )
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] emojiPacksView, views in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] emojiPacksView, views in
                                 guard let view = views.views[viewKey] as? OrderedItemListView else {
                                     return
                                 }
@@ -939,7 +939,7 @@ public class StickerPickerScreen: ViewController {
                 openFeatured: nil,
                 openSearch: {
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let strongSelf = self, let controller = strongSelf.controller, let collectionId = groupId.base as? ItemCollectionId else {
                         return
                     }
@@ -972,7 +972,7 @@ public class StickerPickerScreen: ViewController {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
@@ -1022,10 +1022,10 @@ public class StickerPickerScreen: ViewController {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.controller?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1033,7 +1033,7 @@ public class StickerPickerScreen: ViewController {
                         strongSelf.containerLayoutUpdated(layout: layout, navigationHeight: navigationHeight, transition: transition)
                     }
                 },
-                updateSearchQuery: { [weak self] query in
+                updateSearchQuery: { [weak self = self] query in
                     guard let self, let controller = self.controller else {
                         return
                     }
@@ -1165,7 +1165,7 @@ public class StickerPickerScreen: ViewController {
                             self.emojiSearchStateValue.isSearching = true
                             self.emojiSearchDisposable.set((resultSignal
                             |> delay(0.15, queue: .mainQueue())
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 guard let self else {
                                     return
                                 }
@@ -1221,7 +1221,7 @@ public class StickerPickerScreen: ViewController {
                             
                         var version = 0
                         self.emojiSearchDisposable.set((resultSignal
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -1257,14 +1257,14 @@ public class StickerPickerScreen: ViewController {
                         }))
                     }
                 },
-                updateScrollingToItemGroup: { [weak self] in
+                updateScrollingToItemGroup: { [weak self = self] in
                     if let self, let componentView = self.hostView.componentView as? StickerSelectionComponent.View {
                         componentView.scrolledToItemGroup()
                     }
                     self?.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                 },
                 onScroll: {},
-                loadMore: { [weak self] in
+                loadMore: { [weak self = self] in
                     self?.emojiSearchContext?.loadMore()
                 },
                 chatPeerId: nil,
@@ -1276,7 +1276,7 @@ public class StickerPickerScreen: ViewController {
                 useOpaqueTheme: false,
                 hideBackground: true,
                 stateContext: nil,
-                addImage: controller.hasGifs ? { [weak self] in
+                addImage: controller.hasGifs ? { [weak self = self] in
                     if let self, let controller = self.controller {
                         let _ = controller.completion(nil)
                         controller.dismiss(animated: true)
@@ -1299,14 +1299,14 @@ public class StickerPickerScreen: ViewController {
             }
             
             content.stickers?.inputInteractionHolder.inputInteraction = EmojiPagerContentComponent.InputInteraction(
-                performItemAction: { [weak self] groupId, item, _, _, _, _ in
+                performItemAction: { [weak self = self] groupId, item, _, _, _, _ in
                     guard let self, let controller = self.controller, let file = item.itemFile?._parse() else {
                         return
                     }
                     let presentationData = controller.context.sharedContext.currentPresentationData.with { $0 }
                     if groupId == AnyHashable("featuredTop") {
                         let _ = (controller.context.engine.data.get(TelegramEngine.EngineData.Item.Collections.FeaturedStickerPacks())
-                        |> deliverOnMainQueue).start(next: { [weak self] featuredStickerPacks in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] featuredStickerPacks in
                             guard let self, let controller = self.controller else {
                                 return
                             }
@@ -1317,7 +1317,7 @@ public class StickerPickerScreen: ViewController {
                                         highlightedPackId: featuredStickerPack.info.id,
                                         forceTheme: defaultDarkColorPresentationTheme,
                                         stickerActionTitle: presentationData.strings.StickerPack_AddSticker,
-                                        sendSticker: { [weak self] fileReference, _, _ in
+                                        sendSticker: { [weak self = self] fileReference, _, _ in
                                             guard let self, let controller = self.controller else {
                                                 return false
                                             }
@@ -1348,7 +1348,7 @@ public class StickerPickerScreen: ViewController {
                 deleteBackwards: nil,
                 openStickerSettings: nil,
                 openFeatured: nil,
-                openSearch: { [weak self] in
+                openSearch: { [weak self = self] in
                     if let self, let componentView = self.hostView.componentView as? StickerSelectionComponent.View {
                         if let pagerView = componentView.keyboardView.view as? EntityKeyboardComponent.View {
                             pagerView.openSearch()
@@ -1356,7 +1356,7 @@ public class StickerPickerScreen: ViewController {
                         self.update(isExpanded: true, transition: .animated(duration: 0.4, curve: .spring))
                     }
                 },
-                addGroupAction: { [weak self] groupId, isPremiumLocked, _ in
+                addGroupAction: { [weak self = self] groupId, isPremiumLocked, _ in
                     guard let strongSelf = self, let controller = strongSelf.controller, let collectionId = groupId.base as? ItemCollectionId else {
                         return
                     }
@@ -1389,7 +1389,7 @@ public class StickerPickerScreen: ViewController {
                         }
                     })
                 },
-                clearGroup: { [weak self] groupId in
+                clearGroup: { [weak self = self] groupId in
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
@@ -1430,10 +1430,10 @@ public class StickerPickerScreen: ViewController {
                 },
                 presentGlobalOverlayController: { c in
                 },
-                navigationController: { [weak self] in
+                navigationController: { [weak self = self] in
                     return self?.controller?.navigationController as? NavigationController
                 },
-                requestUpdate: { [weak self] transition in
+                requestUpdate: { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1441,7 +1441,7 @@ public class StickerPickerScreen: ViewController {
                         strongSelf.containerLayoutUpdated(layout: layout, navigationHeight: navigationHeight, transition: transition)
                     }
                 },
-                updateSearchQuery: { [weak self] query in
+                updateSearchQuery: { [weak self = self] query in
                     guard let strongSelf = self, let controller = strongSelf.controller else {
                         return
                     }
@@ -1500,7 +1500,7 @@ public class StickerPickerScreen: ViewController {
                             
                         var version = 0
                         strongSelf.stickerSearchDisposable.set((resultSignal
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1535,7 +1535,7 @@ public class StickerPickerScreen: ViewController {
                         }))
                     }
                 },
-                updateScrollingToItemGroup: { [weak self] in
+                updateScrollingToItemGroup: { [weak self = self] in
                     if let self, let componentView = self.hostView.componentView as? StickerSelectionComponent.View {
                         componentView.scrolledToItemGroup()
                     }
@@ -1551,7 +1551,7 @@ public class StickerPickerScreen: ViewController {
                 useOpaqueTheme: false,
                 hideBackground: true,
                 stateContext: nil,
-                addImage: controller.hasGifs ? { [weak self] in
+                addImage: controller.hasGifs ? { [weak self = self] in
                     if let self, let controller = self.controller {
                         let _ = controller.completion(nil)
                         controller.dismiss(animated: true)
@@ -1637,7 +1637,7 @@ public class StickerPickerScreen: ViewController {
             self.isDismissing = true
             
             let positionTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
-            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self] _ in
+            positionTransition.updatePosition(layer: self.containerView.layer, position: CGPoint(x: self.containerView.center.x, y: self.bounds.height + self.containerView.bounds.height / 2.0), completion: { [weak self = self] _ in
                 self?.controller?.dismiss(animated: false, completion: completion)
             })
             let alphaTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
@@ -1788,7 +1788,7 @@ public class StickerPickerScreen: ViewController {
                             content: content,
                             backgroundColor: self.theme.list.itemBlocksBackgroundColor.withAlphaComponent(0.85),
                             separatorColor: self.theme.rootController.navigationBar.separatorColor,
-                            getController: { [weak self] in
+                            getController: { [weak self = self] in
                                 if let self {
                                     return self.controller
                                 } else {
@@ -2641,7 +2641,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
         super.init(frame: .zero)
                 
         self.weatherDisposable = (weather
-        |> deliverOnMainQueue).start(next: { [weak self] weather in
+        |> deliverOnMainQueue).start(next: { [weak self = self] weather in
             guard let self else {
                 return
             }
@@ -2684,7 +2684,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
                                 )
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 self.linkAction()
                             }
@@ -2710,7 +2710,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
                                 )
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 self.locationAction()
                             }
@@ -2773,7 +2773,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
                                 id: "weather",
                                 component: weatherButtonContent
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 if let self {
                                     self.weatherAction()
                                 }
@@ -2801,7 +2801,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
                                 )
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 self.audioAction()
                             }
@@ -2821,7 +2821,7 @@ final class StoryStickersContentView: UIView, EmojiCustomContentView {
                                 InteractiveReactionButtonContent(theme: theme)
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 self.reactionAction()
                             }

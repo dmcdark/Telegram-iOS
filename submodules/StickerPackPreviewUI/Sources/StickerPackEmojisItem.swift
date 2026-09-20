@@ -186,7 +186,7 @@ final class StickerPackEmojisItemNode: GridItemNode {
         let boundsChangeTrackerLayer = SimpleLayer()
         boundsChangeTrackerLayer.opacity = 0.0
         self.layer.addSublayer(boundsChangeTrackerLayer)
-        boundsChangeTrackerLayer.didEnterHierarchy = { [weak self] in
+        boundsChangeTrackerLayer.didEnterHierarchy = { [weak self = self] in
             self?.standaloneShimmerEffect?.updateLayer()
         }
         self.boundsChangeTrackerLayer =  boundsChangeTrackerLayer
@@ -383,7 +383,7 @@ final class StickerPackEmojisItemNode: GridItemNode {
                     blurredBadgeColor: theme.chat.inputPanel.panelBackgroundColor.withMultipliedAlpha(0.5),
                     accentIconColor: theme.list.itemAccentColor,
                     pointSize: itemNativeFitSize,
-                    onUpdateDisplayPlaceholder: { [weak self] displayPlaceholder, duration in
+                    onUpdateDisplayPlaceholder: { [weak self = self] displayPlaceholder, duration in
                         guard let strongSelf = self else {
                             return
                         }

@@ -46,11 +46,11 @@ public final class OverlayMediaManager {
     public func attachOverlayMediaController(_ controller: OverlayMediaController & ViewController) {
         self.controller = controller
         
-        controller.updatePossibleEmbeddingItem = { [weak self] item in
+        controller.updatePossibleEmbeddingItem = { [weak self = self] item in
             self?.updatePossibleEmbeddingItem?(item)
         }
         
-        controller.embedPossibleEmbeddingItem = { [weak self] item in
+        controller.embedPossibleEmbeddingItem = { [weak self = self] item in
             return self?.embedPossibleEmbeddingItem?(item) ?? false
         }
     }

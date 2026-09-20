@@ -77,11 +77,11 @@ public final class CallBlobsLayer: MetalEngineSubjectLayer, MetalEngineSubject {
     public init(colors: [UIColor] = [UIColor(white: 1.0, alpha: 0.35), UIColor(white: 1.0, alpha: 0.35)]) {
         super.init()
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
-            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(30), { [weak self] deltaTime in
+            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add(framesPerSecond: .fps(30), { [weak self = self] deltaTime in
                 guard let self else {
                     return
                 }
@@ -95,7 +95,7 @@ public final class CallBlobsLayer: MetalEngineSubjectLayer, MetalEngineSubject {
                 self.setNeedsUpdate()
             })
         }
-        self.didExitHierarchy = { [weak self] in
+        self.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }

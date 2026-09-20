@@ -200,7 +200,7 @@ final class GiftContextPreviewController: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )

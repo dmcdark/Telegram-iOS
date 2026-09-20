@@ -106,7 +106,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
         super.init(mode: .automaticMasterDetail, theme: NavigationControllerTheme(presentationTheme: self.presentationData.theme))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.detailsPlaceholderNode?.updatePresentationData(presentationData)
                 
@@ -127,7 +127,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
             })
             
             self.storyUploadEventsDisposable = (context.engine.messages.allStoriesUploadEvents()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] event in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] event in
                 guard let self else {
                     return
                 }
@@ -210,7 +210,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
         var controllers: [ViewController] = []
         
         let contactsController = ContactsController(context: self.context)
-        contactsController.switchToChatsController = {  [weak self] in
+        contactsController.switchToChatsController = {  [weak self = self] in
             self?.openChatsController(activateSearch: false)
         }
         controllers.append(contactsController)
@@ -230,7 +230,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
         }
         
         let accountSettingsController = PeerInfoScreenImpl(context: self.context, updatedPresentationData: nil, peerId: self.context.account.peerId, avatarInitiallyExpanded: false, isOpenedFromChat: false, reactionSourceMessageId: nil, callMessages: [], isSettings: true)
-        accountSettingsController.tabBarItemDebugTapAction = { [weak self] in
+        accountSettingsController.tabBarItemDebugTapAction = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -469,7 +469,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
                         } else {
                             return nil
                         }
-                    }, completion: { [weak self] results, commit in
+                    }, completion: { [weak self = self] results, commit in
                         guard let self else {
                             dismissCameraImpl?()
                             commit({})
@@ -500,7 +500,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
                              externalState.storyTarget = target
                              
                              let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: targetPeerId))
-                             |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+                             |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                                 guard let self, let peer else {
                                     return
                                 }
@@ -637,7 +637,7 @@ public final class TelegramRootController: NavigationController, TelegramRootCon
             }
         }
         
-        let completionImpl: () -> Void = { [weak self] in
+        let completionImpl: () -> Void = { [weak self = self] in
             guard let self else {
                 return
             }

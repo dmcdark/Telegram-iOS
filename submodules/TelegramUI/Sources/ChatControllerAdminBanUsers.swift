@@ -128,7 +128,7 @@ extension ChatControllerImpl {
                 presentationData: self.presentationData,
                 content: undoRights.isEmpty ? .actionSucceeded(title: title, text: text, cancel: nil, destructive: false) : .removedChat(context: self.context, title: NSAttributedString(string: title ?? text), text: title == nil ? nil : text),
                 elevatedLayout: false,
-                action: { [weak self] action in
+                action: { [weak self = self] action in
                     guard let self else {
                         return true
                     }
@@ -176,7 +176,7 @@ extension ChatControllerImpl {
         
         var cancelImpl: (() -> Void)?
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -202,14 +202,14 @@ extension ChatControllerImpl {
         }
         
         disposables.set((combineLatest(signal, deleteAllMessageCount)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] authorsAndParticipants, deleteAllMessageCount in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] authorsAndParticipants, deleteAllMessageCount in
             guard let self else {
                 return
             }
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] chatPeer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] chatPeer in
                 guard let self, let chatPeer else {
                     return
                 }
@@ -253,7 +253,7 @@ extension ChatControllerImpl {
                     mode: .chat(
                         messageCount: messageIds.count,
                         deleteAllMessageCount: deleteAllMessageCount,
-                        completion: { [weak self] result in
+                        completion: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -275,7 +275,7 @@ extension ChatControllerImpl {
             messageIds: Set([messageId]),
             keepUpdated: false
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] actions in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] actions in
             guard let self, !actions.options.isEmpty else {
                 return
             }
@@ -300,7 +300,7 @@ extension ChatControllerImpl {
         
         var cancelImpl: (() -> Void)?
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -334,7 +334,7 @@ extension ChatControllerImpl {
         }
         
         disposables.set((combineLatest(signal, deleteAllMessageCount)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] maybeParticipant, deleteAllMessageCount in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] maybeParticipant, deleteAllMessageCount in
             guard let self else {
                 return
             }
@@ -358,7 +358,7 @@ extension ChatControllerImpl {
                 TelegramEngine.EngineData.Item.Peer.Peer(id: peerId),
                 TelegramEngine.EngineData.Item.Peer.Peer(id: author.id)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] chatPeer, authorPeer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] chatPeer, authorPeer in
                 guard let self, let chatPeer else {
                     return
                 }
@@ -379,7 +379,7 @@ extension ChatControllerImpl {
                 
                 let mode: AdminUserActionsSheet.Mode
                 if reaction {
-                    mode = .chatReaction(completion: { [weak self] result in
+                    mode = .chatReaction(completion: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -389,7 +389,7 @@ extension ChatControllerImpl {
                     mode = .chat(
                         messageCount: messageIds.count,
                         deleteAllMessageCount: deleteAllMessageCount,
-                        completion: { [weak self] result in
+                        completion: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -429,7 +429,7 @@ extension ChatControllerImpl {
         self.chatDisplayNode.historyNode.ignoreMessageIds = Set(messageIds)
         
         let undoTitle = self.presentationData.strings.Chat_MessagesDeletedToast_Text(Int32(messageIds.count))
-        self.present(UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: undoTitle), text: nil), elevatedLayout: false, position: .top, action: { [weak self] value in
+        self.present(UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: undoTitle), text: nil), elevatedLayout: false, position: .top, action: { [weak self = self] value in
             guard let self else {
                 return false
             }
@@ -448,13 +448,13 @@ extension ChatControllerImpl {
         let _ = (self.context.engine.data.get(
             EngineDataMap(messageIds.map(TelegramEngine.EngineData.Item.Messages.Message.init(id:)))
         )
-        |> deliverOnMainQueue).start(next: { [weak self] messages in
+        |> deliverOnMainQueue).start(next: { [weak self = self] messages in
             guard let self else {
                 return
             }
             
             if let message = messages.values.compactMap({ $0 }).first(where: { message in message.attributes.contains(where: { $0 is PublishedSuggestedPostMessageAttribute }) }), let attribute = message.attributes.first(where: { $0 is PublishedSuggestedPostMessageAttribute }) as? PublishedSuggestedPostMessageAttribute, message.timestamp > Int32(Date().timeIntervalSince1970) - 60 * 60 * 24 {
-                let commit = { [weak self] in
+                let commit = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -473,7 +473,7 @@ extension ChatControllerImpl {
                         title: titleString,
                         text: textString,
                         actions: [
-                            TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.Chat_DeletePaidMessage_Action, action: { [weak self] in
+                            TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.Chat_DeletePaidMessage_Action, action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -495,7 +495,7 @@ extension ChatControllerImpl {
             
             
             if messageIds.count == 1, let message = messages.values.compactMap({ $0 }).first, let repeatAttribute = message.attributes.first(where: { $0 is ScheduledRepeatAttribute }) as? ScheduledRepeatAttribute {
-                let commit = { [weak self] in
+                let commit = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -519,7 +519,7 @@ extension ChatControllerImpl {
                         title: title,
                         text: text,
                         actions: [
-                            TextAlertAction(type: .destructiveAction, title: deleteOneAction, action: { [weak self] in
+                            TextAlertAction(type: .destructiveAction, title: deleteOneAction, action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -537,7 +537,7 @@ extension ChatControllerImpl {
                                 }, error: { error in
                                 }))
                             }),
-                            TextAlertAction(type: .destructiveAction, title: deleteAllAction, action: { [weak self] in
+                            TextAlertAction(type: .destructiveAction, title: deleteAllAction, action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -573,7 +573,7 @@ extension ChatControllerImpl {
             var canDisplayContextMenu = true
 
             if options.contains(.cancelSending) {
-                contextItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCancelSending, textColor: .destructive, icon: { _ in nil }, action: { [weak self] _, f in
+                contextItems.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCancelSending, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState { $0.withoutSelectionState() } })
@@ -605,7 +605,7 @@ extension ChatControllerImpl {
                 } else {
                     globalTitle = self.presentationData.strings.Conversation_DeleteMessagesForEveryone
                 }
-                contextItems.append(.action(ContextMenuActionItem(text: globalTitle, textColor: .destructive, icon: { _ in nil }, action: { [weak self] c, f in
+                contextItems.append(.action(ContextMenuActionItem(text: globalTitle, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] c, f in
                     if let strongSelf = self {
                         var giveaway: TelegramMediaGiveaway?
                         for messageId in messageIds {
@@ -682,7 +682,7 @@ extension ChatControllerImpl {
                         }
                     }
                 }
-                contextItems.append(.action(ContextMenuActionItem(text: localOptionText, textColor: .destructive, icon: { _ in nil }, action: { [weak self] c, f in
+                contextItems.append(.action(ContextMenuActionItem(text: localOptionText, textColor: .destructive, icon: { _ in nil }, action: { [weak self = self] c, f in
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState { $0.withoutSelectionState() } })
                         
@@ -735,7 +735,7 @@ extension ChatControllerImpl {
                 ])])
                 
                 if let contextController = contextController {
-                    contextController.dismiss(completion: { [weak self] in
+                    contextController.dismiss(completion: { [weak self = self] in
                         self?.present(actionSheet, in: .window(.root))
                     })
                 } else {
@@ -790,7 +790,7 @@ extension ChatControllerImpl {
             TelegramEngine.EngineData.Item.Peer.Peer(id: chatPeerId),
             TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] chatPeer, authorPeer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] chatPeer, authorPeer in
             guard let self, let chatPeer, let authorPeer else {
                 return
             }
@@ -809,7 +809,7 @@ extension ChatControllerImpl {
                     participant: participant,
                     peer: authorPeer
                 )],
-                mode: .monoforum(completion: { [weak self] result in
+                mode: .monoforum(completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }

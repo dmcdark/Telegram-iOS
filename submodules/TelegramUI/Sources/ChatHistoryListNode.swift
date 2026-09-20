@@ -950,7 +950,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
 
         self.clipsToBounds = false
 
-        self.listView.getCustomItemDeleteAnimationDuration = { [weak self] itemNode in
+        self.listView.getCustomItemDeleteAnimationDuration = { [weak self = self] itemNode in
             guard let self else { return nil }
             if !self.currentAppliedDeleteAnimationCorrelationIds.isEmpty {
                 if let itemNode = itemNode as? ChatMessageItemView, let item = itemNode.item {
@@ -966,7 +966,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
 
         self.beginAdMessageManagement(adMessages: adMessages)
         
-        self.listView.accessibilityPageScrolledString = { [weak self] row, count in
+        self.listView.accessibilityPageScrolledString = { [weak self = self] row, count in
             if let strongSelf = self {
                 return strongSelf.currentPresentationData.strings.VoiceOver_ScrollStatus(row, count).string
             } else {
@@ -1017,7 +1017,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }
         
-        self.unseenReactionsProcessingManager.process = { [weak self] messageIds in
+        self.unseenReactionsProcessingManager.process = { [weak self = self] messageIds in
             guard let strongSelf = self else {
                 return
             }
@@ -1028,7 +1028,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }
         
-        self.extendedMediaProcessingManager.process = { [weak self] messageIds in
+        self.extendedMediaProcessingManager.process = { [weak self = self] messageIds in
             guard let strongSelf = self else {
                 return
             }
@@ -1065,7 +1065,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
         }
         self.chatHistoryLocationPromise.set(self.chatHistoryLocationValue!)
         
-        self.listView.generalScrollDirectionUpdated = { [weak self] direction in
+        self.listView.generalScrollDirectionUpdated = { [weak self = self] direction in
             guard let strongSelf = self else {
                 return
             }
@@ -1080,13 +1080,13 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }
         
-        self.listView.displayedItemRangeChanged = { [weak self] displayedRange, opaqueTransactionState in
+        self.listView.displayedItemRangeChanged = { [weak self = self] displayedRange, opaqueTransactionState in
             if let strongSelf = self, let transactionState = opaqueTransactionState as? ChatHistoryTransactionOpaqueState {
                 strongSelf.processDisplayedItemRangeChanged(displayedRange: displayedRange, transactionState: transactionState)
             }
         }
         
-        self.refreshDisplayedItemRangeTimer = SwiftSignalKit.Timer(timeout: 10.0, repeat: true, completion: { [weak self] in
+        self.refreshDisplayedItemRangeTimer = SwiftSignalKit.Timer(timeout: 10.0, repeat: true, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1096,7 +1096,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
         
         self.beginPresentationDataManagement(updated: updatedPresentationData.signal)
         
-        self.listView.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listView.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self {
                 strongSelf.contentPositionChanged(offset)
                 
@@ -1209,7 +1209,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }).startStrict()
         
-        self.beganInteractiveDragging = { [weak self] _ in
+        self.beganInteractiveDragging = { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1219,7 +1219,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             self.beganDragging?()
         }
 
-        self.endedInteractiveDragging = { [weak self] _ in
+        self.endedInteractiveDragging = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1252,7 +1252,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }
         
-        self.listView.didEndScrolling = { [weak self] _ in
+        self.listView.didEndScrolling = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1261,7 +1261,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             //strongSelf.updateHistoryScrollingArea(transition: .immediate)
         }
 
-        /*self.updateScrollingIndicator = { [weak self] scrollingState, transition in
+        /*self.updateScrollingIndicator = { [weak self = self] scrollingState, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -1270,7 +1270,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
         }*/
         
         let selectionRecognizer = ChatHistoryListSelectionRecognizer(target: self, action: #selector(self.selectionPanGesture(_:)))
-        selectionRecognizer.shouldBegin = { [weak self] in
+        selectionRecognizer.shouldBegin = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -1330,7 +1330,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
     
     private func beginAdMessageManagement(adMessages: Signal<(interPostInterval: Int32?, messages: [Message], startDelay: Int32?, betweenDelay: Int32?), NoError>) {
         self.adMessagesDisposable = (adMessages
-        |> deliverOnMainQueue).startStrict(next: { [weak self] interPostInterval, messages, _, _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] interPostInterval, messages, _, _ in
             guard let self else {
                 return
             }
@@ -1935,7 +1935,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             chatThemes |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_chatThemes"),
             deviceContactsNumbers |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_deviceContactsNumbers"),
             contentSettings |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_contentSettings")
-        ) |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_firstChatHistoryTransition")).startStrict(next: { [weak self] update, chatPresentationData, selectedMessages, updatingMedia, networkType, preferredStoryHighQuality, animatedEmojiStickers, additionalAnimatedEmojiStickers, customChannelDiscussionReadState, customThreadOutgoingReadState, availableReactions, availableMessageEffects, savedMessageTags, defaultReaction, accountPeer, accountCountry, suggestAudioTranscription, promises, topicAuthorId, translationState, maxReadStoryId, recommendedChannels, audioTranscriptionTrial, chatThemes, deviceContactsNumbers, contentSettings in
+        ) |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_firstChatHistoryTransition")).startStrict(next: { [weak self = self] update, chatPresentationData, selectedMessages, updatingMedia, networkType, preferredStoryHighQuality, animatedEmojiStickers, additionalAnimatedEmojiStickers, customChannelDiscussionReadState, customThreadOutgoingReadState, availableReactions, availableMessageEffects, savedMessageTags, defaultReaction, accountPeer, accountCountry, suggestAudioTranscription, promises, topicAuthorId, translationState, maxReadStoryId, recommendedChannels, audioTranscriptionTrial, chatThemes, deviceContactsNumbers, contentSettings in
             let (historyAppearsCleared, pendingUnpinnedAllMessages, pendingRemovedMessages, currentlyPlayingMessageIdAndType, scrollToMessageId, chatHasBots, allAdMessages) = promises
             
             if measure_isFirstTime {
@@ -2519,7 +2519,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
         let previousMaxIncomingMessageIndexByNamespace = Atomic<[MessageId.Namespace: MessageIndex]>(value: [:])
         let readHistory = combineLatest(self.maxVisibleIncomingMessageIndex.get(), self.canReadHistory.get())
         
-        self.readHistoryDisposable.set((readHistory |> deliverOnMainQueue).startStrict(next: { [weak self] messageIndex, canRead in
+        self.readHistoryDisposable.set((readHistory |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageIndex, canRead in
             guard let strongSelf = self else {
                 return
             }
@@ -2583,7 +2583,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             updated |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_beginPresentationDataManagement_updated"),
             appConfiguration |> debug_measureTimeToFirstEvent(label: "chatHistoryNode_beginPresentationDataManagement_appConfiguration")
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData, appConfiguration in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData, appConfiguration in
             if let strongSelf = self {
                 let previousTheme = strongSelf.currentPresentationData.theme
                 let previousStrings = strongSelf.currentPresentationData.strings
@@ -2641,7 +2641,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
     
     private func loadNextGenericReactionEffect(context: AccountContext) {
         self.genericReactionEffectDisposable?.dispose()
-        self.genericReactionEffectDisposable = (ReactionContextNode.randomGenericReactionEffect(context: context) |> deliverOnMainQueue).startStrict(next: { [weak self] path in
+        self.genericReactionEffectDisposable = (ReactionContextNode.randomGenericReactionEffect(context: context) |> deliverOnMainQueue).startStrict(next: { [weak self = self] path in
             guard let strongSelf = self else {
                 return
             }
@@ -3533,14 +3533,14 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             messageReadMetricsTracker = MessageReadMetricsTracker()
             self.messageReadMetricsTracker = messageReadMetricsTracker
             
-            self.messageReadMetricsTrackerDisposable = (messageReadMetricsTracker.completedMetrics |> deliverOnMainQueue).startStrict(next: { [weak self] metric in
+            self.messageReadMetricsTrackerDisposable = (messageReadMetricsTracker.completedMetrics |> deliverOnMainQueue).startStrict(next: { [weak self = self] metric in
                 guard let self else {
                     return
                 }
                 self.messageReadMetricsTrackerPendingMetrics.append(metric)
                 
                 if self.messageReadMetricsTrackerPendingMetricTimer == nil {
-                    self.messageReadMetricsTrackerPendingMetricTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { [weak self] timer in
+                    self.messageReadMetricsTrackerPendingMetricTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { [weak self = self] timer in
                         guard let self else {
                             return
                         }
@@ -3986,7 +3986,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
                         dustEffectLayer.transform = CATransform3DMakeRotation(CGFloat(Double.pi), 0.0, 0.0, 1.0)
                     }
                     self.layer.addSublayer(dustEffectLayer)
-                    dustEffectLayer.becameEmpty = { [weak self] in
+                    dustEffectLayer.becameEmpty = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -4023,7 +4023,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             previousCloneView = self.view.snapshotView(afterScreenUpdates: false)
         }
 
-        let completion: (Bool, ListViewDisplayedItemRange) -> Void = { [weak self] wasTransformed, visibleRange in
+        let completion: (Bool, ListViewDisplayedItemRange) -> Void = { [weak self = self] wasTransformed, visibleRange in
             if let strongSelf = self {
                 strongSelf.currentAppliedDeleteAnimationCorrelationIds.removeAll()
                 
@@ -4601,7 +4601,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
                     playHaptic: true,
                     isLarge: updatedReactionIsLarge,
                     targetView: targetView,
-                    addStandaloneReactionAnimation: { [weak self] standaloneReactionAnimation in
+                    addStandaloneReactionAnimation: { [weak self = self] standaloneReactionAnimation in
                         guard let strongSelf = self, let chatDisplayNode = strongSelf.controllerInteraction.chatControllerNode() as? ChatControllerNode else {
                             return
                         }
@@ -4644,7 +4644,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             }
         }
         transition.updateFrame(node: self.listView, frame: CGRect(origin: CGPoint(), size: updateSizeAndInsets.size))
-        self.listView.transaction(deleteIndices: [], insertIndicesAndItems: [], updateIndicesAndItems: [], options: [.Synchronous, .LowLatency], scrollToItem: scrollToItem, additionalScrollDistance: scrollToTop ? 0.0 : additionalScrollDistance, updateSizeAndInsets: updateSizeAndInsets, stationaryItemRange: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+        self.listView.transaction(deleteIndices: [], insertIndicesAndItems: [], updateIndicesAndItems: [], options: [.Synchronous, .LowLatency], scrollToItem: scrollToItem, additionalScrollDistance: scrollToTop ? 0.0 : additionalScrollDistance, updateSizeAndInsets: updateSizeAndInsets, stationaryItemRange: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -4699,7 +4699,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
                         let visibleMessageRange = self.visibleMessageRange
                         self.interactiveReadReactionsDisposable = context.engine.messages.installInteractiveReadReactionsAction(peerId: peerId, getVisibleRange: {
                             return visibleMessageRange.with { $0 }
-                        }, didReadReactionsInMessages: { [weak self] idsAndReactions in
+                        }, didReadReactionsInMessages: { [weak self = self] idsAndReactions in
                             Queue.mainQueue().after(0.2, {
                                 guard let strongSelf = self else {
                                     return
@@ -5091,7 +5091,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
                 } else {
                     if let _ = self.selectionScrollActivationTimer {
                     } else {
-                        let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self] in
+                        let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self = self] in
                             self?.setupSelectionScrolling()
                         }, queue: .mainQueue())
                         timer.start()
@@ -5108,7 +5108,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
     
     private var selectionScrollSkipUpdate = false
     private func setupSelectionScrolling() {
-        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             self?.selectionScrollActivationTimer = nil
             if let strongSelf = self, let delta = strongSelf.selectionScrollDelta {
                 let distance: CGFloat = 15.0 * min(1.0, 0.15 + abs(delta * delta))

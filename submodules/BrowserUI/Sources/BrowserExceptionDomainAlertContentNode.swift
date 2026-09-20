@@ -100,7 +100,7 @@ private final class BrowserExceptionDomainAlertContentNode: AlertContentNode {
             self.addSubnode(separatorNode)
         }
         
-        self.allowWriteCheckNode.valueChanged = { [weak self] value in
+        self.allowWriteCheckNode.valueChanged = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.allowWriteAccess = !strongSelf.allowWriteAccess
             }

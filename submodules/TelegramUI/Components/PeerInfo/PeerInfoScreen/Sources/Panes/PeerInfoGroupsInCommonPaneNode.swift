@@ -138,7 +138,7 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
         self.view.addSubview(self.listMaskView)
         
         self.disposable = (groupsInCommonContext.state
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
             guard let strongSelf = self else {
                 return
             }
@@ -148,7 +148,7 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
         })
         
-        self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self, let state = strongSelf.state, case .ready(true) = state.dataState else {
                 return
             }
@@ -157,7 +157,7 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
         }
 
-        self.listNode.visibleContentOffsetChanged = { [weak self] _, transition in
+        self.listNode.visibleContentOffsetChanged = { [weak self = self] _, transition in
             guard let self else {
                 return
             }
@@ -165,7 +165,7 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 self.updateListBackground(transition: transition)
             }
         }
-        self.listNode.displayedItemRangeChanged = { [weak self] _, _ in
+        self.listNode.displayedItemRangeChanged = { [weak self = self] _, _ in
             guard let self else {
                 return
             }
@@ -231,9 +231,9 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 entries.append(GroupsInCommonListEntry(index: entries.count, peer: EnginePeer(peer)))
             }
         }
-        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, openPeer: { [weak self] peer in
+        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, openPeer: { [weak self = self] peer in
             self?.chatControllerInteraction.openPeer(peer, .default, nil, .default)
-        }, openPeerContextAction: { [weak self] peer, node, gesture in
+        }, openPeerContextAction: { [weak self = self] peer, node, gesture in
             self?.openPeerContextAction(false, peer, node, gesture)
         })
         self.currentEntries = entries
@@ -251,7 +251,7 @@ final class PeerInfoGroupsInCommonPaneNode: ASDisplayNode, PeerInfoPaneNode {
         var options = ListViewDeleteAndInsertOptions()
         options.insert(.Synchronous)
         
-        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

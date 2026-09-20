@@ -77,7 +77,7 @@ public final class InstantPageScrollableNode: ASScrollNode, InstantPageNode {
         }
         self.addSubnode(self.contentNode)
         
-        self.view.interactiveTransitionGestureRecognizerTest = { [weak self] point -> Bool in
+        self.view.interactiveTransitionGestureRecognizerTest = { [weak self = self] point -> Bool in
             if let strongSelf = self {
                 if strongSelf.view.contentOffset.x < 1.0 {
                     return false

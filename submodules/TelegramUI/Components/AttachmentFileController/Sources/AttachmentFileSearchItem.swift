@@ -52,7 +52,7 @@ final class AttachmentFileSearchItem: ItemListControllerSearch {
             } else {
                 return .single(value)
             }
-        }).startStrict(next: { [weak self] value in
+        }).startStrict(next: { [weak self = self] value in
             self?.updateActivity?(value)
         }))
     }
@@ -88,7 +88,7 @@ final class AttachmentFileSearchItem: ItemListControllerSearch {
     }
     
     func node(current: ItemListControllerSearchNode?, titleContentNode: (NavigationBarContentNode & ItemListControllerSearchNavigationContentNode)?) -> ItemListControllerSearchNode {
-        return AttachmentFileSearchItemNode(context: self.context, mode: self.mode, presentationData: self.presentationData, focus: self.focus, send: self.send, cancel: self.cancel, updateActivity: { [weak self] value in
+        return AttachmentFileSearchItemNode(context: self.context, mode: self.mode, presentationData: self.presentationData, focus: self.focus, send: self.send, cancel: self.cancel, updateActivity: { [weak self = self] value in
             self?.activity.set(value)
         }, dismissInput: self.dismissInput, didPreviewAudio: self.didPreviewAudio)
     }
@@ -124,7 +124,7 @@ private final class AttachmentFileSearchItemNode: ItemListControllerSearchNode {
         
         self.addSubnode(self.containerNode)
         
-        self.containerNode.cancel = { [weak self] in
+        self.containerNode.cancel = { [weak self = self] in
             dismissInput()
             cancel()
             self?.deactivateInput()
@@ -165,13 +165,13 @@ private final class AttachmentFileSearchItemNode: ItemListControllerSearchNode {
                         metrics: layout.metrics,
                         safeInsets: layout.safeInsets,
                         placeholder: self.presentationData.strings.Attachment_FilesSearchPlaceholder,
-                        updated: { [weak self] query in
+                        updated: { [weak self = self] query in
                             guard let self else {
                                 return
                             }
                             self.queryUpdated(query)
                         },
-                        cancel: { [weak self] in
+                        cancel: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -479,11 +479,11 @@ public final class AttachmentFileSearchContainerNode: SearchDisplayControllerCon
         
         let interaction = AttachmentFileSearchContainerInteraction(
             context: context,
-            send: { [weak self] message in
+            send: { [weak self = self] message in
                 send(message)
                 self?.listNode.clearHighlightAnimated(true)
             },
-            toggleMediaPlayback: { [weak self] message in
+            toggleMediaPlayback: { [weak self = self] message in
                 didPreviewAudio()
                 
                 let playlistLocation: PeerMessagesPlaylistLocation = .custom(messages: .single(([message], 0, false)), canReorder: false, at: message.id, loadMore: nil, hidePanel: true)
@@ -491,7 +491,7 @@ public final class AttachmentFileSearchContainerNode: SearchDisplayControllerCon
                 
                 self?.view.window?.endEditing(true)
             },
-            expandSection: { [weak self] section in
+            expandSection: { [weak self = self] section in
             self?.expandedSections.insert(section)
         })
         
@@ -703,7 +703,7 @@ public final class AttachmentFileSearchContainerNode: SearchDisplayControllerCon
         let previousHadSavedItems = Atomic<Bool>(value: false)
         let previousHadGlobalItems = Atomic<Bool>(value: false)
         self.searchDisposable.set((combineLatest(searchQuery, foundItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).startStrict(next: { [weak self] query, entries, presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] query, entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousSearchItems.swap(entries)
                 updateActivity(false)
@@ -739,11 +739,11 @@ public final class AttachmentFileSearchContainerNode: SearchDisplayControllerCon
             }
         }))
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
         
-        self.listNode.itemNodeHitTest = { [weak self] point in
+        self.listNode.itemNodeHitTest = { [weak self = self] point in
             if let strongSelf = self {
                 return point.x > strongSelf.leftOverlayNode.frame.maxX && point.x < strongSelf.rightOverlayNode.frame.minX
             } else {
@@ -800,7 +800,7 @@ public final class AttachmentFileSearchContainerNode: SearchDisplayControllerCon
             }
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1035,12 +1035,12 @@ private final class AttachmentFileSearchNavigationContentNode: NavigationBarCont
         self.backgroundContainer.contentView.addSubview(self.close.background)
         self.close.background.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onCloseTapGesture(_:))))
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.queryUpdated?(query)
         }
         
@@ -1050,7 +1050,7 @@ private final class AttachmentFileSearchNavigationContentNode: NavigationBarCont
             }
         }
         
-        updateActivity({ [weak self] value in
+        updateActivity({ [weak self = self] value in
             self?.activity = value
         })
         

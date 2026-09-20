@@ -150,7 +150,7 @@ final class StarsTransactionItemNode: ListViewItemNode, ItemListItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                         
@@ -386,7 +386,7 @@ final class StarsTransactionItemNode: ListViewItemNode, ItemListItemNode {
                             leftIcon: .custom(AnyComponentWithIdentity(id: "avatar", component: AnyComponent(StarsAvatarComponent(context: item.context, theme: item.presentationData.theme, peer: .transactionPeer(item.transaction.peer), photo: nil, media: [], gift: nil, backgroundColor: item.presentationData.theme.list.itemBlocksBackgroundColor))), false),
                             icon: nil,
                             accessory: .custom(ListActionItemComponent.CustomAccessory(component: AnyComponentWithIdentity(id: "label", component: AnyComponent(StarsLabelComponent(text: itemLabel, iconName: itemIconName, iconColor: itemIconColor))), insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16.0))),
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self, let item = self.item else {
                                     return
                                 }
@@ -435,7 +435,7 @@ final class StarsTransactionItemNode: ListViewItemNode, ItemListItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

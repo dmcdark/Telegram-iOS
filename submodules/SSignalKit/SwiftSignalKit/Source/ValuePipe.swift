@@ -7,7 +7,7 @@ public final class ValuePipe<T> {
     }
     
     public func signal() -> Signal<T, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 let index = strongSelf.subscribers.with { value -> Bag<T>.Index in
                     return value.add { next in

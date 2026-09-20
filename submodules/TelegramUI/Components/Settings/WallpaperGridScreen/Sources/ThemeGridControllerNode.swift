@@ -323,7 +323,7 @@ final class ThemeGridControllerNode: ASDisplayNode {
         self.maskNode.image = PresentationResourcesItemList.cornersImage(presentationData.theme, top: true, bottom: true, glass: true)
         
         let previousEntries = Atomic<[ThemeGridControllerEntry]?>(value: nil)
-        let interaction = ThemeGridControllerInteraction(openWallpaper: { [weak self] wallpaper in
+        let interaction = ThemeGridControllerInteraction(openWallpaper: { [weak self = self] wallpaper in
             if let strongSelf = self, !strongSelf.currentState.editing {
                 let entries = previousEntries.with { $0 }
                 if let entries = entries, !entries.isEmpty {
@@ -344,7 +344,7 @@ final class ThemeGridControllerNode: ASDisplayNode {
                     presentPreviewController(.list(wallpapers: wallpapers, central: wallpaper, type: .wallpapers(options)))
                 }
             }
-        }, toggleWallpaperSelection: { [weak self] id, value in
+        }, toggleWallpaperSelection: { [weak self = self] id, value in
             if let strongSelf = self {
                 strongSelf.updateState { state in
                     var state = state
@@ -356,12 +356,12 @@ final class ThemeGridControllerNode: ASDisplayNode {
                     return state
                 }
             }
-        }, deleteSelectedWallpapers: { [weak self] in
+        }, deleteSelectedWallpapers: { [weak self = self] in
             let entries = previousEntries.with { $0 }
             if let strongSelf = self, let entries = entries {
                 let wallpapers = selectedWallpapers(entries: entries, state: strongSelf.currentState)
 
-                deleteWallpapers(wallpapers, { [weak self] in
+                deleteWallpapers(wallpapers, { [weak self = self] in
                     if let strongSelf = self {
                         var updatedDeletedIds = deletedWallpaperIdsValue.with { $0 }
                         
@@ -390,12 +390,12 @@ final class ThemeGridControllerNode: ASDisplayNode {
                     }
                 })
             }
-        }, shareSelectedWallpapers: { [weak self] in
+        }, shareSelectedWallpapers: { [weak self = self] in
             let entries = previousEntries.with { $0 }
             if let strongSelf = self, let entries = entries {
                 shareWallpapers(selectedWallpapers(entries: entries, state: strongSelf.currentState))
             }
-        }, removeWallpaper: { [weak self] in
+        }, removeWallpaper: { [weak self = self] in
             if let self {
                 self.requestWallpaperRemoval?()
             }
@@ -518,13 +518,13 @@ final class ThemeGridControllerNode: ASDisplayNode {
             let previous = previousEntries.swap(entries)
             return (preparedThemeGridEntryTransition(context: context, from: previous ?? [], to: entries, interaction: interaction), previous == nil)
         }
-        self.disposable = (transition |> deliverOnMainQueue).start(next: { [weak self] (transition, _) in
+        self.disposable = (transition |> deliverOnMainQueue).start(next: { [weak self = self] (transition, _) in
             if let strongSelf = self {
                 strongSelf.enqueueTransition(transition)
             }
         })
         
-        removeImpl = { [weak self] in
+        removeImpl = { [weak self = self] in
             self?.controllerInteraction?.removeWallpaper()
         }
 
@@ -543,7 +543,7 @@ final class ThemeGridControllerNode: ASDisplayNode {
         tapRecognizer.tapActionAtPoint = { _ in
             return .waitForSingleTap
         }
-        tapRecognizer.highlight = { [weak self] point in
+        tapRecognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 var highlightedNode: ListViewItemNode?
                 if let point = point {
@@ -570,7 +570,7 @@ final class ThemeGridControllerNode: ASDisplayNode {
         }
         self.gridNode.view.addGestureRecognizer(tapRecognizer)
         
-        self.gridNode.presentationLayoutUpdated = { [weak self] gridLayout, transition in
+        self.gridNode.presentationLayoutUpdated = { [weak self = self] gridLayout, transition in
             if let strongSelf = self, let (layout, _) = strongSelf.validLayout {
                 transition.updateFrame(node: strongSelf.bottomBackgroundNode, frame: CGRect(origin: CGPoint(x: 0.0, y: gridLayout.contentSize.height), size: CGSize(width: layout.size.width, height: 500.0)))
                 transition.updateFrame(node: strongSelf.bottomSeparatorNode, frame: CGRect(origin: CGPoint(x: 0.0, y: gridLayout.contentSize.height), size: CGSize(width: layout.size.width, height: UIScreenPixel)))
@@ -677,13 +677,13 @@ final class ThemeGridControllerNode: ASDisplayNode {
         self.bottomBackgroundNode.backgroundColor = presentationData.theme.list.blocksBackgroundColor
         self.bottomSeparatorNode.backgroundColor = presentationData.theme.list.itemBlocksSeparatorColor
         
-        self.colorItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_SetColor, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self] in
+        self.colorItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_SetColor, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self = self] in
             self?.presentColors()
         })
         
         switch self.mode {
         case .generic:
-            self.galleryItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_SetCustomBackground, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self] in
+            self.galleryItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_SetCustomBackground, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self = self] in
                 self?.presentGallery()
             })
         case .peer:
@@ -691,16 +691,16 @@ final class ThemeGridControllerNode: ASDisplayNode {
             if case let .peer(_, _, _, _, customLevel) = mode {
                 requiredCustomWallpaperLevel = customLevel
             }
-            self.galleryItem = ItemListPeerActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, icon: generateTintedImage(image: UIImage(bundleImageName: "Chat/Attach Menu/Image"), color: presentationData.theme.list.itemAccentColor), title: presentationData.strings.Wallpaper_SetCustomBackground, additionalBadgeIcon: requiredCustomWallpaperLevel.flatMap { generateDisclosureActionBoostLevelBadgeImage(text: presentationData.strings.Channel_Appearance_BoostLevel("\($0)").string) }, alwaysPlain: false, hasSeparator: true, sectionId: 0, height: .generic, color: .accent, editing: false, action: { [weak self] in
+            self.galleryItem = ItemListPeerActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, icon: generateTintedImage(image: UIImage(bundleImageName: "Chat/Attach Menu/Image"), color: presentationData.theme.list.itemAccentColor), title: presentationData.strings.Wallpaper_SetCustomBackground, additionalBadgeIcon: requiredCustomWallpaperLevel.flatMap { generateDisclosureActionBoostLevelBadgeImage(text: presentationData.strings.Channel_Appearance_BoostLevel("\($0)").string) }, alwaysPlain: false, hasSeparator: true, sectionId: 0, height: .generic, color: .accent, editing: false, action: { [weak self = self] in
                 self?.presentGallery()
             })
-            self.removeItem = ItemListPeerActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, icon: generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Accessory Panels/MessageSelectionTrash"), color: presentationData.theme.list.itemDestructiveColor), title: presentationData.strings.Wallpaper_ChannelRemoveBackground, alwaysPlain: false, hasSeparator: true, sectionId: 0, height: .generic, color: .destructive, editing: false, action: { [weak self] in
+            self.removeItem = ItemListPeerActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, icon: generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Accessory Panels/MessageSelectionTrash"), color: presentationData.theme.list.itemDestructiveColor), title: presentationData.strings.Wallpaper_ChannelRemoveBackground, alwaysPlain: false, hasSeparator: true, sectionId: 0, height: .generic, color: .destructive, editing: false, action: { [weak self = self] in
                 self?.controllerInteraction?.removeWallpaper()
             })
         }
         
         self.descriptionItem = ItemListTextItem(presentationData: ItemListPresentationData(presentationData), text: .plain(presentationData.strings.Wallpaper_SetCustomBackgroundInfo), sectionId: 0)
-        self.resetItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_ResetWallpapers, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self] in
+        self.resetItem = ItemListActionItem(presentationData: ItemListPresentationData(presentationData), systemStyle: .glass, title: presentationData.strings.Wallpaper_ResetWallpapers, kind: .generic, alignment: .natural, sectionId: 0, style: .blocks, action: { [weak self = self] in
             self?.resetWallpapers()
         })
         self.resetDescriptionItem = ItemListTextItem(presentationData: ItemListPresentationData(presentationData), text: .plain(presentationData.strings.Wallpaper_ResetWallpapersInfo), sectionId: 0)
@@ -745,7 +745,7 @@ final class ThemeGridControllerNode: ASDisplayNode {
     private func dequeueTransitions() {
         while !self.queuedTransitions.isEmpty {
             let transition = self.queuedTransitions.removeFirst()
-            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: .immediate, stationaryItems: transition.stationaryItems, updateFirstIndexInSectionOffset: transition.updateFirstIndexInSectionOffset, synchronousLoads: transition.synchronousLoad), completion: { [weak self] _ in
+            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: .immediate, stationaryItems: transition.stationaryItems, updateFirstIndexInSectionOffset: transition.updateFirstIndexInSectionOffset, synchronousLoads: transition.synchronousLoad), completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.ready.set(true)
                 }

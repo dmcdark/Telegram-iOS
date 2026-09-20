@@ -538,7 +538,7 @@ public final class VideoRecorder {
             return nil
         }
         self.impl = impl
-        impl.completion = { [weak self] result, transitionImage, positionChangeTimestamps in
+        impl.completion = { [weak self = self] result, transitionImage, positionChangeTimestamps in
             if let self {
                 let duration = self.duration ?? 0.0
                 if result {

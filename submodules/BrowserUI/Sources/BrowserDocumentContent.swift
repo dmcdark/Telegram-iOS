@@ -96,7 +96,7 @@ final class BrowserDocumentContent: UIView, BrowserContent, WKNavigationDelegate
         }
         self.addSubview(self.webView)
         
-        self.webView.interactiveTransitionGestureRecognizerTest = { [weak self] point in
+        self.webView.interactiveTransitionGestureRecognizerTest = { [weak self = self] point in
             if let self {
                 if let result = self.webView.hitTest(point, with: nil), let scrollView = findScrollView(view: result), scrollView.isDescendant(of: self.webView) {
                     if scrollView.contentSize.width > scrollView.frame.width, scrollView.contentOffset.x > -scrollView.contentInset.left {
@@ -171,12 +171,12 @@ final class BrowserDocumentContent: UIView, BrowserContent, WKNavigationDelegate
             return
         }
         self.previousQuery = query
-        self.setupSearch { [weak self] in
+        self.setupSearch { [weak self = self] in
             if let query = query {
                 let js = "uiWebview_HighlightAllOccurencesOfString('\(query)')"
-                self?.webView.evaluateJavaScript(js, completionHandler: { [weak self] _, _ in
+                self?.webView.evaluateJavaScript(js, completionHandler: { [weak self = self] _, _ in
                     let js = "uiWebview_SearchResultCount"
-                    self?.webView.evaluateJavaScript(js, completionHandler: { [weak self] result, _ in
+                    self?.webView.evaluateJavaScript(js, completionHandler: { [weak self = self] result, _ in
                         if let result = result as? NSNumber {
                             self?.searchResultsCount = result.intValue
                             completion?(result.intValue)
@@ -408,7 +408,7 @@ final class BrowserDocumentContent: UIView, BrowserContent, WKNavigationDelegate
     
     private func share(url: String) {
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self] in
+        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self = self] in
             self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
         }))
         self.present(shareController, nil)

@@ -654,7 +654,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
         
         super.init(initParams: initParams, presentationData: presentationData)
         
-        self._itemParams = SecureIdPlaintextFormParams(openCountrySelection: { [weak self] in
+        self._itemParams = SecureIdPlaintextFormParams(openCountrySelection: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -667,7 +667,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
             }
             strongSelf.view.endEditing(true)
             strongSelf.present(controller, ViewControllerPresentationArguments(presentationAnimation: .modalSheet))
-        }, updateTextField: { [weak self] type, value in
+        }, updateTextField: { [weak self = self] type, value in
             guard let strongSelf = self else {
                 return
             }
@@ -676,11 +676,11 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
             }
             innerState.data.updateTextField(type: type, value: value)
             strongSelf.updateInnerState(transition: .immediate, with: innerState)
-        }, usePhone: { [weak self] value in
+        }, usePhone: { [weak self = self] value in
             self?.savePhone(value)
-        }, useEmailAddress: { [weak self] value in
+        }, useEmailAddress: { [weak self = self] value in
             self?.saveEmailAddress(value)
-        }, save: { [weak self] in
+        }, save: { [weak self = self] in
             self?.save()
         })
     }
@@ -767,7 +767,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
                         self.updateInnerState(transition: .immediate, with: innerState)
                         
                         self.actionDisposable.set((secureIdCommitEmailVerification(postbox: self.context.account.postbox, network: self.context.account.network, context: self.secureIdContext, payload: verify.payload, code: verify.code)
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             if let strongSelf = self {
                                 guard let innerState = strongSelf.innerState else {
                                     return
@@ -777,7 +777,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
                                 }
                                 strongSelf.completedWithValue?(result)
                             }
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             if let strongSelf = self {
                                 guard var innerState = strongSelf.innerState else {
                                     return
@@ -817,7 +817,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
         self.updateInnerState(transition: .immediate, with: innerState)
         
         self.actionDisposable.set((secureIdPreparePhoneVerification(network: self.context.account.network, value: SecureIdPhoneValue(phone: inputPhone))
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 guard var innerState = strongSelf.innerState else {
                     return
@@ -830,7 +830,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
                 strongSelf.updateInnerState(transition: .immediate, navigationTransition: .push, with: innerState)
                 strongSelf.activateMainInput()
             }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 guard var innerState = strongSelf.innerState else {
                     return
@@ -863,12 +863,12 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
         self.updateInnerState(transition: .immediate, with: innerState)
         
         self.actionDisposable.set((saveSecureIdValue(postbox: self.context.account.postbox, network: self.context.account.network, context: self.secureIdContext, value: .email(SecureIdEmailValue(email: value)), uploadedFiles: [:])
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.completedWithValue?(result)
-        }, error: { [weak self] _ in
+        }, error: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -887,7 +887,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
                 innerState.data = .email(.verify(EmailVerifyState(email: value, payload: result, code: "")))
                 strongSelf.updateInnerState(transition: .immediate, navigationTransition: .push, with: innerState)
                 strongSelf.activateMainInput()
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let strongSelf = self else {
                     return
                 }
@@ -927,7 +927,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
         self.updateInnerState(transition: .immediate, with: innerState)
         
         self.actionDisposable.set((secureIdCommitPhoneVerification(postbox: self.context.account.postbox, network: self.context.account.network, context: self.secureIdContext, payload: verify.payload, code: verify.code)
-    |> deliverOnMainQueue).start(next: { [weak self] result in
+    |> deliverOnMainQueue).start(next: { [weak self = self] result in
         if let strongSelf = self {
             guard let innerState = strongSelf.innerState else {
                 return
@@ -938,7 +938,7 @@ public final class SecureIdPlaintextFormControllerNode: FormControllerNode<Secur
             
             strongSelf.completedWithValue?(result)
         }
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let strongSelf = self {
                 guard var innerState = strongSelf.innerState else {
                     return

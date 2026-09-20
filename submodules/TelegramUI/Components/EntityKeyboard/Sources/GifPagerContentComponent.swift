@@ -285,7 +285,7 @@ public final class GifPagerContentComponent: Component {
                     self.updateDisplayPlaceholder(displayPlaceholder: true, duration: 0.0)
                 }
                 
-                self.started = { [weak self] in
+                self.started = { [weak self = self] in
                     let _ = self
                     //self?.updateDisplayPlaceholder(displayPlaceholder: false, duration: 0.2)
                 }
@@ -540,7 +540,7 @@ public final class GifPagerContentComponent: Component {
             self.isMultipleTouchEnabled = false
             
             self.useSublayerTransformForActivation = false
-            self.shouldBegin = { [weak self] point in
+            self.shouldBegin = { [weak self = self] point in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -551,7 +551,7 @@ public final class GifPagerContentComponent: Component {
                 }
                 return false
             }
-            self.activated = { [weak self] gesture, location in
+            self.activated = { [weak self = self] gesture, location in
                 guard let strongSelf = self, let component = strongSelf.component else {
                     gesture.cancel()
                     return
@@ -769,7 +769,7 @@ public final class GifPagerContentComponent: Component {
                             batchVideoContext: batchVideoContext,
                             groupId: "savedGif",
                             attemptSynchronousLoad: attemptSynchronousLoads,
-                            onUpdateDisplayPlaceholder: { [weak self] displayPlaceholder, duration in
+                            onUpdateDisplayPlaceholder: { [weak self = self] displayPlaceholder, duration in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -937,7 +937,7 @@ public final class GifPagerContentComponent: Component {
                 if let current = self.visibleSearchHeader {
                     visibleSearchHeader = current
                 } else {
-                    visibleSearchHeader = EmojiSearchHeaderView(activated: { [weak self] isTextInput in
+                    visibleSearchHeader = EmojiSearchHeaderView(activated: { [weak self = self] isTextInput in
                         guard let strongSelf = self else {
                             return
                         }
@@ -945,7 +945,7 @@ public final class GifPagerContentComponent: Component {
                             strongSelf.component?.inputInteraction.openSearch()
                         }
                     }, deactivated: { _ in
-                    }, updateQuery: { [weak self] query in
+                    }, updateQuery: { [weak self = self] query in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -965,7 +965,7 @@ public final class GifPagerContentComponent: Component {
                 
                 let searchHeaderFrame = CGRect(origin: CGPoint(x: itemLayout.searchInsets.left, y: itemLayout.searchInsets.top), size: CGSize(width: itemLayout.width - itemLayout.searchInsets.left - itemLayout.searchInsets.right, height: itemLayout.searchHeight))
                 visibleSearchHeader.update(context: component.context, theme: keyboardChildEnvironment.theme, forceNeedsVibrancy: false, strings: keyboardChildEnvironment.strings, text: displaySearchWithPlaceholder, useOpaqueTheme: false, isActive: false, size: searchHeaderFrame.size, canFocus: false, searchCategories: component.searchCategories, searchState: component.searchState, transition: transition)
-                transition.setFrame(view: visibleSearchHeader, frame: searchHeaderFrame, completion: { [weak self] completed in
+                transition.setFrame(view: visibleSearchHeader, frame: searchHeaderFrame, completion: { [weak self = self] completed in
                     let _ = self
                     let _ = completed
                     /*guard let strongSelf = self, completed, let visibleSearchHeader = strongSelf.visibleSearchHeader else {

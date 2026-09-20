@@ -252,7 +252,7 @@ public class ItemListInviteLinkItemNode: ListViewItemNode, ItemListItemNode {
         self.offsetContainerNode.addSubnode(self.subtitleNode)
         self.offsetContainerNode.addSubnode(self.pricingNode.textNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0, let invite = item.invite, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -260,7 +260,7 @@ public class ItemListInviteLinkItemNode: ListViewItemNode, ItemListItemNode {
             contextAction(invite, strongSelf.contextSourceNode, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0 else {
                 return
             }
@@ -527,7 +527,7 @@ public class ItemListInviteLinkItemNode: ListViewItemNode, ItemListItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors, firstWithHeader, last)
                                         
@@ -742,7 +742,7 @@ public class ItemListInviteLinkItemNode: ListViewItemNode, ItemListItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -826,7 +826,7 @@ private final class TimerNode: ASDisplayNode {
         
         self.addSubnode(self.contentNode)
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -954,7 +954,7 @@ private final class TimerNode: ASDisplayNode {
             self.animator = nil
         } else {
             if self.animator == nil {
-                let animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                let animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateValues()
                 })
                 self.animator = animator

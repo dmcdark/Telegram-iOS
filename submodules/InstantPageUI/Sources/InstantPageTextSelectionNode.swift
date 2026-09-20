@@ -117,7 +117,7 @@ private final class InstantPageTextSelectionGestureRecognizer: UIGestureRecogniz
                         self.f()
                     }
                 }
-                let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self] in
+                let longTapTimer = Timer(timeInterval: 0.3, target: TimerTarget({ [weak self = self] in
                     self?.longTapEvent()
                 }), selector: #selector(TimerTarget.event), userInfo: nil, repeats: false)
                 self.longTapTimer = longTapTimer
@@ -259,15 +259,15 @@ final class InstantPageTextSelectionNode: ASDisplayNode {
     override public func didLoad() {
         super.didLoad()
         
-        (self.view as? InstantPageTextSelectionNodeView)?.hitTestImpl = { [weak self] point, event in
+        (self.view as? InstantPageTextSelectionNodeView)?.hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
        
         let recognizer = InstantPageTextSelectionGestureRecognizer(target: nil, action: nil)
-        recognizer.knobAtPoint = { [weak self] point in
+        recognizer.knobAtPoint = { [weak self = self] point in
             return self?.knobAtPoint(point)
         }
-        recognizer.moveKnob = { [weak self] knob, point in
+        recognizer.moveKnob = { [weak self = self] knob, point in
             guard let strongSelf = self, let currentSelection = strongSelf.currentSelection, let currentItem = currentSelection.items.first else {
                 return
             }
@@ -295,13 +295,13 @@ final class InstantPageTextSelectionNode: ASDisplayNode {
                 }
             }
         }
-        recognizer.finishedMovingKnob = { [weak self] in
+        recognizer.finishedMovingKnob = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.displayMenu()
         }
-        recognizer.beginSelection = { [weak self] point in
+        recognizer.beginSelection = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -342,7 +342,7 @@ final class InstantPageTextSelectionNode: ASDisplayNode {
             strongSelf.displayMenu()
             strongSelf.updateIsActive(true)
         }
-        recognizer.clearSelection = { [weak self] in
+        recognizer.clearSelection = { [weak self = self] in
             self?.dismissSelection()
             self?.updateIsActive(false)
         }
@@ -490,19 +490,19 @@ final class InstantPageTextSelectionNode: ASDisplayNode {
         let text = "Text"
         
         var actions: [ContextMenuAction] = []
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
             self?.performAction(text, .copy)
             self?.dismissSelection()
         }))
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuLookUp, accessibilityLabel: self.strings.Conversation_ContextMenuLookUp), action: { [weak self = self] in
             self?.performAction(text, .lookup)
             self?.dismissSelection()
         }))
-        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self] in
+        actions.append(ContextMenuAction(content: .text(title: self.strings.Conversation_ContextMenuShare, accessibilityLabel: self.strings.Conversation_ContextMenuShare), action: { [weak self = self] in
             self?.performAction(text, .share)
             self?.dismissSelection()
         }))
-        self.present(makeContextMenuController(actions: actions, catchTapsOutside: false, hasHapticFeedback: false), ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+        self.present(makeContextMenuController(actions: actions, catchTapsOutside: false, hasHapticFeedback: false), ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
             guard let strongSelf = self, let rootNode = strongSelf.rootNode else {
                 return nil
             }

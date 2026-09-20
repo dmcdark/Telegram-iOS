@@ -172,13 +172,13 @@ public final class ChatNavigationBarTitleView: UIView, NavigationBarTitleView {
                     content: contentData.content,
                     activities: self.activities,
                     networkState: self.networkState,
-                    tapped: { [weak self] in
+                    tapped: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.tapAction?()
                     },
-                    longTapped: { [weak self] in
+                    longTapped: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -191,7 +191,7 @@ public final class ChatNavigationBarTitleView: UIView, NavigationBarTitleView {
             if let titleView = self.title.view {
                 if titleView.superview == nil {
                     self.title.parentState = self.parentTitleState
-                    self.parentTitleState._updated = { [weak self] transition, _ in
+                    self.parentTitleState._updated = { [weak self = self] transition, _ in
                         guard let self else {
                             return
                         }
@@ -327,7 +327,7 @@ public final class ChatTitleComponent: Component {
             
             super.init(frame: frame)
             
-            self.presenceManager = PeerPresenceStatusManager(update: { [weak self] in
+            self.presenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
                 guard let self else {
                     return
                 }

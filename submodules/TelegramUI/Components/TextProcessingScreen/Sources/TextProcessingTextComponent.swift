@@ -204,7 +204,7 @@ final class TextProcessingTextComponent: Component {
                 } else {
                     self.richContentView?.removeFromSuperview()
                     richContentView = TextProcessingRichContentView(context: component.context, instantPage: instantPage)
-                    richContentView.requestUpdate = { [weak self] in
+                    richContentView.requestUpdate = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -308,7 +308,7 @@ final class TextProcessingTextComponent: Component {
                     canHandleTapAtPoint: { _ in
                         return true
                     },
-                    requestToggleBlockCollapsed: { [weak self] blockId in
+                    requestToggleBlockCollapsed: { [weak self = self] blockId in
                         guard let self else {
                             return
                         }
@@ -321,7 +321,7 @@ final class TextProcessingTextComponent: Component {
                             self.state?.updated(transition: .spring(duration: 0.4))
                         }
                     },
-                    requestDisplayContentsUnderSpoilers: { [weak self] location in
+                    requestDisplayContentsUnderSpoilers: { [weak self = self] location in
                         guard let self else {
                             return
                         }

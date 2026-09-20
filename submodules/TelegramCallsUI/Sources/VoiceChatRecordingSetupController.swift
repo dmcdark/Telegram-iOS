@@ -37,7 +37,7 @@ final class VoiceChatRecordingSetupController: ViewController {
         self.blocksBackgroundWhenInOverlay = true
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.controllerNode.updatePresentationData(presentationData)
             }
@@ -56,13 +56,13 @@ final class VoiceChatRecordingSetupController: ViewController {
     
     override public func loadDisplayNode() {
         self.displayNode = VoiceChatRecordingSetupControllerNode(controller: self, context: self.context, peer: self.peer)
-        self.controllerNode.completion = { [weak self] videoOrientation in
+        self.controllerNode.completion = { [weak self = self] videoOrientation in
             self?.completion(videoOrientation)
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
     }
@@ -306,7 +306,7 @@ private class VoiceChatRecordingSetupControllerNode: ViewControllerTracingNode, 
         
         self.doneButton.addTarget(self, action: #selector(self.donePressed), forControlEvents: .touchUpInside)
         
-        self.cancelButton.pressed = { [weak self] in
+        self.cancelButton.pressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.cancel?()
             }
@@ -402,7 +402,7 @@ private class VoiceChatRecordingSetupControllerNode: ViewControllerTracingNode, 
         var dimCompleted = false
         var offsetCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && offsetCompleted {
                 strongSelf.dismiss?()
             }

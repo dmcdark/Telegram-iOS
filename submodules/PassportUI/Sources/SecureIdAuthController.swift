@@ -121,7 +121,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: PresentationResourcesRootController.navigationInfoIcon(self.presentationData.theme), style: .plain, target: self, action: #selector(self.infoPressed))
         
         self.challengeDisposable.set((context.engine.auth.twoStepAuthData()
-        |> deliverOnMainQueue).start(next: { [weak self] data in
+        |> deliverOnMainQueue).start(next: { [weak self = self] data in
             if let strongSelf = self {
                 let storedPassword = context.getStoredSecureIdPassword()
                 if data.currentPasswordDerivation != nil, let storedPassword = storedPassword {
@@ -145,7 +145,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                             }
                             return state
                         })
-                    }, error: { [weak self] error in
+                    }, error: { [weak self = self] error in
                         guard let strongSelf = self else {
                             return
                         }
@@ -173,7 +173,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
             }
         }))
         
-        let handleError: (Any, String?, EnginePeer.Id?) -> Void = { [weak self] error, callbackUrl, peerId in
+        let handleError: (Any, String?, EnginePeer.Id?) -> Void = { [weak self = self] error, callbackUrl, peerId in
             if let strongSelf = self {
                 var passError: String?
                 var appUpdateRequired = false
@@ -229,7 +229,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                         return .single(SecureIdEncryptedFormData(form: form, primaryLanguageByCountry: primaryLanguageByCountry, accountPeer: accountPeer, servicePeer: servicePeer))
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] formData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] formData in
                     if let strongSelf = self {
                         strongSelf.updateState { state in
                             var state = state
@@ -257,7 +257,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                         return .single(accountPeer)
                     }
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] values, configuration, accountPeer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] values, configuration, accountPeer in
                     if let strongSelf = self {
                         strongSelf.updateState { state in
                             let state = state
@@ -303,27 +303,27 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
     }
     
     override public func loadDisplayNode() {
-        let interaction = SecureIdAuthControllerInteraction(updateState: { [weak self] f in
+        let interaction = SecureIdAuthControllerInteraction(updateState: { [weak self = self] f in
             self?.updateState(f)
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, push: { [weak self] c in
+        }, push: { [weak self = self] c in
             self?.push(c)
-        }, checkPassword: { [weak self] password in
+        }, checkPassword: { [weak self = self] password in
             self?.checkPassword(password: password, inBackground: false, completion: {})
-        }, openPasswordHelp: { [weak self] in
+        }, openPasswordHelp: { [weak self = self] in
             self?.openPasswordHelp()
-        }, setupPassword: { [weak self] in
+        }, setupPassword: { [weak self = self] in
             self?.setupPassword()
-        }, grant: { [weak self] in
+        }, grant: { [weak self = self] in
             self?.grantAccess()
-        }, openUrl: { [weak self] url in
+        }, openUrl: { [weak self = self] url in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: false, presentationData: strongSelf.presentationData, navigationController: strongSelf.navigationController as? NavigationController, dismissInput: {
                     self?.view.endEditing(true)
                 })
             }
-        }, openMention: { [weak self] mention in
+        }, openMention: { [weak self = self] mention in
             guard let strongSelf = self else {
                 return
             }
@@ -343,7 +343,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                     (strongSelf.navigationController as? NavigationController)?.pushViewController(infoController)
                 }
             })
-        }, deleteAll: { [weak self] in
+        }, deleteAll: { [weak self = self] in
             guard let strongSelf = self, case let .list(list) = strongSelf.state, let values = list.values else {
                 return
             }
@@ -366,7 +366,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
             }))
         })
         
-        self.displayNode = SecureIdAuthControllerNode(context: self.context, presentationData: presentationData, requestLayout: { [weak self] transition in
+        self.displayNode = SecureIdAuthControllerNode(context: self.context, presentationData: presentationData, requestLayout: { [weak self = self] transition in
             self?.requestLayout(transition: transition)
         }, interaction: interaction)
         self.controllerNode.updateState(self.state, transition: .immediate)
@@ -380,7 +380,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
     
     override public func dismiss(completion: (() -> Void)? = nil) {
         if case .form = self.mode {
-            self.controllerNode.animateOut(completion: { [weak self] in
+            self.controllerNode.animateOut(completion: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
                 completion?()
             })
@@ -424,7 +424,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
     }
     
     private func openUrl(_ url: String) {
-        self.context.sharedContext.openExternalUrl(context: self.context, urlContext: .generic, url: url, forceExternal: true, presentationData: self.presentationData, navigationController: nil, dismissInput: { [weak self] in
+        self.context.sharedContext.openExternalUrl(context: self.context, urlContext: .generic, url: url, forceExternal: true, presentationData: self.presentationData, navigationController: nil, dismissInput: { [weak self = self] in
             self?.view.endEditing(true)
         })
     }
@@ -451,7 +451,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                 return state
             })
             self.challengeDisposable.set((self.context.engine.secureId.accessSecureId(password: password)
-            |> deliverOnMainQueue).start(next: { [weak self] context in
+            |> deliverOnMainQueue).start(next: { [weak self = self] context in
                 guard let strongSelf = self, let verificationState = strongSelf.state.verificationState, case .passwordChallenge(_, .checking, _) = verificationState else {
                     return
                 }
@@ -471,7 +471,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                     return state
                 })
                 completion()
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let strongSelf = self else {
                     return
                 }
@@ -517,7 +517,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
         }
         
         if hasRecoveryEmail {
-            self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_ForgottenPassword, text: self.presentationData.strings.Passport_PasswordReset, actions: [TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: presentationData.strings.Login_ResetAccountProtected_Reset, action: { [weak self] in
+            self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_ForgottenPassword, text: self.presentationData.strings.Passport_PasswordReset, actions: [TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: presentationData.strings.Login_ResetAccountProtected_Reset, action: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -562,7 +562,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
             case let .awaitingConfirmation(password, emailPattern, codeLength):
                 initialState = .confirmEmail(password: password, hasSecureValues: false, pattern: emailPattern, codeLength: codeLength)
         }
-        let controller = SetupTwoStepVerificationController(context: self.context, initialState: initialState, stateUpdated: { [weak self] update, shouldDismiss, controller in
+        let controller = SetupTwoStepVerificationController(context: self.context, initialState: initialState, stateUpdated: { [weak self = self] update, shouldDismiss, controller in
             guard let strongSelf = self else {
                 return
             }
@@ -615,7 +615,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
         }
         let controller = createPasswordController(account: self.account, context: .secureId, state: state, completion: { password, hint, hasRecoveryEmail in
             completionImpl?(password, hint, hasRecoveryEmail)
-        }, updatePasswordEmailConfirmation: { [weak self] pattern in
+        }, updatePasswordEmailConfirmation: { [weak self = self] pattern in
             guard let strongSelf = self else {
                 return
             }
@@ -652,7 +652,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
                     let values = parseRequestedFormFields(formData.requestedFields, values: formData.values, primaryLanguageByCountry: encryptedFormData.primaryLanguageByCountry).map({ $0.1 }).flatMap({ $0 })
                     
                     let _ = (grantSecureIdAccess(network: self.context.account.network, peerId: encryptedFormData.servicePeer.id, publicKey: publicKey, scope: scope, opaquePayload: opaquePayload, opaqueNonce: opaqueNonce, values: values, requestedFields: formData.requestedFields)
-                    |> deliverOnMainQueue).start(completed: { [weak self] in
+                    |> deliverOnMainQueue).start(completed: { [weak self = self] in
                         self?.dismiss()
                         if let callbackUrl = callbackUrl {
                             self?.openUrl(secureIdCallbackUrl(with: callbackUrl, peerId: peerId, result: .success, parameters: [:]))
@@ -665,7 +665,7 @@ public final class SecureIdAuthController: ViewController, StandalonePresentable
     }
     
     @objc private func infoPressed() {
-        self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_InfoTitle, text: self.presentationData.strings.Passport_InfoText.replacingOccurrences(of: "**", with: ""), actions: [TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Common_OK, action: {}), TextAlertAction(type: .genericAction, title: self.presentationData.strings.Passport_InfoLearnMore, action: { [weak self] in
+        self.present(textAlertController(context: self.context, title: self.presentationData.strings.Passport_InfoTitle, text: self.presentationData.strings.Passport_InfoText.replacingOccurrences(of: "**", with: ""), actions: [TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Common_OK, action: {}), TextAlertAction(type: .genericAction, title: self.presentationData.strings.Passport_InfoLearnMore, action: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

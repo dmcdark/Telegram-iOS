@@ -390,14 +390,14 @@ private final class MediaPickerPhotoToolbarComponent: Component {
             self.addSubview(self.infoLabel)
 
             self.doneButtonContextView.beginDelay = 0.4
-            self.doneButtonContextView.activated = { [weak self] gesture, _ in
+            self.doneButtonContextView.activated = { [weak self = self] gesture, _ in
                 guard let self else {
                     gesture.cancel()
                     return
                 }
                 self.doneLongPressed?(self.doneButtonContextView)
             }
-            self.doneButtonContextView.shouldBegin = { [weak self] _ in
+            self.doneButtonContextView.shouldBegin = { [weak self = self] _ in
                 guard let self, let component = self.component else {
                     return false
                 }
@@ -457,7 +457,7 @@ private final class MediaPickerPhotoToolbarComponent: Component {
                                 )
                             )
                         ),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             self?.cancelPressed?()
                         }
                     )
@@ -501,7 +501,7 @@ private final class MediaPickerPhotoToolbarComponent: Component {
                                 )
                             )
                         ),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             self?.donePressed?()
                         }
                     )
@@ -726,7 +726,7 @@ private final class MediaPickerPhotoToolbarComponent: Component {
                         PlainButtonComponent(
                             content: content,
                             minSize: CGSize(width: toolbarButtonSide, height: toolbarButtonSide),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 self?.tabPressed?(tab)
                             },
                             isEnabled: component.editButtonsEnabled && !isDisabled,
@@ -1033,7 +1033,7 @@ final class MediaPickerPhotoToolbarView: UIView, TGPhotoToolbarViewProtocol {
         self.updateRootFrame(transition: transition)
 
         if hideOnCompletion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self = self] in
                 self?.isHidden = true
             }
         }

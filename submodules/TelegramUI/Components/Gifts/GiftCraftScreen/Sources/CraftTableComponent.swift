@@ -114,7 +114,7 @@ final class CraftTableComponent: Component {
             }
             self.didSetupFinishAnimation = true
             
-            self.animationView.onFinishApproach = { [weak self] isUpsideDown, isClockwise in
+            self.animationView.onFinishApproach = { [weak self = self] isUpsideDown, isClockwise in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -166,7 +166,7 @@ final class CraftTableComponent: Component {
             
             self.animationView.isSuccess = true
             
-            self.animationView.onFinishApproach = { [weak self] isUpsideDown, isClockwise in
+            self.animationView.onFinishApproach = { [weak self = self] isUpsideDown, isClockwise in
                 guard let self else {
                     return
                 }

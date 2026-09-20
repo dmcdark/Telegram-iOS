@@ -176,12 +176,12 @@ final class EmojisChatInputContextPanelNode: ChatInputContextPanelNode {
         self.addSubnode(self.clippingNode)
         self.clippingNode.addSubnode(self.listView)
         
-        let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point in
+        let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point in
             guard let self else {
                 return nil
             }
             return self.peekContentAtPoint(point: point)
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             guard let strongSelf = self else {
                 return nil
             }
@@ -190,7 +190,7 @@ final class EmojisChatInputContextPanelNode: ChatInputContextPanelNode {
             let controller = makePeekController(presentationData: presentationData, content: content, sourceView: {
                 return (sourceView, sourceRect)
             })
-            /*controller.visibilityUpdated = { [weak self] visible in
+            /*controller.visibilityUpdated = { [weak self = self] visible in
                 self?.previewingStickersPromise.set(visible)
                 self?.requestDisableStickerAnimations?(visible)
                 self?.simulateUpdateLayout(isVisible: !visible)
@@ -198,7 +198,7 @@ final class EmojisChatInputContextPanelNode: ChatInputContextPanelNode {
             strongSelf.peekController = controller
             strongSelf.interfaceInteraction?.presentController(controller, nil)
             return controller
-        }, updateContent: { [weak self] content in
+        }, updateContent: { [weak self = self] content in
             guard let strongSelf = self else {
                 return
             }
@@ -425,7 +425,7 @@ final class EmojisChatInputContextPanelNode: ChatInputContextPanelNode {
                 return nil
             }
             
-            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self] in
+            let content = StickerPreviewPeekContent(context: context, theme: presentationData.theme, strings: presentationData.strings, item: .pack(file), isLocked: isLocked, menu: menuItems, openPremiumIntro: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -466,7 +466,7 @@ final class EmojisChatInputContextPanelNode: ChatInputContextPanelNode {
     
     private func prepareTransition(from: [EmojisChatInputContextPanelEntry]? , to: [EmojisChatInputContextPanelEntry]) {
         let firstTime = self.currentEntries == nil
-        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, emojiSelected: { [weak self] text, file in
+        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, emojiSelected: { [weak self = self] text, file in
             guard let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction else {
                 return
             }

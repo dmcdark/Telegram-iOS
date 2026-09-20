@@ -389,7 +389,7 @@ public final class AccountContextImpl: AccountContext {
         if !temp {
             let currentCountriesConfiguration = self.currentCountriesConfiguration
             self.countriesConfigurationDisposable = (self.engine.localization.getCountriesList(accountManager: sharedContext.accountManager, langCode: langCode)
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 let configuration = CountriesConfiguration(countries: value)
                 let _ = currentCountriesConfiguration.swap(configuration)
                 self?._countriesConfiguration.set(.single(configuration))
@@ -429,7 +429,7 @@ public final class AccountContextImpl: AccountContext {
             }
             return animatedEmojiStickers
         }
-        |> deliverOnMainQueue).start(next: { [weak self] stickers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] stickers in
             guard let strongSelf = self else {
                 return
             }
@@ -445,7 +445,7 @@ public final class AccountContextImpl: AccountContext {
                 return (isPremium, userLimits)
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] isPremium, userLimits in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] isPremium, userLimits in
             guard let self = self else {
                 return
             }
@@ -457,7 +457,7 @@ public final class AccountContextImpl: AccountContext {
             self.engine.accountData.observeAvailableColorOptions(scope: .replies),
             self.engine.accountData.observeAvailableColorOptions(scope: .profile)
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] availableReplyColors, availableProfileColors in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] availableReplyColors, availableProfileColors in
             guard let self = self else {
                 return
             }
@@ -473,7 +473,7 @@ public final class AccountContextImpl: AccountContext {
                 return self.engine.data.subscribe(TelegramEngine.EngineData.Item.Configuration.AudioTranscriptionTrial())
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] audioTranscriptionTrial in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] audioTranscriptionTrial in
             guard let self = self else {
                 return
             }
@@ -485,7 +485,7 @@ public final class AccountContextImpl: AccountContext {
             return AccountFreezeConfiguration.with(appConfiguration: appConfiguration).freezeUntilDate != nil
         }
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] isFrozen in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] isFrozen in
             guard let self = self else {
                 return
             }
@@ -493,7 +493,7 @@ public final class AccountContextImpl: AccountContext {
         })
         
         self.experimentalUISettingsDisposable = (sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.experimentalUISettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             guard let self else {
                 return
             }
@@ -519,7 +519,7 @@ public final class AccountContextImpl: AccountContext {
     
     public func storeSecureIdPassword(password: String) {
         self.storedPassword?.2.invalidate()
-        let timer = SwiftSignalKit.Timer(timeout: 1.0 * 60.0 * 60.0, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 1.0 * 60.0 * 60.0, repeat: false, completion: { [weak self = self] in
             self?.storedPassword = nil
         }, queue: Queue.mainQueue())
         self.storedPassword = (password, CFAbsoluteTimeGetCurrent(), timer)
@@ -642,7 +642,7 @@ public final class AccountContextImpl: AccountContext {
                 }
                 
                 let _ = (dataInput
-                |> deliverOnMainQueue).start(next: { [weak self] peer, current in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer, current in
                     guard let strongSelf = self else {
                         return
                     }
@@ -723,7 +723,7 @@ public final class AccountContextImpl: AccountContext {
             }
             
             let _ = (dataInput
-            |> deliverOnMainQueue).start(next: { [weak self] current in
+            |> deliverOnMainQueue).start(next: { [weak self = self] current in
                 guard let strongSelf = self else {
                     return
                 }
@@ -845,7 +845,7 @@ public final class AccountContextImpl: AccountContext {
                 }
                 
                 let _ = (dataInput
-                |> deliverOnMainQueue).start(next: { [weak self] peer, current in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer, current in
                     guard let strongSelf = self else {
                         return
                     }

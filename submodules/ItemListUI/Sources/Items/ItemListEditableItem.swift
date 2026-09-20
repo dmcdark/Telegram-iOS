@@ -267,7 +267,7 @@ open class ItemListRevealOptionsItemNode: ListViewItemNode, ASGestureRecognizerD
         
         self.view.disablesInteractiveTransitionGestureRecognizer = self.allowAnyDirection
         
-        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -500,9 +500,9 @@ open class ItemListRevealOptionsItemNode: ListViewItemNode, ASGestureRecognizerD
     
     private func setupAndAddLeftRevealNode() {
         if !self.revealOptions.left.isEmpty {
-            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self] option in
+            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected(option, animated: false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                 self?.hapticImpact()
             })
             revealNode.setOptions(self.revealOptions.left, isLeft: true, enableAnimations: self.enableAnimations)
@@ -522,9 +522,9 @@ open class ItemListRevealOptionsItemNode: ListViewItemNode, ASGestureRecognizerD
     
     private func setupAndAddRightRevealNode() {
         if !self.revealOptions.right.isEmpty {
-            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self] option in
+            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected(option, animated: false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                 self?.hapticImpact()
             })
             revealNode.setOptions(self.revealOptions.right, isLeft: false, enableAnimations: self.enableAnimations)

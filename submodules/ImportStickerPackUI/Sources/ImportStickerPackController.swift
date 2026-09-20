@@ -41,7 +41,7 @@ public final class ImportStickerPackController: ViewController, StandalonePresen
         self.statusBar.statusBarStyle = .Ignore
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 strongSelf.controllerNode.updatePresentationData(presentationData)
             }
@@ -59,17 +59,17 @@ public final class ImportStickerPackController: ViewController, StandalonePresen
     
     override public func loadDisplayNode() {
         self.displayNode = ImportStickerPackControllerNode(context: self.context)
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.dismissed?()
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
-        self.controllerNode.present = { [weak self] controller, arguments in
+        self.controllerNode.present = { [weak self = self] controller, arguments in
             self?.present(controller, in: .window(.root), with: arguments)
         }
-        self.controllerNode.presentInGlobalOverlay = { [weak self] controller, arguments in
+        self.controllerNode.presentInGlobalOverlay = { [weak self = self] controller, arguments in
             self?.presentInGlobalOverlay(controller, with: arguments)
         }
         self.controllerNode.navigationController = self.parentNavigationController
@@ -87,7 +87,7 @@ public final class ImportStickerPackController: ViewController, StandalonePresen
                         return .never()
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let strongSelf = self else {
                         return
                     }
@@ -114,7 +114,7 @@ public final class ImportStickerPackController: ViewController, StandalonePresen
                         }
                     }
                     strongSelf.verificationDisposable = (combineLatest(signals)
-                    |> deliverOnMainQueue).start(next: { [weak self] results in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] results in
                         guard let strongSelf = self else {
                             return
                         }

@@ -46,11 +46,11 @@ public final class BotReceiptController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        let displayNode = BotReceiptControllerNode(controller: nil, navigationBar: self.navigationBar!, context: self.context, messageId: self.messageId, dismissAnimated: { [weak self] in
+        let displayNode = BotReceiptControllerNode(controller: nil, navigationBar: self.navigationBar!, context: self.context, messageId: self.messageId, dismissAnimated: { [weak self = self] in
             self?.dismiss()
         })
         
-        displayNode.dismiss = { [weak self] in
+        displayNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         

@@ -113,7 +113,7 @@ final class BoostHeaderItemNode: ItemListControllerHeaderItemNode {
                 
         self.updateItem()
         
-        self.backButton.action = { [weak self] _, _ in
+        self.backButton.action = { [weak self = self] _, _ in
             if let self {
                 self.item.back()
             }

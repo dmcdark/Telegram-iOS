@@ -51,7 +51,7 @@ final class InstantPageFeedbackNode: ASDisplayNode, InstantPageNode {
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.labelNode.layer.removeAnimation(forKey: "opacity")
@@ -78,7 +78,7 @@ final class InstantPageFeedbackNode: ASDisplayNode, InstantPageNode {
             }
             return .single(result)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             if let strongSelf = self, let _ = peer, let webPageId = strongSelf.webPage.id?.id {
                 strongSelf.openUrl(InstantPageUrlItem(url: "https://t.me/previews?start=webpage\(webPageId)", webpageId: nil))
             }

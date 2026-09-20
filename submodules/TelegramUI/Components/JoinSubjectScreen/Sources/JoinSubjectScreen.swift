@@ -145,7 +145,7 @@ private final class JoinSubjectSheetContentComponent: Component {
                 }
 
                 self.joinDisposable = (component.context.engine.peers.joinChatInteractively(with: group.link)
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -172,7 +172,7 @@ private final class JoinSubjectSheetContentComponent: Component {
                         }
                         component.dismiss()
                     }
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -254,7 +254,7 @@ private final class JoinSubjectSheetContentComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -732,7 +732,7 @@ private final class JoinSubjectSheetContentComponent: Component {
                             )))
                         ], spacing: 10.0)),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -814,7 +814,7 @@ private final class JoinSubjectSheetContentComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: self.isJoining,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -949,7 +949,7 @@ private final class JoinSubjectScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     self?.dismiss()
                 }
             )
@@ -960,7 +960,7 @@ private final class JoinSubjectScreenComponent: Component {
                     content: AnyComponent(JoinSubjectSheetContentComponent(
                         context: component.context,
                         mode: component.mode,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss()
                         }
                     )),

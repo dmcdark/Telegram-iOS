@@ -152,7 +152,7 @@ public final class SolidRoundedButtonComponent: Component {
                 self.button = button
                 self.addSubview(button)
                 
-                button.pressed = { [weak self] in
+                button.pressed = { [weak self = self] in
                     self?.component?.action()
                 }
             }

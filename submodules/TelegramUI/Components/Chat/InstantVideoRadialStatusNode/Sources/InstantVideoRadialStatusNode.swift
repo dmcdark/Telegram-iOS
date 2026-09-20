@@ -149,7 +149,7 @@ public final class InstantVideoRadialStatusNode: ASDisplayNode, ASGestureRecogni
         self.isOpaque = false
         
         self.statusDisposable = (self.statusValuePromise.get()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.statusValue = status
             }
@@ -158,7 +158,7 @@ public final class InstantVideoRadialStatusNode: ASDisplayNode, ASGestureRecogni
         self.view.disablesInteractiveTransitionGestureRecognizer = true
         
         if sparks {
-            self.animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+            self.animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                 self?.updateSparks()
             })
             self.animator?.isPaused = false

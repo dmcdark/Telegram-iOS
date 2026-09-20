@@ -126,9 +126,9 @@ public class BaseLinesChartController: BaseChartController {
                                               isLoading: loading,
                                               values: values,
                                               totalValue: nil,
-                                              tapAction: { [weak self] in
+                                              tapAction: { [weak self = self] in
                                                 self?.didTapZoomIn(date: closestDate, pointIndex: pointIndex)
-                                              }, hideAction: { [weak self] in
+                                              }, hideAction: { [weak self = self] in
                                                 self?.cancelChartInteraction()
                                               })
         return viewModel

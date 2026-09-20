@@ -129,7 +129,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
         self.listClippingView.addSubview(self.listView.view)
         self.backgroundView.contentView.addSubview(self.listClippingView)
         
-        self.listView.displayedItemRangeChanged = { [weak self] displayedRange, opaqueTransactionState in
+        self.listView.displayedItemRangeChanged = { [weak self = self] displayedRange, opaqueTransactionState in
             if let strongSelf = self, let state = opaqueTransactionState as? HorizontalListContextResultsOpaqueState {
                 if let visible = displayedRange.visibleRange {
                     if state.hasMore && visible.lastIndex >= state.entryCount - 10 {
@@ -149,7 +149,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
         
         self.listView.view.disablesInteractiveTransitionGestureRecognizer = true
         self.listView.view.disablesInteractiveKeyboardGestureRecognizer = true
-        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
+        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
             if let strongSelf = self {
                 let convertedPoint = strongSelf.listView.view.convert(point, from: strongSelf.view)
                 
@@ -172,7 +172,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
                                 guard let packReference = packReference else {
                                     continue
                                 }
-                                menuItems.append(.action(ContextMenuActionItem(text: strongSelf.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                menuItems.append(.action(ContextMenuActionItem(text: strongSelf.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
                                     
                                     if let strongSelf = self {
@@ -189,7 +189,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
                                     }
                                 })))
                             }
-                            selectedItemNodeAndContent = (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: item.context, theme: strongSelf.theme, strings: strongSelf.strings, item: .found(FoundStickerItem(file: file, stringRepresentations: [])), menu: menuItems, openPremiumIntro: { [weak self] in
+                            selectedItemNodeAndContent = (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: item.context, theme: strongSelf.theme, strings: strongSelf.strings, item: .found(FoundStickerItem(file: file, stringRepresentations: [])), menu: menuItems, openPremiumIntro: { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -249,7 +249,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
                 return .single(selectedItemNodeAndContent)
             }
             return nil
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             if let strongSelf = self {
                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                 let controller = makePeekController(presentationData: presentationData, content: content, sourceView: {
@@ -286,7 +286,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
         |> map { results -> ChatContextResultCollection? in
             return results?.results
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] nextResults in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] nextResults in
             guard let strongSelf = self, let nextResults = nextResults else {
                 return
             }
@@ -325,7 +325,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
         }
         
         let firstTime = self.currentEntries == nil
-        let transition = preparedTransition(from: self.currentEntries ?? [], to: entries, hasMore: results.nextOffset != nil, context: self.context, batchVideoContext: self.batchVideoContext, resultSelected: { [weak self] result, node, rect in
+        let transition = preparedTransition(from: self.currentEntries ?? [], to: entries, hasMore: results.nextOffset != nil, context: self.context, batchVideoContext: self.batchVideoContext, resultSelected: { [weak self = self] result, node, rect in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 return interfaceInteraction.sendContextResult(results, result, node, rect)
             } else {
@@ -362,7 +362,7 @@ final class HorizontalListContextResultsChatInputContextPanelNode: ChatInputCont
                 //options.insert(.AnimateCrossfade)
             }
             
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: HorizontalListContextResultsOpaqueState(entryCount: transition.entryCount, hasMore: transition.hasMore), completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: HorizontalListContextResultsOpaqueState(entryCount: transition.entryCount, hasMore: transition.hasMore), completion: { [weak self = self] _ in
                 if let strongSelf = self, firstTime {
                     strongSelf.listView.isHidden = false
                     

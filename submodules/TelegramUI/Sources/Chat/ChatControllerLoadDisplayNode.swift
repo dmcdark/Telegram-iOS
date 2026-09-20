@@ -211,7 +211,7 @@ extension ChatControllerImpl {
                     return .never()
                 }
                 |> take(1)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] threadId in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] threadId in
                     guard let self else {
                         return
                     }
@@ -668,14 +668,14 @@ extension ChatControllerImpl {
     }
     
     func loadDisplayNodeImpl() {
-        self.navigationBar?.backPressed = { [weak self] in
+        self.navigationBar?.backPressed = { [weak self = self] in
             guard let self else {
                 return
             }
             if let channel = self.presentationInterfaceState.renderedPeer?.peer as? TelegramChannel, channel.isForumOrMonoForum, self.presentationInterfaceState.persistentData.topicListPanelLocation == .side, self.presentationInterfaceState.chatLocation.threadId != nil {
                 self.updateChatLocationThread(threadId: nil, animationDirection: .left)
             } else {
-                if self.attemptNavigation({ [weak self] in
+                if self.attemptNavigation({ [weak self = self] in
                     self?.dismiss()
                 }) {
                     self.dismiss()
@@ -701,7 +701,7 @@ extension ChatControllerImpl {
             if "".isEmpty {
                 didDisplayTooltip = true
             }
-            self.chatDisplayNode.historyNode.hasLotsOfMessagesUpdated = { [weak self] hasLotsOfMessages in
+            self.chatDisplayNode.historyNode.hasLotsOfMessagesUpdated = { [weak self = self] hasLotsOfMessages in
                 guard let self, hasLotsOfMessages else {
                     return
                 }
@@ -711,7 +711,7 @@ extension ChatControllerImpl {
                 didDisplayTooltip = true
                 
                 let _ = (ApplicationSpecificNotice.getSavedMessagesChatsSuggestion(accountManager: self.context.sharedContext.accountManager)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] counter in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] counter in
                     guard let self else {
                         return
                     }
@@ -732,7 +732,7 @@ extension ChatControllerImpl {
             }
         }
 
-        self.chatDisplayNode.historyNode.addContentOffset = { [weak self] offset, itemNode in
+        self.chatDisplayNode.historyNode.addContentOffset = { [weak self = self] offset, itemNode in
             guard let strongSelf = self else {
                 return
             }
@@ -750,7 +750,7 @@ extension ChatControllerImpl {
         }
         
         if closeOnEmpty {
-            self.chatDisplayNode.historyNode.addSetLoadStateUpdated({ [weak self] state, _ in
+            self.chatDisplayNode.historyNode.addSetLoadStateUpdated({ [weak self = self] state, _ in
                 guard let self else {
                     return
                 }
@@ -788,7 +788,7 @@ extension ChatControllerImpl {
                 currentAccountPeer,
                 self.context.account.postbox.peerView(id: peerId),
                 self.context.engine.peers.sendAsAvailablePeers(peerId: peerId))
-            ).startStrict(next: { [weak self] currentAccountPeer, peerView, peers in
+            ).startStrict(next: { [weak self = self] currentAccountPeer, peerView, peers in
                 guard let strongSelf = self else {
                     return
                 }
@@ -879,7 +879,7 @@ extension ChatControllerImpl {
         
         self.setupChatHistoryNode(historyNode: self.chatDisplayNode.historyNode)
         
-        self.chatDisplayNode.requestLayout = { [weak self] transition in
+        self.chatDisplayNode.requestLayout = { [weak self = self] transition in
             self?.requestLayout(transition: transition)
         }
         
@@ -889,7 +889,7 @@ extension ChatControllerImpl {
             enableSendAnimationV2 = true
         }
         
-        self.chatDisplayNode.setupSendActionOnViewUpdate = { [weak self] f, messageCorrelationId in
+        self.chatDisplayNode.setupSendActionOnViewUpdate = { [weak self = self] f, messageCorrelationId in
             //print("setup layoutActionOnViewTransition")
 
             guard let self else {
@@ -902,7 +902,7 @@ extension ChatControllerImpl {
             } else if !self.chatDisplayNode.historyNode.isStrictlyScrolledToPinToEdgeItem() {
                 self.chatDisplayNode.historyNode.pinToTopStableId = nil
             }
-            self.chatDisplayNode.historyNode.layoutActionOnViewTransition = ({ [weak self] transition in
+            self.chatDisplayNode.historyNode.layoutActionOnViewTransition = ({ [weak self = self] transition in
                 f()
                 if let strongSelf = self, let validLayout = strongSelf.validLayout {
                     strongSelf.layoutActionOnViewTransitionAction = nil
@@ -983,7 +983,7 @@ extension ChatControllerImpl {
             }, messageCorrelationId)
         }
         
-        self.chatDisplayNode.sendMessages = { [weak self] messages, silentPosting, scheduleTime, repeatPeriod, isAnyMessageTextPartitioned, postpone in
+        self.chatDisplayNode.sendMessages = { [weak self = self] messages, silentPosting, scheduleTime, repeatPeriod, isAnyMessageTextPartitioned, postpone in
             guard let strongSelf = self else {
                 return
             }
@@ -1176,7 +1176,7 @@ extension ChatControllerImpl {
         }
         
         if case let .customChatContents(customChatContents) = self.subject {
-            customChatContents.hashtagSearchResultsUpdate = { [weak self] searchResult in
+            customChatContents.hashtagSearchResultsUpdate = { [weak self = self] searchResult in
                 guard let self else {
                     return
                 }
@@ -1209,15 +1209,15 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.requestUpdateChatInterfaceState = { [weak self] transition, saveInterfaceState, f in
+        self.chatDisplayNode.requestUpdateChatInterfaceState = { [weak self = self] transition, saveInterfaceState, f in
             self?.updateChatPresentationInterfaceState(transition: transition, interactive: true, saveInterfaceState: saveInterfaceState, { $0.updatedInterfaceState(f) })
         }
         
-        self.chatDisplayNode.requestUpdateInterfaceState = { [weak self] transition, interactive, f in
+        self.chatDisplayNode.requestUpdateInterfaceState = { [weak self = self] transition, interactive, f in
             self?.updateChatPresentationInterfaceState(transition: transition, interactive: interactive, f)
         }
         
-        self.chatDisplayNode.displayAttachmentMenu = { [weak self] in
+        self.chatDisplayNode.displayAttachmentMenu = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1258,7 +1258,7 @@ extension ChatControllerImpl {
                 strongSelf.presentAttachmentMenu(subject: .default)
             }
         }
-        self.chatDisplayNode.paste = { [weak self] data in
+        self.chatDisplayNode.paste = { [weak self = self] data in
             switch data {
             case let .images(images):
                 self?.displayPasteMenu(images.map { .image($0) })
@@ -1275,7 +1275,7 @@ extension ChatControllerImpl {
                 self?.enqueueAnimatedStickerData(data)
             }
         }
-        self.chatDisplayNode.updateTypingActivity = { [weak self] value in
+        self.chatDisplayNode.updateTypingActivity = { [weak self = self] value in
             if let strongSelf = self {
                 if value {
                     strongSelf.typingActivityPromise.set(Signal<Bool, NoError>.single(true)
@@ -1299,7 +1299,7 @@ extension ChatControllerImpl {
                             (strongSelf.typingActivityPromise.get()
                             |> filter { !$0 }
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] _ in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     Queue.mainQueue().after(2.0) {
                                         strongSelf.displaySendWhenOnlineTooltip()
@@ -1314,7 +1314,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.dismissUrlPreview = { [weak self] in
+        self.chatDisplayNode.dismissUrlPreview = { [weak self = self] in
             if let strongSelf = self {
                 if let _ = strongSelf.presentationInterfaceState.interfaceState.editMessage {
                     if let link = strongSelf.presentationInterfaceState.editingUrlPreview?.url {
@@ -1346,7 +1346,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.navigateButtons.downPressed = { [weak self] in
+        self.chatDisplayNode.navigateButtons.downPressed = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1379,7 +1379,7 @@ extension ChatControllerImpl {
                 }
             }
         }
-        self.chatDisplayNode.navigateButtons.upPressed = { [weak self] in
+        self.chatDisplayNode.navigateButtons.upPressed = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1389,7 +1389,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.navigateButtons.mentionsPressed = { [weak self] in
+        self.chatDisplayNode.navigateButtons.mentionsPressed = { [weak self = self] in
             if let strongSelf = self, strongSelf.isNodeLoaded, let peerId = strongSelf.chatLocation.peerId {
                 let signal = strongSelf.context.engine.messages.earliestUnseenPersonalMentionMessage(peerId: peerId, threadId: strongSelf.chatLocation.threadId)
                 strongSelf.navigationActionDisposable.set((signal |> deliverOnMainQueue).startStrict(next: { result in
@@ -1407,7 +1407,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.navigateButtons.mentionsButton.activated = { [weak self] gesture, _ in
+        self.chatDisplayNode.navigateButtons.mentionsButton.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 gesture.cancel()
                 return
@@ -1446,7 +1446,7 @@ extension ChatControllerImpl {
             strongSelf.window?.presentInGlobalOverlay(controller)
         }
         
-        self.chatDisplayNode.navigateButtons.reactionsPressed = { [weak self] in
+        self.chatDisplayNode.navigateButtons.reactionsPressed = { [weak self = self] in
             if let strongSelf = self, strongSelf.isNodeLoaded, let peerId = strongSelf.chatLocation.peerId {
                 let signal = strongSelf.context.engine.messages.earliestUnseenPersonalReactionMessage(peerId: peerId, threadId: strongSelf.chatLocation.threadId)
                 strongSelf.navigationActionDisposable.set((signal |> deliverOnMainQueue).startStrict(next: { result in
@@ -1575,7 +1575,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.navigateButtons.reactionsButton.activated = { [weak self] gesture, _ in
+        self.chatDisplayNode.navigateButtons.reactionsButton.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 gesture.cancel()
                 return
@@ -1614,7 +1614,7 @@ extension ChatControllerImpl {
             strongSelf.window?.presentInGlobalOverlay(controller)
         }
         
-        self.chatDisplayNode.navigateButtons.pollVotesPressed = { [weak self] in
+        self.chatDisplayNode.navigateButtons.pollVotesPressed = { [weak self = self] in
             if let strongSelf = self, strongSelf.isNodeLoaded, let peerId = strongSelf.chatLocation.peerId {
                 let signal = strongSelf.context.engine.messages.earliestUnseenPollVoteMessage(peerId: peerId, threadId: strongSelf.chatLocation.threadId)
                 strongSelf.navigationActionDisposable.set((signal |> deliverOnMainQueue).startStrict(next: { result in
@@ -1635,7 +1635,7 @@ extension ChatControllerImpl {
             }
         }
         
-        self.chatDisplayNode.navigateButtons.pollVotesButton.activated = { [weak self] gesture, _ in
+        self.chatDisplayNode.navigateButtons.pollVotesButton.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 gesture.cancel()
                 return
@@ -1674,7 +1674,7 @@ extension ChatControllerImpl {
             strongSelf.window?.presentInGlobalOverlay(controller)
         }
         
-        let interfaceInteraction = ChatPanelInterfaceInteraction(setupReplyMessage: { [weak self] messageId, innerSubject, completion in
+        let interfaceInteraction = ChatPanelInterfaceInteraction(setupReplyMessage: { [weak self = self] messageId, innerSubject, completion in
             guard let strongSelf = self, strongSelf.isNodeLoaded else {
                 return
             }
@@ -1708,7 +1708,7 @@ extension ChatControllerImpl {
                             })
                             strongSelf.updateItemNodesSearchTextHighlightStates()
                             if !strongSelf.chatDisplayNode.ensureInputViewFocused() {
-                                DispatchQueue.main.async { [weak self] in
+                                DispatchQueue.main.async { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1746,7 +1746,7 @@ extension ChatControllerImpl {
                     completion(t, {})
                 })
             }
-        }, setupEditMessage: { [weak self] messageId, completion in
+        }, setupEditMessage: { [weak self = self] messageId, completion in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 guard let messageId = messageId else {
                     strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
@@ -1811,7 +1811,7 @@ extension ChatControllerImpl {
                         }, completion: completion)
                         
                         if !strongSelf.chatDisplayNode.ensureInputViewFocused() {
-                            DispatchQueue.main.async { [weak self] in
+                            DispatchQueue.main.async { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1823,7 +1823,7 @@ extension ChatControllerImpl {
                     completion(.immediate)
                 }, delay: true)
             }
-        }, beginMessageSelection: { [weak self] messageIds, completion in
+        }, beginMessageSelection: { [weak self = self] messageIds, completion in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 let _ = strongSelf.presentVoiceMessageDiscardAlert(action: {
                     strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState { $0.withUpdatedSelectedMessages(messageIds) }.updatedShowCommands(false) }, completion: completion)
@@ -1839,12 +1839,12 @@ extension ChatControllerImpl {
             } else {
                 completion(.immediate)
             }
-        }, cancelMessageSelection: { [weak self] transition in
+        }, cancelMessageSelection: { [weak self = self] transition in
             guard let self else {
                 return
             }
             self.updateChatPresentationInterfaceState(transition: transition, interactive: true, { $0.updatedInterfaceState { $0.withoutSelectionState() } })
-        }, deleteSelectedMessages: { [weak self] sourceView in
+        }, deleteSelectedMessages: { [weak self = self] sourceView in
             if let strongSelf = self {
                 if let messageIds = strongSelf.presentationInterfaceState.interfaceState.selectionState?.selectedIds, !messageIds.isEmpty {
                     strongSelf.messageContextDisposable.set((strongSelf.context.sharedContext.chatAvailableMessageActions(engine: strongSelf.context.engine, accountPeerId: strongSelf.context.account.peerId, messageIds: messageIds, keepUpdated: false)
@@ -1865,7 +1865,7 @@ extension ChatControllerImpl {
                     }))
                 }
             }
-        }, reportSelectedMessages: { [weak self] in
+        }, reportSelectedMessages: { [weak self = self] in
             if let strongSelf = self, let messageIds = strongSelf.presentationInterfaceState.interfaceState.selectionState?.selectedIds, !messageIds.isEmpty {
                 if let reportReason = strongSelf.presentationInterfaceState.reportReason {
                     let presentationData = strongSelf.presentationData
@@ -1880,17 +1880,17 @@ extension ChatControllerImpl {
                         context: strongSelf.context,
                         subject: .messages(Array(messageIds).sorted()),
                         forceDark: false,
-                        present: { [weak self] controller in
+                        present: { [weak self = self] controller in
                             self?.push(controller)
                         },
-                        completion: { [weak self] in
+                        completion: { [weak self = self] in
                             self?.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState { $0.withoutSelectionState() } })
                         },
                         requestSelectMessages: nil
                     )
                 }
             }
-        }, reportMessages: { [weak self] messages, contextController in
+        }, reportMessages: { [weak self = self] messages, contextController in
             guard let self, !messages.isEmpty else {
                 return
             }
@@ -1899,7 +1899,7 @@ extension ChatControllerImpl {
                 context: self.context,
                 subject: .messages(messages.map({ $0.id }).sorted()),
                 forceDark: false,
-                present: { [weak self] controller in
+                present: { [weak self = self] controller in
                     guard let self else {
                         return
                     }
@@ -1908,7 +1908,7 @@ extension ChatControllerImpl {
                 completion: {},
                 requestSelectMessages: nil
             )
-        }, blockMessageAuthor: { [weak self] message, contextController in
+        }, blockMessageAuthor: { [weak self = self] message, contextController in
             contextController?.dismiss(completion: {
                 guard let strongSelf = self else {
                     return
@@ -1956,7 +1956,7 @@ extension ChatControllerImpl {
                 ])
                 strongSelf.present(controller, in: .window(.root), with: ViewControllerPresentationArguments(presentationAnimation: .modalSheet))
             })
-        }, deleteMessages: { [weak self] messages, contextController, completion in
+        }, deleteMessages: { [weak self = self] messages, contextController, completion in
             guard let self else {
                 return
             }
@@ -1970,13 +1970,13 @@ extension ChatControllerImpl {
             
             let messageIds = Set(messages.map { $0.id })
             self.messageContextDisposable.set((self.context.sharedContext.chatAvailableMessageActions(engine: self.context.engine, accountPeerId: self.context.account.peerId, messageIds: messageIds, keepUpdated: false)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] actions in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] actions in
                 guard let self, !actions.options.isEmpty else {
                     return
                 }
                 
                 if actions.options.contains(.deleteGlobally), let message = messages.first(where: { message in message.attributes.contains(where: { $0 is PublishedSuggestedPostMessageAttribute }) }), let attribute = message.attributes.first(where: { $0 is PublishedSuggestedPostMessageAttribute }) as? PublishedSuggestedPostMessageAttribute, message.timestamp > Int32(Date().timeIntervalSince1970) - 60 * 60 * 24 {
-                    let commit = { [weak self] in
+                    let commit = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1996,7 +1996,7 @@ extension ChatControllerImpl {
                             title: titleString,
                             text: textString,
                             actions: [
-                                TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.Chat_DeletePaidMessage_Action, action: { [weak self] in
+                                TextAlertAction(type: .destructiveAction, title: self.presentationData.strings.Chat_DeletePaidMessage_Action, action: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -2018,7 +2018,7 @@ extension ChatControllerImpl {
                 
                 if let banAuthor = actions.banAuthor {
                     if let contextController = contextController {
-                        contextController.dismiss(completion: { [weak self] in
+                        contextController.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2060,7 +2060,7 @@ extension ChatControllerImpl {
                     }
                 }
             }))
-        }, forwardSelectedMessages: { [weak self] in
+        }, forwardSelectedMessages: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.commitPurposefulAction()
                 if let forwardMessageIdsSet = strongSelf.presentationInterfaceState.interfaceState.selectionState?.selectedIds {
@@ -2068,14 +2068,14 @@ extension ChatControllerImpl {
                     strongSelf.forwardMessages(messageIds: forwardMessageIds)
                 }
             }
-        }, forwardCurrentForwardMessages: { [weak self] in
+        }, forwardCurrentForwardMessages: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.commitPurposefulAction()
                 if let forwardMessageIds = strongSelf.presentationInterfaceState.interfaceState.forwardMessageIds {
                     strongSelf.forwardMessages(messageIds: forwardMessageIds, options: strongSelf.presentationInterfaceState.interfaceState.forwardOptionsState, resetCurrent: true)
                 }
             }
-        }, forwardMessages: { [weak self] messages in
+        }, forwardMessages: { [weak self = self] messages in
             if let strongSelf = self, !messages.isEmpty {
                 guard !strongSelf.presentAccountFrozenInfoIfNeeded(delay: true) else {
                     return
@@ -2085,31 +2085,31 @@ extension ChatControllerImpl {
                 let forwardMessageIds = messages.map { $0.id }.sorted()
                 strongSelf.forwardMessages(messageIds: forwardMessageIds)
             }
-        }, updateForwardOptionsState: { [weak self] f in
+        }, updateForwardOptionsState: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState({ $0.withUpdatedForwardOptionsState(f($0.forwardOptionsState ?? ChatInterfaceForwardOptionsState(hideNames: false, hideCaptions: false, unhideNamesOnCaptionChange: false))) }) })
             }
-        }, presentForwardOptions: { [weak self] sourceView in
+        }, presentForwardOptions: { [weak self = self] sourceView in
             guard let self else {
                 return
             }
             presentChatForwardOptions(selfController: self, sourceView: sourceView)
-        }, presentReplyOptions: { [weak self] sourceView in
+        }, presentReplyOptions: { [weak self = self] sourceView in
             guard let self else {
                 return
             }
             presentChatReplyOptions(selfController: self, sourceView: sourceView)
-        }, presentLinkOptions: { [weak self] sourceView in
+        }, presentLinkOptions: { [weak self = self] sourceView in
             guard let self else {
                 return
             }
             presentChatLinkOptions(selfController: self, sourceView: sourceView)
-        }, presentSuggestPostOptions: { [weak self] in
+        }, presentSuggestPostOptions: { [weak self = self] in
             guard let self else {
                 return
             }
             self.presentSuggestPostOptions()
-        }, shareSelectedMessages: { [weak self] in
+        }, shareSelectedMessages: { [weak self = self] in
             if let strongSelf = self, let selectedIds = strongSelf.presentationInterfaceState.interfaceState.selectionState?.selectedIds, !selectedIds.isEmpty {
                 strongSelf.commitPurposefulAction()
                 let _ = (strongSelf.context.engine.data.get(EngineDataMap(
@@ -2130,7 +2130,7 @@ extension ChatControllerImpl {
                     }
                 })
             }
-        }, updateTextInputStateAndMode: { [weak self] f in
+        }, updateTextInputStateAndMode: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                     let (updatedState, updatedMode) = f(state.interfaceState.effectiveInputState, state.inputMode)
@@ -2143,7 +2143,7 @@ extension ChatControllerImpl {
                     strongSelf.silentPostTooltipController?.dismiss()
                 }
             }
-        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self] f in
+        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, {
                     let (updatedInputMode, updatedClosedButtonKeyboardMessageId) = f($0)
@@ -2167,13 +2167,13 @@ extension ChatControllerImpl {
                     return updated
                 })
             }
-        }, openStickers: { [weak self] in
+        }, openStickers: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.chatDisplayNode.openStickers(beginWithEmoji: false)
             strongSelf.mediaRecordingModeTooltipController?.dismissImmediately()
-        }, editMessage: { [weak self] in
+        }, editMessage: { [weak self = self] in
             guard let strongSelf = self, let editMessage = strongSelf.presentationInterfaceState.interfaceState.editMessage else {
                 return
             }
@@ -2296,7 +2296,7 @@ extension ChatControllerImpl {
                 }
                 
                 let _ = (strongSelf.context.account.postbox.messageAtId(editMessage.messageId)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] currentMessage in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] currentMessage in
                     if let strongSelf = self {
                         if let currentMessage = currentMessage {
                             let currentEntities = currentMessage.textEntitiesAttribute?.entities ?? []
@@ -2319,7 +2319,7 @@ extension ChatControllerImpl {
                     }
                 })
             })
-        }, beginMessageSearch: { [weak self] domain, query in
+        }, beginMessageSearch: { [weak self = self] domain, query in
             guard let strongSelf = self else {
                 return
             }
@@ -2341,7 +2341,7 @@ extension ChatControllerImpl {
                 })
                 strongSelf.updateItemNodesSearchTextHighlightStates()
             })
-        }, dismissMessageSearch: { [weak self] in
+        }, dismissMessageSearch: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -2356,7 +2356,7 @@ extension ChatControllerImpl {
             })
             self.updateItemNodesSearchTextHighlightStates()
             self.searchResultsController = nil
-        }, updateMessageSearch: { [weak self] query in
+        }, updateMessageSearch: { [weak self = self] query in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { current in
                     if let data = current.search {
@@ -2368,7 +2368,7 @@ extension ChatControllerImpl {
                 strongSelf.updateItemNodesSearchTextHighlightStates()
                 strongSelf.searchResultsController = nil
             }
-        }, openSearchResults: { [weak self] in
+        }, openSearchResults: { [weak self = self] in
             if let strongSelf = self, let searchData = strongSelf.presentationInterfaceState.search, let _ = searchData.resultsState {
                 if let controller = strongSelf.searchResultsController {
                     strongSelf.chatDisplayNode.dismissInput()
@@ -2380,7 +2380,7 @@ extension ChatControllerImpl {
                 } else {
                     let _ = (strongSelf.searchResult.get()
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] searchResult in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] searchResult in
                         if let strongSelf = self, let (searchResult, searchState, searchLocation) = searchResult {
                             let controller = ChatSearchResultsController(context: strongSelf.context, updatedPresentationData: strongSelf.updatedPresentationData, location: searchLocation, searchQuery: searchData.query, searchResult: searchResult, searchState: searchState, navigateToMessageIndex: { index in
                                 guard let strongSelf = self else {
@@ -2422,7 +2422,7 @@ extension ChatControllerImpl {
                     })
                 }
             }
-        }, navigateMessageSearch: { [weak self] action in
+        }, navigateMessageSearch: { [weak self = self] action in
             if let strongSelf = self {
                 var navigateIndex: MessageIndex?
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { current in
@@ -2459,9 +2459,9 @@ extension ChatControllerImpl {
                     }
                 }
             }
-        }, openCalendarSearch: { [weak self] in
+        }, openCalendarSearch: { [weak self = self] in
             self?.openCalendarSearch(timestamp: Int32(Date().timeIntervalSince1970), isMedia: false)
-        }, toggleMembersSearch: { [weak self] value in
+        }, toggleMembersSearch: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                     if value {
@@ -2481,9 +2481,9 @@ extension ChatControllerImpl {
                 })
                 strongSelf.updateItemNodesSearchTextHighlightStates()
             }
-        }, navigateToMessage: { [weak self] messageId, dropStack, forceInCurrentChat, statusSubject in
+        }, navigateToMessage: { [weak self = self] messageId, dropStack, forceInCurrentChat, statusSubject in
             self?.navigateToMessage(from: nil, to: .id(messageId, NavigateToMessageParams(timestamp: nil, quote: nil)), forceInCurrentChat: forceInCurrentChat, dropStack: dropStack, statusSubject: statusSubject)
-        }, navigateToChat: { [weak self] peerId in
+        }, navigateToChat: { [weak self = self] peerId in
             guard let strongSelf = self else {
                 return
             }
@@ -2500,7 +2500,7 @@ extension ChatControllerImpl {
                     strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .peer(peer), subject: nil, keepStack: .always))
                 }
             })
-        }, navigateToProfile: { [weak self] peerId in
+        }, navigateToProfile: { [weak self = self] peerId in
             guard let strongSelf = self else {
                 return
             }
@@ -2510,13 +2510,13 @@ extension ChatControllerImpl {
                     strongSelf.openPeer(peer: peer, navigation: .default, fromMessage: nil)
                 }
             })
-        }, openPeerInfo: { [weak self] in
+        }, openPeerInfo: { [weak self = self] in
             self?.navigationButtonAction(.openChatInfo(expandAvatar: false, section: nil))
-        }, togglePeerNotifications: { [weak self] in
+        }, togglePeerNotifications: { [weak self = self] in
             if let strongSelf = self, let peerId = strongSelf.chatLocation.peerId {
                 let _ = strongSelf.context.engine.peers.togglePeerMuted(peerId: peerId, threadId: strongSelf.chatLocation.threadId).startStandalone()
             }
-        }, sendContextResult: { [weak self] results, result, node, rect in
+        }, sendContextResult: { [weak self = self] results, result, node, rect in
             guard let strongSelf = self else {
                 return false
             }
@@ -2524,14 +2524,14 @@ extension ChatControllerImpl {
                 strongSelf.interfaceInteraction?.displaySlowmodeTooltip(node.view, rect)
                 return false
             }
-            strongSelf.presentPaidMessageAlertIfNeeded(completion: { [weak self] postpone in
+            strongSelf.presentPaidMessageAlertIfNeeded(completion: { [weak self = self] postpone in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.enqueueChatContextResult(results, result, postpone: postpone)
             })
             return true
-        }, sendBotCommand: { [weak self] botPeer, command in
+        }, sendBotCommand: { [weak self = self] botPeer, command in
             if let strongSelf = self, canSendMessagesToChat(strongSelf.presentationInterfaceState) {
                 if let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer {
                     let messageText: String
@@ -2545,7 +2545,7 @@ extension ChatControllerImpl {
                         messageText = command
                     }
                             
-                    let sendNormally: () -> Void = { [weak self] in
+                    let sendNormally: () -> Void = { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -2577,7 +2577,7 @@ extension ChatControllerImpl {
 
                     let _ = (strongSelf.context.engine.peers.peerCommands(id: peerId)
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] peerCommands in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerCommands in
                         guard let strongSelf = self else {
                             return
                         }
@@ -2610,7 +2610,7 @@ extension ChatControllerImpl {
                     })
                 }
             }
-        }, sendShortcut: { [weak self] shortcutId in
+        }, sendShortcut: { [weak self = self] shortcutId in
             guard let self else {
                 return
             }
@@ -2630,7 +2630,7 @@ extension ChatControllerImpl {
             
             self.context.engine.accountData.sendMessageShortcut(peerId: peerId, id: shortcutId)
             
-            /*self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self] in
+            /*self.chatDisplayNode.setupSendActionOnViewUpdate({ [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -2663,13 +2663,13 @@ extension ChatControllerImpl {
             }
             
             self.sendMessages(messages)*/
-        }, openEditShortcuts: { [weak self] in
+        }, openEditShortcuts: { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (self.context.sharedContext.makeQuickReplySetupScreenInitialData(context: self.context)
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] initialData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] initialData in
                 guard let self else {
                     return
                 }
@@ -2678,11 +2678,11 @@ extension ChatControllerImpl {
                 controller.navigationPresentation = .modal
                 self.push(controller)
             })
-        }, sendBotStart: { [weak self] payload in
+        }, sendBotStart: { [weak self = self] payload in
             if let strongSelf = self, canSendMessagesToChat(strongSelf.presentationInterfaceState) {
                 strongSelf.startBot(payload)
             }
-        }, botSwitchChatWithPayload: { [weak self] peerId, payload in
+        }, botSwitchChatWithPayload: { [weak self = self] peerId, payload in
             if let strongSelf = self, case let .peer(currentPeerId) = strongSelf.chatLocation {
                 var isScheduled = false
                 if case .scheduledMessages = strongSelf.presentationInterfaceState.subject {
@@ -2695,7 +2695,7 @@ extension ChatControllerImpl {
                     }
                 })
             }
-        }, beginMediaRecording: { [weak self] isVideo in
+        }, beginMediaRecording: { [weak self = self] isVideo in
             guard let strongSelf = self else {
                 return
             }
@@ -2750,7 +2750,7 @@ extension ChatControllerImpl {
                 guard let strongSelf = self, strongSelf.beginMediaRecordingRequestId == requestId else {
                     return
                 }
-                guard checkAvailableDiskSpace(context: strongSelf.context, push: { [weak self] c in
+                guard checkAvailableDiskSpace(context: strongSelf.context, push: { [weak self = self] c in
                     self?.present(c, in: .window(.root))
                 }) else {
                     return
@@ -2797,37 +2797,37 @@ extension ChatControllerImpl {
                     begin()
                 }
             })
-        }, finishMediaRecording: { [weak self] action in
+        }, finishMediaRecording: { [weak self = self] action in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.beginMediaRecordingRequestId += 1
             strongSelf.dismissMediaRecorder(action)
-        }, stopMediaRecording: { [weak self] in
+        }, stopMediaRecording: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.beginMediaRecordingRequestId += 1
             strongSelf.lockMediaRecordingRequestId = nil
             strongSelf.stopMediaRecorder(pause: true)
-        }, lockMediaRecording: { [weak self] in
+        }, lockMediaRecording: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.lockMediaRecordingRequestId = strongSelf.beginMediaRecordingRequestId
             strongSelf.lockMediaRecorder()
-        }, resumeMediaRecording: { [weak self] in
+        }, resumeMediaRecording: { [weak self = self] in
             guard let self else {
                 return
             }
             self.resumeMediaRecorder()
-        }, deleteRecordedMedia: { [weak self] in
+        }, deleteRecordedMedia: { [weak self = self] in
             self?.deleteMediaRecording()
-        }, sendRecordedMedia: { [weak self] silentPosting, viewOnce in
-            self?.presentPaidMessageAlertIfNeeded(count: 1, completion: { [weak self] postpone in
+        }, sendRecordedMedia: { [weak self = self] silentPosting, viewOnce in
+            self?.presentPaidMessageAlertIfNeeded(count: 1, completion: { [weak self = self] postpone in
                 self?.sendMediaRecording(silentPosting: silentPosting, viewOnce: viewOnce, postpone: postpone)
             })
-        }, displayRestrictedInfo: { [weak self] subject, displayType in
+        }, displayRestrictedInfo: { [weak self = self] subject, displayType in
             guard let strongSelf = self else {
                 return
             }
@@ -2996,7 +2996,7 @@ extension ChatControllerImpl {
                     }))
                 }
             }
-        }, displayVideoUnmuteTip: { [weak self] location in
+        }, displayVideoUnmuteTip: { [weak self = self] location in
             guard let strongSelf = self, !strongSelf.didDisplayVideoUnmuteTooltip, let layout = strongSelf.validLayout, strongSelf.traceVisibility() && isTopmostChatController(strongSelf) else {
                 return
             }
@@ -3029,7 +3029,7 @@ extension ChatControllerImpl {
             } else if let tooltipController = strongSelf.videoUnmuteTooltipController {
                 tooltipController.dismissImmediately()
             }
-        }, switchMediaRecordingMode: { [weak self] in
+        }, switchMediaRecordingMode: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -3099,7 +3099,7 @@ extension ChatControllerImpl {
             }
             
             strongSelf.displayMediaRecordingTooltip()
-        }, setupMessageAutoremoveTimeout: { [weak self] in
+        }, setupMessageAutoremoveTimeout: { [weak self = self] in
             guard let strongSelf = self, case let .peer(peerId) = strongSelf.chatLocation else {
                 return
             }
@@ -3197,19 +3197,19 @@ extension ChatControllerImpl {
                     }
                 }
             }
-        }, sendSticker: { [weak self] file, clearInput, sourceView, sourceRect, sourceLayer, bubbleUpEmojiOrStickersets in
+        }, sendSticker: { [weak self = self] file, clearInput, sourceView, sourceRect, sourceLayer, bubbleUpEmojiOrStickersets in
             if let strongSelf = self, canSendMessagesToChat(strongSelf.presentationInterfaceState) {
                 return strongSelf.controllerInteraction?.sendSticker(file, false, false, nil, clearInput, sourceView, sourceRect, sourceLayer, bubbleUpEmojiOrStickersets) ?? false
             } else {
                 return false
             }
-        }, editSticker: { [weak self] file in
+        }, editSticker: { [weak self = self] file in
             if let self {
                 self.openStickerEditing(file: file)
             }
-        }, unblockPeer: { [weak self] in
+        }, unblockPeer: { [weak self = self] in
             self?.unblockPeer()
-        }, pinMessage: { [weak self] messageId, contextController in
+        }, pinMessage: { [weak self = self] messageId, contextController in
             if let strongSelf = self, let currentPeerId = strongSelf.chatLocation.peerId {
                 guard !strongSelf.presentAccountFrozenInfoIfNeeded(delay: true) else {
                     contextController?.dismiss(completion: nil)
@@ -3357,7 +3357,7 @@ extension ChatControllerImpl {
                     }
                 }
             }
-        }, unpinMessage: { [weak self] id, askForConfirmation, contextController in
+        }, unpinMessage: { [weak self = self] id, askForConfirmation, contextController in
             let impl: () -> Void = {
                 guard let strongSelf = self else {
                     return
@@ -3535,7 +3535,7 @@ extension ChatControllerImpl {
             } else {
                 impl()
             }
-        }, unpinAllMessages: { [weak self] in
+        }, unpinAllMessages: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -3559,26 +3559,26 @@ extension ChatControllerImpl {
                     strongSelf.dismiss()
                 }
             })
-        }, openPinnedList: { [weak self] messageId in
+        }, openPinnedList: { [weak self = self] messageId in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.openPinnedMessages(at: messageId)
-        }, shareAccountContact: { [weak self] in
+        }, shareAccountContact: { [weak self = self] in
             self?.shareAccountContact()
-        }, reportPeer: { [weak self] in
+        }, reportPeer: { [weak self = self] in
             self?.reportPeer()
-        }, presentPeerContact: { [weak self] in
+        }, presentPeerContact: { [weak self = self] in
             self?.addPeerContact()
-        }, dismissReportPeer: { [weak self] in
+        }, dismissReportPeer: { [weak self = self] in
             self?.dismissPeerContactOptions()
-        }, deleteChat: { [weak self] in
+        }, deleteChat: { [weak self = self] in
             self?.deleteChat(reportChatSpam: false)
-        }, beginCall: { [weak self] isVideo in
+        }, beginCall: { [weak self = self] isVideo in
             if let strongSelf = self, case let .peer(peerId) = strongSelf.chatLocation {
                 strongSelf.controllerInteraction?.callPeer(peerId, isVideo)
             }
-        }, toggleMessageStickerStarred: { [weak self] messageId in
+        }, toggleMessageStickerStarred: { [weak self = self] messageId in
             if let strongSelf = self, let message = strongSelf.chatDisplayNode.historyNode.messageInCurrentHistoryView(messageId)?._asMessage() {
                 var stickerFile: TelegramMediaFile?
                 for media in message.media {
@@ -3596,7 +3596,7 @@ extension ChatControllerImpl {
                             return (result, !isSaved)
                         }
                     }
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] result, added in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result, added in
                         if let strongSelf = self {
                             switch result {
                                 case .generic:
@@ -3609,7 +3609,7 @@ extension ChatControllerImpl {
                                     } else {
                                         text = strongSelf.presentationData.strings.Premium_MaxFavedStickersText("\(premiumLimit)").string
                                     }
-                                    strongSelf.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: stickerFile, loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: true, action: { [weak self] action in
+                                    strongSelf.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: stickerFile, loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: true, action: { [weak self = self] action in
                                         if let strongSelf = self {
                                             if case .info = action {
                                                 let controller = PremiumIntroScreen(context: strongSelf.context, source: .savedStickers)
@@ -3624,23 +3624,23 @@ extension ChatControllerImpl {
                     })
                 }
             }
-        }, presentController: { [weak self] controller, arguments in
+        }, presentController: { [weak self = self] controller, arguments in
             self?.present(controller, in: .window(.root), with: arguments)
-        }, presentControllerInCurrent: { [weak self] controller, arguments in
+        }, presentControllerInCurrent: { [weak self = self] controller, arguments in
             if controller is UndoOverlayController {
                 self?.dismissAllTooltips()
             }
             self?.present(controller, in: .current, with: arguments)
-        }, getNavigationController: { [weak self] in
+        }, getNavigationController: { [weak self = self] in
             return self?.navigationController as? NavigationController
-        }, presentGlobalOverlayController: { [weak self] controller, arguments in
+        }, presentGlobalOverlayController: { [weak self = self] controller, arguments in
             self?.presentInGlobalOverlay(controller, with: arguments)
-        }, navigateFeed: { [weak self] in
+        }, navigateFeed: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.chatDisplayNode.historyNode.scrollToNextMessage()
             }
         }, openGrouping: {
-        }, toggleSilentPost: { [weak self] in
+        }, toggleSilentPost: { [weak self = self] in
             if let strongSelf = self {
                 var value: Bool = false
                 strongSelf.updateChatPresentationInterfaceState(interactive: true, {
@@ -3689,7 +3689,7 @@ extension ChatControllerImpl {
                     }))
                 }
             }
-        }, requestUnvoteInMessage: { [weak self] id in
+        }, requestUnvoteInMessage: { [weak self = self] id in
             guard let strongSelf = self else {
                 return
             }
@@ -3731,7 +3731,7 @@ extension ChatControllerImpl {
             }
             
             disposables.set((signal
-            |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+            |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -3740,7 +3740,7 @@ extension ChatControllerImpl {
                 }
                 self.selectPollOptionFeedback?.success()
             }), forKey: id)
-        }, requestStopPollInMessage: { [weak self] id in
+        }, requestStopPollInMessage: { [weak self = self] id in
             guard let strongSelf = self, let message = strongSelf.chatDisplayNode.historyNode.messageInCurrentHistoryView(id)?._asMessage() else {
                 return
             }
@@ -3811,19 +3811,19 @@ extension ChatControllerImpl {
             
             strongSelf.chatDisplayNode.dismissInput()
             strongSelf.present(actionSheet, in: .window(.root))
-        }, updateInputLanguage: { [weak self] f in
+        }, updateInputLanguage: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, {
                     return $0.updatedInterfaceState({ $0.withUpdatedInputLanguage(f($0.inputLanguage)) })
                 })
             }
-        }, unarchiveChat: { [weak self] in
+        }, unarchiveChat: { [weak self = self] in
             guard let strongSelf = self, case let .peer(peerId) = strongSelf.chatLocation else {
                 return
             }
             let _ = (strongSelf.context.engine.peers.updatePeersGroupIdInteractively(peerIds: [peerId], groupId: .root)
             |> deliverOnMainQueue).startStandalone()
-        }, openLinkEditing: { [weak self] in
+        }, openLinkEditing: { [weak self = self] in
             if let strongSelf = self {
                 // New rich-text editor backend: the editor owns the document, so read/apply the link through its
                 // native API rather than the legacy ChatTextInputState. The same chatTextLinkEditController UI is reused.
@@ -3860,7 +3860,7 @@ extension ChatControllerImpl {
                     }
                 }
                 
-                let controller = chatTextLinkEditController(context: strongSelf.context, updatedPresentationData: strongSelf.updatedPresentationData, text: strongSelf.presentationData.strings.TextFormat_AddLinkText(text?.string ?? "").string, link: link, apply: { [weak self] link, _ in
+                let controller = chatTextLinkEditController(context: strongSelf.context, updatedPresentationData: strongSelf.updatedPresentationData, text: strongSelf.presentationData.strings.TextFormat_AddLinkText(text?.string ?? "").string, link: link, apply: { [weak self = self] link, _ in
                     if let strongSelf = self, let inputMode = inputMode, let selectionRange = selectionRange {
                         if let link {
                             if !link.isEmpty {
@@ -3884,7 +3884,7 @@ extension ChatControllerImpl {
                 
                 strongSelf.updateChatPresentationInterfaceState(animated: false, interactive: false, { $0.updatedInputMode({ _ in return .none }) })
             }
-        }, openDateEditing: { [weak self] in
+        }, openDateEditing: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -3924,7 +3924,7 @@ extension ChatControllerImpl {
                 currentTime: date,
                 suggestedTime: suggestedDate,
                 isDark: false,
-                completion: { [weak self] result in
+                completion: { [weak self = self] result in
                     guard let self, let inputMode = inputMode, let selectionRange = selectionRange else {
                         return
                     }
@@ -3948,7 +3948,7 @@ extension ChatControllerImpl {
             self.push(controller)
             
             self.updateChatPresentationInterfaceState(animated: false, interactive: false, { $0.updatedInputMode({ _ in return .none }) })
-        }, displaySlowmodeTooltip: { [weak self] sourceView, nodeRect in
+        }, displaySlowmodeTooltip: { [weak self = self] sourceView, nodeRect in
             guard let strongSelf = self, let slowmodeState = strongSelf.presentationInterfaceState.slowmodeState else {
                 return
             }
@@ -3980,16 +3980,16 @@ extension ChatControllerImpl {
             strongSelf.slowmodeTooltipController = slowmodeTooltipController
             
             strongSelf.window?.presentInGlobalOverlay(slowmodeTooltipController)
-        }, displaySendMessageOptions: { [weak self] node, gesture in
+        }, displaySendMessageOptions: { [weak self = self] node, gesture in
             guard let self else {
                 return
             }
             chatMessageDisplaySendMessageOptions(selfController: self, node: node, gesture: gesture)
-        }, openScheduledMessages: { [weak self] in
+        }, openScheduledMessages: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.openScheduledMessages()
             }
-        }, displaySearchResultsTooltip: { [weak self] node, nodeRect in
+        }, displaySearchResultsTooltip: { [weak self = self] node, nodeRect in
             if let strongSelf = self {
                 strongSelf.searchResultsTooltipController?.dismiss()
                 let tooltipController = TooltipController(content: .text(strongSelf.presentationData.strings.ChatSearch_ResultsTooltip), baseFontSize: strongSelf.presentationData.listsFontSize.baseDisplaySize, dismissByTapOutside: true, dismissImmediatelyOnLayoutUpdate: true)
@@ -4008,20 +4008,20 @@ extension ChatControllerImpl {
                     return nil
                 }))
            }
-        }, unarchivePeer: { [weak self] in
+        }, unarchivePeer: { [weak self = self] in
             guard let strongSelf = self, case let .peer(peerId) = strongSelf.chatLocation else {
                 return
             }
             unarchiveAutomaticallyArchivedPeer(account: strongSelf.context.account, peerId: peerId)
             
             strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .succeed(text: strongSelf.presentationData.strings.Conversation_UnarchiveDone, timeout: nil, customUndoText: nil), elevatedLayout: false, action: { _ in return false }), in: .current)
-        }, scrollToTop: { [weak self] in
+        }, scrollToTop: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             
             strongSelf.chatDisplayNode.historyNode.scrollToStartOfHistory()
-        }, viewReplies: { [weak self] sourceMessageId, replyThreadResult in
+        }, viewReplies: { [weak self = self] sourceMessageId, replyThreadResult in
             guard let strongSelf = self else {
                 return
             }
@@ -4030,7 +4030,7 @@ extension ChatControllerImpl {
                 let subject: ChatControllerSubject? = sourceMessageId.flatMap { ChatControllerSubject.message(id: .id($0), highlight: ChatControllerSubject.MessageHighlight(quote: nil), timecode: nil, setupReply: false) }
                 strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .replyThread(replyThreadResult), subject: subject, keepStack: .always))
             }
-        }, activatePinnedListPreview: { [weak self] node, gesture in
+        }, activatePinnedListPreview: { [weak self = self] node, gesture in
             guard let strongSelf = self else {
                 return
             }
@@ -4047,7 +4047,7 @@ extension ChatControllerImpl {
             
             items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Chat_PinnedListPreview_ShowAllMessages, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/PinnedList"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let strongSelf = self else {
                     return
                 }
@@ -4058,7 +4058,7 @@ extension ChatControllerImpl {
             if strongSelf.canManagePin() {
                 items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Chat_PinnedListPreview_UnpinAllMessages, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unpin"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     guard let strongSelf = self else {
                         return
                     }
@@ -4068,7 +4068,7 @@ extension ChatControllerImpl {
             } else {
                 items.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.Chat_PinnedListPreview_HidePinnedMessages, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unpin"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     guard let strongSelf = self else {
                         return
                     }
@@ -4113,12 +4113,12 @@ extension ChatControllerImpl {
                 return {}
             }
             strongSelf.presentInGlobalOverlay(contextController)
-        }, joinGroupCall: { [weak self] activeCall in
+        }, joinGroupCall: { [weak self = self] activeCall in
             guard let strongSelf = self, let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer else {
                 return
             }
             strongSelf.joinGroupCall(peerId: peer.id, invite: nil, activeCall: EngineGroupCallDescription(activeCall))
-        }, presentInviteMembers: { [weak self] in
+        }, presentInviteMembers: { [weak self = self] in
             guard let strongSelf = self, let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer else {
                 return
             }
@@ -4126,11 +4126,11 @@ extension ChatControllerImpl {
                 return
             }
             presentAddMembersImpl(context: strongSelf.context, updatedPresentationData: strongSelf.updatedPresentationData, parentController: strongSelf, groupPeer: EnginePeer(peer), selectAddMemberDisposable: strongSelf.selectAddMemberDisposable, addMemberDisposable: strongSelf.addMemberDisposable)
-        }, presentGigagroupHelp: { [weak self] in
+        }, presentGigagroupHelp: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .info(title: nil, text: strongSelf.presentationData.strings.Conversation_GigagroupDescription, timeout: nil, customUndoText: nil), elevatedLayout: false, action: { _ in return true }), in: .current)
             }
-        }, openMonoforum: { [weak self] in
+        }, openMonoforum: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4144,7 +4144,7 @@ extension ChatControllerImpl {
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: monoforumPeerId)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] monoforumPeer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] monoforumPeer in
                 guard let self, let monoforumPeer else {
                     return
                 }
@@ -4153,29 +4153,29 @@ extension ChatControllerImpl {
                 }
                 self.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: self.context, chatLocation: .peer(monoforumPeer), keepStack: .always))
             })
-        }, editMessageMedia: { [weak self] messageId, draw in
+        }, editMessageMedia: { [weak self = self] messageId, draw in
             if let strongSelf = self {
                 strongSelf.controllerInteraction?.editMessageMedia(messageId, draw)
             }
-        }, updateShowCommands: { [weak self] f in
+        }, updateShowCommands: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(interactive: true, {
                     return $0.updatedShowCommands(f($0.showCommands))
                 })
             }
-        }, updateShowSendAsPeers: { [weak self] f in
+        }, updateShowSendAsPeers: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(interactive: true, {
                     return $0.updatedShowSendAsPeers(f($0.showSendAsPeers))
                 })
             }
-        }, openInviteRequests: { [weak self] in
+        }, openInviteRequests: { [weak self = self] in
             if let strongSelf = self, let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer {
                 let controller = inviteRequestsController(context: strongSelf.context, updatedPresentationData: strongSelf.updatedPresentationData, peerId: peer.id, existingContext: strongSelf.contentData?.inviteRequestsContext)
                 controller.navigationPresentation = .modal
                 strongSelf.push(controller)
             }
-        }, openSendAsPeer: { [weak self] node, gesture in
+        }, openSendAsPeer: { [weak self = self] node, gesture in
             guard let strongSelf = self, let peerId = strongSelf.chatLocation.peerId, let node = node as? ContextReferenceContentNode, let peers = strongSelf.presentationInterfaceState.sendAsPeers, let layout = strongSelf.validLayout else {
                 return
             }
@@ -4198,16 +4198,16 @@ extension ChatControllerImpl {
             
             var items: [ContextMenuItem] = []
             items.append(.custom(ChatSendAsPeerTitleContextItem(text: strongSelf.presentationInterfaceState.strings.Conversation_SendMesageAs.uppercased()), false))
-            items.append(.custom(ChatSendAsPeerListContextItem(context: strongSelf.context, chatPeerId: peerId, peers: peers, selectedPeerId: myPeerId, isPremium: isPremium, action: { [weak self] peer in
+            items.append(.custom(ChatSendAsPeerListContextItem(context: strongSelf.context, chatPeerId: peerId, peers: peers, selectedPeerId: myPeerId, isPremium: isPremium, action: { [weak self = self] peer in
                 guard let self else {
                     return
                 }
                 let _ = self.context.engine.peers.updatePeerSendAsPeer(peerId: peerId, sendAs: peer.id).startStandalone()
-            }, presentToast: { [weak self] peer in
+            }, presentToast: { [weak self = self] peer in
                 if let strongSelf = self {
                     HapticFeedback().impact()
                     
-                    strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .invitedToVoiceChat(context: strongSelf.context, peer: peer, title: nil, text: strongSelf.presentationData.strings.Conversation_SendMesageAsPremiumInfo, action: strongSelf.presentationData.strings.EmojiInput_PremiumEmojiToast_Action, duration: 3), elevatedLayout: false, action: { [weak self] action in
+                    strongSelf.present(UndoOverlayController(presentationData: strongSelf.presentationData, content: .invitedToVoiceChat(context: strongSelf.context, peer: peer, title: nil, text: strongSelf.presentationData.strings.Conversation_SendMesageAsPremiumInfo, action: strongSelf.presentationData.strings.EmojiInput_PremiumEmojiToast_Action, duration: 3), elevatedLayout: false, action: { [weak self = self] action in
                         guard let strongSelf = self else {
                             return true
                         }
@@ -4226,7 +4226,7 @@ extension ChatControllerImpl {
             strongSelf.chatDisplayNode.messageTransitionNode.dismissMessageReactionContexts()
             
             let contextController = makeContextController(presentationData: strongSelf.presentationData, source: .reference(ChatControllerContextReferenceContentSource(controller: strongSelf, sourceView: node.view, insets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: bottomInset, right: 0.0), contentInsets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0))), items: .single(ContextController.Items(content: .list(items))), gesture: gesture, workaroundUseLegacyImplementation: true)
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.updateChatPresentationInterfaceState(interactive: true, {
                         return $0.updatedShowSendAsPeers(false)
@@ -4238,9 +4238,9 @@ extension ChatControllerImpl {
             strongSelf.updateChatPresentationInterfaceState(interactive: true, {
                 return $0.updatedShowSendAsPeers(true)
             })
-        }, presentChatRequestAdminInfo: { [weak self] in
+        }, presentChatRequestAdminInfo: { [weak self = self] in
             self?.presentChatRequestAdminInfo()
-        }, displayCopyProtectionTip: { [weak self] sourceView, save in
+        }, displayCopyProtectionTip: { [weak self = self] sourceView, save in
             if let strongSelf = self, let peer = strongSelf.presentationInterfaceState.renderedPeer?.peer, let messageIds = strongSelf.presentationInterfaceState.interfaceState.selectionState?.selectedIds {
                 let _ = (strongSelf.context.engine.data.get(EngineDataMap(
                     messageIds.map(TelegramEngine.EngineData.Item.Messages.Message.init)
@@ -4248,7 +4248,7 @@ extension ChatControllerImpl {
                 |> map { messages -> [EngineMessage] in
                     return messages.values.compactMap { $0 }
                 }
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] messages in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] messages in
                     guard let strongSelf = self else {
                         return
                     }
@@ -4309,17 +4309,17 @@ extension ChatControllerImpl {
                     }))
                 })
            }
-        }, openWebView: { [weak self] buttonText, url, simple, source in
+        }, openWebView: { [weak self = self] buttonText, url, simple, source in
             if let strongSelf = self {
                 strongSelf.controllerInteraction?.openWebView(buttonText, url, simple, source)
             }
-        }, updateShowWebView: { [weak self] f in
+        }, updateShowWebView: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(interactive: true, {
                     return $0.updatedShowWebView(f($0.showWebView))
                 })
             }
-        }, insertText: { [weak self] text in
+        }, insertText: { [weak self = self] text in
             guard let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction else {
                 return
             }
@@ -4349,7 +4349,7 @@ extension ChatControllerImpl {
             }
             
             strongSelf.chatDisplayNode.updateTypingActivity(true)
-        }, backwardsDeleteText: { [weak self] in
+        }, backwardsDeleteText: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -4364,26 +4364,26 @@ extension ChatControllerImpl {
                 return
             }
             textInputPanelNode.backwardsDeleteText()
-        }, restartTopic: { [weak self] in
+        }, restartTopic: { [weak self = self] in
             guard let strongSelf = self, let peerId = strongSelf.chatLocation.peerId, let threadId = strongSelf.chatLocation.threadId else {
                 return
             }
             let _ = strongSelf.context.engine.peers.setForumChannelTopicClosed(id: peerId, threadId: threadId, isClosed: false).startStandalone()
-        }, toggleTranslation: { [weak self] type in
+        }, toggleTranslation: { [weak self = self] type in
             guard let self, let peerId = self.chatLocation.peerId else {
                 return
             }
             let _ = (updateChatTranslationStateInteractively(engine: self.context.engine, peerId: peerId, threadId: self.chatLocation.threadId,  { current in
                 return current?.withIsEnabled(type == .translated)
             })
-            |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+            |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                 if let self, type == .translated {
                     Queue.mainQueue().after(0.15) {
                         self.chatDisplayNode.historyNode.refreshPollActionsForVisibleMessages()
                     }
                 }
             })
-        }, changeTranslationLanguage: { [weak self] langCode in
+        }, changeTranslationLanguage: { [weak self = self] langCode in
             guard let self, let peerId = self.chatLocation.peerId else {
                 return
             }
@@ -4391,7 +4391,7 @@ extension ChatControllerImpl {
             let _ = updateChatTranslationStateInteractively(engine: self.context.engine, peerId: peerId, threadId: self.chatLocation.threadId, { current in
                 return current?.withToLang(langCode).withIsEnabled(true)
             }).startStandalone()
-        }, addDoNotTranslateLanguage: { [weak self] langCode in
+        }, addDoNotTranslateLanguage: { [weak self = self] langCode in
             guard let self, let peerId = self.chatLocation.peerId else {
                 return
             }
@@ -4426,7 +4426,7 @@ extension ChatControllerImpl {
             let locale = Locale(identifier: languageCode)
             let fromLanguage: String = locale.localizedString(forLanguageCode: langCode) ?? ""
             
-            self.present(UndoOverlayController(presentationData: presentationData, content: .image(image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Title Panels/Translate"), color: .white)!, title: nil, text: presentationData.strings.Conversation_Translation_AddedToDoNotTranslateText(fromLanguage).string, round: false, undoText: presentationData.strings.Conversation_Translation_Settings), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self] action in
+            self.present(UndoOverlayController(presentationData: presentationData, content: .image(image: generateTintedImage(image: UIImage(bundleImageName: "Chat/Title Panels/Translate"), color: .white)!, title: nil, text: presentationData.strings.Conversation_Translation_AddedToDoNotTranslateText(fromLanguage).string, round: false, undoText: presentationData.strings.Conversation_Translation_Settings), elevatedLayout: false, animateInAsReplacement: false, action: { [weak self = self] action in
                 if case .undo = action, let self {
                     let controller = translationSettingsController(context: self.context)
                     controller.navigationPresentation = .modal
@@ -4434,7 +4434,7 @@ extension ChatControllerImpl {
                 }
                 return true
             }), in: .current)
-        }, hideTranslationPanel: { [weak self] in
+        }, hideTranslationPanel: { [weak self = self] in
             guard let strongSelf = self, let peerId = strongSelf.chatLocation.peerId else {
                 return
             }
@@ -4463,7 +4463,7 @@ extension ChatControllerImpl {
                     }
                     return true
             }), in: .current)
-        }, openPremiumGift: { [weak self] in
+        }, openPremiumGift: { [weak self = self] in
             guard let self, let peerId = self.chatLocation.peerId else {
                 return
             }
@@ -4474,7 +4474,7 @@ extension ChatControllerImpl {
                     let _ = ApplicationSpecificNotice.incrementDismissedPremiumGiftSuggestion(accountManager: self.context.sharedContext.accountManager, peerId: peerId, timestamp: Int32(Date().timeIntervalSince1970)).startStandalone()
                 }
             } else {
-                let controller = self.context.sharedContext.makeGiftOptionsController(context: self.context, peerId: peerId, premiumOptions: [], hasBirthday: false, completion: { [weak self] in
+                let controller = self.context.sharedContext.makeGiftOptionsController(context: self.context, peerId: peerId, premiumOptions: [], hasBirthday: false, completion: { [weak self = self] in
                     guard let self, let peer = self.presentationInterfaceState.renderedPeer?.peer else {
                         return
                     }
@@ -4492,7 +4492,7 @@ extension ChatControllerImpl {
                 })
                 self.push(controller)
             }
-        }, openSuggestPost: { [weak self] message, mode in
+        }, openSuggestPost: { [weak self = self] message, mode in
             guard let self else {
                 return
             }
@@ -4572,19 +4572,19 @@ extension ChatControllerImpl {
                 })
                 self.presentSuggestPostOptions()
             }
-        }, openPremiumRequiredForMessaging: { [weak self] in
+        }, openPremiumRequiredForMessaging: { [weak self = self] in
             guard let self else {
                 return
             }
             let controller = self.context.sharedContext.makePremiumIntroController(context: self.context, source: .messageTags, forceDark: false, dismissed: nil)
             self.push(controller)
-        }, openStarsPurchase: { [weak self] requiredStars in
+        }, openStarsPurchase: { [weak self = self] requiredStars in
             guard let self, let starsContext = self.context.starsContext else {
                 return
             }
             let _ = (self.context.engine.payments.starsTopUpOptions()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                 guard let self else {
                     return
                 }
@@ -4594,7 +4594,7 @@ extension ChatControllerImpl {
             })
         }, openMessagePayment: {
             
-        }, openBoostToUnrestrict: { [weak self] in
+        }, openBoostToUnrestrict: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4612,7 +4612,7 @@ extension ChatControllerImpl {
             let _ = combineLatest(queue: Queue.mainQueue(),
                 context.engine.peers.getChannelBoostStatus(peerId: peerId),
                 context.engine.peers.getMyBoostStatus()
-            ).startStandalone(next: { [weak self] boostStatus, myBoostStatus in
+            ).startStandalone(next: { [weak self = self] boostStatus, myBoostStatus in
                 guard let self, let boostStatus, let myBoostStatus else {
                     return
                 }
@@ -4625,32 +4625,32 @@ extension ChatControllerImpl {
                 )
                 self.push(boostController)
             })
-        }, updateRecordingTrimRange: { [weak self] start, end, updatedEnd, apply in
+        }, updateRecordingTrimRange: { [weak self = self] start, end, updatedEnd, apply in
             guard let self else {
                 return
             }
             self.updateTrimRange(start: start, end: end, updatedEnd: updatedEnd, apply: apply)
-        }, dismissAllTooltips: { [weak self] in
+        }, dismissAllTooltips: { [weak self = self] in
             guard let self else {
                 return
             }
             self.dismissAllTooltips()
-        }, editTodoMessage: { [weak self] messageId, itemId, append in
+        }, editTodoMessage: { [weak self = self] messageId, itemId, append in
             guard let self else {
                 return
             }
             self.openTodoEditing(messageId: messageId, itemId: itemId, append: append)
-        }, dismissUrlPreview: { [weak self] in
+        }, dismissUrlPreview: { [weak self = self] in
             guard let self else {
                 return
             }
             self.chatDisplayNode.dismissUrlPreview()
-        }, dismissForwardMessages: { [weak self] in
+        }, dismissForwardMessages: { [weak self = self] in
             guard let self else {
                 return
             }
             self.chatDisplayNode.requestUpdateChatInterfaceState(.animated(duration: 0.4, curve: .spring), false, { $0.withUpdatedForwardMessageIds(nil).withUpdatedForwardOptionsState(nil) })
-        }, dismissSuggestPost: { [weak self] in
+        }, dismissSuggestPost: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4664,12 +4664,12 @@ extension ChatControllerImpl {
                 }
                 return state
             })
-        }, displayUndo: { [weak self] content in
+        }, displayUndo: { [weak self = self] content in
             guard let self else {
                 return
             }
             self.controllerInteraction?.displayUndo(content)
-        }, presentInputTextTranslation: { [weak self] text, replace in
+        }, presentInputTextTranslation: { [weak self = self] text, replace in
             let _ = self
             guard let self else {
                 return
@@ -4699,18 +4699,18 @@ extension ChatControllerImpl {
                     replaceText: { text, entities in
                         replace(chatInputStateStringWithAppliedEntities(text, entities: entities))
                     },
-                    pushController: { [weak self] c in
+                    pushController: { [weak self = self] c in
                         self?.push(c)
                     },
-                    presentController: { [weak self] c in
+                    presentController: { [weak self = self] c in
                         self?.present(c, in: .window(.root))
                     },
-                    display: { [weak self] c in
+                    display: { [weak self = self] c in
                         self?.push(c)
                     }
                 )
             } else {
-                Task { @MainActor [weak self] in
+                Task { @MainActor [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -4732,22 +4732,22 @@ extension ChatControllerImpl {
                     ))
                 }
             }
-        }, sendEmoji: { [weak self] text, attribute, immediately in
+        }, sendEmoji: { [weak self = self] text, attribute, immediately in
             guard let self else {
                 return
             }
             self.controllerInteraction?.sendEmoji(text, attribute, immediately)
-        }, openAICompose: { [weak self] in
+        }, openAICompose: { [weak self = self] in
             guard let self else {
                 return
             }
             self.chatDisplayNode.openAICompose()
-        }, openExpandedInput: { [weak self] in
+        }, openExpandedInput: { [weak self = self] in
             guard let self else {
                 return
             }
             self.chatDisplayNode.openExpandedInput()
-        }, openSetPeerAvatar: { [weak self] in
+        }, openSetPeerAvatar: { [weak self = self] in
             guard let self, let peer = self.presentationInterfaceState.renderedPeer?.peer else {
                 return
             }
@@ -4760,14 +4760,14 @@ extension ChatControllerImpl {
                     return nil
                 }
             )
-        }, updateHistoryFilter: { [weak self] update in
+        }, updateHistoryFilter: { [weak self = self] update in
             guard let self else {
                 return
             }
             
             let updatedFilter = update(self.presentationInterfaceState.historyFilter)
             
-            let apply: () -> Void = { [weak self] in
+            let apply: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -4791,7 +4791,7 @@ extension ChatControllerImpl {
                 let _ = (self.context.engine.data.get(
                     TelegramEngine.EngineData.Item.Messages.ReactionTagMessageCount(peerId: self.context.account.peerId, threadId: self.chatLocation.threadId, reaction: reaction)
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] count in
+                |> deliverOnMainQueue).start(next: { [weak self = self] count in
                     guard let self else {
                         return
                     }
@@ -4812,7 +4812,7 @@ extension ChatControllerImpl {
             } else {
                 apply()
             }
-        }, updateChatLocationThread: { [weak self] threadId, animationDirection in
+        }, updateChatLocationThread: { [weak self = self] threadId, animationDirection in
             guard let self else {
                 return
             }
@@ -4820,7 +4820,7 @@ extension ChatControllerImpl {
                 return direction ? .right : .left
             }
             self.updateChatLocationThread(threadId: threadId, animationDirection: animationDirection ?? defaultDirection)
-        }, toggleChatSidebarMode: { [weak self] in
+        }, toggleChatSidebarMode: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4836,7 +4836,7 @@ extension ChatControllerImpl {
                 }
                 return presentationInterfaceState.updatedPersistentData(persistentData)
             })
-        }, updateDisplayHistoryFilterAsList: { [weak self] displayAsList in
+        }, updateDisplayHistoryFilterAsList: { [weak self = self] displayAsList in
             guard let self else {
                 return
             }
@@ -4848,11 +4848,11 @@ extension ChatControllerImpl {
             self.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                 return state.updatedDisplayHistoryFilterAsList(displayAsList)
             })
-        }, requestLayout: { [weak self] transition in
+        }, requestLayout: { [weak self = self] transition in
             if let strongSelf = self, let layout = strongSelf.validLayout {
                 strongSelf.containerLayoutUpdated(layout, transition: transition)
             }
-        }, chatController: { [weak self] in
+        }, chatController: { [weak self = self] in
             return self
         }, statuses: ChatPanelInterfaceInteractionStatuses(editingMessage: self.editingMessage.get(), startingBot: self.startingBot.get(), unblockingPeer: self.unblockingPeer.get(), searching: self.searching.get(), loadingMessage: self.loadingMessage.get(), inlineSearch: self.performingInlineSearch.get()))
         
@@ -4866,7 +4866,7 @@ extension ChatControllerImpl {
         self.chatDisplayNode.interfaceInteraction = interfaceInteraction
         
         self.context.sharedContext.mediaManager.galleryHiddenMediaManager.addTarget(self)
-        self.galleryHiddenMesageAndMediaDisposable.set(self.context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self] ids in
+        self.galleryHiddenMesageAndMediaDisposable.set(self.context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self = self] ids in
             if let strongSelf = self, let controllerInteraction = strongSelf.controllerInteraction {
                 var messageIdAndMedia: [MessageId: [Media]] = [:]
                 
@@ -4886,7 +4886,7 @@ extension ChatControllerImpl {
             }
         }))
         
-        self.chatDisplayNode.dismissAsOverlay = { [weak self] in
+        self.chatDisplayNode.dismissAsOverlay = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.statusBar.statusBarStyle = .Ignore
                 strongSelf.chatDisplayNode.animateDismissAsOverlay(completion: {
@@ -4897,7 +4897,7 @@ extension ChatControllerImpl {
         
         var lastEventTimestamp: Double = 0.0
         self.networkSpeedEventsDisposable = (self.context.account.network.networkSpeedLimitedEvents
-        |> deliverOnMainQueue).start(next: { [weak self] event in
+        |> deliverOnMainQueue).start(next: { [weak self = self] event in
             guard let self else {
                 return
             }
@@ -4953,7 +4953,7 @@ extension ChatControllerImpl {
             
             self.context.account.network.markNetworkSpeedLimitDisplayed()
             
-            self.present(UndoOverlayController(presentationData: self.presentationData, content: content, elevatedLayout: false, position: .top, action: { [weak self] action in
+            self.present(UndoOverlayController(presentationData: self.presentationData, content: content, elevatedLayout: false, position: .top, action: { [weak self = self] action in
                 guard let self else {
                     return false
                 }
@@ -4979,7 +4979,7 @@ extension ChatControllerImpl {
         
         if case .scheduledMessages = self.subject {
             self.postedScheduledMessagesEventsDisposable = (self.context.account.stateManager.sentScheduledMessageIds
-            |> deliverOnMainQueue).start(next: { [weak self] ids in
+            |> deliverOnMainQueue).start(next: { [weak self = self] ids in
                 guard let self, let peerId = self.chatLocation.peerId else {
                     return
                 }
@@ -5021,7 +5021,7 @@ extension ChatControllerImpl {
         )
         self.globalControlPanelsContext = globalControlPanelsContext
         self.globalControlPanelsContextStateDisposable = (globalControlPanelsContext.state
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
             guard let self else {
                 return
             }
@@ -5034,7 +5034,7 @@ extension ChatControllerImpl {
     
     func setupChatHistoryNode(historyNode: ChatHistoryListNodeImpl) {
         self.historyStateDisposable?.dispose()
-        self.historyStateDisposable = historyNode.historyState.get().startStrict(next: { [weak self] state in
+        self.historyStateDisposable = historyNode.historyState.get().startStrict(next: { [weak self = self] state in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: strongSelf.isViewLoaded && strongSelf.view.window != nil, {
                     $0.updatedChatHistoryState(state)
@@ -5059,7 +5059,7 @@ extension ChatControllerImpl {
                 }
                 self.buttonUnreadCountDisposable?.dispose()
                 self.buttonUnreadCountDisposable = (throttledUnreadCountSignal
-                |> deliverOnMainQueue).startStrict(next: { [weak self] count in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] count in
                     guard let strongSelf = self else {
                         return
                     }
@@ -5073,7 +5073,7 @@ extension ChatControllerImpl {
                         TelegramEngine.EngineData.Item.Messages.TotalReadCounters(),
                         TelegramEngine.EngineData.Item.Peer.NotificationSettings(id: peerId)
                     )
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] peerUnreadCount, totalReadCounters, notificationSettings in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerUnreadCount, totalReadCounters, notificationSettings in
                         guard let strongSelf = self else {
                             return
                         }
@@ -5099,7 +5099,7 @@ extension ChatControllerImpl {
                     })
                 
                     self.chatUnreadMentionCountDisposable?.dispose()
-                    self.chatUnreadMentionCountDisposable = (self.context.account.viewTracker.unseenPersonalMessagesAndReactionCount(peerId: peerId, threadId: nil) |> deliverOnMainQueue).startStrict(next: { [weak self] mentionCount, reactionCount, pollVoteCount in
+                    self.chatUnreadMentionCountDisposable = (self.context.account.viewTracker.unseenPersonalMessagesAndReactionCount(peerId: peerId, threadId: nil) |> deliverOnMainQueue).startStrict(next: { [weak self = self] mentionCount, reactionCount, pollVoteCount in
                         if let strongSelf = self {
                             if case .standard(.previewing) = strongSelf.presentationInterfaceState.mode {
                                 strongSelf.chatDisplayNode.navigateButtons.mentionCount = 0
@@ -5114,7 +5114,7 @@ extension ChatControllerImpl {
                     })
                 } else if let peerId = self.chatLocation.peerId, let threadId = self.chatLocation.threadId {
                     self.chatUnreadMentionCountDisposable?.dispose()
-                    self.chatUnreadMentionCountDisposable = (self.context.account.viewTracker.unseenPersonalMessagesAndReactionCount(peerId: peerId, threadId: threadId) |> deliverOnMainQueue).startStrict(next: { [weak self] mentionCount, reactionCount, pollVoteCount in
+                    self.chatUnreadMentionCountDisposable = (self.context.account.viewTracker.unseenPersonalMessagesAndReactionCount(peerId: peerId, threadId: threadId) |> deliverOnMainQueue).startStrict(next: { [weak self = self] mentionCount, reactionCount, pollVoteCount in
                         if let strongSelf = self {
                             if case .standard(.previewing) = strongSelf.presentationInterfaceState.mode {
                                 strongSelf.chatDisplayNode.navigateButtons.mentionCount = 0
@@ -5178,7 +5178,7 @@ extension ChatControllerImpl {
                             }
                         }
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] activities in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] activities in
                         if let strongSelf = self {
                             let displayActivities = activities.filter({
                                 switch $0.1 {
@@ -5227,7 +5227,7 @@ extension ChatControllerImpl {
             
             if let peerId = peerId {
                 self.sentMessageEventsDisposable.set((self.context.account.pendingMessageManager.deliveredMessageEvents(peerId: peerId)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] eventGroup in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] eventGroup in
                     guard let self else {
                         return
                     }
@@ -5237,7 +5237,7 @@ extension ChatControllerImpl {
                     }
                     if self.presentationInterfaceState.subject != .scheduledMessages, let firstEvent = eventGroup.first, firstEvent.id.namespace == Namespaces.Message.ScheduledCloud {
                         if eventGroup.contains(where: { $0.isPendingProcessing }) {
-                            self.openScheduledMessages(completion: { [weak self] c in
+                            self.openScheduledMessages(completion: { [weak self = self] c in
                                 guard let self else {
                                     return
                                 }
@@ -5272,7 +5272,7 @@ extension ChatControllerImpl {
                     }
                     
                     if self.shouldDisplayChecksTooltip {
-                        Queue.mainQueue().after(1.0) { [weak self] in
+                        Queue.mainQueue().after(1.0) { [weak self = self] in
                             self?.displayChecksTooltip()
                         }
                         self.shouldDisplayChecksTooltip = false
@@ -5281,7 +5281,7 @@ extension ChatControllerImpl {
                     
                     if let shouldDisplayProcessingVideoTooltip = self.shouldDisplayProcessingVideoTooltip {
                         self.shouldDisplayProcessingVideoTooltip = nil
-                        Queue.mainQueue().after(1.0) { [weak self] in
+                        Queue.mainQueue().after(1.0) { [weak self = self] in
                             self?.displayProcessingVideoTooltip(messageId: shouldDisplayProcessingVideoTooltip)
                         }
                     }
@@ -5295,7 +5295,7 @@ extension ChatControllerImpl {
                 }
             
                 self.failedMessageEventsDisposable.set((self.context.account.pendingMessageManager.failedMessageEvents(peerId: peerId, isScheduled: isScheduledMessages)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] reason in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] reason in
                     guard let strongSelf = self else {
                         return
                     }
@@ -5353,7 +5353,7 @@ extension ChatControllerImpl {
                 self.sentPeerMediaMessageEventsDisposable.dispose()
                 self.sentPeerMediaMessageEventsDisposable.set(
                     (self.context.account.pendingPeerMediaUploadManager.sentMessageEvents(peerId: peerId)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                         if let self {
                             self.chatDisplayNode.historyNode.scrollToEndOfHistory()
                         }
@@ -5414,7 +5414,7 @@ extension ChatControllerImpl {
             strongSelf.chatDisplayNode.updatePlainInputSeparatorAlpha(plainInputSeparatorAlpha, transition: .animated(duration: 0.2, curve: .easeInOut))
         }
         
-        historyNode.scrolledToIndex = { [weak self] toSubject, initial in
+        historyNode.scrolledToIndex = { [weak self = self] toSubject, initial in
             if let strongSelf = self, case let .message(index) = toSubject.index {
                 if case let .message(messageSubject, _, _, _) = strongSelf.subject, initial, case let .id(messageId) = messageSubject, messageId != index.id {
                     if messageId.peerId == index.id.peerId {
@@ -5477,14 +5477,14 @@ extension ChatControllerImpl {
             }
         }
         
-        historyNode.scrolledToSomeIndex = { [weak self] in
+        historyNode.scrolledToSomeIndex = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.contentData?.scrolledToMessageIdValue = nil
         }
         
-        historyNode.maxVisibleMessageIndexUpdated = { [weak self] index in
+        historyNode.maxVisibleMessageIndexUpdated = { [weak self = self] index in
             if let strongSelf = self, let contentData = strongSelf.contentData, !contentData.historyNavigationStack.isEmpty {
                 contentData.historyNavigationStack.filterOutIndicesLessThan(index)
             }
@@ -5498,7 +5498,7 @@ extension ChatControllerImpl {
             self.hasActiveGroupCallDisposable = ((callManager.currentGroupCallSignal
             |> map { call -> Bool in
                 return call != nil
-            }) |> deliverOnMainQueue).startStrict(next: { [weak self] hasActiveGroupCall in
+            }) |> deliverOnMainQueue).startStrict(next: { [weak self = self] hasActiveGroupCall in
                 self?.updateChatPresentationInterfaceState(animated: true, interactive: false, { state in
                     return state.updatedHasActiveGroupCall(hasActiveGroupCall)
                 })
@@ -5508,9 +5508,9 @@ extension ChatControllerImpl {
         }
         
         let shouldBeActive = combineLatest(self.context.sharedContext.mediaManager.audioSession.isPlaybackActive() |> deliverOnMainQueue, historyNode.hasVisiblePlayableItemNodes, hasActiveCalls)
-        |> mapToSignal { [weak self] isPlaybackActive, hasVisiblePlayableItemNodes, hasActiveCalls -> Signal<Bool, NoError> in
+        |> mapToSignal { [weak self = self] isPlaybackActive, hasVisiblePlayableItemNodes, hasActiveCalls -> Signal<Bool, NoError> in
             if hasVisiblePlayableItemNodes && !isPlaybackActive && !hasActiveCalls {
-                return Signal<Bool, NoError> { [weak self] subscriber in
+                return Signal<Bool, NoError> { [weak self = self] subscriber in
                     guard let strongSelf = self else {
                         subscriber.putCompletion()
                         return EmptyDisposable
@@ -5525,7 +5525,7 @@ extension ChatControllerImpl {
             }
         }
         
-        let buttonAction = { [weak self] in
+        let buttonAction = { [weak self = self] in
             guard let self, self.traceVisibility() && isTopmostChatController(self) else {
                 return
             }
@@ -5560,7 +5560,7 @@ extension ChatControllerImpl {
             downPressed: buttonAction
         )
 
-        historyNode.openNextChannelToRead = { [weak self] peer, threadData, location in
+        historyNode.openNextChannelToRead = { [weak self = self] peer, threadData, location in
             guard let strongSelf = self else {
                 return
             }
@@ -5615,12 +5615,12 @@ extension ChatControllerImpl {
             }
         }
         
-        historyNode.beganDragging = { [weak self] in
+        historyNode.beganDragging = { [weak self = self] in
             guard let self else {
                 return
             }
             if self.presentationInterfaceState.search != nil && self.presentationInterfaceState.historyFilter != nil {
-                self.chatDisplayNode.historyNode.addAfterTransactionsCompleted { [weak self] in
+                self.chatDisplayNode.historyNode.addAfterTransactionsCompleted { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -5630,7 +5630,7 @@ extension ChatControllerImpl {
             }
         }
     
-        historyNode.didScrollWithOffset = { [weak self] offset, transition, itemNode, isTracking in
+        historyNode.didScrollWithOffset = { [weak self = self] offset, transition, itemNode, isTracking in
             guard let strongSelf = self else {
                 return
             }
@@ -5662,13 +5662,13 @@ extension ChatControllerImpl {
             strongSelf.chatDisplayNode.messageTransitionNode.addExternalOffset(offset: offset, transition: transition, itemNode: itemNode, isRotated: strongSelf.chatDisplayNode.historyNode.rotated)
         }
         
-        historyNode.hasAtLeast3MessagesUpdated = { [weak self] hasAtLeast3Messages in
+        historyNode.hasAtLeast3MessagesUpdated = { [weak self = self] hasAtLeast3Messages in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(interactive: false, { $0.updatedHasAtLeast3Messages(hasAtLeast3Messages) })
             }
         }
         
-        historyNode.hasPlentyOfMessagesUpdated = { [weak self] hasPlentyOfMessages in
+        historyNode.hasPlentyOfMessagesUpdated = { [weak self = self] hasPlentyOfMessages in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(interactive: false, { $0.updatedHasPlentyOfMessages(hasPlentyOfMessages) })
             }

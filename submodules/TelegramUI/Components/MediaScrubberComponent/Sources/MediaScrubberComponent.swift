@@ -283,20 +283,20 @@ public final class MediaScrubberComponent: Component {
             
             self.cursorView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.handleCursorPan(_:))))
             
-            self.cursorDisplayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.cursorDisplayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 self?.updateCursorPosition()
             }
             self.cursorDisplayLink?.isPaused = true
             
-            self.trimView.updated = { [weak self] transition in
+            self.trimView.updated = { [weak self = self] transition in
                 self?.state?.updated(transition: transition)
             }
-            self.trimView.trimUpdated = { [weak self] startValue, endValue, updatedEnd, done in
+            self.trimView.trimUpdated = { [weak self = self] startValue, endValue, updatedEnd, done in
                 if let self, let component = self.component {
                     component.trackTrimUpdated(self.selectedTrackId, startValue, endValue, updatedEnd, done)
                 }
             }
-            self.ghostTrimView.trimUpdated = { [weak self] startValue, endValue, updatedEnd, done in
+            self.ghostTrimView.trimUpdated = { [weak self = self] startValue, endValue, updatedEnd, done in
                 if let self, let component = self.component {
                     component.trackTrimUpdated(0, startValue, endValue, updatedEnd, done)
                 }
@@ -573,7 +573,7 @@ public final class MediaScrubberComponent: Component {
                 } else {
                     trackTransition = .immediate
                     trackView = TrackView()
-                    trackView.onTap = { [weak self] fraction in
+                    trackView.onTap = { [weak self = self] fraction in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -582,7 +582,7 @@ public final class MediaScrubberComponent: Component {
                             position += offset
                         }
                         self.ignoreCursorPositionUpdate = true
-                        component.coverPositionUpdated(position, true, { [weak self] in
+                        component.coverPositionUpdated(position, true, { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -590,7 +590,7 @@ public final class MediaScrubberComponent: Component {
                             self.state?.updated(transition: .immediate)
                         })
                     }
-                    trackView.onSelection = { [weak self] id in
+                    trackView.onSelection = { [weak self = self] id in
                         guard let self else {
                             return
                         }
@@ -598,13 +598,13 @@ public final class MediaScrubberComponent: Component {
                         self.component?.trackSelectionUpdated(id)
                         self.state?.updated(transition: .easeInOut(duration: 0.2))
                     }
-                    trackView.offsetUpdated = { [weak self] offset, apply in
+                    trackView.offsetUpdated = { [weak self = self] offset, apply in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.trackOffsetUpdated(id, offset, apply)
                     }
-                    trackView.updated = { [weak self] transition in
+                    trackView.updated = { [weak self = self] transition in
                         guard let self else {
                             return
                         }
@@ -658,7 +658,7 @@ public final class MediaScrubberComponent: Component {
                 } else {
                     trackTransition = .immediate
                     trackView = TrackView()
-                    trackView.onSelection = { [weak self] _ in
+                    trackView.onSelection = { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -916,7 +916,7 @@ public final class MediaScrubberComponent: Component {
                     if component.isCollageSelected {
                         blurFilter.setValue(0.0 as NSNumber, forKey: "inputRadius")
                         self.trackContainerView.layer.filters = [blurFilter]
-                        self.trackContainerView.layer.animate(from: 20.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.3, completion: { [weak self] completed in
+                        self.trackContainerView.layer.animate(from: 20.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.3, completion: { [weak self = self] completed in
                             guard let self, completed else {
                                 return
                             }
@@ -925,7 +925,7 @@ public final class MediaScrubberComponent: Component {
                     } else {
                         blurFilter.setValue(0.0 as NSNumber, forKey: "inputRadius")
                         self.trackContainerView.layer.filters = [blurFilter]
-                        self.trackContainerView.layer.animate(from: 0.0 as NSNumber, to: 20.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.4, completion: { [weak self] completed in
+                        self.trackContainerView.layer.animate(from: 0.0 as NSNumber, to: 20.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.4, completion: { [weak self = self] completed in
                             guard let self, completed else {
                                 return
                             }

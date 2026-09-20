@@ -142,7 +142,7 @@ final class SemanticStatusNodeIconContext: SemanticStatusNodeStateContext {
         
         if [.play, .pause].contains(icon) {
             self.animationNode = PlayPauseIconNode()
-            self.animationNode?.imageUpdated = { [weak self] image in
+            self.animationNode?.imageUpdated = { [weak self = self] image in
                 if let strongSelf = self {
                     strongSelf.iconImage = image
                     if var position = strongSelf.animationNode?.state?.position {

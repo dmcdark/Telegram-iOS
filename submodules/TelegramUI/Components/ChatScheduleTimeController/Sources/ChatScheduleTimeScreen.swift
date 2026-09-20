@@ -173,7 +173,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
             
             let isSilentPosting = self.isSilentPosting
             let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer, let environment = self.environment, let controller = self.environment?.controller() else {
                     return
                 }
@@ -304,7 +304,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                     dateTimeFormat: environment.dateTimeFormat,
                     hasValueRow: false
                 )
-                datePicker.valueUpdated = { [weak self] date in
+                datePicker.valueUpdated = { [weak self = self] date in
                     if let self {
                         self.date = date
                         self.state?.updated()
@@ -313,7 +313,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                 self.addSubview(datePicker.view)
                 self.datePicker = datePicker
             }
-            datePicker.heightUpdated = { [weak self] height in
+            datePicker.heightUpdated = { [weak self = self] height in
                 guard let self else {
                     return
                 }
@@ -403,7 +403,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                     isLocked: false
                                 )
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -499,7 +499,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                     isLocked: !component.context.isPremium
                                 )
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -568,7 +568,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                     )),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component, let controller = self.environment?.controller() as? ChatScheduleTimeScreen else {
                             return
                         }
@@ -617,7 +617,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                         )),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let controller = self.environment?.controller() as? ChatScheduleTimeScreen else {
                                 return
                             }
@@ -659,7 +659,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                         )),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let controller = self.environment?.controller() as? ChatScheduleTimeScreen else {
                                 return
                             }
@@ -698,7 +698,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                             sourceFrame: timeValueFrame,
                             component: AnyComponent(TimeMenuComponent(
                                 value: self.date ?? Date(),
-                                valueUpdated: { [weak self] value in
+                                valueUpdated: { [weak self = self] value in
                                     guard let self else {
                                         return
                                     }
@@ -716,7 +716,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                     self.state?.updated()
                                 }
                             )),
-                            dismiss: { [weak self] in
+                            dismiss: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -756,7 +756,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                 theme: environment.theme,
                                 strings: strings,
                                 value: self.repeatPeriod,
-                                valueUpdated: { [weak self] value in
+                                valueUpdated: { [weak self = self] value in
                                     guard let self, let component = self.component, let environment = self.environment else {
                                         return
                                     }
@@ -798,7 +798,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                     self.state?.updated()
                                 }
                             )),
-                            dismiss: { [weak self] in
+                            dismiss: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -844,7 +844,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                 tintColor: environment.theme.chat.inputPanel.panelControlColor
                             )
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -885,7 +885,7 @@ private final class ChatScheduleTimeSheetContentComponent: Component {
                                     size: CGSize(width: 30.0, height: 30.0)
                                 )
                             )),
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1004,7 +1004,7 @@ private final class ChatScheduleTimeScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     guard let self, let environment = self.environment else {
                         return
                     }
@@ -1027,7 +1027,7 @@ private final class ChatScheduleTimeScreenComponent: Component {
                         minimalTime: component.minimalTime,
                         silentPosting: component.silentPosting,
                         externalState: self.contentExternalState,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1481,7 +1481,7 @@ private final class MenuButtonComponent: Component {
             
             self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.selectionLayer.opacity = 1.0
@@ -1650,7 +1650,7 @@ private final class RepeatMenuComponent: Component {
                         text: component.strings.ScheduleMessage_RepeatPeriod_Never,
                         isSelected: component.value == nil,
                         width: self.width,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1708,7 +1708,7 @@ private final class RepeatMenuComponent: Component {
                             text: repeatString,
                             isSelected: component.value == value,
                             width: self.width,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

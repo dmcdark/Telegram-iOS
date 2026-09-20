@@ -198,7 +198,7 @@ public final class LottieComponent: Component {
             self.hierarchyTrackingLayer = hierarchyTrackingLayer
             self.layer.addSublayer(hierarchyTrackingLayer)
             
-            hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+            hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -207,7 +207,7 @@ public final class LottieComponent: Component {
                     self.visibilityUpdated()
                 }
             }
-            hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+            hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -260,7 +260,7 @@ public final class LottieComponent: Component {
             
             if delay != 0.0 {
                 self.isHidden = true
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay, execute: { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay, execute: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -268,7 +268,7 @@ public final class LottieComponent: Component {
                     
                     self.currentFrameStartTime = CACurrentMediaTime()
                     if self.displayLink == nil {
-                        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -279,7 +279,7 @@ public final class LottieComponent: Component {
             } else {
                 self.currentFrameStartTime = CACurrentMediaTime()
                 if self.displayLink == nil {
-                    self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                    self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -431,7 +431,7 @@ public final class LottieComponent: Component {
             self.component = component
             self.state = state
             
-            component.playOnce?.connect { [weak self] in
+            component.playOnce?.connect { [weak self = self] in
                 guard let self else {
                     return
                 }

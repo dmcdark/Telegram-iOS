@@ -173,7 +173,7 @@ private final class MultiplexedRequestManagerContext {
         self.updateState()
         
         let queue = self.queue
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 guard let strongSelf = self else {
                     return
@@ -311,7 +311,7 @@ private final class MultiplexedRequestManagerContext {
                         
                         disposable.set((Signal<Never, NoError>.complete()
                         |> delay(20 * 60, queue: self.queue)
-                        |> deliverOn(self.queue)).start(completed: { [weak self] in
+                        |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }

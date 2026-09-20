@@ -62,7 +62,7 @@ extension ChatControllerImpl {
                 reactionFile
             )
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] savedMessageTags, reactionFile in
+            |> deliverOnMainQueue).start(next: { [weak self = self] savedMessageTags, reactionFile in
                 guard let self, let savedMessageTags else {
                     return
                 }
@@ -85,26 +85,26 @@ extension ChatControllerImpl {
                 
                 items.append(.action(ContextMenuActionItem(text: optionTitle, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/TagEditName"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, a in
+                }, action: { [weak self = self] c, a in
                     guard let self else {
                         a(.default)
                         return
                     }
-                    c?.dismiss(completion: { [weak self] in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         
                         let _ = (self.context.engine.stickers.savedMessageTagData()
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] savedMessageTags in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] savedMessageTags in
                             guard let self else {
                                 return
                             }
                             
                             let reaction = value
                             
-                            let promptController = savedTagNameAlertController(context: self.context, updatedPresentationData: nil, text: optionTitle, subtext: self.presentationData.strings.Chat_EditTagTitle_Text, value: savedMessageTags?.tags.first(where: { $0.reaction == reaction })?.title ?? "", reaction: reaction, file: reactionFile, characterLimit: 12, apply: { [weak self] value in
+                            let promptController = savedTagNameAlertController(context: self.context, updatedPresentationData: nil, text: optionTitle, subtext: self.presentationData.strings.Chat_EditTagTitle_Text, value: savedMessageTags?.tags.first(where: { $0.reaction == reaction })?.title ?? "", reaction: reaction, file: reactionFile, characterLimit: 12, apply: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -123,7 +123,7 @@ extension ChatControllerImpl {
                     if self.presentationInterfaceState.historyFilter?.customTag != tag {
                         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_ReactionContextMenu_FilterByTag, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/TagFilter"), color: theme.contextMenu.primaryColor)
-                        }, action: { [weak self] _, a in
+                        }, action: { [weak self = self] _, a in
                             guard let self else {
                                 a(.default)
                                 return
@@ -140,7 +140,7 @@ extension ChatControllerImpl {
                 
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_ReactionContextMenu_RemoveTag, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/TagRemove"), color: theme.contextMenu.destructiveColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     a(.dismissWithoutContent)
                     guard let self else {
                         return
@@ -151,7 +151,7 @@ extension ChatControllerImpl {
                 self.canReadHistory.set(false)
                 
                 let controller = makeContextController(presentationData: self.presentationData, source: .extracted(ChatMessageReactionContextExtractedContentSource(chatNode: self.chatDisplayNode, engine: self.context.engine, message: message, contentView: sourceView)), items: .single(ContextController.Items(content: .list(items))), recognizer: nil, gesture: gesture)
-                controller.dismissed = { [weak self] in
+                controller.dismissed = { [weak self = self] in
                     self?.canReadHistory.set(true)
                 }
                 
@@ -181,7 +181,7 @@ extension ChatControllerImpl {
                 self.context.engine.stickers.availableReactions(),
                 self.context.engine.stickers.resolveInlineStickers(fileIds: customFileIds)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] availableReactions, customEmoji in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] availableReactions, customEmoji in
                 guard let self else {
                     return
                 }
@@ -196,8 +196,8 @@ extension ChatControllerImpl {
                 let canViewReactions = canViewMessageReactionList(message: message)
                 let deleteReaction: ((EnginePeer, MessageReaction.Reaction) -> Void)?
                 if canDeleteReactions && canViewReactions {
-                    deleteReaction = { [weak self] peer, _ in
-                        dismissController?({ [weak self] in
+                    deleteReaction = { [weak self = self] peer, _ in
+                        dismissController?({ [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -221,7 +221,7 @@ extension ChatControllerImpl {
                         readStats: nil,
                         back: nil,
                         openPeer: { peer, hasReaction in
-                            dismissController?({ [weak self] in
+                            dismissController?({ [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -254,14 +254,14 @@ extension ChatControllerImpl {
                 let context = self.context
                 let presentationData = self.presentationData
                 
-                let action = { [weak self] in
+                let action = { [weak self = self] in
                     guard let packReference = packReferences.first, let self else {
                         return
                     }
                     self.chatDisplayNode.dismissTextInput()
                     
                     let presentationData = self.presentationData
-                    let controller = StickerPackScreen(context: context, updatedPresentationData: self.updatedPresentationData, mainStickerPack: packReference, stickerPacks: Array(packReferences), parentNavigationController: self.effectiveNavigationController, actionPerformed: { [weak self] actions in
+                    let controller = StickerPackScreen(context: context, updatedPresentationData: self.updatedPresentationData, mainStickerPack: packReference, stickerPacks: Array(packReferences), parentNavigationController: self.effectiveNavigationController, actionPerformed: { [weak self = self] actions in
                         guard let self else {
                             return
                         }
@@ -372,7 +372,7 @@ extension ChatControllerImpl {
                 self.canReadHistory.set(false)
                 
                 let controller = makeContextController(presentationData: self.presentationData, source: .extracted(ChatMessageReactionContextExtractedContentSource(chatNode: self.chatDisplayNode, engine: self.context.engine, message: message, contentView: sourceView)), items: .single(items), recognizer: nil, gesture: gesture)
-                controller.dismissed = { [weak self] in
+                controller.dismissed = { [weak self = self] in
                     self?.canReadHistory.set(true)
                 }
                 dismissController = { [weak controller] completion in
@@ -407,13 +407,13 @@ extension ChatControllerImpl {
             return
         }
         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.ReactionSettings(id: peerId))
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] reactionSettings in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] reactionSettings in
             guard let self else {
                 return
             }
         
             let reactionsAttribute = mergedMessageReactions(attributes: message.attributes, isTags: false)
-            let _ = (ChatSendStarsScreen.initialData(context: self.context, peerId: message.id.peerId, reactSubject: .message(message.id), topPeers: reactionsAttribute?.topPeers ?? [], completion: { [weak self] amount, privacy, isBecomingTop, transitionOut in
+            let _ = (ChatSendStarsScreen.initialData(context: self.context, peerId: message.id.peerId, reactSubject: .message(message.id), topPeers: reactionsAttribute?.topPeers ?? [], completion: { [weak self = self] amount, privacy, isBecomingTop, transitionOut in
                 guard let self, amount > 0 else {
                     return
                 }
@@ -479,7 +479,7 @@ extension ChatControllerImpl {
                             hideNode: false,
                             forceSwitchToInlineImmediately: false,
                             animateTargetContainer: nil,
-                            addStandaloneReactionAnimation: { [weak self] standaloneReactionAnimation in
+                            addStandaloneReactionAnimation: { [weak self = self] standaloneReactionAnimation in
                                 guard let self else {
                                     return
                                 }
@@ -510,7 +510,7 @@ extension ChatControllerImpl {
                 let _ = self.context.engine.messages.sendStarsReaction(id: message.id, count: Int(amount), privacy: privacy).startStandalone()
                 self.displayOrUpdateSendStarsUndo(messageId: message.id, count: Int(amount), privacy: privacy)
             })
-            |> deliverOnMainQueue).start(next: { [weak self] initialData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] initialData in
                 guard let self, let initialData else {
                     return
                 }
@@ -528,7 +528,7 @@ extension ChatControllerImpl {
             )
         }
         let _ = (privacyPeer
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] privacyPeer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] privacyPeer in
             guard let self else {
                 return
             }
@@ -565,7 +565,7 @@ extension ChatControllerImpl {
             if let current = self.currentSendStarsUndoController {
                 current.content = .starsSent(context: self.context, title: title, text: textItems, hasUndo: true)
             } else {
-                let controller = UndoOverlayController(presentationData: self.presentationData, content: .starsSent(context: self.context, title: title, text: textItems, hasUndo: true), elevatedLayout: false, position: .top, action: { [weak self] action in
+                let controller = UndoOverlayController(presentationData: self.presentationData, content: .starsSent(context: self.context, title: title, text: textItems, hasUndo: true), elevatedLayout: false, position: .top, action: { [weak self = self] action in
                     guard let self else {
                         return false
                     }

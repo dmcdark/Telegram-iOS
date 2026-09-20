@@ -146,13 +146,13 @@ public class ItemListTextWithLabelItemNode: ListViewItemNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self, strongSelf.linkItemAtPoint(point) != nil {
                 return .waitForSingleTap
             }
             return .fail
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }
@@ -220,7 +220,7 @@ public class ItemListTextWithLabelItemNode: ListViewItemNode {
             let (textLayout, textApply) = makeTextLayout(TextNodeLayoutArguments(attributedString: string, backgroundColor: nil, maximumNumberOfLines: item.multiline ? 0 : 1, truncationType: .end, constrainedSize: CGSize(width: params.width - leftOffset - leftInset - rightInset, height: CGFloat.greatestFiniteMagnitude), alignment: .natural, cutout: nil, insets: UIEdgeInsets()))
             let contentSize = CGSize(width: params.width, height: textLayout.size.height + labelLayout.size.height + 22.0)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
-            return (nodeLayout, { [weak self] animation in
+            return (nodeLayout, { [weak self = self] animation in
                 if let strongSelf = self {
                     let transition: ContainedViewLayoutTransition
                     if animation.isAnimated {
@@ -370,7 +370,7 @@ public class ItemListTextWithLabelItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

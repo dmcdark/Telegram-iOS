@@ -351,7 +351,7 @@ public protocol CustomViewControllerNavigationDataSummary: AnyObject {
     }
     
     public var titleSignal: Signal<String?, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }
@@ -359,7 +359,7 @@ public protocol CustomViewControllerNavigationDataSummary: AnyObject {
             let listenerIndex = self.navigationItem.addSetTitleListener { title, _ in
                 subscriber.putNext(title)
             }
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 if let self {
                     self.navigationItem.removeSetTitleListener(listenerIndex)
                 }
@@ -378,7 +378,7 @@ public protocol CustomViewControllerNavigationDataSummary: AnyObject {
         
         super.init(nibName: nil, bundle: nil)
         
-        self.navigationBar?.backPressed = { [weak self] in
+        self.navigationBar?.backPressed = { [weak self = self] in
             if let strongSelf = self, strongSelf.attemptNavigation({
                 guard let strongSelf = self else {
                     return
@@ -396,7 +396,7 @@ public protocol CustomViewControllerNavigationDataSummary: AnyObject {
                 }
             }
         }
-        self.navigationBar?.requestContainerLayout = { [weak self] transition in
+        self.navigationBar?.requestContainerLayout = { [weak self = self] transition in
             if let strongSelf = self, strongSelf.isNodeLoaded, let validLayout = strongSelf.validLayout {
                 if strongSelf.navigationBarRequiresEntireLayoutUpdate {
                     strongSelf.containerLayoutUpdated(validLayout, transition: transition)
@@ -408,7 +408,7 @@ public protocol CustomViewControllerNavigationDataSummary: AnyObject {
         self.navigationBar?.item = self.navigationItem
         //self.automaticallyAdjustsScrollViewInsets = false
         
-        self.scrollToTopWithTabBar = { [weak self] in
+        self.scrollToTopWithTabBar = { [weak self = self] in
             self?.scrollToTop?()
         }
     }

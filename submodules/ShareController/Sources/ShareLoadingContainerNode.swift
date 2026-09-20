@@ -163,7 +163,7 @@ public final class ShareProlongedLoadingContainerNode: ASDisplayNode, ShareConte
                     self.targetProgressValue = CGFloat(value) * self.randomCompletionStart
                 
                     if self.animator == nil {
-                        self.animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                        self.animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                             if let strongSelf = self, strongSelf.targetProgressValue > strongSelf.progressValue {
                                 let updatedProgress = strongSelf.progressValue + 0.005
                                 strongSelf.progressValue = min(1.0, updatedProgress)
@@ -198,28 +198,28 @@ public final class ShareProlongedLoadingContainerNode: ASDisplayNode, ShareConte
                         self.updateLayout(size: size, isLandscape: isLandscape, bottomInset: bottomInset, transition: .animated(duration: 0.2, curve: .easeInOut))
                     }
                     self.animationNode.stopAtNearestLoop = true
-                    self.animationNode.completed = { [weak self] _ in
+                    self.animationNode.completed = { [weak self = self] _ in
                         if let strongSelf = self {
                             strongSelf.animationNode.visibility = false
                             strongSelf.doneAnimationNode.visibility = true
                             strongSelf.doneAnimationNode.isHidden = false
                         }
                     }
-                    self.animationNode.frameUpdated = { [weak self] index, total in
+                    self.animationNode.frameUpdated = { [weak self = self] index, total in
                         if let strongSelf = self {
                             let progress = min(1.0, CGFloat(index) / CGFloat(total))
                             let delta = 1.0 - strongSelf.randomCompletionStart
                             strongSelf.targetProgressValue = strongSelf.randomCompletionStart + delta * progress * 0.5
                         }
                     }
-                    self.doneAnimationNode.frameUpdated = { [weak self] index, total in
+                    self.doneAnimationNode.frameUpdated = { [weak self = self] index, total in
                         if let strongSelf = self {
                             let progress = min(1.0, CGFloat(index) / CGFloat(total) * 2.1)
                             let delta = 1.0 - strongSelf.randomCompletionStart
                             strongSelf.targetProgressValue = strongSelf.randomCompletionStart + delta * 0.5 + delta * progress * 0.5
                         }
                     }
-                    self.doneAnimationNode.started = { [weak self] in
+                    self.doneAnimationNode.started = { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -269,7 +269,7 @@ public final class ShareProlongedLoadingContainerNode: ASDisplayNode, ShareConte
         self.addSubnode(self.progressForegroundNode)
         
         self.animationStatusDisposable.set((self.animationNode.status
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 strongSelf.elapsedTime = status.duration - status.timestamp
             }

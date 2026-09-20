@@ -323,10 +323,10 @@ public final class GradientBackgroundNode: ASDisplayNode {
             self.phase = GradientBackgroundNode.sharedPhase
             
             self.sharedAnimationSyncDisposable = (GradientBackgroundNode.sharedAnimationSyncPipe.signal()
-            |> filter { [weak self] update in
+            |> filter { [weak self = self] update in
                 return update.sender !== self
             }
-            |> deliverOnMainQueue).start(next: { [weak self] update in
+            |> deliverOnMainQueue).start(next: { [weak self = self] update in
                 if let self {
                     self.phase = update.phase
                     if let size = self.validLayout {
@@ -473,7 +473,7 @@ public final class GradientBackgroundNode: ASDisplayNode {
                     if let patternOverlayLayer = self.patternOverlayLayer {
                         patternOverlayLayer.isAnimating = true
                     }
-                    animation.completion = { [weak self] value in
+                    animation.completion = { [weak self = self] value in
                         if let strongSelf = self, value {
                             strongSelf.isAnimating = false
                             if let patternOverlayLayer = strongSelf.patternOverlayLayer {

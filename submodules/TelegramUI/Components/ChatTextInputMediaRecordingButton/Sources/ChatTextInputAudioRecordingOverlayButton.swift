@@ -93,7 +93,7 @@ final class ChatTextInputAudioRecordingOverlay {
             if let displayLink = self.displayLink {
                 displayLink.invalidate()
             }
-            self.displayLink = CADisplayLink(target: ChatTextInputAudioRecordingOverlayDisplayLinkTarget({ [weak self] in
+            self.displayLink = CADisplayLink(target: ChatTextInputAudioRecordingOverlayDisplayLinkTarget({ [weak self = self] in
                 self?.displayLinkEvent()
             }), selector: #selector(ChatTextInputAudioRecordingOverlayDisplayLinkTarget.displayLinkEvent))
             

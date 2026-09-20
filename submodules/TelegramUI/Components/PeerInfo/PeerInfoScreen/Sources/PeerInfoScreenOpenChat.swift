@@ -62,7 +62,7 @@ extension PeerInfoScreenNode {
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
@@ -89,7 +89,7 @@ extension PeerInfoScreenNode {
             TelegramEngine.EngineData.Item.Peer.Peer(id: messageId.peerId),
             TelegramEngine.EngineData.Item.Messages.Message(id: messageId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] sourcePeer, sourceMessage in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] sourcePeer, sourceMessage in
             guard let self, let sourcePeer, let sourceMessage = sourceMessage?._asMessage() else {
                 return
             }
@@ -141,7 +141,7 @@ extension PeerInfoScreenNode {
         let _ = (self.context.engine.data.get(
             TelegramEngine.EngineData.Item.Peer.Peer(id: linkedMonoforumId)
         )
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
             guard let self, let peer else {
                 return
             }

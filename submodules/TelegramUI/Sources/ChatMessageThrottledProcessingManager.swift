@@ -96,7 +96,7 @@ final class ChatMessageVisibleThrottledProcessingManager {
         self.timer = timer
         timer.start()
                 
-        completionImpl = { [weak self] in
+        completionImpl = { [weak self = self] in
             if let strongSelf = self, !strongSelf.currentIds.isEmpty {
                 strongSelf.process?(strongSelf.currentIds)
             }

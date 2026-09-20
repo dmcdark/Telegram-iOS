@@ -318,7 +318,7 @@ final class EmojiSearchSearchBarComponent: Component {
             self.tintScrollView.layer.addSublayer(self.selectedItemTintBackground)
             
             let tapRecognizer = HoldGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
-            tapRecognizer.updateHighlight = { [weak self] point in
+            tapRecognizer.updateHighlight = { [weak self = self] point in
                 guard let self else {
                     return
                 }

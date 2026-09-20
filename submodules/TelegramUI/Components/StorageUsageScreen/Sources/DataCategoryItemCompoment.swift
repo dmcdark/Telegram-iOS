@@ -73,7 +73,7 @@ private final class SubItemComponent: Component {
             
             self.addSubview(self.iconView)
             
-            /*self.highligthedChanged = { [weak self] isHighlighted in
+            /*self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }
@@ -309,7 +309,7 @@ final class DataCategoryItemComponent: Component {
             
             self.addSubview(self.iconView)
             
-            self.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }

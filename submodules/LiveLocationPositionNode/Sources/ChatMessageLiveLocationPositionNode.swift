@@ -138,7 +138,7 @@ public final class ChatMessageLiveLocationPositionNode: ASDisplayNode {
         
         let currentCoordinate = self.coordinate
         
-        return { [weak self] context, theme, mode in
+        return { [weak self = self] context, theme, mode in
             var updatedVenueType: String?
             
             let backgroundImage: UIImage?

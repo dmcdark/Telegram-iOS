@@ -92,7 +92,7 @@ final class CreateBotContentComponent: Component {
         override init(frame: CGRect) {
             super.init(frame: frame)
             
-            self.usernameInputState.updated = { [weak self] in
+            self.usernameInputState.updated = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -103,7 +103,7 @@ final class CreateBotContentComponent: Component {
                     self.state?.updated(transition: .immediate)
                 }
             }
-            self.nameInputState.updated = { [weak self] in
+            self.nameInputState.updated = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -136,7 +136,7 @@ final class CreateBotContentComponent: Component {
             }
             
             self.usernameCheckingStatus = (username, .checking)
-            self.usernameCheckingDisposable = (component.context.engine.peers.addressNameAvailability(domain: .bot(component.parentPeer.id), name: username) |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            self.usernameCheckingDisposable = (component.context.engine.peers.addressNameAvailability(domain: .bot(component.parentPeer.id), name: username) |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -281,7 +281,7 @@ final class CreateBotContentComponent: Component {
                                 component: AnyComponent(EditLabelComponent(
                                     theme: environment.theme,
                                     strings: environment.strings,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         guard let self, let itemView = self.nameSection.findTaggedView(tag: self.nameInputTag) as? ListMultilineTextFieldItemComponent.View else {
                                             return
                                         }
@@ -401,7 +401,7 @@ final class CreateBotContentComponent: Component {
                                 component: AnyComponent(EditLabelComponent(
                                     theme: environment.theme,
                                     strings: environment.strings,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         guard let self, let itemView = self.usernameSection.findTaggedView(tag: self.usernameInputTag) as? ListMultilineTextFieldItemComponent.View else {
                                             return
                                         }
@@ -522,7 +522,7 @@ private final class CreateBotSheetComponent: Component {
                 actions: [
                     TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {
                     }),
-                    TextAlertAction(type: .destructiveAction, title: presentationData.strings.CreateBot_UnsavedAlert_Discard, action: { [weak self] in
+                    TextAlertAction(type: .destructiveAction, title: presentationData.strings.CreateBot_UnsavedAlert_Discard, action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -616,7 +616,7 @@ private final class CreateBotSheetComponent: Component {
                 managerPeerId: component.parentPeer.id,
                 viaDeeplink: true
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] botPeer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] botPeer in
                 guard let self, let component = self.component, let controller = self.environment?.controller(), let navigationController = controller.navigationController as? NavigationController else {
                     return
                 }
@@ -636,7 +636,7 @@ private final class CreateBotSheetComponent: Component {
                         })
                     }
                 })
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 Task { @MainActor in
                     guard let self, let environment = self.environment, let component = self.component else {
                         return
@@ -683,7 +683,7 @@ private final class CreateBotSheetComponent: Component {
             let controller = environmentValue.controller
             let theme = environmentValue.theme
 
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -704,7 +704,7 @@ private final class CreateBotSheetComponent: Component {
                 }
             }
 
-            let performMainAction: () -> Void = { [weak self] in
+            let performMainAction: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -769,7 +769,7 @@ private final class CreateBotSheetComponent: Component {
                         isCentered: environmentValue.metrics.widthClass == .regular,
                         screenSize: availableSize,
                         regularMetricsSize: nil,
-                        dismiss: { [weak self] animated in
+                        dismiss: { [weak self = self] animated in
                             guard let self else {
                                 return
                             }
@@ -845,7 +845,7 @@ public class CreateBotScreen: ViewControllerComponentContainer {
         self.navigationPresentation = .flatModal
         self.blocksBackgroundWhenInOverlay = true
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? CreateBotSheetComponent.View else {
                 return true
             }
@@ -945,7 +945,7 @@ private final class ActionButtonsComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -976,7 +976,7 @@ private final class ActionButtonsComponent: Component {
                     ),
                     isEnabled: component.isActionEnabled,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

@@ -40,7 +40,7 @@ final class RatingView: OverlayMaskContainerView {
         
         self.textContainer.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.15, delay: delay)
         self.textContainer.layer.cornerRadius = self.bounds.height * 0.5
-        self.textContainer.layer.animateFrame(from: CGRect(origin: CGPoint(x: (self.bounds.width - self.bounds.height) * 0.5, y: 0.0), size: CGSize(width: self.bounds.height, height: self.bounds.height)), to: self.textContainer.frame, duration: 0.5, delay: delay, timingFunction: kCAMediaTimingFunctionSpring, completion: { [weak self] completed in
+        self.textContainer.layer.animateFrame(from: CGRect(origin: CGPoint(x: (self.bounds.width - self.bounds.height) * 0.5, y: 0.0), size: CGSize(width: self.bounds.height, height: self.bounds.height)), to: self.textContainer.frame, duration: 0.5, delay: delay, timingFunction: kCAMediaTimingFunctionSpring, completion: { [weak self = self] completed in
             guard let self, completed else {
                 return
             }

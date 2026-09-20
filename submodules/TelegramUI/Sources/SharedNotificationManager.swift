@@ -56,7 +56,7 @@ public final class SharedNotificationManager {
         self.pollLiveLocationOnce = pollLiveLocationOnce
         
         self.inForegroundDisposable = (inForeground
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -73,7 +73,7 @@ public final class SharedNotificationManager {
             }
             return combineLatest(signals)
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] accountsAndKeys in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] accountsAndKeys in
             guard let strongSelf = self else {
                 return
             }
@@ -496,7 +496,7 @@ public final class SharedNotificationManager {
                             return nil
                         }
                     }
-                    |> distinctUntilChanged(isEqual: { $0?.1 == $1?.1 })).startStrict(next: { [weak self] peerAndInternalId in
+                    |> distinctUntilChanged(isEqual: { $0?.1 == $1?.1 })).startStrict(next: { [weak self = self] peerAndInternalId in
                         self?.updateNotificationCall(call: peerAndInternalId, strings: strings, nameOrder: .firstLast)
                     }))
             } else {

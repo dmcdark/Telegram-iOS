@@ -73,7 +73,7 @@ final class InstantPageV2SlideshowView: UIView, InstantPageItemView, UIScrollVie
 
         let renderContext = self.renderContext
         // The image node owns this closure, and is owned (transitively) by self — capture weakly.
-        let openMedia: (InstantPageMedia) -> Void = { [weak self] tapped in
+        let openMedia: (InstantPageMedia) -> Void = { [weak self = self] tapped in
             guard let self else { return }
             handleOpenMediaTap(tapped: tapped, wrapper: self, renderContext: renderContext)
         }

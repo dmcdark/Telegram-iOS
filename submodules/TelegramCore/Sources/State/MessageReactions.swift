@@ -932,7 +932,7 @@ public final class EngineMessageReactionListContext {
                 }
             }
             self.disposable.set((signal
-            |> deliverOn(self.queue)).start(next: { [weak self] state in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] state in
                 guard let strongSelf = self else {
                     return
                 }

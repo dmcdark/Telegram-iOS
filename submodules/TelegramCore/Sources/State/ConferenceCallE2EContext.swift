@@ -95,7 +95,7 @@ public final class ConferenceCallE2EContext {
 
         func begin(initialState: JoinGroupCallResult.E2EState?) {
             self.scheduledSynchronizeRemovedParticipantsAfterPoll = true
-            self.synchronizeRemovedParticipantsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true, block: { [weak self] _ in
+            self.synchronizeRemovedParticipantsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true, block: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -232,7 +232,7 @@ public final class ConferenceCallE2EContext {
             }
             
             let disposable = (self.engine.calls.pollConferenceCallBlockchain(reference: self.reference, subChainId: subChainId, offset: offset ?? 0, limit: 10)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -263,7 +263,7 @@ public final class ConferenceCallE2EContext {
                 
                 if subChainId == 0 {
                     self.e2ePoll0Timer?.invalidate()
-                    self.e2ePoll0Timer = Foundation.Timer.scheduledTimer(withTimeInterval: delayPoll ? 1.0 : 0.0, repeats: false, block: { [weak self] _ in
+                    self.e2ePoll0Timer = Foundation.Timer.scheduledTimer(withTimeInterval: delayPoll ? 1.0 : 0.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -276,7 +276,7 @@ public final class ConferenceCallE2EContext {
                     }
                 } else if subChainId == 1 {
                     self.e2ePoll1Timer?.invalidate()
-                    self.e2ePoll1Timer = Foundation.Timer.scheduledTimer(withTimeInterval: delayPoll ? 1.0 : 0.0, repeats: false, block: { [weak self] _ in
+                    self.e2ePoll1Timer = Foundation.Timer.scheduledTimer(withTimeInterval: delayPoll ? 1.0 : 0.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -334,7 +334,7 @@ public final class ConferenceCallE2EContext {
                             return false
                         }
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] shouldRetry in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] shouldRetry in
                         guard let self else {
                             return
                         }
@@ -424,7 +424,7 @@ public final class ConferenceCallE2EContext {
                         }
                     }
                 }
-                |> deliverOn(self.queue)).startStrict(next: { [weak self] shouldRetry in
+                |> deliverOn(self.queue)).startStrict(next: { [weak self = self] shouldRetry in
                     guard let self else {
                         return
                     }

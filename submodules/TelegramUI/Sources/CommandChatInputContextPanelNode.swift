@@ -318,7 +318,7 @@ final class CommandChatInputContextPanelNode: ChatInputContextPanelNode {
         self.addSubnode(self.listView)
         
         self.backgroundView.isHidden = true
-        self.listView.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listView.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             guard let self else {
                 return
             }
@@ -362,7 +362,7 @@ final class CommandChatInputContextPanelNode: ChatInputContextPanelNode {
     private func prepareTransition(from: [CommandChatInputContextPanelEntry]? , to: [CommandChatInputContextPanelEntry]) {
         let firstTime = self.currentEntries == nil
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, presentationData: presentationData, commandSelected: { [weak self] command, sendImmediately in
+        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, presentationData: presentationData, commandSelected: { [weak self = self] command, sendImmediately in
             guard let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction else {
                 return
             }
@@ -398,7 +398,7 @@ final class CommandChatInputContextPanelNode: ChatInputContextPanelNode {
                     interfaceInteraction.sendShortcut(shortcutId)
                 }
             }
-        }, openEditShortcuts: { [weak self] in
+        }, openEditShortcuts: { [weak self = self] in
             guard let self, let interfaceInteraction = self.interfaceInteraction else {
                 return
             }
@@ -445,7 +445,7 @@ final class CommandChatInputContextPanelNode: ChatInputContextPanelNode {
             
             let updateSizeAndInsets = ListViewUpdateSizeAndInsets(size: self.listView.bounds.size, insets: insets, duration: 0.0, curve: .Default(duration: nil))
             
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self, firstTime {
                     var topItemOffset: CGFloat?
                     strongSelf.listView.forEachItemNode { itemNode in

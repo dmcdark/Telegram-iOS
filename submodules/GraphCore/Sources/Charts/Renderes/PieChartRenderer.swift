@@ -61,7 +61,7 @@ class PieChartRenderer: BaseChartRenderer {
         if animated {
             self.oldPercentageData = self.currentTransitionAnimationData
             self.percentageData = percentageData
-            transitionAnimator.completionClosure = { [weak self] in
+            transitionAnimator.completionClosure = { [weak self = self] in
                 self?.oldPercentageData = []
             }
             transitionAnimator.set(current: 0)

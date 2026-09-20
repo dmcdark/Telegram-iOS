@@ -289,13 +289,13 @@ final class ChannelAppearanceScreenComponent: Component {
                     title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertTitle,
                     text: presentationData.strings.Channel_Appearance_UnsavedChangesAlertText,
                     actions: [
-                        TextAlertAction(type: .genericAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertDiscard, action: { [weak self] in
+                        TextAlertAction(type: .genericAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertDiscard, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.environment?.controller()?.dismiss()
                         }),
-                        TextAlertAction(type: .defaultAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertApply, action: { [weak self] in
+                        TextAlertAction(type: .defaultAction, title: presentationData.strings.Channel_Appearance_UnsavedChangesAlertApply, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -523,7 +523,7 @@ final class ChannelAppearanceScreenComponent: Component {
             }
             
             self.applyDisposable = (combineLatest(signals)
-            |> deliverOnMainQueue).start(error: { [weak self] _ in
+            |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -541,7 +541,7 @@ final class ChannelAppearanceScreenComponent: Component {
                 
                 self.isApplyingSettings = false
                 self.state?.updated(transition: .immediate)
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -569,13 +569,13 @@ final class ChannelAppearanceScreenComponent: Component {
                 mode: .owner(subject: subject),
                 status: status,
                 myBoostStatus: myBoostStatus,
-                openStats: { [weak self] in
+                openStats: { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.openBoostStats()
                 },
-                openGift: { [weak self] in
+                openGift: { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -583,7 +583,7 @@ final class ChannelAppearanceScreenComponent: Component {
                     self.environment?.controller()?.push(controller)
                 }
             )
-            controller.boostStatusUpdated = { [weak self] boostStatus, myBoostStatus in
+            controller.boostStatusUpdated = { [weak self = self] boostStatus, myBoostStatus in
                 if let self {
                     self.boostStatus = boostStatus
                     self.boostLevel = boostStatus.level
@@ -613,18 +613,18 @@ final class ChannelAppearanceScreenComponent: Component {
             let requiredCustomWallpaperLevel = Int(BoostSubject.customWallpaper.requiredLevel(group: self.isGroup, context: component.context, configuration: premiumConfiguration))
             
             let controller = MediaPickerScreenImpl(context: component.context, peer: nil, threadTitle: nil, chatLocation: nil, bannedSendPhotos: nil, bannedSendVideos: nil, subject: .assets(nil, .wallpaper))
-            controller.customSelection = { [weak self] _, asset in
+            controller.customSelection = { [weak self = self] _, asset in
                 guard let self, let asset = asset as? PHAsset else {
                     return
                 }
                 let controller = WallpaperGalleryController(context: component.context, source: .asset(asset), mode: .peer(peer, false))
                 controller.requiredLevel = level < requiredCustomWallpaperLevel ? requiredCustomWallpaperLevel : nil
-                controller.apply = { [weak self] wallpaperEntry, options, editedImage, cropRect, brightness, _ in
+                controller.apply = { [weak self = self] wallpaperEntry, options, editedImage, cropRect, brightness, _ in
                     if let self {
                         self.updatedPeerWallpaper = .custom(wallpaperEntry: wallpaperEntry, options: options, editedImage: editedImage, cropRect: cropRect, brightness: brightness)
                         
                         let _ = (getTemporaryCustomPeerWallpaper(context: component.context, wallpaper: wallpaperEntry, mode: options, editedImage: editedImage, cropRect: cropRect, brightness: brightness)
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] wallpaper in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] wallpaper in
                             self?.temporaryPeerWallpaper = wallpaper
                             self?.state?.updated(transition: .immediate)
                         })
@@ -669,7 +669,7 @@ final class ChannelAppearanceScreenComponent: Component {
             guard let component = self.component, let environment = self.environment, let resolvedState = self.resolveState() else {
                 return
             }
-            let controller = groupStickerPackSetupController(context: component.context, peerId: component.peerId, isEmoji: true, currentPackInfo: resolvedState.emojiPack, completion: { [weak self] emojiPack in
+            let controller = groupStickerPackSetupController(context: component.context, peerId: component.peerId, isEmoji: true, currentPackInfo: resolvedState.emojiPack, completion: { [weak self = self] emojiPack in
                 if let self {
                     self.updatedPeerEmojiPack = emojiPack
                     self.state?.updated(transition: .spring(duration: 0.4))
@@ -713,7 +713,7 @@ final class ChannelAppearanceScreenComponent: Component {
             let mappedMode: EmojiStatusSelectionController.Mode
             switch subject {
             case .status:
-                mappedMode = .customStatusSelection(completion: { [weak self] result, timestamp in
+                mappedMode = .customStatusSelection(completion: { [weak self = self] result, timestamp in
                     guard let self else {
                         return
                     }
@@ -729,7 +729,7 @@ final class ChannelAppearanceScreenComponent: Component {
                     self.state?.updated(transition: .spring(duration: 0.4))
                 })
             default:
-                mappedMode = .backgroundSelection(completion: { [weak self] result in
+                mappedMode = .backgroundSelection(completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -825,7 +825,7 @@ final class ChannelAppearanceScreenComponent: Component {
 
             if self.contentsDataDisposable == nil {
                 self.contentsDataDisposable = (ContentsData.get(context: component.context, peerId: component.peerId)
-                |> deliverOnMainQueue).start(next: { [weak self] contentsData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] contentsData in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -857,7 +857,7 @@ final class ChannelAppearanceScreenComponent: Component {
                 self.boostStatusDisposable = combineLatest(queue: Queue.mainQueue(),
                     component.context.engine.peers.getChannelBoostStatus(peerId: component.peerId),
                     component.context.engine.peers.getMyBoostStatus()
-                ).start(next: { [weak self] boostStatus, myBoostStatus in
+                ).start(next: { [weak self = self] boostStatus, myBoostStatus in
                     guard let self else {
                         return
                     }
@@ -939,7 +939,7 @@ final class ChannelAppearanceScreenComponent: Component {
                         resolvedWallpaper = .single(presentationTheme.chat.defaultWallpaper)
                     }
                     disposable.set((resolvedWallpaper
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] resolvedWallpaper in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] resolvedWallpaper in
                         guard let self, let environment = self.environment else {
                             return
                         }
@@ -1121,7 +1121,7 @@ final class ChannelAppearanceScreenComponent: Component {
                             style: .glass,
                             title: AnyComponent(HStack(boostContents, spacing: 12.0)),
                             icon: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 self?.displayBoostLevels(subject: nil)
                             }
                         )))
@@ -1180,7 +1180,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                 colors: component.context.peerNameColors,
                                 mode: .profile,
                                 currentColor: profileColor,
-                                updated: { [weak self] value in
+                                updated: { [weak self = self] value in
                                     guard let self, let value else {
                                         return
                                     }
@@ -1203,7 +1203,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                 fileId: backgroundFileId,
                                 file: backgroundFileId.flatMap { self.cachedIconFiles[$0] }
                             )))),
-                            action: { [weak self] view in
+                            action: { [weak self = self] view in
                                 guard let self, let resolvedState = self.resolveState(), let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                     return
                                 }
@@ -1251,7 +1251,7 @@ final class ChannelAppearanceScreenComponent: Component {
                             )),
                             icon: nil,
                             accessory: nil,
-                            action: { [weak self] view in
+                            action: { [weak self = self] view in
                                 guard let self else {
                                     return
                                 }
@@ -1333,7 +1333,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                     fileId: emojiPack?.thumbnailFileId,
                                     file: emojiPackFile
                                 )))),
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self, let resolvedState = self.resolveState() else {
                                         return
                                     }
@@ -1399,7 +1399,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                 fileId: statusFileId,
                                 file: statusFileId.flatMap { self.cachedIconFiles[$0] }
                             )))),
-                            action: { [weak self] view in
+                            action: { [weak self = self] view in
                                 guard let self, let resolvedState = self.resolveState(), let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                     return
                                 }
@@ -1465,7 +1465,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                     fileId: nil,
                                     file: stickerPackFile
                                 )))),
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self else {
                                         return
                                     }
@@ -1570,7 +1570,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                     colors: component.context.peerNameColors,
                                     mode: .name,
                                     currentColor: resolvedState.nameColor,
-                                    updated: { [weak self] value in
+                                    updated: { [weak self = self] value in
                                         guard let self, let value else {
                                             return
                                         }
@@ -1591,7 +1591,7 @@ final class ChannelAppearanceScreenComponent: Component {
                                     fileId: replyFileId,
                                     file: replyFileId.flatMap { self.cachedIconFiles[$0] }
                                 )))),
-                                action: { [weak self] view in
+                                action: { [weak self = self] view in
                                     guard let self, let resolvedState = self.resolveState(), let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                         return
                                     }
@@ -1703,7 +1703,7 @@ final class ChannelAppearanceScreenComponent: Component {
                             channelMode: true,
                             selectedWallpaper: selectedWallpaper,
                             currentTheme: currentTheme,
-                            updatedTheme: { [weak self] value in
+                            updatedTheme: { [weak self = self] value in
                                 guard let self, value != .builtin(.day) else {
                                     return
                                 }
@@ -1727,7 +1727,7 @@ final class ChannelAppearanceScreenComponent: Component {
                         theme: environment.theme,
                         title: AnyComponent(HStack(wallpaperLogoContents, spacing: 6.0)),
                         icon: nil,
-                        action: { [weak self] view in
+                        action: { [weak self = self] view in
                             guard let self else {
                                 return
                             }
@@ -1800,7 +1800,7 @@ final class ChannelAppearanceScreenComponent: Component {
                     isEnabled: true,
                     tintWhenDisabled: false,
                     displaysProgress: self.isApplyingSettings,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1896,14 +1896,14 @@ public class ChannelAppearanceScreen: ViewControllerComponentContainer {
         
         self.ready.set(.never())
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ChannelAppearanceScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? ChannelAppearanceScreenComponent.View else {
                 return true
             }

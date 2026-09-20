@@ -147,7 +147,7 @@ final class CameraLiveStreamComponent: Component {
                     let storyContent = SingleStoryContentContextImpl(context: component.context, storyId: EngineStoryId(peerId: component.peerId, id: story.id), storyItem: story, readGlobally: false)
                     self.storyContent = storyContent
                     self.storyContentDisposable = (storyContent.state
-                    |> deliverOnMainQueue).start(next: { [weak self] state in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -209,13 +209,13 @@ final class CameraLiveStreamComponent: Component {
                             isPanning: false,
                             isCentral: true,
                             pinchState: nil,
-                            presentController: { [weak self] c, a in
+                            presentController: { [weak self = self] c, a in
                                 guard let self, let component = self.component else {
                                     return
                                 }
                                 component.presentController(c, a)
                             },
-                            presentInGlobalOverlay: { [weak self] c, a in
+                            presentInGlobalOverlay: { [weak self = self] c, a in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -235,7 +235,7 @@ final class CameraLiveStreamComponent: Component {
                             },
                             addToFolder: { _ in
                             },
-                            controller: { [weak self] in
+                            controller: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return nil
                                 }
@@ -398,7 +398,7 @@ public final class StreamAsComponent: Component {
             
             if self.peer?.id != component.peerId {
                 let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: component.peerId))
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let self, let peer else {
                         return
                     }

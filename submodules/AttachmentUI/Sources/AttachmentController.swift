@@ -491,19 +491,19 @@ public class AttachmentController: ViewController, MinimizableController {
             didSet {
                 if let mediaPickerContext = self.mediaPickerContext {
                     self.captionDisposable.set((mediaPickerContext.caption
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] caption in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] caption in
                         if let strongSelf = self {
                             strongSelf.panel.updateCaption(caption ?? NSAttributedString())
                         }
                     }))
                     self.mediaSelectionCountDisposable.set((mediaPickerContext.selectionCount
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] count in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] count in
                         if let strongSelf = self {
                             strongSelf.updateSelectionCount(count)
                         }
                     }))
                     self.loadingProgressDisposable.set((mediaPickerContext.loadingProgress
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] progress in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] progress in
                         if let strongSelf = self {
                             strongSelf.panel.updateLoadingProgress(progress)
                             if let layout = strongSelf.validLayout {
@@ -512,13 +512,13 @@ public class AttachmentController: ViewController, MinimizableController {
                         }
                     }))
                     self.mainButtonStateDisposable.set((mediaPickerContext.mainButtonState
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] mainButtonState in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] mainButtonState in
                         if let strongSelf = self {
                             let _ = (strongSelf.panel.animatingTransitionPromise.get()
                             |> filter { value in
                                 return !value
                             }
-                            |> take(1)).startStandalone(next: { [weak self] _ in
+                            |> take(1)).startStandalone(next: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.panel.updateMainButtonState(mainButtonState)
                                     if let layout = strongSelf.validLayout {
@@ -529,13 +529,13 @@ public class AttachmentController: ViewController, MinimizableController {
                         }
                     }))
                     self.secondaryButtonStateDisposable.set((mediaPickerContext.secondaryButtonState
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] mainButtonState in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] mainButtonState in
                         if let strongSelf = self {
                             let _ = (strongSelf.panel.animatingTransitionPromise.get()
                             |> filter { value in
                                 return !value
                             }
-                            |> take(1)).startStandalone(next: { [weak self] _ in
+                            |> take(1)).startStandalone(next: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.panel.updateSecondaryButtonState(mainButtonState)
                                     if let layout = strongSelf.validLayout {
@@ -546,13 +546,13 @@ public class AttachmentController: ViewController, MinimizableController {
                         }
                     }))
                     self.bottomPanelBackgroundColorDisposable.set((mediaPickerContext.bottomPanelBackgroundColor
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] color in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] color in
                         if let strongSelf = self {
                             let _ = (strongSelf.panel.animatingTransitionPromise.get()
                             |> filter { value in
                                 return !value
                             }
-                            |> take(1)).startStandalone(next: { [weak self] _ in
+                            |> take(1)).startStandalone(next: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.panel.updateCustomBottomPanelBackgroundColor(color)
                                 }
@@ -619,14 +619,14 @@ public class AttachmentController: ViewController, MinimizableController {
             self.addSubnode(self.shadowNode)
             self.addSubnode(self.wrapperNode)
 
-            self.container.controllerRemoved = { [weak self] controller in
+            self.container.controllerRemoved = { [weak self = self] controller in
                 if let strongSelf = self, let layout = strongSelf.validLayout, !strongSelf.isDismissing {
                     strongSelf.currentControllers = strongSelf.currentControllers.filter { $0 !== controller }
                     strongSelf.containerLayoutUpdated(layout, transition: .immediate)
                 }
             }
 
-            self.container.updateModalProgress = { [weak self] progress, topInset, bounds, transition in
+            self.container.updateModalProgress = { [weak self = self] progress, topInset, bounds, transition in
                 if let strongSelf = self, let controller = strongSelf.controller,  let layout = strongSelf.validLayout, !strongSelf.isDismissing {
                     var transition = transition
                     if strongSelf.container.supernode == nil {
@@ -645,13 +645,13 @@ public class AttachmentController: ViewController, MinimizableController {
                     }
                 }
             }
-            self.container.isReadyUpdated = { [weak self] in
+            self.container.isReadyUpdated = { [weak self = self] in
                 if let strongSelf = self, let layout = strongSelf.validLayout {
                     strongSelf.containerLayoutUpdated(layout, transition: .animated(duration: 0.5, curve: .spring))
                 }
             }
 
-            self.container.interactivelyDismissed = { [weak self] velocity in
+            self.container.interactivelyDismissed = { [weak self = self] velocity in
                 guard let self, let controller = self.controller, let layout = self.validLayout else {
                     return true
                 }
@@ -674,13 +674,13 @@ public class AttachmentController: ViewController, MinimizableController {
                 return true
             }
 
-            self.container.isPanningUpdated = { [weak self] value in
+            self.container.isPanningUpdated = { [weak self = self] value in
                 if let strongSelf = self, let currentController = strongSelf.currentControllers.last, !value {
                     currentController.isContainerPanningUpdated(value)
                 }
             }
 
-            self.container.isPanGestureEnabled = { [weak self] in
+            self.container.isPanGestureEnabled = { [weak self = self] in
                 guard let self, let currentController = self.currentControllers.last else {
                     return true
                 }
@@ -691,7 +691,7 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.container.isInnerPanGestureEnabled = { [weak self] in
+            self.container.isInnerPanGestureEnabled = { [weak self = self] in
                 guard let self, let currentController = self.currentControllers.last else {
                     return true
                 }
@@ -702,7 +702,7 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.container.shouldCancelPanGesture = { [weak self] in
+            self.container.shouldCancelPanGesture = { [weak self = self] in
                 if let strongSelf = self, let currentController = strongSelf.currentControllers.last {
                     if !currentController.shouldDismissImmediately() {
                         return true
@@ -714,9 +714,9 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.container.requestDismiss = { [weak self] in
+            self.container.requestDismiss = { [weak self = self] in
                 if let strongSelf = self, let currentController = strongSelf.currentControllers.last {
-                    currentController.requestDismiss { [weak self] in
+                    currentController.requestDismiss { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.controller?.dismiss(animated: true)
                         }
@@ -724,7 +724,7 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.panel.selectionChanged = { [weak self] type in
+            self.panel.selectionChanged = { [weak self = self] type in
                 if let strongSelf = self {
                     return strongSelf.switchToController(type)
                 } else {
@@ -732,25 +732,25 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.panel.longPressed = { [weak self] _ in
+            self.panel.longPressed = { [weak self = self] _ in
                 if let strongSelf = self, let currentController = strongSelf.currentControllers.last {
                     currentController.longTapWithTabBar?()
                 }
             }
 
-            self.panel.beganTextEditing = { [weak self] in
+            self.panel.beganTextEditing = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.container.update(isExpanded: true, transition: .animated(duration: 0.5, curve: .spring))
                 }
             }
 
-            self.panel.textUpdated = { [weak self] text in
+            self.panel.textUpdated = { [weak self = self] text in
                 if let strongSelf = self {
                     strongSelf.mediaPickerContext?.setCaption(text)
                 }
             }
 
-            self.panel.sendMessagePressed = { [weak self] mode, parameters in
+            self.panel.sendMessagePressed = { [weak self = self] mode, parameters in
                 if let strongSelf = self {
                     switch mode {
                     case .generic:
@@ -764,7 +764,7 @@ public class AttachmentController: ViewController, MinimizableController {
                     }
                 }
             }
-            self.panel.invokeAICompose = { [weak self] in
+            self.panel.invokeAICompose = { [weak self = self] in
                 Task { @MainActor in
                     guard let self, let controller = self.controller, let mediaPickerContext = self.mediaPickerContext else {
                         return
@@ -782,7 +782,7 @@ public class AttachmentController: ViewController, MinimizableController {
                         theme: self.presentationData.theme,
                         mode: .edit(
                             saveRestoreStateId: nil,
-                            completion: { [weak self] text in
+                            completion: { [weak self = self] text in
                                 guard let self, let mediaPickerContext = self.mediaPickerContext else {
                                     return
                                 }
@@ -793,7 +793,7 @@ public class AttachmentController: ViewController, MinimizableController {
                                 self.panel.updateCaption(chatInputStateStringWithAppliedEntities(text, entities: entities))
                                 mediaPickerContext.setCaption(chatInputStateStringWithAppliedEntities(text, entities: entities))
                             },
-                            send: { [weak self] text in
+                            send: { [weak self = self] text in
                                 guard let self, let mediaPickerContext = self.mediaPickerContext else {
                                     return
                                 }
@@ -814,43 +814,43 @@ public class AttachmentController: ViewController, MinimizableController {
                 }
             }
 
-            self.panel.onMainButtonPressed = { [weak self] in
+            self.panel.onMainButtonPressed = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.mediaPickerContext?.mainButtonAction()
                 }
             }
 
-            self.panel.onSecondaryButtonPressed = { [weak self] in
+            self.panel.onSecondaryButtonPressed = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.mediaPickerContext?.secondaryButtonAction()
                 }
             }
 
-            self.panel.requestLayout = { [weak self] in
+            self.panel.requestLayout = { [weak self = self] in
                 if let strongSelf = self, let layout = strongSelf.validLayout {
                     strongSelf.containerLayoutUpdated(layout, transition: .animated(duration: 0.2, curve: .easeInOut))
                 }
             }
 
-            self.panel.present = { [weak self] c in
+            self.panel.present = { [weak self = self] c in
                 if let strongSelf = self {
                     strongSelf.controller?.present(c, in: .window(.root))
                 }
             }
 
-            self.panel.presentInGlobalOverlay = { [weak self] c in
+            self.panel.presentInGlobalOverlay = { [weak self = self] c in
                 if let strongSelf = self {
                     strongSelf.controller?.presentInGlobalOverlay(c, with: nil)
                 }
             }
-            self.panel.getNavigationController = { [weak self] in
+            self.panel.getNavigationController = { [weak self = self] in
                 guard let controller = self?.controller else {
                     return nil
                 }
                 return controller.navigationController as? NavigationController
             }
 
-            self.panel.getCurrentSendMessageContextMediaPreview = { [weak self] in
+            self.panel.getCurrentSendMessageContextMediaPreview = { [weak self = self] in
                 guard let self, let currentController = self.currentControllers.last else {
                     return nil
                 }
@@ -860,7 +860,7 @@ public class AttachmentController: ViewController, MinimizableController {
 
             if let updatedPresentationData = controller.updatedPresentationData {
                 self.presentationDataDisposable = (updatedPresentationData.signal
-                |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                     guard let self else {
                         return
                     }
@@ -929,7 +929,7 @@ public class AttachmentController: ViewController, MinimizableController {
             navigationController.minimizeViewController(controller, damping: damping, velocity: initialVelocity, beforeMaximize: { [weak self, weak controller] navigationController, completion in
                 self?.didMaximizeOnce = true
                 controller?.mainController.beforeMaximize(navigationController: navigationController, completion: completion)
-            }, setupContainer: { [weak self] current in
+            }, setupContainer: { [weak self = self] current in
                 let minimizedContainer: MinimizedContainerImpl?
                 if let current = current as? MinimizedContainerImpl {
                     minimizedContainer = current
@@ -969,7 +969,7 @@ public class AttachmentController: ViewController, MinimizableController {
                         self.minimize()
                         return
                     }
-                    lastController.requestDismiss(completion: { [weak self] in
+                    lastController.requestDismiss(completion: { [weak self = self] in
                         self?.controller?.dismiss(animated: true)
                     })
                 } else {
@@ -990,7 +990,7 @@ public class AttachmentController: ViewController, MinimizableController {
                 return true
             }
             let previousType = self.currentType
-            let shouldSwitch = self.controller?.requestController(type, { [weak self] controller, mediaPickerContext in
+            let shouldSwitch = self.controller?.requestController(type, { [weak self = self] controller, mediaPickerContext in
                 if let strongSelf = self {
                     if let controller = controller  {
                         if strongSelf.controller?._hasGlassStyle == true {
@@ -999,12 +999,12 @@ public class AttachmentController: ViewController, MinimizableController {
                         strongSelf.controller?._ready.set(controller.ready.get())
                         controller._presentedInModal = true
                         controller.navigation_setPresenting(strongSelf.controller)
-                        controller.requestAttachmentMenuExpansion = { [weak self] in
+                        controller.requestAttachmentMenuExpansion = { [weak self = self] in
                             if let strongSelf = self, !strongSelf.container.isTracking {
                                 strongSelf.container.update(isExpanded: true, transition: .animated(duration: 0.5, curve: .spring))
                             }
                         }
-                        controller.updateNavigationStack = { [weak self] f in
+                        controller.updateNavigationStack = { [weak self = self] f in
                             if let strongSelf = self {
                                 let (controllers, mediaPickerContext) = f(strongSelf.currentControllers)
                                 strongSelf.currentControllers = controllers
@@ -1014,7 +1014,7 @@ public class AttachmentController: ViewController, MinimizableController {
                                 }
                             }
                         }
-                        controller.parentController = { [weak self] in
+                        controller.parentController = { [weak self = self] in
                             guard let self else {
                                 return nil
                             }
@@ -1031,13 +1031,13 @@ public class AttachmentController: ViewController, MinimizableController {
                             }
                         }
 
-                        controller.cancelPanGesture = { [weak self] in
+                        controller.cancelPanGesture = { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.container.cancelPanGesture()
                             }
                         }
 
-                        controller.isContainerPanning = { [weak self] in
+                        controller.isContainerPanning = { [weak self = self] in
                             if let strongSelf = self {
                                 return strongSelf.container.isPanning
                             } else {
@@ -1045,7 +1045,7 @@ public class AttachmentController: ViewController, MinimizableController {
                             }
                         }
 
-                        controller.isContainerExpanded = { [weak self] in
+                        controller.isContainerExpanded = { [weak self = self] in
                             if let strongSelf = self {
                                 return strongSelf.container.isExpanded
                             } else {
@@ -1103,9 +1103,9 @@ public class AttachmentController: ViewController, MinimizableController {
                         startPosition = presentation.position
                     }
 
-                    strongSelf.container.wrappingNode.layer.animatePosition(from: startPosition, to: targetPosition, duration: 0.2, removeOnCompletion: false, completion: { [weak self] finished in
+                    strongSelf.container.wrappingNode.layer.animatePosition(from: startPosition, to: targetPosition, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] finished in
                         if let strongSelf = self, finished {
-                            strongSelf.container.wrappingNode.layer.animateSpring(from: NSValue(cgPoint: targetPosition), to: NSValue(cgPoint: initialPosition), keyPath: "position", duration: 0.3, delay: 0.0, initialVelocity: 0.0, damping: 70.0, removeOnCompletion: false, completion: { [weak self] finished in
+                            strongSelf.container.wrappingNode.layer.animateSpring(from: NSValue(cgPoint: targetPosition), to: NSValue(cgPoint: initialPosition), keyPath: "position", duration: 0.3, delay: 0.0, initialVelocity: 0.0, damping: 70.0, removeOnCompletion: false, completion: { [weak self = self] finished in
                                 if finished {
                                     self?.container.wrappingNode.layer.removeAllAnimations()
                                 }
@@ -1244,7 +1244,7 @@ public class AttachmentController: ViewController, MinimizableController {
             switch layout.metrics.widthClass {
             case .regular:
                 self.layer.allowsGroupOpacity = true
-                self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+                self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
                     let _ = self?.container.dismiss(transition: .immediate, completion: completion)
                     self?.isAnimating = false
                     self?.layer.removeAllAnimations()
@@ -1308,7 +1308,7 @@ public class AttachmentController: ViewController, MinimizableController {
                         scaleTransition.updateBounds(layer: containerView.layer, bounds: CGRect(origin: CGPoint(x: 0.0, y: 0.0), size: CGSize(width: initialFrame.width, height: initialFrame.width)))
 
                         scaleTransition.updateTransformScale(layer: containerView.layer, scale: targetButtonScale)
-                        positionTransition.updatePosition(layer: containerView.layer, position: targetButtonFrame.center, completion: { [weak self] _ in
+                        positionTransition.updatePosition(layer: containerView.layer, position: targetButtonFrame.center, completion: { [weak self = self] _ in
                             let _ = self?.container.dismiss(transition: .immediate, completion: completion)
                             self?.isAnimating = false
                         })
@@ -1320,7 +1320,7 @@ public class AttachmentController: ViewController, MinimizableController {
                     }
                 } else {
                     let positionTransition: ContainedViewLayoutTransition = .animated(duration: 0.25, curve: .easeInOut)
-                    positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0), completion: { [weak self] _ in
+                    positionTransition.updatePosition(node: self.container, position: CGPoint(x: self.container.position.x, y: self.bounds.height + self.container.bounds.height / 2.0), completion: { [weak self = self] _ in
                         let _ = self?.container.dismiss(transition: .immediate, completion: completion)
                         self?.isAnimating = false
                     })
@@ -1587,7 +1587,7 @@ public class AttachmentController: ViewController, MinimizableController {
 
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.context.sharedContext.currentPresentationData.with { $0 }.strings.Common_Back, style: .plain, target: nil, action: nil)
 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.node.scrollToTop()
             }
@@ -1654,7 +1654,7 @@ public class AttachmentController: ViewController, MinimizableController {
             if !self.dismissedFlag {
                 self.dismissedFlag = true
                 self.willDismiss()
-                self.node.animateOut(completion: { [weak self] in
+                self.node.animateOut(completion: { [weak self = self] in
                     self?.didDismiss()
                     self?._dismiss()
                     completion?()

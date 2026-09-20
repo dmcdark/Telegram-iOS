@@ -410,7 +410,7 @@ extension DocumentCanvasView {
 
     /// The standard structural-action handler: run a structural command, then clear the selection.
     private func structuralPerform(_ run: @escaping (DocumentCanvasView) -> Void) -> () -> Void {
-        { [weak self] in guard let self else { return }; run(self); self.clearTableSelection() }
+        { [weak self = self] in guard let self else { return }; run(self); self.clearTableSelection() }
     }
 
     /// The alignment descriptor for the current structural selection: per-axis uniform value (nil if the
@@ -425,7 +425,7 @@ extension DocumentCanvasView {
         return TableStructuralMenuRequest.Alignment(
             horizontal: hs.count == 1 ? hs.first : nil,
             vertical: vs.count == 1 ? vs.first : nil,
-            apply: { [weak self] h, v in self?.setSelectionAlignment(horizontal: h, vertical: v) })
+            apply: { [weak self = self] h, v in self?.setSelectionAlignment(horizontal: h, vertical: v) })
     }
 
     /// The header descriptor for the current structural selection: the uniform per-cell header value
@@ -438,7 +438,7 @@ extension DocumentCanvasView {
         let flags = Set(coords.map { t.rows[$0.row].cells[$0.column].isHeader })
         return TableStructuralMenuRequest.Header(
             isHeader: flags.count == 1 ? flags.first : nil,
-            apply: { [weak self] in self?.toggleSelectionHeader() })
+            apply: { [weak self = self] in self?.toggleSelectionHeader() })
     }
 
     /// The structural row/column menu, described for the host to present its own menu. nil when there is

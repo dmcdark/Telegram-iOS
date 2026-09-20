@@ -442,7 +442,7 @@ private final class CommunityAvatarComponent: Component {
                         color: component.theme.list.itemAccentColor
                     )),
                     contentInsets: UIEdgeInsets(top: -8.0, left: -8.0, bottom: -8.0, right: -8.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard self?.component?.isEnabled == true else {
                             return
                         }
@@ -841,7 +841,7 @@ private final class CommunityEditScreenComponent: Component {
                 component.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: communityId)),
                 component.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.CachedData(id: communityId))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer, cachedData in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer, cachedData in
                 guard let self else {
                     return
                 }
@@ -896,7 +896,7 @@ private final class CommunityEditScreenComponent: Component {
             self.linkedPeersDisposable.set((component.context.engine.data.subscribe(
                 EngineDataMap(ids.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peersById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peersById in
                 guard let self else {
                     return
                 }
@@ -913,7 +913,7 @@ private final class CommunityEditScreenComponent: Component {
             self.linkedPeerDataDisposable.set((component.context.engine.data.subscribe(
                 EngineDataMap(ids.map(TelegramEngine.EngineData.Item.Peer.CachedData.init(id:)))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] cachedDataById in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] cachedDataById in
                 guard let self else {
                     return
                 }
@@ -969,11 +969,11 @@ private final class CommunityEditScreenComponent: Component {
                 context: component.context,
                 peer: peer,
                 canDelete: !peer.profileImageRepresentations.isEmpty,
-                performDelete: { [weak self] in
+                performDelete: { [weak self = self] in
                     self?.confirmRemoveAvatar()
                 },
                 completion: { _ in },
-                completedWithUploadingImage: { [weak self] image, uploadStatus in
+                completedWithUploadingImage: { [weak self = self] image, uploadStatus in
                     guard let self else {
                         return nil
                     }
@@ -982,7 +982,7 @@ private final class CommunityEditScreenComponent: Component {
                     self.avatarUploadProgress = 0.027
                     self.state?.updated(transition: .easeInOut(duration: 0.2))
                     self.avatarUploadStatusDisposable.set((uploadStatus
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                         guard let self else {
                             return
                         }
@@ -999,7 +999,7 @@ private final class CommunityEditScreenComponent: Component {
                             self.avatarUploadProgress = nil
                             self.state?.updated(transition: .easeInOut(duration: 0.2))
                         }
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         guard let self, self.isUpdatingAvatar else {
                             return
                         }
@@ -1041,16 +1041,16 @@ private final class CommunityEditScreenComponent: Component {
                 peerType: .community,
                 getSourceRect: { return nil },
                 canDelete: self.pendingAvatar != nil,
-                performDelete: { [weak self] in
+                performDelete: { [weak self = self] in
                     self?.clearPendingAvatar()
                 },
-                completion: { [weak self] result, transitionView, transitionRect, transitionImage, fromCamera, _, cancelled in
+                completion: { [weak self = self] result, transitionView, transitionRect, transitionImage, fromCamera, _, cancelled in
                     guard let self, let component = self.component else {
                         return
                     }
                     self.avatarPickerHolder = nil
                     
-                    let applyPhoto: (UIImage) -> Void = { [weak self] image in
+                    let applyPhoto: (UIImage) -> Void = { [weak self = self] image in
                         guard let self else {
                             return
                         }
@@ -1058,11 +1058,11 @@ private final class CommunityEditScreenComponent: Component {
                             self.applyPendingAvatar(avatar)
                         }
                     }
-                    let applyVideo: (UIImage, MediaEditorScreenImpl.MediaResult.VideoResult?, MediaEditorValues?, UploadPeerPhotoMarkup?) -> Void = { [weak self] image, video, values, markup in
+                    let applyVideo: (UIImage, MediaEditorScreenImpl.MediaResult.VideoResult?, MediaEditorValues?, UploadPeerPhotoMarkup?) -> Void = { [weak self = self] image, video, values, markup in
                         guard let self else {
                             return
                         }
-                        if let avatar = CommunityCreateAvatarSetup.video(context: component.context, image: image, video: video, values: values, markup: markup, didCompleteLoadingPreview: { [weak self] avatar in
+                        if let avatar = CommunityCreateAvatarSetup.video(context: component.context, image: image, video: video, values: values, markup: markup, didCompleteLoadingPreview: { [weak self = self] avatar in
                             self?.updatePendingAvatarIfCurrent(avatar)
                         }) {
                             self.applyPendingAvatar(avatar)
@@ -1147,7 +1147,7 @@ private final class CommunityEditScreenComponent: Component {
                     }
                     self.pushController(editorController)
                 },
-                dismissed: { [weak self] in
+                dismissed: { [weak self = self] in
                     self?.avatarPickerHolder = nil
                 }
             )
@@ -1219,7 +1219,7 @@ private final class CommunityEditScreenComponent: Component {
             }
 
             self.avatarDisposable.set((signal
-            |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -1232,7 +1232,7 @@ private final class CommunityEditScreenComponent: Component {
                 case .progress:
                     break
                 }
-            }, error: { [weak self] _ in
+            }, error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -1241,7 +1241,7 @@ private final class CommunityEditScreenComponent: Component {
                 self.avatarUploadProgress = nil
                 self.state?.updated(transition: .easeInOut(duration: 0.2))
                 self.presentError()
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self, self.isUpdatingAvatar else {
                     return
                 }
@@ -1265,7 +1265,7 @@ private final class CommunityEditScreenComponent: Component {
                 text: environment.strings.Community_Edit_DeleteConfirmationText,
                 actions: [
                     AlertScreen.Action(title: environment.strings.Common_Cancel, type: .generic),
-                    AlertScreen.Action(title: environment.strings.Common_Delete, type: .defaultDestructive, action: { [weak self] in
+                    AlertScreen.Action(title: environment.strings.Common_Delete, type: .defaultDestructive, action: { [weak self = self] in
                         self?.deleteCommunity()
                     })
                 ]
@@ -1295,14 +1295,14 @@ private final class CommunityEditScreenComponent: Component {
             )
 
             self.deleteDisposable.set((signal
-            |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.isDeleting = false
                 self.state?.updated(transition: .easeInOut(duration: 0.2))
                 self.presentError()
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1392,7 +1392,7 @@ private final class CommunityEditScreenComponent: Component {
                 context: component.context,
                 peerId: peer.id,
                 initialVisibility: initialVisibility,
-                completed: { [weak self] isVisible in
+                completed: { [weak self = self] isVisible in
                     guard let self else {
                         return
                     }
@@ -1440,7 +1440,7 @@ private final class CommunityEditScreenComponent: Component {
 
             self.addChatDisposable.set((component.context.engine.peers.adminedPublicChannels(scope: .forCommunity)
             |> take(1)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] channels in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] channels in
                 guard let self else {
                     return
                 }
@@ -1459,7 +1459,7 @@ private final class CommunityEditScreenComponent: Component {
                     context: component.context,
                     initialData: PeerSelectionScreen.communityInitialData(channels: channels),
                     updatedPresentationData: nil,
-                    completion: { [weak self] channel in
+                    completion: { [weak self = self] channel in
                         guard let self, let component = self.component, let channel else {
                             return
                         }
@@ -1469,7 +1469,7 @@ private final class CommunityEditScreenComponent: Component {
                                 context: component.context,
                                 peerId: channel.peer.id,
                                 initialVisibility: true,
-                                completed: { [weak self] isVisible in
+                                completed: { [weak self = self] isVisible in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1490,7 +1490,7 @@ private final class CommunityEditScreenComponent: Component {
                                 context: component.context,
                                 communityId: communityId,
                                 peerId: channel.peer.id,
-                                completed: { [weak self] immediate in
+                                completed: { [weak self = self] immediate in
                                     guard let self, let component = self.component, let communityId = self.editCommunityId else {
                                         return
                                     }
@@ -1558,7 +1558,7 @@ private final class CommunityEditScreenComponent: Component {
                 |> mapError { _ -> CommunityEditSaveError in
                     return .generic
                 }
-                |> afterNext { [weak self] communityId in
+                |> afterNext { [weak self = self] communityId in
                     self?.createdCommunityId = communityId
                     self?.createdCommunityTitle = title
                 }
@@ -1619,14 +1619,14 @@ private final class CommunityEditScreenComponent: Component {
             )
             
             self.saveDisposable.set((signal
-            |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.isSaving = false
                 self.state?.updated(transition: .easeInOut(duration: 0.2))
                 self.presentError()
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1684,13 +1684,13 @@ private final class CommunityEditScreenComponent: Component {
             }
 
             self.saveDisposable.set((signal
-            |> deliverOnMainQueue).startStrict(error: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.isSaving = false
                 self.presentError()
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1742,12 +1742,12 @@ private final class CommunityEditScreenComponent: Component {
                 leftIcon: .check(ListActionItemComponent.LeftIcon.Check(
                     style: .tick,
                     isSelected: self.selectedMode == mode,
-                    toggle: { [weak self] in
+                    toggle: { [weak self = self] in
                         self?.selectMode(mode)
                     }
                 )),
                 accessory: nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.selectMode(mode)
                 },
                 highlighting: self.isSaving ? .disabled : .default
@@ -1842,7 +1842,7 @@ private final class CommunityEditScreenComponent: Component {
                 contentInsets: UIEdgeInsets(top: 10.0, left: 0.0, bottom: 10.0, right: 0.0),
                 leftIcon: .custom(AnyComponentWithIdentity(id: "icon", component: AnyComponent(BundleIconComponent(name: "Item List/AddCommunityIcon", tintColor: theme.list.itemAccentColor))), false),
                 accessory: self.isAddActionInProgress ? .activity : nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.openAddChat()
                 },
                 highlighting: (self.isSaving || self.isDeleting || self.isAddActionInProgress) ? .disabled : .default
@@ -1886,7 +1886,7 @@ private final class CommunityEditScreenComponent: Component {
                     background: theme.list.itemBlocksBackgroundColor
                 ),
                 insets: UIEdgeInsets(top: -1.0, left: 0.0, bottom: -1.0, right: 0.0),
-                action: { [weak self] peer, _, _ in
+                action: { [weak self = self] peer, _, _ in
                     self?.openPeer(peer)
                 }
             )))
@@ -1923,7 +1923,7 @@ private final class CommunityEditScreenComponent: Component {
                     background: theme.list.itemBlocksBackgroundColor
                 ),
                 insets: UIEdgeInsets(top: -1.0, left: 0.0, bottom: -1.0, right: 0.0),
-                action: { [weak self] peer, _, _ in
+                action: { [weak self = self] peer, _, _ in
                     self?.openDraftPeerVisibility(peer: peer)
                 }
             )))
@@ -1949,7 +1949,7 @@ private final class CommunityEditScreenComponent: Component {
                 contentInsets: UIEdgeInsets(top: 12.0, left: 0.0, bottom: 12.0, right: 0.0),
                 leftIcon: nil,
                 accessory: self.isDeleting ? .activity : nil,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.confirmDeleteCommunity()
                 },
                 highlighting: (self.isSaving || self.isDeleting) ? .disabled : .default
@@ -2017,7 +2017,7 @@ private final class CommunityEditScreenComponent: Component {
                         isEnabled: !(self.isSaving || self.isDeleting || self.isUpdatingAvatar),
                         uploadingImage: self.uploadingAvatarImage,
                         uploadProgress: self.avatarUploadProgress,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.openAvatarSetup()
                         }
                     )),
@@ -2050,7 +2050,7 @@ private final class CommunityEditScreenComponent: Component {
                             characterLimit: 128,
                             autocapitalizationType: .words,
                             autocorrectionType: .yes,
-                            updated: { [weak self] value in
+                            updated: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -2071,7 +2071,7 @@ private final class CommunityEditScreenComponent: Component {
             }
             if self.isCreateMode && !self.didFocusTitleField {
                 self.didFocusTitleField = true
-                Queue.mainQueue().after(0.1, { [weak self] in
+                Queue.mainQueue().after(0.1, { [weak self = self] in
                     guard let self, let view = self.titleSection.findTaggedView(tag: self.titleFieldTag) as? ListTextFieldItemComponent.View else {
                         return
                     }
@@ -2137,7 +2137,7 @@ private final class CommunityEditScreenComponent: Component {
                     countStyle: .plain,
                     theme: theme,
                     presentationData: presentationData,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.openAdministrators()
                     }
                 )
@@ -2151,7 +2151,7 @@ private final class CommunityEditScreenComponent: Component {
                     countStyle: .badge,
                     theme: theme,
                     presentationData: presentationData,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.openPendingRequests()
                     }
                 ))
@@ -2164,7 +2164,7 @@ private final class CommunityEditScreenComponent: Component {
                 countStyle: .plain,
                 theme: theme,
                 presentationData: presentationData,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.openRemovedUsers()
                 }
             ))
@@ -2346,7 +2346,7 @@ public final class CommunityEditScreen: ViewControllerComponentContainer {
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "___done", style: .plain, target: self, action: #selector(self.savePressed))
 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? CommunityEditScreenComponent.View else {
                 return
             }

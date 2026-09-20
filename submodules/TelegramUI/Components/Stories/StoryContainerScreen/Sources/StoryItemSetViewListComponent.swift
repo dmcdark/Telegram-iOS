@@ -346,7 +346,7 @@ public final class StoryItemSetViewListComponent: Component {
         
         func setPreviewedItem(signal: Signal<EngineStoryId?, NoError>) {
             self.previewedItemDisposable?.dispose()
-            self.previewedItemDisposable = (signal |> distinctUntilChanged |> deliverOnMainQueue).start(next: { [weak self] previewedItemId in
+            self.previewedItemDisposable = (signal |> distinctUntilChanged |> deliverOnMainQueue).start(next: { [weak self = self] previewedItemId in
                 guard let self else {
                     return
                 }
@@ -588,7 +588,7 @@ public final class StoryItemSetViewListComponent: Component {
                             message: item.message,
                             selectionState: .none,
                             hasNext: index != viewListState.totalCount - 1 || itemLayout.premiumFooterSize != nil,
-                            action: { [weak self] peer, messageId, itemView in
+                            action: { [weak self = self] peer, messageId, itemView in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -606,7 +606,7 @@ public final class StoryItemSetViewListComponent: Component {
                             contextAction: component.peerId.isGroupOrChannel || item.peer.id == component.context.account.peerId ? nil : { peer, view, gesture in
                                 component.peerContextAction(peer, view, gesture)
                             },
-                            openStories: { [weak self] peer, avatarNode in
+                            openStories: { [weak self = self] peer, avatarNode in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -712,19 +712,19 @@ public final class StoryItemSetViewListComponent: Component {
                         placeholder: component.strings.Common_Search,
                         isSearchActive: component.isSearchActive,
                         collapseFraction: navigationSearchFieldCollapseFraction,
-                        activateSearch: { [weak self] in
+                        activateSearch: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.setIsSearchActive(true)
                         },
-                        deactivateSearch: { [weak self] in
+                        deactivateSearch: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.setIsSearchActive(false)
                         },
-                        updateQuery: { [weak self] query in
+                        updateQuery: { [weak self = self] query in
                             guard let self else {
                                 return
                             }
@@ -854,7 +854,7 @@ public final class StoryItemSetViewListComponent: Component {
                         return .single(state)
                         #endif
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] listState in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] listState in
                         guard let self else {
                             return
                         }
@@ -1004,7 +1004,7 @@ public final class StoryItemSetViewListComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: component.hasPremium ? nil : { [weak self] _, _ in
+                        tapAction: component.hasPremium ? nil : { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1162,7 +1162,7 @@ public final class StoryItemSetViewListComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] _, _ in
+                        tapAction: { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1198,7 +1198,7 @@ public final class StoryItemSetViewListComponent: Component {
                             ),
                             isEnabled: true,
                             displaysProgress: false,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1399,7 +1399,7 @@ public final class StoryItemSetViewListComponent: Component {
                         return UIImage()
                     }
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     a(.default)
                     
                     guard let self else {
@@ -1418,7 +1418,7 @@ public final class StoryItemSetViewListComponent: Component {
                         return UIImage()
                     }
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     a(.default)
                     
                     guard let self else {
@@ -1437,7 +1437,7 @@ public final class StoryItemSetViewListComponent: Component {
                     return UIImage()
                 }
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, a in
+            }, action: { [weak self = self] _, a in
                 a(.default)
                 
                 guard let self else {
@@ -1512,7 +1512,7 @@ public final class StoryItemSetViewListComponent: Component {
                     }
                     self.mainViewList = viewList
                     self.mainViewListDisposable = (viewList.state
-                    |> deliverOnMainQueue).start(next: { [weak self] listState in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] listState in
                         guard let self else {
                             return
                         }
@@ -1537,7 +1537,7 @@ public final class StoryItemSetViewListComponent: Component {
                 
                 let currentContentView = ContentView(configuration: currentConfiguration)
                 self.currentContentView = currentContentView
-                currentContentView.updateQuery = { [weak self] query in
+                currentContentView.updateQuery = { [weak self = self] query in
                     guard let self else {
                         return
                     }
@@ -1615,7 +1615,7 @@ public final class StoryItemSetViewListComponent: Component {
                         )
                     ],
                     selectedId: AnyHashable(self.listMode == .everyone ? 0 : 1),
-                    setSelectedId: { [weak self] id in
+                    setSelectedId: { [weak self = self] id in
                         guard let self, let idValue = id.base as? Int, let listMode = ListMode(rawValue: idValue) else {
                             return
                         }
@@ -1676,7 +1676,7 @@ public final class StoryItemSetViewListComponent: Component {
                         foreground: .white
                     ),
                     icon: orderSelectorIconName,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1799,7 +1799,7 @@ public final class StoryItemSetViewListComponent: Component {
                     currentSearchContentView = ContentView(configuration: currentConfiguration)
                     self.currentSearchContentView = currentSearchContentView
                     currentSearchContentView.isHidden = true
-                    currentSearchContentView.dismissInput = { [weak self] in
+                    currentSearchContentView.dismissInput = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1813,7 +1813,7 @@ public final class StoryItemSetViewListComponent: Component {
                     self.insertSubview(currentSearchContentView, belowSubview: self.navigationContainerView)
                 }
                 
-                currentSearchContentView.hasContentUpdated = { [weak self] hasContent in
+                currentSearchContentView.hasContentUpdated = { [weak self = self] hasContent in
                     guard let self else {
                         return
                     }

@@ -100,7 +100,7 @@ public final class AnimatedCountView: UIView {
             animation.fromValue = previousValue
             animation.toValue = newValue
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 self?.setupGradientAnimations()
             }
             self.foregroundGradientLayer.add(animation, forKey: "movement")

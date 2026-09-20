@@ -90,7 +90,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
             
             if let item = value {
                 self.title = item.title
-                self.itemTitleListenerKey = item.addSetTitleListener { [weak self] text, animated in
+                self.itemTitleListenerKey = item.addSetTitleListener { [weak self = self] text, animated in
                     if let strongSelf = self {
                         let animateIn = animated && (strongSelf.title?.isEmpty ?? true)
                         strongSelf.title = text
@@ -119,7 +119,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                         }
                     }
                 }
-                self.itemTitleViewListenerKey = item.addSetTitleViewListener { [weak self] itemTitleView in
+                self.itemTitleViewListenerKey = item.addSetTitleViewListener { [weak self = self] itemTitleView in
                     guard let self else {
                         return
                     }
@@ -142,7 +142,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                     }
                 }
                 
-                self.itemLeftButtonListenerKey = item.addSetLeftBarButtonItemListener { [weak self] previousItem, _, animated in
+                self.itemLeftButtonListenerKey = item.addSetLeftBarButtonItemListener { [weak self = self] previousItem, _, animated in
                     if let strongSelf = self {
                         if let itemLeftButtonSetEnabledListenerKey = strongSelf.itemLeftButtonSetEnabledListenerKey {
                             previousItem?.removeSetEnabledListener(itemLeftButtonSetEnabledListenerKey)
@@ -155,7 +155,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                     }
                 }
                 
-                self.itemRightButtonListenerKey = item.addSetRightBarButtonItemListener { [weak self] previousItem, currentItem, animated in
+                self.itemRightButtonListenerKey = item.addSetRightBarButtonItemListener { [weak self = self] previousItem, currentItem, animated in
                     if let strongSelf = self {
                         strongSelf.updateRightButton(animated: animated)
                         strongSelf.invalidateCalculatedLayout()
@@ -163,7 +163,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                     }
                 }
                 
-                self.itemRightButtonsListenerKey = item.addSetMultipleRightBarButtonItemsListener { [weak self] items, animated in
+                self.itemRightButtonsListenerKey = item.addSetMultipleRightBarButtonItemsListener { [weak self = self] items, animated in
                     if let strongSelf = self {
                         strongSelf.updateRightButton(animated: animated)
                         strongSelf.invalidateCalculatedLayout()
@@ -171,7 +171,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                     }
                 }
                 
-                self.itemBadgeListenerKey = item.addSetBadgeListener { [weak self] text in
+                self.itemBadgeListenerKey = item.addSetBadgeListener { [weak self = self] text in
                     if let strongSelf = self {
                         strongSelf.updateBadgeText(text: text)
                     }
@@ -306,7 +306,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                 if let previousItem = value {
                     switch previousItem {
                         case let .item(itemValue):
-                            self.previousItemListenerKey = itemValue.addSetTitleListener { [weak self] _, _ in
+                            self.previousItemListenerKey = itemValue.addSetTitleListener { [weak self = self] _, _ in
                                 if let strongSelf = self, let previousItem = strongSelf.previousItem, case let .item(itemValue) = previousItem {
                                     if case .glass = strongSelf.presentationData.theme.style {
                                         strongSelf.backButtonNodeImpl.updateManualText("", isBack: true)
@@ -322,7 +322,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                                 }
                             }
                             
-                            self.previousItemBackListenerKey = itemValue.addSetBackBarButtonItemListener { [weak self] _, _, _ in
+                            self.previousItemBackListenerKey = itemValue.addSetBackBarButtonItemListener { [weak self = self] _, _, _ in
                                 if let strongSelf = self, let previousItem = strongSelf.previousItem, case let .item(itemValue) = previousItem {
                                     if case .glass = strongSelf.presentationData.theme.style {
                                         strongSelf.backButtonNodeImpl.updateManualText("", isBack: true)
@@ -695,13 +695,13 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
         self.titleNode.truncationType = .end
         self.titleNode.isOpaque = false
         
-        self.backButtonNodeImpl.highlightChanged = { [weak self] index, highlighted in
+        self.backButtonNodeImpl.highlightChanged = { [weak self = self] index, highlighted in
             if let strongSelf = self, index == 0 {
                 strongSelf.backButtonArrow.alpha = (highlighted ? 0.4 : 1.0)
                 strongSelf.badgeNode.alpha = (highlighted ? 0.4 : 1.0)
             }
         }
-        self.backButtonNodeImpl.pressed = { [weak self] index in
+        self.backButtonNodeImpl.pressed = { [weak self = self] index in
             if let strongSelf = self, index == 0 {
                 if let leftBarButtonItem = strongSelf.item?.leftBarButtonItem, leftBarButtonItem.backButtonAppearance {
                     leftBarButtonItem.performActionOnTarget()
@@ -711,7 +711,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
             }
         }
         
-        self.leftButtonNodeImpl.pressed = { [weak self] index in
+        self.leftButtonNodeImpl.pressed = { [weak self = self] index in
             if let item = self?.item {
                 if index == 0 {
                     if let leftBarButtonItem = item.leftBarButtonItem {
@@ -722,14 +722,14 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                 }
             }
         }
-        self.leftButtonNodeImpl.requestUpdate = { [weak self] in
+        self.leftButtonNodeImpl.requestUpdate = { [weak self = self] in
             guard let self else {
                 return
             }
             self.requestLayout()
         }
         
-        self.rightButtonNodeImpl.pressed = { [weak self] index in
+        self.rightButtonNodeImpl.pressed = { [weak self = self] index in
             if let item = self?.item {
                 if let rightBarButtonItems = item.rightBarButtonItems, !rightBarButtonItems.isEmpty {
                     if index < rightBarButtonItems.count {
@@ -740,7 +740,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                 }
             }
         }
-        self.rightButtonNodeImpl.requestUpdate = { [weak self] in
+        self.rightButtonNodeImpl.requestUpdate = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1201,7 +1201,7 @@ public final class NavigationBarImpl: ASDisplayNode, NavigationBar {
                 }
             }
             self.contentNode = contentNode
-            self.contentNode?.requestContainerLayout = { [weak self] transition in
+            self.contentNode?.requestContainerLayout = { [weak self = self] transition in
                 guard let self else {
                     return
                 }

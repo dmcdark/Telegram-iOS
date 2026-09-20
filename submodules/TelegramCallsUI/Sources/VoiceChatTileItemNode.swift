@@ -226,27 +226,27 @@ final class VoiceChatTileItemNode: ASDisplayNode {
         self.contentNode.addSubnode(self.placeholderIconNode)
         self.contentNode.addSubnode(self.highlightNode)
         
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let item = strongSelf.item, item.videoReady && !item.isVideoLimit else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let contextAction = item.contextAction, !item.isVideoLimit else {
                 gesture.cancel()
                 return
             }
             contextAction(strongSelf.contextSourceNode, gesture)
         }
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let _ = strongSelf.item else {
                 return
             }
             strongSelf.updateIsExtracted(isExtracted, transition: transition)
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
                 strongSelf.highlightNode.isCurrentlyInHierarchy = value
@@ -283,7 +283,7 @@ final class VoiceChatTileItemNode: ASDisplayNode {
         let springDuration: Double = 0.42
         let springDamping: CGFloat = 124.0
         if isExtracted {
-            let profileNode = VoiceChatPeerProfileNode(context: self.context, size: extractedRect.size, sourceSize: nonExtractedRect.size, peer: item.peer, text: item.text, customNode: self.videoContainerNode, additionalEntry: .single(nil), requestDismiss: { [weak self] in
+            let profileNode = VoiceChatPeerProfileNode(context: self.context, size: extractedRect.size, sourceSize: nonExtractedRect.size, peer: item.peer, text: item.text, customNode: self.videoContainerNode, additionalEntry: .single(nil), requestDismiss: { [weak self = self] in
                 self?.contextSourceNode.requestDismiss?()
             })
             profileNode.frame = CGRect(origin: CGPoint(), size: self.bounds.size)
@@ -297,7 +297,7 @@ final class VoiceChatTileItemNode: ASDisplayNode {
             }
             appearenceTransition.updateFrame(node: profileNode, frame: extractedRect)
             
-            self.contextSourceNode.contentNode.customHitTest = { [weak self] point in
+            self.contextSourceNode.contentNode.customHitTest = { [weak self = self] point in
                 if let strongSelf = self, let profileNode = strongSelf.profileNode {
                     if profileNode.avatarListWrapperNode.frame.contains(point) {
                         return profileNode.avatarListNode.view
@@ -314,7 +314,7 @@ final class VoiceChatTileItemNode: ASDisplayNode {
             self.profileNode = nil
             
             self.infoNode.isHidden = false
-            profileNode.animateOut(to: self, targetRect: nonExtractedRect, transition: transition, completion: { [weak self] in
+            profileNode.animateOut(to: self, targetRect: nonExtractedRect, transition: transition, completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.backgroundNode.isHidden = false
                     strongSelf.fadeNode.isHidden = false
@@ -399,7 +399,7 @@ final class VoiceChatTileItemNode: ASDisplayNode {
             
             if let getAudioLevel = item.getAudioLevel {
                 self.audioLevelDisposable.set((getAudioLevel()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -673,7 +673,7 @@ class VoiceChatTileHighlightNode: ASDisplayNode {
         
         super.init()
         
-        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let strongSelf = self else { return }
             
             strongSelf.presentationAudioLevel = strongSelf.presentationAudioLevel * 0.9 + strongSelf.audioLevel * 0.1
@@ -739,7 +739,7 @@ class VoiceChatTileHighlightNode: ASDisplayNode {
             animation.fromValue = previousValue
             animation.toValue = newValue
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

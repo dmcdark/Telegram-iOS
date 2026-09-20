@@ -139,7 +139,7 @@ private final class ChatTextInputMediaRecordingButtonPresenter : NSObject, TGMod
         if let statusBarHost = self.statusBarHost, let keyboardWindow = statusBarHost.keyboardWindow, let keyboardView = statusBarHost.keyboardView, !keyboardView.frame.height.isZero, isViewVisibleInHierarchy(keyboardView) {
             keyboardWindow.addSubview(self.container)
             
-            self.timer = SwiftSignalKit.Timer(timeout: 0.05, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 0.05, repeat: true, completion: { [weak self = self] in
                 if let keyboardWindow = LegacyComponentsGlobals.provider().applicationKeyboardWindow(), windowIsVisible(keyboardWindow) {
                 } else {
                     self?.present()
@@ -260,7 +260,7 @@ public final class ChatTextInputMediaRecordingButton: TGModernConversationInputM
                     micLevelDisposable = MetaDisposable()
                 }
                 if let audioRecorder = self.audioRecorder {
-                    self.micLevelDisposable?.set(audioRecorder.micLevel.start(next: { [weak self] level in
+                    self.micLevelDisposable?.set(audioRecorder.micLevel.start(next: { [weak self = self] level in
                         Queue.mainQueue().async {
                             self?.addMicLevel(CGFloat(level))
                         }
@@ -282,7 +282,7 @@ public final class ChatTextInputMediaRecordingButton: TGModernConversationInputM
                 }
                 
                 if let videoRecordingStatus = self.videoRecordingStatus {
-                    self.micLevelDisposable?.set(videoRecordingStatus.micLevel.start(next: { [weak self] level in
+                    self.micLevelDisposable?.set(videoRecordingStatus.micLevel.start(next: { [weak self = self] level in
                         Queue.mainQueue().async {
                             self?.addMicLevel(CGFloat(level))
                         }
@@ -488,7 +488,7 @@ public final class ChatTextInputMediaRecordingButton: TGModernConversationInputM
         } else {
             //print("\(CFAbsoluteTimeGetCurrent()) began")
             self.modeTimeoutTimer?.invalidate()
-            let modeTimeoutTimer = SwiftSignalKit.Timer(timeout: 0.19, repeat: false, completion: { [weak self] in
+            let modeTimeoutTimer = SwiftSignalKit.Timer(timeout: 0.19, repeat: false, completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.modeTimeoutTimer = nil
                     strongSelf.beginRecording()

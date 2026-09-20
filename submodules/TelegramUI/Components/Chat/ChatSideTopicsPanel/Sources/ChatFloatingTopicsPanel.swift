@@ -139,7 +139,7 @@ public final class ChatFloatingTopicsPanel: Component {
                         topicId: component.topicId,
                         controller: component.controller,
                         togglePanel: component.togglePanel,
-                        updateTopicId: { [weak self] threadId, direction in
+                        updateTopicId: { [weak self = self] threadId, direction in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -203,7 +203,7 @@ public final class ChatFloatingTopicsPanel: Component {
                         topicId: component.topicId,
                         controller: component.controller,
                         togglePanel: component.togglePanel,
-                        updateTopicId: { [weak self] threadId, direction in
+                        updateTopicId: { [weak self = self] threadId, direction in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -391,7 +391,7 @@ public final class ChatTopicsHeaderPanelComponent: Component {
                     topicId: component.topicId,
                     controller: component.controller,
                     togglePanel: component.togglePanel,
-                    updateTopicId: { [weak self] threadId, direction in
+                    updateTopicId: { [weak self = self] threadId, direction in
                         guard let self, let component = self.component else {
                             return
                         }

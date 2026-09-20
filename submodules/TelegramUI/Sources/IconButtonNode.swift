@@ -65,7 +65,7 @@ final class IconButtonNode: HighlightTrackingButtonNode {
         
         self.addSubnode(self.iconNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     let transition: ContainedViewLayoutTransition = .animated(duration: 0.18, curve: .linear)

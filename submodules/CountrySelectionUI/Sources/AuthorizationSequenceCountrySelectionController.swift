@@ -152,11 +152,11 @@ private final class AuthorizationSequenceCountrySelectionNavigationContentNode: 
         
         self.addSubnode(self.searchBar)
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.queryUpdated?(query)
         }
     }
@@ -345,12 +345,12 @@ public final class AuthorizationSequenceCountrySelectionController: ViewControll
         if glass {
             self.title = strings.Login_SelectCountry
         } else {
-            let navigationContentNode = AuthorizationSequenceCountrySelectionNavigationContentNode(theme: theme, strings: strings, cancel: { [weak self] in
+            let navigationContentNode = AuthorizationSequenceCountrySelectionNavigationContentNode(theme: theme, strings: strings, cancel: { [weak self = self] in
                 self?.dismissed?()
                 self?.dismiss()
             })
             self.navigationContentNode = navigationContentNode
-            navigationContentNode.setQueryUpdated { [weak self] query in
+            navigationContentNode.setQueryUpdated { [weak self = self] query in
                 guard let strongSelf = self, strongSelf.isNodeLoaded else {
                     return
                 }
@@ -365,12 +365,12 @@ public final class AuthorizationSequenceCountrySelectionController: ViewControll
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = AuthorizationSequenceCountrySelectionControllerNode(theme: self.theme, strings: self.strings, displayCodes: self.displayCodes, glass: self.glass, itemSelected: { [weak self] args in
+        self.displayNode = AuthorizationSequenceCountrySelectionControllerNode(theme: self.theme, strings: self.strings, displayCodes: self.displayCodes, glass: self.glass, itemSelected: { [weak self = self] args in
             let (_, countryId, code) = args
             self?.completeWithCountryCode?(code, countryId)
             self?.dismiss()
         })
-        self.controllerNode.deactivateSearch = { [weak self] in
+        self.controllerNode.deactivateSearch = { [weak self = self] in
             self?.controllerNode.isSearching = false
             self?.requestLayout(transition: .animated(duration: 0.5, curve: .spring))
         }
@@ -403,7 +403,7 @@ public final class AuthorizationSequenceCountrySelectionController: ViewControll
                         tintColor: self.theme.chat.inputPanel.panelControlColor
                     )
                 )),
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     self?.cancelPressed()
                 }
             ))
@@ -424,7 +424,7 @@ public final class AuthorizationSequenceCountrySelectionController: ViewControll
                             tintColor: self.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.controllerNode.isSearching = true
                         self?.requestLayout(transition: .animated(duration: 0.5, curve: .spring))
                     }

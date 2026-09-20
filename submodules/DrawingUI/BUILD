@@ -54,9 +54,6 @@ swift_library(
     srcs = glob([
 		"Sources/**/*.swift",
     ]),
-    copts = [
-        "-warnings-as-errors",
-    ],
     data = [
         ":DrawingUIBundle",
     ],

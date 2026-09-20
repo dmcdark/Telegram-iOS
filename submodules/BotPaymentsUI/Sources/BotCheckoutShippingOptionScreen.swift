@@ -229,7 +229,7 @@ private final class BotCheckoutShippingOptionScreenComponent: Component {
             let controller = environment.controller
             let theme = environment.theme.withModalBlocksBackground()
             
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 guard let self, !self.isDismissing else {
                     return
                 }
@@ -258,7 +258,7 @@ private final class BotCheckoutShippingOptionScreenComponent: Component {
                         currency: component.currency,
                         options: component.options,
                         selectedId: self.selectedId,
-                        selectOption: { [weak self] id in
+                        selectOption: { [weak self = self] id in
                             guard let self else {
                                 return
                             }
@@ -310,7 +310,7 @@ private final class BotCheckoutShippingOptionScreenComponent: Component {
                         ),
                         isEnabled: self.selectedId != nil,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let selectedId = self.selectedId else {
                                 return
                             }

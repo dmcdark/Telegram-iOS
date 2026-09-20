@@ -92,7 +92,7 @@ final class TermsOfServiceControllerNode: ViewControllerTracingNode {
         self.addSubnode(self.rightActionTextNode)
         self.addSubnode(self.rightActionNode)
         
-        self.leftActionNode.highligthedChanged = { [weak self] highlighted in
+        self.leftActionNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -104,7 +104,7 @@ final class TermsOfServiceControllerNode: ViewControllerTracingNode {
                 strongSelf.leftActionTextNode.layer.animateAlpha(from: 0.4, to: 1.0, duration: 0.2)
             }
         }
-        self.rightActionNode.highligthedChanged = { [weak self] highlighted in
+        self.rightActionNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -132,7 +132,7 @@ final class TermsOfServiceControllerNode: ViewControllerTracingNode {
             }
         }
         
-        let showMentionActionSheet:(String) -> Void = { [weak self] mention in
+        let showMentionActionSheet:(String) -> Void = { [weak self = self] mention in
             guard let strongSelf = self else {
                 return
             }
@@ -150,7 +150,7 @@ final class TermsOfServiceControllerNode: ViewControllerTracingNode {
             strongSelf.present(actionSheet, nil)
         }
         
-        self.contentTextNode.tapAttributeAction = { [weak self] attributes, _ in
+        self.contentTextNode.tapAttributeAction = { [weak self = self] attributes, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -162,7 +162,7 @@ final class TermsOfServiceControllerNode: ViewControllerTracingNode {
                 showMentionActionSheet(mention)
             }
         }
-        self.contentTextNode.longTapAttributeAction = { [weak self] attributes, _ in
+        self.contentTextNode.longTapAttributeAction = { [weak self = self] attributes, _ in
             guard let strongSelf = self else {
                 return
             }

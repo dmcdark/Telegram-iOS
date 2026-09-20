@@ -162,14 +162,14 @@ public final class ThemeColorsGridController: ViewController, AttachmentContaina
 
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controllerNode.scrollToTop()
             }
         }
 
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -190,7 +190,7 @@ public final class ThemeColorsGridController: ViewController, AttachmentContaina
             self.title = self.presentationData.strings.WallpaperColors_Title
         }
 
-        self.pushController = { [weak self] controller in
+        self.pushController = { [weak self = self] controller in
             self?.push(controller)
         }
 
@@ -226,7 +226,7 @@ public final class ThemeColorsGridController: ViewController, AttachmentContaina
     private func presentColorPicker() {
         let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.presentationThemeSettings])
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             guard let strongSelf = self else {
                 return
             }
@@ -274,13 +274,13 @@ public final class ThemeColorsGridController: ViewController, AttachmentContaina
         if case .default = self.mode {
             dark = self.presentationData.theme.overallDarkAppearance
         }
-        self.displayNode = ThemeColorsGridControllerNode(context: self.context, presentationData: self.presentationData, controller: self, gradients: availableGradients(dark: dark), colors: availableColors(dark: dark), push: { [weak self] controller in
+        self.displayNode = ThemeColorsGridControllerNode(context: self.context, presentationData: self.presentationData, controller: self, gradients: availableGradients(dark: dark), colors: availableColors(dark: dark), push: { [weak self = self] controller in
             self?.pushController(controller)
-        }, pop: { [weak self] in
+        }, pop: { [weak self = self] in
             if let strongSelf = self, let navigationController = strongSelf.navigationController as? NavigationController {
                 let _ = navigationController.popViewController(animated: true)
             }
-        }, presentColorPicker: { [weak self] in
+        }, presentColorPicker: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.presentColorPicker()
             }
@@ -294,7 +294,7 @@ public final class ThemeColorsGridController: ViewController, AttachmentContaina
             transitionOffset = 2.0
         }
 
-        self.controllerNode.gridNode.visibleContentOffsetChanged = { [weak self] offset in
+        self.controllerNode.gridNode.visibleContentOffsetChanged = { [weak self = self] offset in
             if let strongSelf = self {
                 var previousContentOffsetValue: CGFloat?
                 if let previousContentOffset = strongSelf.previousContentOffset, case let .known(value) = previousContentOffset {

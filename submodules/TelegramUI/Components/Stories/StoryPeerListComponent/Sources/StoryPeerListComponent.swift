@@ -397,7 +397,7 @@ public final class StoryPeerListComponent: Component {
             self.addSubview(self.collapsedButton)
             self.addSubview(self.titleView)
             
-            self.collapsedButton.highligthedChanged = { [weak self] highlighted in
+            self.collapsedButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -406,7 +406,7 @@ public final class StoryPeerListComponent: Component {
                     self.alpha = 0.6
                 } else {
                     self.alpha = 1.0
-                    self.layer.animateAlpha(from: 0.6, to: 1.0, duration: 0.25, completion: { [weak self] finished in
+                    self.layer.animateAlpha(from: 0.6, to: 1.0, duration: 0.25, completion: { [weak self = self] finished in
                         guard let self, finished else {
                             return
                         }
@@ -445,7 +445,7 @@ public final class StoryPeerListComponent: Component {
         
         public func setPreviewedItem(signal: Signal<EngineStoryId?, NoError>) {
             self.previewedItemDisposable?.dispose()
-            self.previewedItemDisposable = (signal |> map(\.?.peerId) |> distinctUntilChanged |> deliverOnMainQueue).start(next: { [weak self] itemId in
+            self.previewedItemDisposable = (signal |> map(\.?.peerId) |> distinctUntilChanged |> deliverOnMainQueue).start(next: { [weak self = self] itemId in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -492,7 +492,7 @@ public final class StoryPeerListComponent: Component {
             var applyLoadingItem = true
             
             self.loadingItemDisposable?.dispose()
-            let loadingItemDisposable = (signal |> deliverOnMainQueue).start(completed: { [weak self] in
+            let loadingItemDisposable = (signal |> deliverOnMainQueue).start(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -502,7 +502,7 @@ public final class StoryPeerListComponent: Component {
             })
             self.loadingItemDisposable = loadingItemDisposable
             
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -695,7 +695,7 @@ public final class StoryPeerListComponent: Component {
                         content: statusContent,
                         particleColor: particleColor,
                         isVisibleForAnimations: true,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let titleIconView = self.titleIconView?.view else {
                                 return
                             }
@@ -1664,7 +1664,7 @@ public final class StoryPeerListComponent: Component {
             
             if self.animationState != nil || self.titleViewAnimation != nil || !self.disappearingTitleViews.isEmpty {
                 if self.animator == nil {
-                    let animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                    let animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                         guard let self else {
                             return
                         }

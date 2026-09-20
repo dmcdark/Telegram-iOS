@@ -80,7 +80,7 @@ final class MediaPickerPlaceholderNode: ASDisplayNode {
         switch self.content {
         case .bannedSendMedia(_, true):
             self.addSubnode(self.buttonNode)
-            self.buttonNode.pressed = { [weak self] in
+            self.buttonNode.pressed = { [weak self = self] in
                 self?.boostPressed()
             }
         case .intro:
@@ -91,7 +91,7 @@ final class MediaPickerPlaceholderNode: ASDisplayNode {
             self.cameraButtonNode.addSubnode(self.cameraTextNode)
             self.cameraButtonNode.addSubnode(self.cameraIconNode)
             
-            self.cameraButtonNode.highligthedChanged = { [weak self] highlighted in
+            self.cameraButtonNode.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.cameraTextNode.layer.removeAnimation(forKey: "opacity")
@@ -108,7 +108,7 @@ final class MediaPickerPlaceholderNode: ASDisplayNode {
             }
             self.cameraButtonNode.addTarget(self, action: #selector(self.cameraButtonPressed), forControlEvents: .touchUpInside)
             
-            self.buttonNode.pressed = { [weak self] in
+            self.buttonNode.pressed = { [weak self = self] in
                 self?.settingsPressed()
             }
         default:

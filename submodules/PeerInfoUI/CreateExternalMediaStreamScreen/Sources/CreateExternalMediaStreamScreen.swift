@@ -89,7 +89,7 @@ private final class CreateExternalMediaStreamScreenComponent: CombinedComponent 
                     return .never()
                 }
             }
-            self.credentialsDisposable.set((credentialsSignal |> deliverOnMainQueue).start(next: { [weak self] result in
+            self.credentialsDisposable.set((credentialsSignal |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }

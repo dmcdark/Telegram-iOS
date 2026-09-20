@@ -527,7 +527,7 @@ public final class ButtonComponent: Component {
             self.longPressGesture = longPressGesture
             self.button.addGestureRecognizer(longPressGesture)
 
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 if let self, let component = self.component, component.isEnabled {
                     switch component.background.style {
                     case .legacy:
@@ -1000,7 +1000,7 @@ private final class AnimatedGradientBackgroundView: UIView {
             animation.toValue = newValue
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 self?.setupGradientAnimations(size: size, gradient: gradient)
             }
 

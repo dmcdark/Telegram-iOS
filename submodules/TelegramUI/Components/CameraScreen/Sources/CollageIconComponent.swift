@@ -242,7 +242,7 @@ final class CollageIconCarouselComponent: Component {
                                 )
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let component = self?.component {
                                 component.selected(grid)
                             }

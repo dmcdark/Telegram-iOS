@@ -376,7 +376,7 @@ private final class FormulaEditorSheetContent: Component {
                             tintColor: theme.list.itemCheckColors.foregroundColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -447,11 +447,11 @@ private final class FormulaEditorSheetContent: Component {
                                 autocapitalizationType: .none,
                                 autocorrectionType: .no,
                                 returnKeyType: .done,
-                                updated: { [weak self] text in
+                                updated: { [weak self = self] text in
                                     self?.currentLatex = text
                                     component.updateLatex(text)
                                 },
-                                onReturn: { [weak self] in
+                                onReturn: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -651,7 +651,7 @@ private final class FormulaEditorSheetComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] animated in
+                dismiss: { [weak self = self] animated in
                     self?.dismiss(animated: animated)
                 }
             )
@@ -665,16 +665,16 @@ private final class FormulaEditorSheetComponent: Component {
                         initialLatex: initialLatex,
                         placeholderLatex: placeholderLatex,
                         latex: latex,
-                        updateLatex: { [weak self] text in
+                        updateLatex: { [weak self = self] text in
                             self?.latex = text
-                            Queue.mainQueue().justDispatch { [weak self] in
+                            Queue.mainQueue().justDispatch { [weak self = self] in
                                 self?.state?.updated(transition: .immediate)
                             }
                         },
-                        complete: { [weak self] latex in
+                        complete: { [weak self = self] latex in
                             self?.complete(latex: latex)
                         },
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss(animated: true)
                         }
                     )),

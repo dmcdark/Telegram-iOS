@@ -162,7 +162,7 @@ private final class PeerInfoMembersContextImpl {
         self.pushState()
         
         if peerId.namespace == Namespaces.Peer.CloudChannel {
-            let (disposable, control) = context.peerChannelMemberCategoriesContextsManager.recent(engine: context.engine, accountPeerId: context.account.peerId, peerId: peerId, requestUpdate: true, updated: { [weak self] state in
+            let (disposable, control) = context.peerChannelMemberCategoriesContextsManager.recent(engine: context.engine, accountPeerId: context.account.peerId, peerId: peerId, requestUpdate: true, updated: { [weak self = self] state in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -190,7 +190,7 @@ private final class PeerInfoMembersContextImpl {
             self.channelMembersControl = control
             
             self.peerDisposable.set((context.account.postbox.peerView(id: peerId)
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] view in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] view in
                 guard let strongSelf = self else {
                     return
                 }
@@ -225,7 +225,7 @@ private final class PeerInfoMembersContextImpl {
             }))
         } else if peerId.namespace == Namespaces.Peer.CloudGroup {
             self.disposable.set((context.account.postbox.peerView(id: peerId)
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] view in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] view in
                 guard let strongSelf = self, let cachedData = view.cachedData as? CachedGroupData, let participantsData = cachedData.participants else {
                     return
                 }
@@ -318,7 +318,7 @@ private final class PeerInfoMembersContextImpl {
                 signal = self.context.engine.peers.removePeerMember(peerId: self.peerId, memberId: memberId)
                 |> ignoreValues
             }
-            let completed: () -> Void = { [weak self] in
+            let completed: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

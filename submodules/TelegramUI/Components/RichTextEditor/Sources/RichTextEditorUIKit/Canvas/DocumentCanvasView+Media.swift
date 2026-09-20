@@ -50,7 +50,7 @@ extension DocumentCanvasView {
                     // occurrence BlockID (media.id) so delete targets THIS block even if mediaID repeats.
                     let blockID = media.id
                     let mediaID = media.mediaID
-                    v.onControlTapped = { [weak self] kind, itemIndex, anchorView, rect in
+                    v.onControlTapped = { [weak self = self] kind, itemIndex, anchorView, rect in
                         self?.handleMediaControlTapped(blockID: blockID, mediaID: mediaID, itemIndex: itemIndex,
                                                        kind: kind, anchorView: anchorView, sourceRect: rect)
                     }
@@ -105,18 +105,18 @@ extension DocumentCanvasView {
             control: kind,
             mediaID: mediaID,
             itemIndex: itemIndex,
-            delete: { [weak self] in
+            delete: { [weak self = self] in
                 if let itemIndex { self?.deleteMediaItem(blockID: blockID, itemIndex: itemIndex) }
                 else { self?.deleteMediaBlock(id: blockID) }
             },
             isSpoiler: isSpoiler,
-            toggleSpoiler: { [weak self] in self?.toggleMediaSpoiler(blockID: blockID, itemIndex: itemIndex) },
+            toggleSpoiler: { [weak self = self] in self?.toggleMediaSpoiler(blockID: blockID, itemIndex: itemIndex) },
             replace: nil,
-            addMore: { [weak self] mediaID, naturalSize, kind in
+            addMore: { [weak self = self] mediaID, naturalSize, kind in
                 self?.addMediaItem(blockID: blockID, mediaID: mediaID,
                                    naturalSize: naturalSize, kind: kind)
             },
-            toggleLayout: { [weak self] in self?.toggleMediaDisplayMode(blockID: blockID) }
+            toggleLayout: { [weak self = self] in self?.toggleMediaDisplayMode(blockID: blockID) }
         )
         onRequestMediaControl?(request)
     }

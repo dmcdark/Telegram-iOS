@@ -110,7 +110,7 @@ final class GifPaneSearchContentNode: ASDisplayNode & PaneSearchContentNode {
         }
         
         self.searchDisposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self, let (result, nextOffset) = result else {
                 return
             }
@@ -147,7 +147,7 @@ final class GifPaneSearchContentNode: ASDisplayNode & PaneSearchContentNode {
         }
         
         self.searchDisposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self, let (result, nextOffset) = result else {
                 return
             }
@@ -228,7 +228,7 @@ final class GifPaneSearchContentNode: ASDisplayNode & PaneSearchContentNode {
             
             self.addSubnode(multiplexedNode)
             
-            multiplexedNode.fileSelected = { [weak self] file, sourceNode, sourceRect in
+            multiplexedNode.fileSelected = { [weak self = self] file, sourceNode, sourceRect in
                 if let (collection, result) = file.contextResult {
                     let _ = self?.interaction.sendBotContextResultAsGif(collection, result, sourceNode.view, sourceRect, false, false)
                 } else {
@@ -236,11 +236,11 @@ final class GifPaneSearchContentNode: ASDisplayNode & PaneSearchContentNode {
                 }
             }
             
-            multiplexedNode.fileContextMenu = { [weak self] fileReference, sourceNode, sourceRect, gesture, isSaved in
+            multiplexedNode.fileContextMenu = { [weak self = self] fileReference, sourceNode, sourceRect, gesture, isSaved in
                 self?.openGifContextMenu?(fileReference, sourceNode, sourceRect, gesture, isSaved)
             }
             
-            multiplexedNode.didScroll = { [weak self] offset, height in
+            multiplexedNode.didScroll = { [weak self = self] offset, height in
                 guard let strongSelf = self, let multiplexedNode = strongSelf.multiplexedNode else {
                     return
                 }
@@ -252,7 +252,7 @@ final class GifPaneSearchContentNode: ASDisplayNode & PaneSearchContentNode {
                 }
             }
             
-            multiplexedNode.reactionSelected = { [weak self] reaction in
+            multiplexedNode.reactionSelected = { [weak self = self] reaction in
                 self?.requestUpdateQuery?(reaction)
             }
         }

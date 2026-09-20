@@ -151,13 +151,13 @@ private final class AutodownloadDataUsagePickerItemNode: ListViewItemNode, ItemL
         self.addSubnode(self.customTextNode)
         self.addSubnode(self.activateArea)
         
-//        self.activateArea.increment = { [weak self] in
+//        self.activateArea.increment = { [weak self = self] in
 //            if let self {
 //                self.sliderView?.increase()
 //            }
 //        }
 //        
-//        self.activateArea.decrement = { [weak self] in
+//        self.activateArea.decrement = { [weak self = self] in
 //            if let self {
 //                self.sliderView?.decrease()
 //            }
@@ -203,7 +203,7 @@ private final class AutodownloadDataUsagePickerItemNode: ListViewItemNode, ItemL
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -304,7 +304,7 @@ private final class AutodownloadDataUsagePickerItemNode: ListViewItemNode, ItemL
                                     valueCount: valueCount,
                                     value: value,
                                     markPositions: true,
-                                    valueUpdated: { [weak self] position in
+                                    valueUpdated: { [weak self = self] position in
                                         guard let self else {
                                             return
                                         }

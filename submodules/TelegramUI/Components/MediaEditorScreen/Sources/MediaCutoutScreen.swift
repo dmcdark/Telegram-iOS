@@ -118,8 +118,8 @@ private final class MediaCutoutScreenComponent: Component {
                 return
             }
             
-            component.mediaEditor.processImage { [weak self] originalImage, _ in
-                cutoutImage(from: originalImage, crop: nil, target: .point(point), includeExtracted: false, completion: { [weak self] results in
+            component.mediaEditor.processImage { [weak self = self] originalImage, _ in
+                cutoutImage(from: originalImage, crop: nil, target: .point(point), includeExtracted: false, completion: { [weak self = self] results in
                     Queue.mainQueue().async {
                         if let self, let _ = self.component, let result = results.first, let maskImage = result.maskImage, let controller = self.environment?.controller() as? MediaCutoutScreen {
                             if case let .image(mask, _) = maskImage {
@@ -567,7 +567,7 @@ final class MediaCutoutScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )

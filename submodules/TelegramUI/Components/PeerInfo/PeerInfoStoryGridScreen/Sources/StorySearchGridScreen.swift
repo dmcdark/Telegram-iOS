@@ -110,7 +110,7 @@ final class StorySearchGridScreenComponent: Component {
                     captureProtected: false,
                     isProfileEmbedded: false,
                     canManageStories: false,
-                    navigationController: { [weak self] in
+                    navigationController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
@@ -120,7 +120,7 @@ final class StorySearchGridScreenComponent: Component {
                     initialStoryFolderId: nil
                 )
                 paneNode.parentController = environment.controller()
-                paneNode.isEmptyUpdated = { [weak self] _ in
+                paneNode.isEmptyUpdated = { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -132,7 +132,7 @@ final class StorySearchGridScreenComponent: Component {
                 self.addSubview(paneNode.view)
                 
                 self.paneStatusDisposable = (paneNode.status
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     guard let self else {
                         return
                     }
@@ -222,7 +222,7 @@ public final class StorySearchGridScreen: ViewControllerComponentContainer {
         
         self.updateTitle()
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? StorySearchGridScreenComponent.View else {
                 return
             }
@@ -245,13 +245,13 @@ public final class StorySearchGridScreen: ViewControllerComponentContainer {
         
         let presentationData = self.context.sharedContext.currentPresentationData.with({ $0 })
         
-        let shareAction = OpenInControllerAction(title: presentationData.strings.Conversation_ContextMenuShare, action: { [weak self] in
+        let shareAction = OpenInControllerAction(title: presentationData.strings.Conversation_ContextMenuShare, action: { [weak self = self] in
             guard let self else {
                 return
             }
             self.present(self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .mapMedia(locationMap), externalShare: true)), in: .window(.root), with: nil)
         })
-        self.push(OpenInOptionsScreen(context: self.context, updatedPresentationData: nil, item: .location(location: locationMap, directions: nil), additionalAction: shareAction, openUrl: { [weak self] url in
+        self.push(OpenInOptionsScreen(context: self.context, updatedPresentationData: nil, item: .location(location: locationMap, directions: nil), additionalAction: shareAction, openUrl: { [weak self = self] url in
             guard let self else {
                 return
             }

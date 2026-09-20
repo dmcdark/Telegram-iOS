@@ -37,7 +37,7 @@ final class ChannelMembersSearchItem: ItemListControllerSearch {
             } else {
                 return .single(value)
             }
-        }).start(next: { [weak self] value in
+        }).start(next: { [weak self = self] value in
             self?.updateActivity?(value)
         }))
     }
@@ -66,16 +66,16 @@ final class ChannelMembersSearchItem: ItemListControllerSearch {
             current.updateTheme(presentationData.theme)
             return current
         } else {
-            return GroupInfoSearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, mode: self.searchMode, cancel: self.cancel, updateActivity: { [weak self] value in
+            return GroupInfoSearchNavigationContentNode(theme: presentationData.theme, strings: presentationData.strings, mode: self.searchMode, cancel: self.cancel, updateActivity: { [weak self = self] value in
                 self?.updateActivity = value
             })
         }
     }
     
     func node(current: ItemListControllerSearchNode?, titleContentNode: (NavigationBarContentNode & ItemListControllerSearchNavigationContentNode)?) -> ItemListControllerSearchNode {
-        return ChannelMembersSearchItemNode(context: self.context, peerId: self.peerId, searchMode: self.searchMode, searchContext: self.searchContext, openPeer: self.openPeer, cancel: self.cancel, updateActivity: { [weak self] value in
+        return ChannelMembersSearchItemNode(context: self.context, peerId: self.peerId, searchMode: self.searchMode, searchContext: self.searchContext, openPeer: self.openPeer, cancel: self.cancel, updateActivity: { [weak self = self] value in
             self?.activity.set(value)
-        }, pushController: { [weak self] c in
+        }, pushController: { [weak self = self] c in
             self?.pushController(c)
         }, dismissInput: self.dismissInput)
     }

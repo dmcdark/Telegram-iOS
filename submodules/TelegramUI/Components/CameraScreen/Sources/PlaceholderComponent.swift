@@ -129,7 +129,7 @@ final class PlaceholderComponent: Component {
                         ),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 self.component?.action()
                             }

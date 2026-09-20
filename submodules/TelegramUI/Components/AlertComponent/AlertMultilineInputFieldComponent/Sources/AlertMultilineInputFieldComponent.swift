@@ -235,13 +235,13 @@ public final class AlertMultilineInputFieldComponent: Component {
             var resetText: NSAttributedString?
             if self.component == nil {
                 resetText = component.initialValue ?? (component.externalState.value.length == 0 ? nil : component.externalState.value)
-                component.externalState.animateError = { [weak self] in
+                component.externalState.animateError = { [weak self = self] in
                     self?.animateError()
                 }
-                component.externalState.activateInput = { [weak self] in
+                component.externalState.activateInput = { [weak self = self] in
                     self?.activateInput()
                 }
-                component.externalState.setValueImpl = { [weak self] value, selectionRange in
+                component.externalState.setValueImpl = { [weak self = self] value, selectionRange in
                     if let textFieldView = self?.textField.view as? TextFieldComponent.View {
                         textFieldView.updateText(value, selectionRange: selectionRange)
                     }
@@ -283,7 +283,7 @@ public final class AlertMultilineInputFieldComponent: Component {
                     autocorrectionType: component.autocorrectionType,
                     lockedFormatAction: {
                     },
-                    present: { [weak self] c in
+                    present: { [weak self = self] c in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -291,7 +291,7 @@ public final class AlertMultilineInputFieldComponent: Component {
                     },
                     paste: { _ in
                     },
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

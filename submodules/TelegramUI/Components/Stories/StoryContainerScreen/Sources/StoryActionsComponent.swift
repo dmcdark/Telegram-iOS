@@ -56,7 +56,7 @@ public final class StoryActionsComponent: Component {
             
             self.addSubview(self.iconView)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -140,7 +140,7 @@ public final class StoryActionsComponent: Component {
                     itemView = current
                 } else {
                     itemTransition = .immediate
-                    itemView = ItemView(action: { [weak self] item in
+                    itemView = ItemView(action: { [weak self = self] item in
                         self?.component?.action(item)
                     })
                     self.itemViews[item.kind] = itemView

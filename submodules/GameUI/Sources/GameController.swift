@@ -73,7 +73,7 @@ public final class GameController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = GameControllerNode(context: self.context, presentationData: self.presentationData, url: self.url, present: { [weak self] c, a in
+        self.displayNode = GameControllerNode(context: self.context, presentationData: self.presentationData, url: self.url, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         }, message: self.message)
     }

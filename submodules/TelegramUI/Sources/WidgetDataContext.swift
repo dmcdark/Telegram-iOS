@@ -37,7 +37,7 @@ private final class WidgetReloadManager {
     init(inForeground: Signal<Bool, NoError>) {
         self.inForegroundDisposable = (inForeground
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -254,7 +254,7 @@ final class WidgetDataContext {
             }
         }
         |> distinctUntilChanged
-        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             self?.reloadManager.requestReload()
         })
         

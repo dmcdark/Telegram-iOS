@@ -69,7 +69,7 @@ class ChatListHoleItemNode: ListViewItemNode {
         return { item, params, first, last in
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: 0.0), insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.relativePosition = (first, last)
                     
@@ -204,7 +204,7 @@ class ChatListSearchEmptyFooterItemNode: ListViewItemNode {
         let makeTextNodeLayout = TextNode.asyncLayout(self.textNode)
         let makeSearchAllMessagesTitleLayout = TextNode.asyncLayout(self.searchAllMessagesTitle)
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let titleLayout = makeTitleNodeLayout(TextNodeLayoutArguments(
                 attributedString: NSAttributedString(string: item.strings.ChatList_Search_NoResults, font: Font.semibold(17.0), textColor: item.theme.list.freeTextColor),
                 maximumNumberOfLines: 1,
@@ -265,7 +265,7 @@ class ChatListSearchEmptyFooterItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: contentHeight), insets: UIEdgeInsets())
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 guard let self else {
                     return
                 }

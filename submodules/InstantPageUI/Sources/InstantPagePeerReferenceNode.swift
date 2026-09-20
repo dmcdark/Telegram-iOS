@@ -117,7 +117,7 @@ public final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode 
         self.addSubnode(self.checkNode)
         self.addSubnode(self.nameNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.highlightedBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -129,7 +129,7 @@ public final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode 
             }
         }
         
-        self.joinNode.highligthedChanged = { [weak self] highlighted in
+        self.joinNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.joinNode.layer.removeAnimation(forKey: "opacity")
@@ -165,7 +165,7 @@ public final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode 
             }
         })
     
-        self.peerDisposable = (signal |> deliverOnMainQueue).start(next: { [weak self] peer in
+        self.peerDisposable = (signal |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             if let strongSelf = self {
                 strongSelf.peer = peer
                 if case let .channel(peer) = peer {
@@ -309,7 +309,7 @@ public final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode 
     @objc func joinPressed() {
         if let peer = self.peer, case .notJoined = self.joinState {
             self.updateJoinState(.inProgress)
-            self.joinDisposable.set((self.context.engine.peers.joinChannel(peerId: peer.id, hash: nil) |> deliverOnMainQueue).start(next: { [weak self] result in
+            self.joinDisposable.set((self.context.engine.peers.joinChannel(peerId: peer.id, hash: nil) |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
@@ -323,7 +323,7 @@ public final class InstantPagePeerReferenceNode: ASDisplayNode, InstantPageNode 
                         strongSelf.updateJoinState(.notJoined)
                     }
                 }
-            }, error: { [weak self] _ in
+            }, error: { [weak self = self] _ in
                 if let strongSelf = self {
                     if case .inProgress = strongSelf.joinState {
                         strongSelf.updateJoinState(.notJoined)

@@ -616,7 +616,7 @@ private final class CommunityPeerLinkRequestsContextImpl {
 
             return (requests, peers, cachedResult.count, Int(cachedResult.count) > requests.count)
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] cachedResult in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] cachedResult in
             guard let strongSelf = self else {
                 return
             }
@@ -667,7 +667,7 @@ private final class CommunityPeerLinkRequestsContextImpl {
             offset: offset,
             limit: requestLimit
         )
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }

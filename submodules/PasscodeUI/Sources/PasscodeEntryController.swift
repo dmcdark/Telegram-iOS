@@ -75,14 +75,14 @@ public final class PasscodeEntryController: ViewController {
         self.statusBar.updateStatusBarStyle(.White, animated: false)
         
         self.presentationDataDisposable = (presentationDataSignal
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self, strongSelf.isNodeLoaded {
                 strongSelf.controllerNode.updatePresentationData(presentationData)
             }
         })
         
         self.inBackgroundDisposable = (applicationBindings.applicationInForeground
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -133,14 +133,14 @@ public final class PasscodeEntryController: ViewController {
         self.displayNodeDidLoad()
         
         let _ = (self.appLockContext.invalidAttempts
-        |> deliverOnMainQueue).start(next: { [weak self] attempts in
+        |> deliverOnMainQueue).start(next: { [weak self = self] attempts in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controllerNode.updateInvalidAttempts(attempts)
         })
         
-        self.controllerNode.checkPasscode = { [weak self] passcode in
+        self.controllerNode.checkPasscode = { [weak self = self] passcode in
             guard let strongSelf = self else {
                 return
             }
@@ -175,7 +175,7 @@ public final class PasscodeEntryController: ViewController {
                 strongSelf.controllerNode.animateError()
             }
         }
-        self.controllerNode.requestBiometrics = { [weak self] in
+        self.controllerNode.requestBiometrics = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.requestBiometrics(force: true)
             }
@@ -189,7 +189,7 @@ public final class PasscodeEntryController: ViewController {
         
         self.controllerNode.activateInput()
         if self.arguments.animated {
-            self.controllerNode.animateIn(iconFrame: self.arguments.lockIconInitialFrame(), completion: { [weak self] in
+            self.controllerNode.animateIn(iconFrame: self.arguments.lockIconInitialFrame(), completion: { [weak self = self] in
                 self?.presentationCompleted?()
             })
         } else {
@@ -228,7 +228,7 @@ public final class PasscodeEntryController: ViewController {
         
         self.hasOngoingBiometricsRequest = true
         
-        self.biometricsDisposable.set((LocalAuth.auth(reason: self.presentationData.strings.EnterPasscode_TouchId) |> deliverOnMainQueue).start(next: { [weak self] result, evaluatedPolicyDomainState in
+        self.biometricsDisposable.set((LocalAuth.auth(reason: self.presentationData.strings.EnterPasscode_TouchId) |> deliverOnMainQueue).start(next: { [weak self = self] result, evaluatedPolicyDomainState in
             guard let strongSelf = self else {
                 return
             }
@@ -273,7 +273,7 @@ public final class PasscodeEntryController: ViewController {
     
     public override func dismiss(completion: (() -> Void)? = nil) {
         self.view.endEditing(true)
-        self.controllerNode.animateOut { [weak self] in
+        self.controllerNode.animateOut { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

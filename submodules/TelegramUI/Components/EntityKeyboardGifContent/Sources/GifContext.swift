@@ -298,7 +298,7 @@ public final class GifContext {
         
         self.componentPromise.set(gifItems)
         self.componentDisposable = (self.componentPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }

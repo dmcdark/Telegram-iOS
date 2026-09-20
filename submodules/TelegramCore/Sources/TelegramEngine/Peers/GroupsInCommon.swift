@@ -40,7 +40,7 @@ private final class GroupsInCommonContextImpl {
         
         if let hintGroupInCommon = hintGroupInCommon {
             let _ = (self.account.postbox.loadedPeerWithId(hintGroupInCommon)
-            |> deliverOn(self.queue)).start(next: { [weak self] peer in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] peer in
                 if let strongSelf = self {
                     strongSelf.peers.append(RenderedPeer(peer: peer))
                     strongSelf.pushState()
@@ -72,7 +72,7 @@ private final class GroupsInCommonContextImpl {
                         return (peers, cached.count)
                     }
                     return nil
-                } |> deliverOn(self.queue)).start(next: { [weak self] peersAndCount in
+                } |> deliverOn(self.queue)).start(next: { [weak self = self] peersAndCount in
                     guard let self else {
                         return
                     }
@@ -138,7 +138,7 @@ private final class GroupsInCommonContextImpl {
             }
             
             self.disposable.set((signal
-            |> deliverOn(self.queue)).start(next: { [weak self] (peers, count) in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] (peers, count) in
                 guard let strongSelf = self else {
                     return
                 }

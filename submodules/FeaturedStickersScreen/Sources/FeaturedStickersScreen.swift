@@ -242,13 +242,13 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
         
         self.addSubnode(self.gridNode)
         
-        self.gridNode.scrollingInitiated = { [weak self] in
+        self.gridNode.scrollingInitiated = { [weak self = self] in
             self?.controller?.view.endEditing(true)
         }
         
         var processedRead = Set<ItemCollectionId>()
         
-        self.gridNode.visibleItemsUpdated = { [weak self] visibleItems in
+        self.gridNode.visibleItemsUpdated = { [weak self = self] visibleItems in
             guard let strongSelf = self else {
                 return
             }
@@ -302,7 +302,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
         )
         
         let interaction = FeaturedInteraction(
-            installPack: { [weak self] info, install in
+            installPack: { [weak self = self] info, install in
                 guard let strongSelf = self, let info = info as? StickerPackCollectionInfo else {
                     return
                 }
@@ -314,7 +314,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                     })
                 }
             },
-            openPack: { [weak self] info in
+            openPack: { [weak self = self] info in
                 if let strongSelf = self, let info = info as? StickerPackCollectionInfo {
                     strongSelf.view.window?.endEditing(true)
                     let packReference: StickerPackReference = .id(id: info.id.id, accessHash: info.accessHash)
@@ -358,13 +358,13 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
             itemContext: self.searchItemContext
         )
         
-        self.searchNode?.isActiveUpdated = { [weak self] in
+        self.searchNode?.isActiveUpdated = { [weak self = self] in
             self?.updateCanPlayMedia()
         }
-        self.searchNode?.updateActivity = { [weak self] activity in
+        self.searchNode?.updateActivity = { [weak self = self] activity in
             self?.controller?.searchNavigationNode?.setActivity(activity)
         }
-        self.searchNode?.deactivateSearchBar = { [weak self] in
+        self.searchNode?.deactivateSearchBar = { [weak self = self] in
             self?.controller?.view.endEditing(true)
         }
         
@@ -417,7 +417,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
             
             return preparedTransition(from: previous ?? [], to: entries, context: context, interaction: interaction, initial: initial, scrollToItem: scrollToItem)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] transition in
+        |> deliverOnMainQueue).start(next: { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
@@ -428,7 +428,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
             }
         }).strict()
         
-        self.controller?.searchNavigationNode?.setQueryUpdated({ [weak self] query, languageCode in
+        self.controller?.searchNavigationNode?.setQueryUpdated({ [weak self = self] query, languageCode in
             guard let strongSelf = self else {
                 return
             }
@@ -470,7 +470,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
         }
         self.isLoadingMore = true
         self.loadMoreDisposable.set((requestOldFeaturedStickerPacks(network: self.context.account.network, postbox: self.context.account.postbox, offset: self.additionalPacksValue.count, limit: 50)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -494,7 +494,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
         
         self.view.disablesInteractiveTransitionGestureRecognizer = true
         
-        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point in
+        self.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point in
             guard let strongSelf = self else {
                 return nil
             }
@@ -517,7 +517,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                         }
                                         f(.default)
                                     })),
-                                    .action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                    .action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                         f(.default)
                                         
                                         if let strongSelf = self {
@@ -534,7 +534,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                                         } else {
                                                             text = strongSelf.presentationData.strings.Premium_MaxFavedStickersText("\(premiumLimit)").string
                                                         }
-                                                        strongSelf.controller?.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: file, loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self] action in
+                                                        strongSelf.controller?.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: file, loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self = self] action in
                                                             if let strongSelf = self {
                                                                 if case .info = action {
                                                                     let controller = PremiumIntroScreen(context: strongSelf.context, source: .savedStickers)
@@ -548,7 +548,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                             })
                                         }
                                     })),
-                                    .action(ContextMenuActionItem(text: strongSelf.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                    .action(ContextMenuActionItem(text: strongSelf.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                         f(.default)
                                         
                                         if let strongSelf = self {
@@ -586,7 +586,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                         }
                                     }))
                                 ]
-                                return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: item, menu: menuItems, openPremiumIntro: { [weak self] in
+                                return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: item, menu: menuItems, openPremiumIntro: { [weak self = self] in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -616,7 +616,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                 }
                                 f(.default)
                             })),
-                            .action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                            .action(ContextMenuActionItem(text: isStarred ? strongSelf.presentationData.strings.Stickers_RemoveFromFavorites : strongSelf.presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                 f(.default)
                                 
                                 if let strongSelf = self {
@@ -633,7 +633,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                                 } else {
                                                     text = strongSelf.presentationData.strings.Premium_MaxFavedStickersText("\(premiumLimit)").string
                                                 }
-                                            strongSelf.controller?.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: item.file._parse(), loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self] action in
+                                            strongSelf.controller?.presentInGlobalOverlay(UndoOverlayController(presentationData: strongSelf.presentationData, content: .sticker(context: strongSelf.context, file: item.file._parse(), loop: true, title: strongSelf.presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self = self] action in
                                                     if let strongSelf = self {
                                                         if case .info = action {
                                                             let controller = PremiumIntroScreen(context: strongSelf.context, source: .savedStickers)
@@ -647,7 +647,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                     })
                                 }
                             })),
-                            .action(ContextMenuActionItem(text: strongSelf.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                            .action(ContextMenuActionItem(text: strongSelf.presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                 f(.default)
                                 
                                 if let strongSelf = self {
@@ -685,7 +685,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                                 }
                             }))
                         ]
-                        return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: .pack(item.file._parse()), menu: menuItems, openPremiumIntro: { [weak self] in
+                        return (itemNode.view, itemNode.bounds, StickerPreviewPeekContent(context: strongSelf.context, theme: strongSelf.presentationData.theme, strings: strongSelf.presentationData.strings, item: .pack(item.file._parse()), menu: menuItems, openPremiumIntro: { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -698,7 +698,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
                 }
             }
             return nil
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             if let strongSelf = self {
                 let controller = makePeekController(presentationData: strongSelf.presentationData, content: content, sourceView: {
                     return (sourceView, sourceRect)
@@ -800,7 +800,7 @@ private final class FeaturedStickersScreenNode: ViewControllerTracingNode {
             self.enqueuedTransitions.remove(at: 0)
             
             let itemTransition: ContainedViewLayoutTransition = .immediate
-            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: itemTransition, stationaryItems: .none, updateFirstIndexInSectionOffset: nil, synchronousLoads: transition.initial), completion: { [weak self] _ in
+            self.gridNode.transaction(GridNodeTransaction(deleteItems: transition.deletions, insertItems: transition.insertions, updateItems: transition.updates, scrollToItem: transition.scrollToItem, updateLayout: nil, itemTransition: itemTransition, stationaryItems: .none, updateFirstIndexInSectionOffset: nil, synchronousLoads: transition.initial), completion: { [weak self = self] _ in
                 if let strongSelf = self, transition.initial {
                     strongSelf.gridNode.forEachItemNode({ itemNode in
                         if let itemNode = itemNode as? StickerPaneSearchGlobalItemNode, itemNode.item?.info.id == strongSelf.controller?.highlightedPackId {
@@ -878,7 +878,7 @@ public final class FeaturedStickersScreen: ViewController {
         
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
         
-        let searchNavigationNode = SearchNavigationContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, placeholder: { strings in return strings.Stickers_Search }, cancel: { [weak self] in
+        let searchNavigationNode = SearchNavigationContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, placeholder: { strings in return strings.Stickers_Search }, cancel: { [weak self = self] in
             self?.dismiss()
         })
         self.searchNavigationNode = searchNavigationNode
@@ -886,7 +886,7 @@ public final class FeaturedStickersScreen: ViewController {
         self.navigationBar?.setContentNode(searchNavigationNode, animated: false)
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previous = strongSelf.presentationData
                 
@@ -903,7 +903,7 @@ public final class FeaturedStickersScreen: ViewController {
         })
         
         self.eventsDisposable = (context.account.stateManager.installedStickerPacksArchivedEvents
-        |> deliverOnMainQueue).startStrict(next: { [weak self] count in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] count in
             guard let self else {
                 return
             }
@@ -938,7 +938,7 @@ public final class FeaturedStickersScreen: ViewController {
         self.displayNode = FeaturedStickersScreenNode(
             context: self.context,
             controller: self,
-            sendSticker: self.sendSticker.flatMap { [weak self] sendSticker in
+            sendSticker: self.sendSticker.flatMap { [weak self = self] sendSticker in
                 return { file, sourceNode, sourceRect in
                     if sendSticker(file, sourceNode, sourceRect) {
                         self?.dismiss()
@@ -998,12 +998,12 @@ private final class SearchNavigationContentNode: NavigationBarContentNode {
         
         self.addSubnode(self.searchBar)
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             //self?.searchBar.deactivate(clear: false)
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, languageCode in
+        self.searchBar.textUpdated = { [weak self = self] query, languageCode in
             self?.queryUpdated?(query, languageCode)
         }
     }
@@ -1228,10 +1228,10 @@ private final class FeaturedPaneSearchContentNode: ASDisplayNode {
         self.addSubnode(self.notFoundNode)
         
         self.gridNode.scrollView.alwaysBounceVertical = true
-        self.gridNode.scrollingInitiated = { [weak self] in
+        self.gridNode.scrollingInitiated = { [weak self = self] in
             self?.deactivateSearchBar?()
         }
-        self.gridNode.visibleItemsUpdated = { [weak self] visibleItems in
+        self.gridNode.visibleItemsUpdated = { [weak self = self] visibleItems in
             guard let self, let (bottomIndex, _) = visibleItems.bottomVisible else {
                 return
             }
@@ -1240,7 +1240,7 @@ private final class FeaturedPaneSearchContentNode: ASDisplayNode {
             }
         }
         
-        self.interaction = StickerPaneSearchInteraction(open: { [weak self] info in
+        self.interaction = StickerPaneSearchInteraction(open: { [weak self = self] info in
             if let strongSelf = self {
                 strongSelf.view.window?.endEditing(true)
                 let packReference: StickerPackReference = .id(id: info.id.id, accessHash: info.accessHash)
@@ -1266,7 +1266,7 @@ private final class FeaturedPaneSearchContentNode: ASDisplayNode {
                 )
                 strongSelf.controller?.present(controller, in: .window(.root))
             }
-        }, install: { [weak self] info, items, install in
+        }, install: { [weak self = self] info, items, install in
             guard let strongSelf = self else {
                 return
             }
@@ -1277,7 +1277,7 @@ private final class FeaturedPaneSearchContentNode: ASDisplayNode {
                 |> deliverOnMainQueue).start(next: { _ in
                 })
             }
-        }, sendSticker: { [weak self] file, sourceView, layer, sourceRect in
+        }, sendSticker: { [weak self = self] file, sourceView, layer, sourceRect in
             if let strongSelf = self {
                 let _ = strongSelf.sendSticker?(file, sourceView, sourceRect)
             }
@@ -1403,7 +1403,7 @@ private final class FeaturedPaneSearchContentNode: ASDisplayNode {
         }
         
         self.searchDisposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             Queue.mainQueue().async {
                 guard let strongSelf = self, let interaction = strongSelf.interaction else {
                     return

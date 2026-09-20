@@ -131,7 +131,7 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
     }
 
     private func updateFormulaRenderer() {
-        self.editorView.registerFormulaRenderer { [weak self] context in
+        self.editorView.registerFormulaRenderer { [weak self = self] context in
             return self?.formulaRenderer?(context)
         }
     }
@@ -209,11 +209,11 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
         // returns true to insert a newline, false when it sent the message). Without this a hardware Return
         // just inserted a paragraph break and never sent — the legacy backend wired this via
         // ChatInputTextViewImpl's own \r keyCommand; the native editor surfaces it as onHardwareReturn.
-        self.editorView.onHardwareReturn = { [weak self] modifierFlags in
+        self.editorView.onHardwareReturn = { [weak self = self] modifierFlags in
             return self?.storedDelegate?.chatInputTextNodeShouldReturn(modifierFlags: modifierFlags) ?? true
         }
 
-        self.editorView.onChange = { [weak self] in
+        self.editorView.onChange = { [weak self = self] in
             guard let self else { return }
             // RichTextEditorView is parent-driven: it does NOT self-layout on a content change (unlike the
             // legacy UITextView backend, which renders its own edits). The host must call `update(...)` in
@@ -237,10 +237,10 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
             self.lastTypingActivityText = currentText
             self.storedDelegate?.chatInputTextNodeDidUpdateText()
         }
-        self.editorView.onBecameFirstResponder = { [weak self] in
+        self.editorView.onBecameFirstResponder = { [weak self = self] in
             self?.storedDelegate?.chatInputTextNodeDidBeginEditing()
         }
-        self.editorView.onResignedFirstResponder = { [weak self] in
+        self.editorView.onResignedFirstResponder = { [weak self = self] in
             self?.storedDelegate?.chatInputTextNodeDidFinishEditing()
         }
 
@@ -256,7 +256,7 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
         // renderer fallback. The closure reads `self.emojiViewProvider` lazily, so the panel may set it after
         // this registration. `size` is ignored: the host renderer picks its own point size and the editor
         // frames the returned view to the glyph rect.
-        self.editorView.registerEmojiViewProvider { [weak self] id, _ in
+        self.editorView.registerEmojiViewProvider { [weak self = self] id, _ in
             guard let self, let fileId = Int64(id), let provider = self.emojiViewProvider else { return nil }
             let attribute = self.customEmojiAttributes[fileId]
                 ?? ChatTextInputTextCustomEmojiAttribute(interactivelySelectedFromPackId: nil, fileId: fileId, file: nil)
@@ -279,7 +279,7 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
         // but never renders. Both `mediaItemViewFactory` and `mediaByID` are read LAZILY, so the panel may set
         // the factory after this registration. The returned `(UIView & RichTextMediaItemView)?` is assignable
         // to the provider's `RichTextMediaItemView?` return type.
-        self.editorView.registerMediaViewProvider { [weak self] items, _, _, existing in
+        self.editorView.registerMediaViewProvider { [weak self = self] items, _, _, existing in
             guard let self, let factory = self.mediaItemViewFactory else { return nil }
             let resolved: [(media: EngineMedia, naturalSize: CGSize, isSpoiler: Bool)] = items.compactMap { item in
                 guard let media = self.mediaByID[item.mediaID] else { return nil }
@@ -292,7 +292,7 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
         // Bridge the editor's account-free media-control request to the owner-facing context: resolve the
         // concrete media from the opaque mediaID (may repeat across blocks — the request's `delete` is
         // already bound to the exact occurrence) and hand the panel a MediaControlContext.
-        self.editorView.onRequestMediaControl = { [weak self] request in
+        self.editorView.onRequestMediaControl = { [weak self = self] request in
             guard let self, let media = self.mediaByID[request.mediaID] else { return }
             self.onRequestMediaControl?(MediaControlContext(
                 media: EngineMedia(media),
@@ -312,7 +312,7 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
         // colors threaded across the `ChatRichTextThemeColors` seam (the node holds no `PresentationTheme`).
         // The colors are read LAZILY, so a theme change applied after this registration takes effect on the
         // next-built checkbox. When this provider is unset the editor falls back to its glyph marker.
-        self.editorView.registerChecklistMarkerViewProvider { [weak self] checked, _ in
+        self.editorView.registerChecklistMarkerViewProvider { [weak self = self] checked, _ in
             guard let self else { return nil }
             let nodeTheme = CheckNodeTheme(backgroundColor: self.checkboxFill, strokeColor: self.checkboxForeground, borderColor: self.checkboxBorder, overlayBorder: false, hasInset: false, hasShadow: false)
             return HostChecklistCheckboxView(theme: nodeTheme, checked: checked)
@@ -399,8 +399,8 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
     public func currentInputContent() -> (content: ChatInputContent, selection: ChatInputSelection) {
         let content = chatInputContent(
             fromDocument: self.editorView.document,
-            resolveEmoji: { [weak self] emojiRef in self?.resolveEmojiRef(emojiRef) ?? nil },
-            resolveMedia: { [weak self] mediaID in self?.resolveMediaID(mediaID) ?? nil }
+            resolveEmoji: { [weak self = self] emojiRef in self?.resolveEmojiRef(emojiRef) ?? nil },
+            resolveMedia: { [weak self = self] mediaID in self?.resolveMediaID(mediaID) ?? nil }
         )
         return (content, ChatInputSelection(nsRange: self.selectedRange, in: content))
     }
@@ -465,8 +465,8 @@ public final class RichTextEditorChatInputNode: ASDisplayNode, ChatRichTextInput
 
         let newDocument = document(
             fromChatInputContent: content,
-            registerEmoji: { [weak self] fileId, file in self?.registerEmojiRef(fileId: fileId, file: file) ?? EmojiRef(id: String(fileId), instanceID: BlockID.generate().rawValue, altText: nil) },
-            registerMedia: { [weak self] media in self?.registerMediaValue(media) ?? "" }
+            registerEmoji: { [weak self = self] fileId, file in self?.registerEmojiRef(fileId: fileId, file: file) ?? EmojiRef(id: String(fileId), instanceID: BlockID.generate().rawValue, altText: nil) },
+            registerMedia: { [weak self = self] media in self?.registerMediaValue(media) ?? "" }
         )
         // Programmatic set (draft restore / send-clear / state echo): the assignment fires `onChange`
         // synchronously (reload → setBlocks → notifyContentSizeChanged); flag it so the typing-activity

@@ -204,7 +204,7 @@ final class ForumSettingsScreenComponent: Component {
                             return context.engine.peers.setChannelForumMode(id: upgradedPeerId, isForum: true, displayForumAsTabs: mode == .tabs)
                         })
                         |> map(Optional.init)
-                        |> `catch` { [weak self] error -> Signal<EnginePeer.Id?, NoError> in
+                        |> `catch` { [weak self = self] error -> Signal<EnginePeer.Id?, NoError> in
                             guard let self, let controller = self.environment?.controller() else {
                                 return .single(nil)
                             }
@@ -228,7 +228,7 @@ final class ForumSettingsScreenComponent: Component {
                         }
                         |> deliverOnMainQueue
                         
-                        let _ = signal.startStandalone(next: { [weak self] resultPeerId in
+                        let _ = signal.startStandalone(next: { [weak self = self] resultPeerId in
                             guard let self else {
                                 return
                             }
@@ -295,7 +295,7 @@ final class ForumSettingsScreenComponent: Component {
                 |> mapToSignal { peerId in
                     component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let self else {
                         return
                     }
@@ -400,7 +400,7 @@ final class ForumSettingsScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -435,7 +435,7 @@ final class ForumSettingsScreenComponent: Component {
                         maximumNumberOfLines: 1
                     ))),
                 ], alignment: .left, spacing: 2.0)),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOn, action: { [weak self] value in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: self.isOn, action: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -503,7 +503,7 @@ final class ForumSettingsScreenComponent: Component {
                                     theme: environment.theme,
                                     strings: environment.strings,
                                     mode: self.isOn ? self.mode : nil,
-                                    modeUpdated: { [weak self] mode in
+                                    modeUpdated: { [weak self = self] mode in
                                         guard let self else {
                                             return
                                         }
@@ -593,14 +593,14 @@ public final class ForumSettingsScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ForumSettingsScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? ForumSettingsScreenComponent.View else {
                 return true
             }

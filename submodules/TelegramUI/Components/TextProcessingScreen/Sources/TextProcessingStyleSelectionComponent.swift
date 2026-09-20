@@ -106,7 +106,7 @@ final class TextProcessingStyleSelectionComponent: Component {
 
             self.scrollView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.onTapGesture(_:))))
             
-            self.contextGestureContainerView.shouldBegin = { [weak self] point in
+            self.contextGestureContainerView.shouldBegin = { [weak self = self] point in
                 guard let self, let component = self.component else {
                     return false
                 }
@@ -127,7 +127,7 @@ final class TextProcessingStyleSelectionComponent: Component {
                 self.contextGestureContainerView.targetLayerForActivationProgress = itemComponentView.containerView.layer
                 
                 let startPoint = point
-                self.contextGestureContainerView.contextGesture?.externalUpdated = { [weak self] _, point in
+                self.contextGestureContainerView.contextGesture?.externalUpdated = { [weak self = self] _, point in
                     guard let self else {
                         return
                     }
@@ -140,7 +140,7 @@ final class TextProcessingStyleSelectionComponent: Component {
                 
                 return true
             }
-            self.contextGestureContainerView.activated = { [weak self] gesture, _ in
+            self.contextGestureContainerView.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -399,7 +399,7 @@ final class TextProcessingStyleSelectionComponent: Component {
                 alphaTransition.setAlpha(view: self.selectedBackgroundView, alpha: 1.0)
             } else {
                 if !self.selectedBackgroundView.isHidden {
-                    alphaTransition.setAlpha(view: self.selectedBackgroundView, alpha: 0.0, completion: { [weak self] flag in
+                    alphaTransition.setAlpha(view: self.selectedBackgroundView, alpha: 0.0, completion: { [weak self = self] flag in
                         guard let self, flag else {
                             return
                         }
@@ -485,7 +485,7 @@ private final class ItemComponent: Component {
             self.contextContainerView.contentView.addSubview(self.backgroundContainer)
             self.contextContainerView.contentView.addSubview(self.containerView)
             
-            self.contextContainerView.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+            self.contextContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                 guard let self else {
                     return
                 }

@@ -809,12 +809,12 @@ public final class ChatTitleView: UIView, NavigationBarTitleView {
         self.contentContainer.addSubnode(self.activityNode)
         self.addSubnode(self.button)
         
-        self.presenceManager = PeerPresenceStatusManager(update: { [weak self] in
+        self.presenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
             let _ = self?.updateStatus()
         })
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: [.touchUpInside])
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.titleTextNode.layer.removeAnimation(forKey: "opacity")

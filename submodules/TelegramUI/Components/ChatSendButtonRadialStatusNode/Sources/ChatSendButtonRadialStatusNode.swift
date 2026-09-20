@@ -95,7 +95,7 @@ public final class ChatSendButtonRadialStatusNode: ASDisplayNode {
             
             self.effectiveProgress = progress
             self.updateTimer?.invalidate()
-            self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self] in
+            self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self = self] in
                 self?.updateProgress()
             }, queue: .mainQueue())
             self.updateTimer?.start()
@@ -182,7 +182,7 @@ public final class ChatSendButtonRadialStatusView: UIView {
             
             self.effectiveProgress = progress
             self.updateTimer?.invalidate()
-            self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self] in
+            self.updateTimer = SwiftSignalKit.Timer(timeout: 1.0 / 60.0, repeat: false, completion: { [weak self = self] in
                 self?.updateProgress()
                 }, queue: .mainQueue())
             self.updateTimer?.start()

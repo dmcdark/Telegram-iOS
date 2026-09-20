@@ -66,7 +66,7 @@ final class RadialCheckContentNode: RadialStatusContentNode {
         animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         animation.duration = 0.25
         animation.beginTime = delay
-        animation.completionBlock = { [weak self] _, _ in
+        animation.completionBlock = { [weak self = self] _, _ in
             if let strongSelf = self {
                 strongSelf.animationCompletionTimer?.invalidate()
                 if let strongSelf = self {

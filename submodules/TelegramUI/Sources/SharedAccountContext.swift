@@ -383,7 +383,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         
         self.mediaManager = MediaManagerImpl(accountManager: accountManager, inForeground: applicationBindings.applicationInForeground, presentationData: presentationData)
         
-        self.mediaManager.overlayMediaManager.updatePossibleEmbeddingItem = { [weak self] item in
+        self.mediaManager.overlayMediaManager.updatePossibleEmbeddingItem = { [weak self = self] item in
             guard let strongSelf = self else {
                 return
             }
@@ -403,7 +403,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             navigationController.updatePossibleControllerDropContent(content: content)
         }
         
-        self.mediaManager.overlayMediaManager.embedPossibleEmbeddingItem = { [weak self] item in
+        self.mediaManager.overlayMediaManager.embedPossibleEmbeddingItem = { [weak self = self] item in
             guard let strongSelf = self else {
                 return false
             }
@@ -429,7 +429,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         ))
         
         self.presentationDataDisposable.set((self.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] next in
+        |> deliverOnMainQueue).start(next: { [weak self = self] next in
             if let strongSelf = self {
                 var stringsUpdated = false
                 var themeUpdated = false
@@ -471,7 +471,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         }))
         
         self.inAppNotificationSettingsDisposable = (self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.inAppNotificationSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.inAppNotificationSettings]?.get(InAppNotificationSettings.self) {
                     let _ = strongSelf.currentInAppNotificationSettings.swap(settings)
@@ -480,7 +480,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         })
         
         self.mediaInputSettingsDisposable = (self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.mediaInputSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.mediaInputSettings]?.get(MediaInputSettings.self) {
                     let _ = strongSelf.currentMediaInputSettings.swap(settings)
@@ -489,7 +489,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         })
         
         self.mediaDisplaySettingsDisposable = (self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.mediaDisplaySettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.mediaDisplaySettings]?.get(MediaDisplaySettings.self) {
                     let _ = strongSelf.currentMediaDisplaySettings.swap(settings)
@@ -498,7 +498,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         })
         
         self.stickerSettingsDisposable = (self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.stickerSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.stickerSettings]?.get(StickerSettings.self) {
                     let _ = strongSelf.currentStickerSettings.swap(settings)
@@ -507,7 +507,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         })
         
         self.chatSettingsDisposable = (self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.chatSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.chatSettings]?.get(ChatSettings.self) {
                     let _ = strongSelf.currentChatSettings.swap(settings)
@@ -538,7 +538,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             }).start()
         })
         
-        self.automaticMediaDownloadSettingsDisposable.set(self._automaticMediaDownloadSettings.get().start(next: { [weak self] next in
+        self.automaticMediaDownloadSettingsDisposable.set(self._automaticMediaDownloadSettings.get().start(next: { [weak self = self] next in
             if let strongSelf = self {
                 strongSelf.currentAutomaticMediaDownloadSettings = next
                 
@@ -560,7 +560,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             }
         }))
         
-        self.currentAutodownloadSettingsDisposable.set(self._autodownloadSettings.get().start(next: { [weak self] next in
+        self.currentAutodownloadSettingsDisposable.set(self._autodownloadSettings.get().start(next: { [weak self = self] next in
             if let strongSelf = self {
                 let _ = strongSelf.currentAutodownloadSettings.swap(next)
             }
@@ -831,12 +831,12 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         
         if let mainWindow = mainWindow, applicationBindings.isMainApp {
             let callManager = PresentationCallManagerImpl(accountManager: self.accountManager, getDeviceAccessData: {
-                return (self.currentPresentationData.with { $0 }, { [weak self] c, a in
+                return (self.currentPresentationData.with { $0 }, { [weak self = self] c, a in
                     self?.presentGlobalController(c, a)
                 }, {
                     applicationBindings.openSettings()
                 })
-            }, isMediaPlaying: { [weak self] in
+            }, isMediaPlaying: { [weak self = self] in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -849,7 +849,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                     }
                 })
                 return result
-            }, resumeMediaPlayback: { [weak self] in
+            }, resumeMediaPlayback: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -860,7 +860,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             self.callManager = callManager
             
             self.callDisposable = (callManager.currentCallSignal
-            |> deliverOnMainQueue).start(next: { [weak self] call in
+            |> deliverOnMainQueue).start(next: { [weak self = self] call in
                 guard let self else {
                     return
                 }
@@ -913,7 +913,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                         self.callIsConferenceDisposable = (call.conferenceState
                         |> filter { $0 != nil }
                         |> take(1)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -972,7 +972,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                                 }
                             }
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] _ in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -994,7 +994,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
             })
             
             self.groupCallDisposable = (callManager.currentGroupCallSignal
-            |> deliverOnMainQueue).start(next: { [weak self] call in
+            |> deliverOnMainQueue).start(next: { [weak self = self] call in
                 guard let self else {
                     return
                 }
@@ -1006,7 +1006,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 }
             })
             
-            mainWindow.inCallNavigate = { [weak self] in
+            mainWindow.inCallNavigate = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1131,7 +1131,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
         
         if let primary = self.activeAccountsValue?.primary {
             let _ = (primary.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: primary.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, case let .user(user) = peer else {
                     return
                 }
@@ -1445,7 +1445,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 self.hasGroupCallOnScreenPromise.get(),
                 beginDisplayingCallStatusBar.get()
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] hasGroupCallOnScreen, _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] hasGroupCallOnScreen, _ in
                 guard let self else {
                     return
                 }
@@ -1543,12 +1543,12 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 }
                 
                 let groupCallController = makeVoiceChatController(sharedContext: self, accountContext: call.context, call: groupCall, initialData: initialData, sourceCallController: transitioniongCallController)
-                groupCallController.onViewDidAppear = { [weak self] in
+                groupCallController.onViewDidAppear = { [weak self = self] in
                     if let self {
                         self.hasGroupCallOnScreenPromise.set(true)
                     }
                 }
-                groupCallController.onViewDidDisappear = { [weak self] in
+                groupCallController.onViewDidDisappear = { [weak self = self] in
                     if let self {
                         self.hasGroupCallOnScreenPromise.set(false)
                     }
@@ -1603,12 +1603,12 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 }
                 completion(true)
             }
-            callController.onViewDidAppear = { [weak self] in
+            callController.onViewDidAppear = { [weak self = self] in
                 if let self {
                     self.hasGroupCallOnScreenPromise.set(true)
                 }
             }
-            callController.onViewDidDisappear = { [weak self] in
+            callController.onViewDidDisappear = { [weak self = self] in
                 if let self {
                     self.hasGroupCallOnScreenPromise.set(false)
                 }
@@ -1741,7 +1741,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 return (allApsSuccess, apsNotificationToken)
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] allApsSuccess, apsToken in
+        |> deliverOnMainQueue).start(next: { [weak self = self] allApsSuccess, apsToken in
             guard let self, let appDelegate = self.appDelegate else {
                 return
             }
@@ -4054,7 +4054,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
     }
         
     public func makeStarsTransferScreen(context: AccountContext, starsContext: StarsContext, invoice: TelegramMediaInvoice, source: BotPaymentInvoiceSource, extendedMedia: [TelegramExtendedMedia], inputData: Signal<(StarsContext.State, BotPaymentForm, EnginePeer?, EnginePeer?)?, NoError>, completion: @escaping (Bool) -> Void) -> ViewController {
-        return StarsTransferScreen(context: context, starsContext: starsContext, invoice: invoice, source: source, extendedMedia: extendedMedia, inputData: inputData, navigateToPeer: { [weak self] peer in
+        return StarsTransferScreen(context: context, starsContext: starsContext, invoice: invoice, source: source, extendedMedia: extendedMedia, inputData: inputData, navigateToPeer: { [weak self = self] peer in
             guard let self else {
                 return
             }

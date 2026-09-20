@@ -10,7 +10,7 @@ extension DocumentCanvasView {
     /// `layoutContent`) call this once after creating the canvas + setting its frame, so an edit flushes
     /// layout the way it does at runtime. Install AFTER any initial `layoutIfNeeded()`.
     func simulateParentLayout() {
-        onContentSizeChange = { [weak self] in self?.layoutContent() }
+        onContentSizeChange = { [weak self = self] in self?.layoutContent() }
     }
 }
 #endif

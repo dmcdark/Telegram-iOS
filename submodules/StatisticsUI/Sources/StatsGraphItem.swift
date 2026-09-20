@@ -178,7 +178,7 @@ public final class StatsGraphItemNode: ListViewItemNode {
             if currentItem?.graph != item.graph {
                 updatedGraph = item.graph
                 if case let .Loaded(_, data) = updatedGraph {
-                    updatedController = createChartController(data, type: item.type, rate: item.conversionRate, getDetailsData: { [weak self] date, completion in
+                    updatedController = createChartController(data, type: item.type, rate: item.conversionRate, getDetailsData: { [weak self = self] date, completion in
                         if let strongSelf = self, let item = strongSelf.item {
                             item.getDetailsData?(date, completion)
                         }
@@ -248,7 +248,7 @@ public final class StatsGraphItemNode: ListViewItemNode {
             contentSize.height += 8.0
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
-            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: contentSize, insets: insets), { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.visibilityHeight = visibilityHeight

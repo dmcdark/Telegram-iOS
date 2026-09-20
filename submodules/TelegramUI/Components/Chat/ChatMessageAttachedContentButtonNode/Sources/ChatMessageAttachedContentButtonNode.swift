@@ -30,7 +30,7 @@ public final class ChatMessageAttachedContentButtonNode: HighlightTrackingButton
         
         self.addSubnode(self.textNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     let scale = (strongSelf.bounds.width - 10.0) / strongSelf.bounds.width

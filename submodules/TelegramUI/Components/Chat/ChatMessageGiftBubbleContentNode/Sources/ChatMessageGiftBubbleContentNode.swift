@@ -222,7 +222,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
         self.addSubnode(self.ribbonBackgroundNode)
         self.addSubnode(self.ribbonTextNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonNode.layer.removeAnimation(forKey: "opacity")
@@ -235,7 +235,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
         }
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
-        self.creatorButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.creatorButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.creatorButtonNode.layer.removeAnimation(forKey: "opacity")
@@ -316,7 +316,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
         self.currentProgressDisposable?.dispose()
         self.currentProgressDisposable = (progress.get()
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
             guard let self else {
                 return
             }
@@ -371,7 +371,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
         if !animated {
             self.placeholderNode.removeFromSupernode()
         } else {
-            self.placeholderNode.layer.animateAlpha(from: self.placeholderNode.alpha, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: self.placeholderNode.alpha, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -988,7 +988,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
                 }
                 
                 return (backgroundSize.width, { boundingWidth in
-                    return (backgroundSize, { [weak self] animation, synchronousLoads, info in
+                    return (backgroundSize, { [weak self = self] animation, synchronousLoads, info in
                         if let strongSelf = self {
                             let isFirstTime = strongSelf.item == nil
                             
@@ -1025,7 +1025,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
                             strongSelf.creatorButtonTitleNode.isHidden = creatorButtonTitle.isEmpty
                                                     
                             if strongSelf.item == nil && !isStoryEntity && uniqueGift == nil {
-                                strongSelf.animationNode.started = { [weak self] in
+                                strongSelf.animationNode.started = { [weak self = self] in
                                     if let strongSelf = self {
                                         let current = CACurrentMediaTime()
                                         if let setupTimestamp = strongSelf.setupTimestamp, current - setupTimestamp > 0.3 {
@@ -1598,7 +1598,7 @@ public class ChatMessageGiftBubbleContentNode: ChatMessageBubbleContentNode {
         if self.buttonNode.frame.contains(point) || self.creatorButtonNode.frame.contains(point) {
             return ChatMessageBubbleContentTapAction(content: .ignore)
         } else if self.textClippingNode.frame.contains(point) && !self.isExpanded && !self.moreTextNode.alpha.isZero {
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.expandPressed()
             }))
         } else if let backgroundNode = self.backgroundNode, backgroundNode.frame.contains(point) {

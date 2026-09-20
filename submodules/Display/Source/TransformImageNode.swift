@@ -94,7 +94,7 @@ open class TransformImageNode: ASDisplayNode {
             }
         }
         
-        self.disposable.set((result |> deliverOnMainQueue).start(next: { [weak self] next in
+        self.disposable.set((result |> deliverOnMainQueue).start(next: { [weak self = self] next in
             let apply: () -> Void = {
                 if let strongSelf = self {
                     var animateFromContents: Any?
@@ -153,7 +153,7 @@ open class TransformImageNode: ASDisplayNode {
     public func asyncLayout() -> (TransformImageArguments) -> (() -> Void) {
         let currentTransform = self.currentTransform
         let currentArguments = self.currentArguments
-        return { [weak self] arguments in
+        return { [weak self = self] arguments in
             let updatedImage: UIImage?
             if currentArguments != arguments {
                 updatedImage = currentTransform?(arguments)?.generateImage()
@@ -180,7 +180,7 @@ open class TransformImageNode: ASDisplayNode {
     public func asyncLayoutWithAnimation() -> (TransformImageArguments) -> ((ListViewItemUpdateAnimation) -> Void) {
         let currentTransform = self.currentTransform
         let currentArguments = self.currentArguments
-        return { [weak self] arguments in
+        return { [weak self = self] arguments in
             let updatedImage: UIImage?
             
             if currentArguments != arguments {
@@ -343,7 +343,7 @@ open class TransformImageView: UIView {
             }
         }
 
-        self.disposable.set((result |> deliverOnMainQueue).start(next: { [weak self] next in
+        self.disposable.set((result |> deliverOnMainQueue).start(next: { [weak self = self] next in
             let apply: () -> Void = {
                 if let strongSelf = self {
                     if strongSelf.image == nil {
@@ -393,7 +393,7 @@ open class TransformImageView: UIView {
     public func asyncLayout() -> (TransformImageArguments) -> (() -> Void) {
         let currentTransform = self.currentTransform
         let currentArguments = self.currentArguments
-        return { [weak self] arguments in
+        return { [weak self = self] arguments in
             let updatedImage: UIImage?
             if currentArguments != arguments {
                 updatedImage = currentTransform?(arguments)?.generateImage()

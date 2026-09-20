@@ -117,7 +117,7 @@ class ChatExternalFileGalleryItemNode: GalleryItemNode {
         self.statusNodeContainer.isUserInteractionEnabled = false
         
         self.actionButtonNode.addTarget(self, action: #selector(self.actionButtonPressed), forControlEvents: .touchUpInside)
-        self.actionButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.actionButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.actionTitleNode.layer.removeAnimation(forKey: "opacity")
@@ -183,7 +183,7 @@ class ChatExternalFileGalleryItemNode: GalleryItemNode {
     
     private func setupStatus(context: AccountContext, resource: EngineRawMediaResource) {
         self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(resource))
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 let previousStatus = strongSelf.status
                 strongSelf.status = status

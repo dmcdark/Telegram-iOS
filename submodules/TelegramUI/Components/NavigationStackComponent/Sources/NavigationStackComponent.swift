@@ -21,7 +21,7 @@ private final class NavigationContainer: UIView, UIGestureRecognizerDelegate {
     init() {
         super.init(frame: .zero)
                 
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
             guard let strongSelf = self else {
                 return []
             }
@@ -158,14 +158,14 @@ public final class NavigationStackComponent<ChildEnvironment: Equatable>: Compon
             
             self.addSubview(self.navigationContainer)
             
-            self.navigationContainer.requestUpdate = { [weak self] transition in
+            self.navigationContainer.requestUpdate = { [weak self = self] transition in
                 guard let self else {
                     return
                 }
                 self.state?.updated(transition: transition)
             }
             
-            self.navigationContainer.requestPop = { [weak self] in
+            self.navigationContainer.requestPop = { [weak self = self] in
                 guard let self else {
                     return
                 }

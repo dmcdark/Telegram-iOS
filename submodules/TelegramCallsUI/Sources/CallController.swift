@@ -115,12 +115,12 @@ public final class CallController: ViewController {
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .portrait, compactSize: .portrait)
         
         self.disposable = (call.state
-        |> deliverOnMainQueue).start(next: { [weak self] callState in
+        |> deliverOnMainQueue).start(next: { [weak self = self] callState in
             self?.callStateUpdated(callState)
         })
         
         self.callMutedDisposable = (call.isMuted
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isMuted = value
                 if strongSelf.isNodeLoaded {
@@ -130,7 +130,7 @@ public final class CallController: ViewController {
         })
         
         self.audioOutputStateDisposable = (call.audioOutputState
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             if let strongSelf = self {
                 strongSelf.audioOutputState = state
                 if strongSelf.isNodeLoaded {
@@ -170,7 +170,7 @@ public final class CallController: ViewController {
         self.displayNode = displayNode
         self.isContentsReady.set(displayNode.isReady.get())
         
-        displayNode.restoreUIForPictureInPicture = { [weak self] completion in
+        displayNode.restoreUIForPictureInPicture = { [weak self = self] completion in
             guard let self, let restoreUIForPictureInPicture = self.restoreUIForPictureInPicture else {
                 completion(false)
                 return
@@ -179,15 +179,15 @@ public final class CallController: ViewController {
         }
         self.displayNodeDidLoad()
         
-        self.controllerNode.toggleMute = { [weak self] in
+        self.controllerNode.toggleMute = { [weak self = self] in
             self?.call.toggleIsMuted()
         }
         
-        self.controllerNode.setCurrentAudioOutput = { [weak self] output in
+        self.controllerNode.setCurrentAudioOutput = { [weak self = self] output in
             self?.call.setCurrentAudioOutput(output)
         }
         
-        self.controllerNode.beginAudioOuputSelection = { [weak self] hasMute in
+        self.controllerNode.beginAudioOuputSelection = { [weak self = self] hasMute in
             guard let strongSelf = self, let (availableOutputs, currentOutput) = strongSelf.audioOutputState else {
                 return
             }
@@ -256,26 +256,26 @@ public final class CallController: ViewController {
             }
         }
         
-        self.controllerNode.acceptCall = { [weak self] in
+        self.controllerNode.acceptCall = { [weak self = self] in
             let _ = self?.call.answer()
         }
         
-        self.controllerNode.endCall = { [weak self] in
+        self.controllerNode.endCall = { [weak self = self] in
             let _ = self?.call.hangUp()
         }
         
-        self.controllerNode.back = { [weak self] in
+        self.controllerNode.back = { [weak self = self] in
             let _ = self?.dismiss()
         }
         
-        displayNode.conferenceAddParticipant = { [weak self] in
+        displayNode.conferenceAddParticipant = { [weak self = self] in
             guard let self else {
                 return
             }
             self.conferenceAddParticipant()
         }
         
-        self.controllerNode.presentCallRating = { [weak self] callId, isVideo in
+        self.controllerNode.presentCallRating = { [weak self = self] callId, isVideo in
             if let strongSelf = self, !strongSelf.presentedCallRating {
                 strongSelf.presentedCallRating = true
                 
@@ -286,7 +286,7 @@ public final class CallController: ViewController {
                             c.presentationArguments = a
                             window.present(c, on: .root, blockInteraction: false, completion: {})
                         }
-                    }, push: { [weak self] c in
+                    }, push: { [weak self = self] c in
                         if let strongSelf = self {
                             strongSelf.push(c)
                         }
@@ -296,13 +296,13 @@ public final class CallController: ViewController {
             }
         }
         
-        self.controllerNode.present = { [weak self] controller in
+        self.controllerNode.present = { [weak self = self] controller in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root))
             }
         }
         
-        self.controllerNode.dismissAllTooltips = { [weak self] in
+        self.controllerNode.dismissAllTooltips = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.forEachController({ controller in
                     if let controller = controller as? TooltipScreen {
@@ -313,7 +313,7 @@ public final class CallController: ViewController {
             }
         }
         
-//        self.controllerNode.callEnded = { [weak self] didPresentRating in
+//        self.controllerNode.callEnded = { [weak self = self] didPresentRating in
 //            if let strongSelf = self, !didPresentRating {
 //                let _ = (combineLatest(strongSelf.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.callListSettings]), ApplicationSpecificNotice.getCallsTabTip(accountManager: strongSelf.sharedContext.accountManager))
 //                |> map { sharedData, callsTabTip -> Int32 in
@@ -326,7 +326,7 @@ public final class CallController: ViewController {
 //                    } else {
 //                        return callsTabTip
 //                    }
-//                } |> deliverOnMainQueue).start(next: { [weak self] callsTabTip in
+//                } |> deliverOnMainQueue).start(next: { [weak self = self] callsTabTip in
 //                    if let strongSelf = self {
 //                        if callsTabTip == 2 {
 //                            Queue.mainQueue().after(1.0) {
@@ -342,13 +342,13 @@ public final class CallController: ViewController {
 //            }
 //        }
         
-        self.controllerNode.willBeDismissedInteractively = { [weak self] in
+        self.controllerNode.willBeDismissedInteractively = { [weak self = self] in
             guard let self else {
                 return
             }
             self.notifyDismissed()
         }
-        self.controllerNode.dismissedInteractively = { [weak self] in
+        self.controllerNode.dismissedInteractively = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -364,7 +364,7 @@ public final class CallController: ViewController {
             callPeerView,
             self.sharedContext.activeAccountsWithInfo |> take(1)
         )
-        |> deliverOnMainQueue).start(next: { [weak self] accountView, view, activeAccountsWithInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] accountView, view, activeAccountsWithInfo in
             if let strongSelf = self {
                 if let view {
                     if let accountPeer = accountView {
@@ -397,7 +397,7 @@ public final class CallController: ViewController {
         
         self.idleTimerExtensionDisposable.set(self.sharedContext.applicationBindings.pushIdleTimerExtension())
         
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             self?.onViewDidAppear?()
         }
     }
@@ -453,7 +453,7 @@ public final class CallController: ViewController {
             self.notifyDismissed()
             
             self.isAnimatingDismiss = true
-            self.controllerNode.animateOut(completion: { [weak self] in
+            self.controllerNode.animateOut(completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -481,7 +481,7 @@ public final class CallController: ViewController {
         var disablePeerIds: [EnginePeer.Id] = []
         disablePeerIds.append(self.call.context.account.peerId)
         disablePeerIds.append(self.call.peerId)
-        let controller = CallController.openConferenceAddParticipant(context: self.call.context, disablePeerIds: disablePeerIds, shareLink: nil, completion: { [weak self] peers in
+        let controller = CallController.openConferenceAddParticipant(context: self.call.context, disablePeerIds: disablePeerIds, shareLink: nil, completion: { [weak self = self] peers in
             guard let self else {
                 return
             }

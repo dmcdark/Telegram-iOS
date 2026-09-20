@@ -138,7 +138,7 @@ final class VideoChatParticipantThumbnailComponent: Component {
             
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return
@@ -287,7 +287,7 @@ final class VideoChatParticipantThumbnailComponent: Component {
                         self.videoSource = videoSource
                         
                         self.videoDisposable?.dispose()
-                        self.videoDisposable = videoSource.addOnUpdated { [weak self] in
+                        self.videoDisposable = videoSource.addOnUpdated { [weak self = self] in
                             guard let self, let videoSource = self.videoSource, let videoLayer = self.videoLayer else {
                                 return
                             }
@@ -675,7 +675,7 @@ final class VideoChatExpandedParticipantThumbnailsComponent: Component {
                             isSpeaking: isSpeaking,
                             displayVideo: component.displayVideo,
                             interfaceOrientation: component.interfaceOrientation,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }

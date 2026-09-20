@@ -254,7 +254,7 @@ final class MiniAppListScreenComponent: Component {
                 chatListTitle: nil,
                 leftButton: isModal ? AnyComponentWithIdentity(id: "close", component: AnyComponent(NavigationButtonComponent(
                     content: .icon(imageName: "Navigation/Close"),
-                    pressed: { [weak self] _ in
+                    pressed: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -264,7 +264,7 @@ final class MiniAppListScreenComponent: Component {
                     }
                 ))) : nil,
                 rightButtons: rightButtons,
-                backPressed: isModal ? nil : { [weak self] in
+                backPressed: isModal ? nil : { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -296,7 +296,7 @@ final class MiniAppListScreenComponent: Component {
                     tabsNodeIsSearch: false,
                     accessoryPanelContainer: nil,
                     accessoryPanelContainerHeight: 0.0,
-                    activateSearch: { [weak self] _ in
+                    activateSearch: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -399,7 +399,7 @@ final class MiniAppListScreenComponent: Component {
                 self.recommendedAppPeers = component.initialData.recommendedAppPeers
                 
                 /*self.shortcutMessageListDisposable = (component.context.engine.accountData.shortcutMessageList(onlyRemote: false)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] shortcutMessageList in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] shortcutMessageList in
                     guard let self else {
                         return
                     }
@@ -465,14 +465,14 @@ final class MiniAppListScreenComponent: Component {
                     )
                     searchBarNode.placeholderString = NSAttributedString(string: environment.strings.Common_Search, font: Font.regular(17.0), textColor: searchBarTheme.placeholder)
                     self.searchBarNode = searchBarNode
-                    searchBarNode.cancel = { [weak self] in
+                    searchBarNode.cancel = { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.isSearchDisplayControllerActive = false
                         self.state?.updated(transition: .spring(duration: 0.4))
                     }
-                    searchBarNode.textUpdated = { [weak self] query, _ in
+                    searchBarNode.textUpdated = { [weak self = self] query, _ in
                         guard let self else {
                             return
                         }
@@ -533,7 +533,7 @@ final class MiniAppListScreenComponent: Component {
                 contentListNode = ContentListNode(parentView: self, context: component.context)
                 self.contentListNode = contentListNode
                 
-                contentListNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+                contentListNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
                     guard let self else {
                         return
                     }
@@ -684,14 +684,14 @@ public final class MiniAppListScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .modal
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? MiniAppListScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? MiniAppListScreenComponent.View else {
                 return true
             }

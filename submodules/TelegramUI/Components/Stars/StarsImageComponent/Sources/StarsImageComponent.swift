@@ -195,7 +195,7 @@ final class StarsParticlesView: UIView {
         
         self.particleSet = ParticleSet(size: size, large: large, preAdvance: true)
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] delta in
+        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] delta in
             self?.update(deltaTime: CGFloat(delta))
         })
     }
@@ -418,12 +418,12 @@ public final class StarsImageComponent: Component {
             guard let component = self.component else {
                 return
             }
-            component.action?({ [weak self] media in
+            component.action?({ [weak self = self] media in
                 guard let self else {
                     return nil
                 }
                 return self.transitionNode(media)
-            }, { [weak self] view in
+            }, { [weak self = self] view in
                 guard let self else {
                     return
                 }
@@ -1033,7 +1033,7 @@ public final class StarsImageComponent: Component {
             
             if case .media = component.subject {
                 if self.hiddenMediaDisposable == nil {
-                    self.hiddenMediaDisposable = component.context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self] ids in
+                    self.hiddenMediaDisposable = component.context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().startStrict(next: { [weak self = self] ids in
                         guard let self, let component = self.component else {
                             return
                         }

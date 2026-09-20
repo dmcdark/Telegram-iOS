@@ -76,7 +76,7 @@ class ChartVisibilityView: UIView {
                     }
                 }
                 
-                view.longTapClosure = { [weak self] in
+                view.longTapClosure = { [weak self = self] in
                     guard let self = self else { return }
                     let hasSelectedItem = self.selectedItems.enumerated().contains(where: { $0.element && $0.offset != index })
                     if hasSelectedItem {

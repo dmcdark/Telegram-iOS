@@ -89,7 +89,7 @@ public class VoiceChatPeerActionSheetItemNode: ActionSheetItemNode {
         self.addSubnode(self.subtitleNode)
         self.addSubnode(self.accessibilityArea)
         
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.backgroundNode.backgroundColor = strongSelf.theme.itemHighlightedBackgroundColor
@@ -103,7 +103,7 @@ public class VoiceChatPeerActionSheetItemNode: ActionSheetItemNode {
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
         
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             self?.buttonPressed()
             return true
         }

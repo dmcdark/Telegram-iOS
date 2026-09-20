@@ -12,7 +12,7 @@ extension PeerInfoScreenNode {
     func deleteMessages(messageIds: Set<EngineMessage.Id>?) {
         if let messageIds = messageIds ?? self.state.selectedMessageIds, !messageIds.isEmpty {
             self.activeActionDisposable.set((self.context.sharedContext.chatAvailableMessageActions(engine: self.context.engine, accountPeerId: self.context.account.peerId, messageIds: messageIds, keepUpdated: false)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] actions in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] actions in
                 if let strongSelf = self, let peer = strongSelf.data?.peer, !actions.options.isEmpty {
                     let actionSheet = ActionSheetController(presentationData: strongSelf.presentationData)
                     var items: [ActionSheetItem] = []
@@ -166,7 +166,7 @@ extension PeerInfoScreenNode {
                 strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                     if savedMessages, let self, action == .info {
                         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                        |> deliverOnMainQueue).start(next: { [weak self] peer in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                             guard let self, let peer else {
                                 return
                             }
@@ -192,7 +192,7 @@ extension PeerInfoScreenNode {
                         strongSelf.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: true, text: messageIds.count == 1 ? presentationData.strings.Conversation_ForwardTooltip_SavedMessages_One : presentationData.strings.Conversation_ForwardTooltip_SavedMessages_Many), elevatedLayout: false, animateInAsReplacement: true, action: { action in
                             if let self, action == .info {
                                 let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                     guard let self, let peer else {
                                         return
                                     }
@@ -210,7 +210,7 @@ extension PeerInfoScreenNode {
                         let _ = (enqueueMessages(account: strongSelf.context.account, peerId: peerId, messages: messageIds.map { id -> EnqueueMessage in
                             return .forward(source: id, threadId: nil, grouping: .auto, attributes: [], correlationId: nil)
                         })
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] messageIds in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] messageIds in
                             if let strongSelf = self {
                                 let signals: [Signal<Bool, NoError>] = messageIds.compactMap({ id -> Signal<Bool, NoError>? in
                                     guard let id = id else {

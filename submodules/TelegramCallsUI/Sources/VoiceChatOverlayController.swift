@@ -375,7 +375,7 @@ public final class VoiceChatOverlayController: ViewController {
             let overlayControllers: Signal<[UIViewController], NoError> = .single([])
             |> then(navigationController.overlayControllersSignal)
             
-            self.disposable = (combineLatest(queue: Queue.mainQueue(), controllers, overlayControllers, actionButton.state)).start(next: { [weak self] controllers, overlayControllers, state in
+            self.disposable = (combineLatest(queue: Queue.mainQueue(), controllers, overlayControllers, actionButton.state)).start(next: { [weak self = self] controllers, overlayControllers, state in
                 if let strongSelf = self {
                     strongSelf.currentParams = (controllers, overlayControllers, state)
                     strongSelf.updateVisibility()

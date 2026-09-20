@@ -276,7 +276,7 @@ final class PeerNameColorChatPreviewItemNode: ListViewItemNode {
             let leftInset = params.leftInset
             let rightInset = params.leftInset
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

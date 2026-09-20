@@ -195,7 +195,7 @@ final class ContactSelectionControllerNode: ASDisplayNode {
         
         self.addSubnode(self.countPanelNode)
         
-        self.contactListNode.selectionStateUpdated = { [weak self] selectionState in
+        self.contactListNode.selectionStateUpdated = { [weak self = self] selectionState in
             if let strongSelf = self {
                 strongSelf.countPanelNode.count = selectionState?.selectedPeerIndices.count ?? 0
                 let previousState = strongSelf.selectionState
@@ -208,7 +208,7 @@ final class ContactSelectionControllerNode: ASDisplayNode {
             }
         }
         
-        self.contactListNode.authorizationUpdated = { [weak self] authorization in
+        self.contactListNode.authorizationUpdated = { [weak self = self] authorization in
             guard let self else {
                 return
             }
@@ -218,11 +218,11 @@ final class ContactSelectionControllerNode: ASDisplayNode {
             }
         }
         
-        shareImpl = { [weak self] in
+        shareImpl = { [weak self = self] in
             self?.requestMultipleAction?(false, nil, nil)
         }
         
-        contextActionImpl = { [weak self] peer, node, gesture, _ in
+        contextActionImpl = { [weak self = self] peer, node, gesture, _ in
             if let strongSelf = self, (strongSelf.selectionState?.selectedPeerIndices.isEmpty ?? true) {
                 strongSelf.contactListNode.updateSelectionState { state in
                     let peerId = ContactListPeerId.peer(peer.id)
@@ -345,7 +345,7 @@ final class ContactSelectionControllerNode: ASDisplayNode {
             displayCallIcons: self.displayCallIcons,
             isPeerEnabled: self.isPeerEnabled,
             addContact: nil,
-            openPeer: { [weak self] peer, action in
+            openPeer: { [weak self = self] peer, action in
                 if let strongSelf = self {
                     var updated = false
                     strongSelf.contactListNode.updateSelectionState { state -> ContactListNodeGroupSelectionState? in
@@ -385,14 +385,14 @@ final class ContactSelectionControllerNode: ASDisplayNode {
                     }
                 }
             },
-            openDisabledPeer: { [weak self] peer, reason in
+            openDisabledPeer: { [weak self = self] peer, reason in
                 guard let self else {
                     return
                 }
                 self.requestOpenDisabledPeerFromSearch?(peer, reason)
             },
             contextAction: nil)
-        searchContainerNode.cancel = { [weak self] in
+        searchContainerNode.cancel = { [weak self = self] in
             self?.cancelSearch?()
         }
         self.insertSubnode(searchContainerNode, belowSubnode: navigationBar)
@@ -428,7 +428,7 @@ final class ContactSelectionControllerNode: ASDisplayNode {
             categories.insert(.channels)
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, updatedPresentationData: (self.presentationData, self.presentationDataPromise.get()), onlyWriteable: false, categories: categories, filters: self.filters, displayCallIcons: self.displayCallIcons, isPeerEnabled: self.isPeerEnabled, addContact: nil, openPeer: { [weak self] peer, action in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, updatedPresentationData: (self.presentationData, self.presentationDataPromise.get()), onlyWriteable: false, categories: categories, filters: self.filters, displayCallIcons: self.displayCallIcons, isPeerEnabled: self.isPeerEnabled, addContact: nil, openPeer: { [weak self = self] peer, action in
             if let strongSelf = self {
                 var updated = false
                 strongSelf.contactListNode.updateSelectionState { state -> ContactListNodeGroupSelectionState? in
@@ -467,12 +467,12 @@ final class ContactSelectionControllerNode: ASDisplayNode {
                     strongSelf.requestOpenPeerFromSearch?(peer, mappedAction)
                 }
             }
-        }, openDisabledPeer: { [weak self] peer, reason in
+        }, openDisabledPeer: { [weak self = self] peer, reason in
             guard let self else {
                 return
             }
             self.requestOpenDisabledPeerFromSearch?(peer, reason)
-        }, contextAction: nil), cancel: { [weak self] in
+        }, contextAction: nil), cancel: { [weak self = self] in
             if let requestDeactivateSearch = self?.requestDeactivateSearch {
                 requestDeactivateSearch()
             }
@@ -508,7 +508,7 @@ final class ContactSelectionControllerNode: ASDisplayNode {
     }
     
     func animateOut(completion: (() -> Void)? = nil) {
-        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.dismiss?()
             }
@@ -580,7 +580,7 @@ final class ContactSelectionCountPanelNode: ASDisplayNode {
         
         self.addSubnode(self.separatorNode)
         
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.badgeBackground.layer.removeAnimation(forKey: "opacity")

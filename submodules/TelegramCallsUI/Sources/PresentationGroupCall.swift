@@ -232,7 +232,7 @@ private final class PendingConferenceInvitationContext {
     
     init(engine: TelegramEngine, reference: InternalGroupCallReference, peerId: PeerId, isVideo: Bool, onStateUpdated: @escaping (State) -> Void, onEnded: @escaping (Bool) -> Void, onError: @escaping (InvitationError) -> Void) {
         self.engine = engine
-        self.requestDisposable = ((engine.calls.inviteConferenceCallParticipant(reference: reference, peerId: peerId, isVideo: isVideo) |> deliverOnMainQueue).startStrict(next: { [weak self] messageId in
+        self.requestDisposable = ((engine.calls.inviteConferenceCallParticipant(reference: reference, peerId: peerId, isVideo: isVideo) |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageId in
             guard let self else {
                 return
             }
@@ -253,7 +253,7 @@ private final class PendingConferenceInvitationContext {
                 ),
                 timerSignal
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] message, _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] message, _ in
                 guard let self else {
                     return
                 }
@@ -301,7 +301,7 @@ private final class PendingConferenceInvitationContext {
                     }
                 }
             })
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             guard let self else {
                 return
             }
@@ -987,13 +987,13 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 self.audioOutputStatePromise.set(.single(([], .speaker)))
             }
             
-            self.audioSessionDisposable = audioSession.push(audioSessionType: self.isStream ? .play(mixWithOthers: false) : .voiceCall, activateImmediately: true, manualActivate: { [weak self] control in
+            self.audioSessionDisposable = audioSession.push(audioSessionType: self.isStream ? .play(mixWithOthers: false) : .voiceCall, activateImmediately: true, manualActivate: { [weak self = self] control in
                 Queue.mainQueue().async {
                     if let self {
                         self.updateSessionState(internalState: self.internalState, audioSessionControl: control)
                     }
                 }
-            }, deactivate: { [weak self] _ in
+            }, deactivate: { [weak self = self] _ in
                 return Signal { subscriber in
                     Queue.mainQueue().async {
                         if let self {
@@ -1008,7 +1008,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     }
                     return EmptyDisposable
                 }
-            }, availableOutputsChanged: { [weak self] availableOutputs, currentOutput in
+            }, availableOutputsChanged: { [weak self = self] availableOutputs, currentOutput in
                 Queue.mainQueue().async {
                     guard let self else {
                         return
@@ -1031,7 +1031,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             })
             
             self.audioSessionShouldBeActiveDisposable = (self.audioSessionShouldBeActive.get()
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -1046,7 +1046,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                                 return EmptyDisposable
                             })
                         } else {
-                            audioSessionControl.activate({ [weak self] _ in
+                            audioSessionControl.activate({ [weak self = self] _ in
                                 Queue.mainQueue().async {
                                     guard let self else {
                                         return
@@ -1065,14 +1065,14 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             
             if self.sharedAudioContext == nil {
                 self.audioSessionActiveDisposable = (self.audioSessionActive.get()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     if let self {
                         self.updateIsAudioSessionActive(value)
                     }
                 })
                 
                 self.audioOutputStateDisposable = (self.audioOutputStatePromise.get()
-                |> deliverOnMainQueue).start(next: { [weak self] availableOutputs, currentOutput in
+                |> deliverOnMainQueue).start(next: { [weak self = self] availableOutputs, currentOutput in
                     guard let self else {
                         return
                     }
@@ -1082,7 +1082,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         }
         
         self.groupCallParticipantUpdatesDisposable = (self.account.stateManager.groupCallParticipantUpdates
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let self else {
                 return
             }
@@ -1170,7 +1170,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         }
         
         self.removedChannelMembersDisposable = (accountContext.peerChannelMemberCategoriesContextsManager.removedChannelMembers
-        |> deliverOnMainQueue).start(next: { [weak self] pairs in
+        |> deliverOnMainQueue).start(next: { [weak self = self] pairs in
             guard let self else {
                 return
             }
@@ -1190,7 +1190,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     return .never()
                 }
             }
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self else {
                     return
                 }
@@ -1238,7 +1238,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         
         self.screencastStateDisposable = (screencastIPCContext.isActive
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] isActive in
+        |> deliverOnMainQueue).start(next: { [weak self = self] isActive in
             guard let self else {
                 return
             }
@@ -1249,7 +1249,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             }
         })
 
-        /*Queue.mainQueue().after(2.0, { [weak self] in
+        /*Queue.mainQueue().after(2.0, { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1332,7 +1332,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 temporaryParticipantsContext.state,
                 temporaryParticipantsContext.activeSpeakers
             )
-            |> take(1)).start(next: { [weak self] myPeerData, state, activeSpeakers in
+            |> take(1)).start(next: { [weak self = self] myPeerData, state, activeSpeakers in
                 guard let self else {
                     return
                 }
@@ -1427,7 +1427,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             self.temporaryParticipantsContext = nil
             self.participantsContextStateDisposable.set((myPeerData
             |> deliverOnMainQueue
-            |> take(1)).start(next: { [weak self] myPeerData in
+            |> take(1)).start(next: { [weak self = self] myPeerData in
                 guard let self else {
                     return
                 }
@@ -1617,7 +1617,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             adminIds,
             myPeerData,
             peerView
-        ).start(next: { [weak self] state, adminIds, myPeerData, view in
+        ).start(next: { [weak self = self] state, adminIds, myPeerData, view in
             guard let self else {
                 return
             }
@@ -1813,7 +1813,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 genericCallContext = current
             } else {
                 if self.isStream, self.accountContext.sharedContext.immediateExperimentalUISettings.liveStreamV2 {
-                    let externalMediaStream = DirectMediaStreamingContext(id: self.internalId, rejoinNeeded: { [weak self] in
+                    let externalMediaStream = DirectMediaStreamingContext(id: self.internalId, rejoinNeeded: { [weak self = self] in
                         Queue.mainQueue().async {
                             guard let self else {
                                 return
@@ -1868,7 +1868,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                         useReferenceImpl = value != 0.0
                     }
 
-                    genericCallContext = .call(OngoingGroupCallContext(audioSessionActive: contextAudioSessionActive, video: self.videoCapturer, requestMediaChannelDescriptions: { [weak self] ssrcs, completion in
+                    genericCallContext = .call(OngoingGroupCallContext(audioSessionActive: contextAudioSessionActive, video: self.videoCapturer, requestMediaChannelDescriptions: { [weak self = self] ssrcs, completion in
                         let disposable = MetaDisposable()
                         Queue.mainQueue().async {
                             guard let self else {
@@ -1877,7 +1877,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                             disposable.set(self.requestMediaChannelDescriptions(ssrcs: ssrcs, completion: completion))
                         }
                         return disposable
-                    }, rejoinNeeded: { [weak self] in
+                    }, rejoinNeeded: { [weak self = self] in
                         Queue.mainQueue().async {
                             guard let self else {
                                 return
@@ -1886,7 +1886,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                                 self.requestCall(movingFromBroadcastToRtc: false)
                             }
                         }
-                    }, outgoingAudioBitrateKbit: outgoingAudioBitrateKbit,videoContentType: self.isVideoEnabled ? .generic : .none, enableNoiseSuppression: false, disableAudioInput: self.isStream, enableSystemMute: self.accountContext.sharedContext.immediateExperimentalUISettings.experimentalCallMute, useReferenceImpl: useReferenceImpl, prioritizeVP8: prioritizeVP8, logPath: allocateCallLogPath(account: self.account), onMutedSpeechActivityDetected: { [weak self] value in
+                    }, outgoingAudioBitrateKbit: outgoingAudioBitrateKbit,videoContentType: self.isVideoEnabled ? .generic : .none, enableNoiseSuppression: false, disableAudioInput: self.isStream, enableSystemMute: self.accountContext.sharedContext.immediateExperimentalUISettings.experimentalCallMute, useReferenceImpl: useReferenceImpl, prioritizeVP8: prioritizeVP8, logPath: allocateCallLogPath(account: self.account), onMutedSpeechActivityDetected: { [weak self = self] value in
                         Queue.mainQueue().async {
                             guard let self else {
                                 return
@@ -1929,7 +1929,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     self.hasActiveIncomingDataDisposable?.dispose()
                     self.hasActiveIncomingDataDisposable = (callContext.ssrcActivities
                     |> filter { !$0.isEmpty }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1940,7 +1940,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     })
                     
                     self.hasActiveIncomingDataTimer?.invalidate()
-                    self.hasActiveIncomingDataTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self] _ in
+                    self.hasActiveIncomingDataTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1966,7 +1966,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 }
                 return true
             })
-            |> deliverOnMainQueue).start(next: { [weak self] joinPayload, ssrc in
+            |> deliverOnMainQueue).start(next: { [weak self = self] joinPayload, ssrc in
                 guard let self else {
                     return
                 }
@@ -1975,7 +1975,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 let peerId = self.peerId
                 if let peerId {
                     if peerId.namespace == Namespaces.Peer.CloudChannel {
-                        peerAdminIds = Signal { [weak self] subscriber in
+                        peerAdminIds = Signal { [weak self = self] subscriber in
                             guard let self else {
                                 subscriber.putNext([])
                                 subscriber.putCompletion()
@@ -2074,7 +2074,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     inviteHash: self.invite,
                     generateE2E: generateE2EData
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] joinCallResult in
+                |> deliverOnMainQueue).start(next: { [weak self = self] joinCallResult in
                     guard let self else {
                         return
                     }
@@ -2141,7 +2141,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     } else {
                         self.e2eContext?.begin(initialState: nil)
                     }
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -2165,7 +2165,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             }))
             
             self.networkStateDisposable.set((genericCallContext.networkState
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -2232,7 +2232,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             }))
 
             self.isNoiseSuppressionEnabledDisposable.set((genericCallContext.isNoiseSuppressionEnabled
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -2240,7 +2240,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             }))
             
             self.audioLevelsDisposable.set((genericCallContext.audioLevels
-            |> deliverOnMainQueue).start(next: { [weak self] levels in
+            |> deliverOnMainQueue).start(next: { [weak self = self] levels in
                 guard let self else {
                     return
                 }
@@ -2459,7 +2459,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     chatPeer,
                     peerView,
                     self.isReconnectingAsSpeakerPromise.get()
-                ).start(next: { [weak self] state, activeSpeakers, speakingParticipants, adminIds, myPeerAndCachedData, chatPeer, view, isReconnectingAsSpeaker in
+                ).start(next: { [weak self = self] state, activeSpeakers, speakingParticipants, adminIds, myPeerAndCachedData, chatPeer, view, isReconnectingAsSpeaker in
                     guard let self else {
                         return
                     }
@@ -2486,7 +2486,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     }
                     
                     if !reportSpeakingParticipants.isEmpty {
-                        Queue.mainQueue().justDispatch { [weak self] in
+                        Queue.mainQueue().justDispatch { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2596,7 +2596,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                             if let muteState = participant.muteState, muteState.canUnmute && previousRaisedHand { 
                                 let _ = (self.accountContext.sharedContext.hasGroupCallOnScreen
                                 |> take(1)
-                                |> deliverOnMainQueue).start(next: { [weak self] hasGroupCallOnScreen in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] hasGroupCallOnScreen in
                                     guard let self else {
                                         return
                                     }
@@ -2746,7 +2746,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 self.isFailedEventDisposable = (participantsContext.isFailedEvent
                 |> filter { $0 }
                 |> take(1)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] isFailed in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] isFailed in
                     guard let self, isFailed else {
                         return
                     }
@@ -2770,7 +2770,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                         }
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] event in
+                |> deliverOnMainQueue).start(next: { [weak self = self] event in
                     guard let self, event.peer.id != self.stateValue.myPeerId else {
                         return
                     }
@@ -2890,7 +2890,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             )
             |> restartIfError
             |> take(1)
-            |> deliverOnMainQueue).start(completed: { [weak self] in
+            |> deliverOnMainQueue).start(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -2969,7 +2969,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             if let callManager = self.accountContext.sharedContext.callManager {
                 let _ = (callManager.currentGroupCallSignal
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] call in
+                |> deliverOnMainQueue).start(next: { [weak self = self] call in
                     guard let self else {
                         return
                     }
@@ -2998,7 +2998,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             return
         }
         let _ = (self.accountContext.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-        |> deliverOnMainQueue).start(next: { [weak self] myPeer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] myPeer in
             guard let self, let myPeer = myPeer else {
                 return
             }
@@ -3047,7 +3047,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         if let callInfo = self.internalState.callInfo {
             if terminateIfPossible {
                 self.leaveDisposable.set((self.accountContext.engine.calls.stopGroupCall(peerId: self.peerId, callId: callInfo.id, accessHash: callInfo.accessHash)
-                |> deliverOnMainQueue).start(completed: { [weak self] in
+                |> deliverOnMainQueue).start(completed: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -3158,12 +3158,12 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         )))
         
         self.startDisposable.set((self.accountContext.engine.calls.createGroupCall(peerId: peerId, title: nil, scheduleDate: timestamp, isExternalStream: false)
-        |> deliverOnMainQueue).start(next: { [weak self] callInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] callInfo in
             guard let self else {
                 return
             }
             self.updateSessionState(internalState: .active(callInfo), audioSessionControl: self.audioSessionControl)
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             if let self {
                 self.markAsCanBeRemoved()
             }
@@ -3183,7 +3183,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         self.stateValue.scheduleTimestamp = nil
         
         self.startDisposable.set((self.accountContext.engine.calls.startScheduledGroupCall(peerId: peerId, callId: callInfo.id, accessHash: callInfo.accessHash)
-        |> deliverOnMainQueue).start(next: { [weak self] callInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] callInfo in
             guard let self else {
                 return
             }
@@ -3396,7 +3396,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
             self.isVideoMuted = false
             self.isVideoMutedDisposable.set((videoCapturer.isActive
             |> distinctUntilChanged
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -3447,7 +3447,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         if let screencastIPCContext = self.screencastIPCContext, let joinPayload = screencastIPCContext.requestScreencast() {
             self.screencastJoinDisposable.set((joinPayload
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] joinPayload in
+            |> deliverOnMainQueue).start(next: { [weak self = self] joinPayload in
                 guard let self else {
                     return
                 }
@@ -3457,7 +3457,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     accessHash: callInfo.accessHash,
                     joinPayload: joinPayload.0
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] joinCallResult in
+                |> deliverOnMainQueue).start(next: { [weak self = self] joinCallResult in
                     guard let self, let screencastIPCContext = self.screencastIPCContext else {
                         return
                     }
@@ -3737,7 +3737,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         }
         
         self.requestDisposable.set((currentOrRequestedCall
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -3786,7 +3786,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     didEndAlready = true
                     onEnded?(success)
                 },
-                onError: { [weak self] error in
+                onError: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -3828,7 +3828,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                 if !self.invitedPeersValue.contains(where: { $0.id == peerId }) {
                     self.invitedPeersValue.append(PresentationGroupCallInvitedPeer(id: peerId, state: .requesting))
                 }
-                onStateUpdated = { [weak self] state in
+                onStateUpdated = { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -3955,7 +3955,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         guard let peerId = self.peerId else {
             return
         }
-        let myAudioLevelTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: false, completion: { [weak self] in
+        let myAudioLevelTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: false, completion: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4008,7 +4008,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
     }
     
     func video(endpointId: String) -> Signal<OngoingGroupCallContext.VideoFrameData, NoError>? {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }
@@ -4023,7 +4023,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
                     subscriber.putNext(value)
                 }))
                 
-                return ActionDisposable { [weak self] in
+                return ActionDisposable { [weak self = self] in
                     disposable.dispose()
                     
                     Queue.mainQueue().async {
@@ -4058,7 +4058,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
     }
 
     func getStats() -> Signal<OngoingGroupCallContext.Stats, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 subscriber.putCompletion()
                 return EmptyDisposable
@@ -4086,7 +4086,7 @@ public final class PresentationGroupCallImpl: PresentationGroupCall {
         self.pendingDisconnedUpgradedConferenceCall = source
         
         self.pendingDisconnedUpgradedConferenceCallTimer?.invalidate()
-        self.pendingDisconnedUpgradedConferenceCallTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+        self.pendingDisconnedUpgradedConferenceCallTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
             guard let self else {
                 return
             }

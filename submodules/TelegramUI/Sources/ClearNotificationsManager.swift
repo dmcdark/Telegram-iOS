@@ -64,7 +64,7 @@ public final class ClearNotificationsManager {
     }
     
     public func clearAll() {
-        self.getNotificationIds(ClearNotificationIdsCompletion { [weak self] result in
+        self.getNotificationIds(ClearNotificationIdsCompletion { [weak self = self] result in
             Queue.mainQueue().async {
                 var removeKeys: [String] = []
                 for (identifier, _) in result {
@@ -77,7 +77,7 @@ public final class ClearNotificationsManager {
             }
         })
         
-        self.getPendingNotificationIds(ClearNotificationIdsCompletion { [weak self] result in
+        self.getPendingNotificationIds(ClearNotificationIdsCompletion { [weak self = self] result in
             Queue.mainQueue().async {
                 var removeKeys: [String] = []
                 for (identifier, _) in result {
@@ -100,7 +100,7 @@ public final class ClearNotificationsManager {
             self.ids[id.peerId] = id
         }
         self.timer?.invalidate()
-        let timer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self = self] in
             self?.commitNow()
         }, queue: Queue.mainQueue())
         self.timer = timer
@@ -114,7 +114,7 @@ public final class ClearNotificationsManager {
         let ids = self.ids
         self.ids.removeAll()
         
-        self.getNotificationIds(ClearNotificationIdsCompletion { [weak self] result in
+        self.getNotificationIds(ClearNotificationIdsCompletion { [weak self = self] result in
             Queue.mainQueue().async {
                 var removeKeys: [String] = []
                 for (identifier, requestId) in result {
@@ -131,7 +131,7 @@ public final class ClearNotificationsManager {
             }
         })
         
-        self.getPendingNotificationIds(ClearNotificationIdsCompletion { [weak self] result in
+        self.getPendingNotificationIds(ClearNotificationIdsCompletion { [weak self = self] result in
             Queue.mainQueue().async {
                 var removeKeys: [String] = []
                 for (identifier, requestId) in result {

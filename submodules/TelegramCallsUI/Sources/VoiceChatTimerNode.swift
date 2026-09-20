@@ -86,7 +86,7 @@ final class VoiceChatTimerNode: ASDisplayNode {
         
         self.maskView.addSubnode(self.timerNode)
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
                 strongSelf.updateAnimations()
@@ -124,7 +124,7 @@ final class VoiceChatTimerNode: ASDisplayNode {
             animation.fromValue = previousValue
             animation.toValue = newValue
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 if let isCurrentlyInHierarchy = self?.isCurrentlyInHierarchy, isCurrentlyInHierarchy {
                     self?.setupGradientAnimations()
                 }
@@ -197,7 +197,7 @@ final class VoiceChatTimerNode: ASDisplayNode {
         }
         
         if self.updateTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 if let strongSelf = self, let size = strongSelf.validLayout {
                     strongSelf.update(size: size, scheduleTime: scheduleTime, transition: .immediate)
                 }

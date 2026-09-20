@@ -348,7 +348,7 @@ public final class ProfileGiftsCollectionsContext {
         self.pushState()
         
         self.disposable.set((_internal_getStarGiftCollections(postbox: self.account.postbox, network: self.account.network, peerId: self.peerId)
-        |> deliverOn(self.queue)).start(next: { [weak self] collections in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] collections in
             guard let self else {
                 return
             }
@@ -362,7 +362,7 @@ public final class ProfileGiftsCollectionsContext {
     public func createCollection(title: String, starGifts: [ProfileGiftsContext.State.StarGift]) -> Signal<StarGiftCollection?, NoError> {
         return _internal_createStarGiftCollection(account: self.account, peerId: self.peerId, title: title, starGifts: starGifts)
         |> deliverOn(self.queue)
-        |> beforeNext { [weak self] collection in
+        |> beforeNext { [weak self = self] collection in
             guard let self else {
                 return
             }
@@ -378,7 +378,7 @@ public final class ProfileGiftsCollectionsContext {
         let giftsContext = self.giftsContextForCollection(id: id)
         return _internal_updateStarGiftCollection(account: self.account, peerId: self.peerId, collectionId: id, giftsContext: giftsContext, allGiftsContext: self.allGiftsContext, actions: actions)
         |> deliverOn(self.queue)
-        |> afterNext { [weak self] collection in
+        |> afterNext { [weak self = self] collection in
             guard let self else {
                 return
             }
@@ -412,7 +412,7 @@ public final class ProfileGiftsCollectionsContext {
         let peerId = self.peerId
         return _internal_reorderStarGiftCollections(account: self.account, peerId: peerId, order: order)
         |> deliverOn(self.queue)
-        |> afterNext { [weak self] collection in
+        |> afterNext { [weak self = self] collection in
             guard let self else {
                 return
             }
@@ -435,7 +435,7 @@ public final class ProfileGiftsCollectionsContext {
     public func deleteCollection(id: Int32) -> Signal<Bool, NoError> {
         return _internal_deleteStarGiftCollection(account: self.account, peerId: self.peerId, collectionId: id)
         |> deliverOn(self.queue)
-        |> afterNext { [weak self] _ in
+        |> afterNext { [weak self = self] _ in
             guard let self else {
                 return
             }

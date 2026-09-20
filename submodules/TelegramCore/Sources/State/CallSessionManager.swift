@@ -469,7 +469,7 @@ private final class IncomingConferenceInvitationContext {
                 return view.messages[messageId]
             }
         )
-        |> deliverOn(self.queue)).startStrict(next: { [weak self] message in
+        |> deliverOn(self.queue)).startStrict(next: { [weak self = self] message in
             guard let self = self else {
                 return
             }
@@ -593,7 +593,7 @@ private final class CallSessionManagerContext {
     
     func ringingStates() -> Signal<[CallSessionRingingState], NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             queue.async {
                 if let strongSelf = self {
@@ -616,7 +616,7 @@ private final class CallSessionManagerContext {
     
     func callState(internalId: CallSessionInternalId) -> Signal<CallSession, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             queue.async {
                 guard let strongSelf = self else {
@@ -664,7 +664,7 @@ private final class CallSessionManagerContext {
         let queue = self.queue
 
         let disposable = MetaDisposable()
-        queue.async { [weak self] in
+        queue.async { [weak self = self] in
             if let strongSelf = self, let context = strongSelf.contexts[internalId] {
                 context.signalingReceiver = receiver
 
@@ -756,7 +756,7 @@ private final class CallSessionManagerContext {
             
             let requestSignal: Signal<Api.Bool, MTRpcError> = self.network.request(Api.functions.phone.receivedCall(peer: .inputPhoneCall(.init(id: stableId, accessHash: accessHash))))
             
-            context.acknowledgeIncomingCallDisposable.set(requestSignal.start(error: { [weak self] _ in
+            context.acknowledgeIncomingCallDisposable.set(requestSignal.start(error: { [weak self = self] _ in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -904,7 +904,7 @@ private final class CallSessionManagerContext {
                     mappedReason = .ended(.switchedToConference(slug: slug))
                 }
                 context.state = .dropping(reason: mappedReason, disposable: (dropCallSession(network: self.network, addUpdates: self.addUpdates, stableId: id, accessHash: accessHash, isVideo: isVideo, reason: reason)
-                |> deliverOn(self.queue)).start(next: { [weak self] reportRating, sendDebugLogs in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] reportRating, sendDebugLogs in
                     if let strongSelf = self {
                         if let context = strongSelf.contexts[internalId] {
                             context.state = .terminated(id: id, accessHash: accessHash,  reason: mappedReason, reportRating: reportRating, sendDebugLogs: sendDebugLogs)
@@ -956,7 +956,7 @@ private final class CallSessionManagerContext {
             if let (id, accessHash) = dropData {
                 self.contextIdByStableId.removeValue(forKey: id)
                 context.state = .dropping(reason: .ended(.switchedToConference(slug: slug)), disposable: (dropCallSession(network: self.network, addUpdates: self.addUpdates, stableId: id, accessHash: accessHash, isVideo: isVideo, reason: .switchToConference(slug: slug))
-                |> deliverOn(self.queue)).start(next: { [weak self] reportRating, sendDebugLogs in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] reportRating, sendDebugLogs in
                     if let strongSelf = self {
                         if let context = strongSelf.contexts[internalId] {
                             context.state = .switchedToConference(slug: slug)
@@ -986,7 +986,7 @@ private final class CallSessionManagerContext {
             switch context.state {
                 case let .ringing(id, accessHash, gAHash, b, _):
                     let acceptVersions = self.versions.map({ $0.version })
-                    context.state = .accepting(id: id, accessHash: accessHash, gAHash: gAHash, b: b, disposable: (acceptCallSession(accountPeerId: self.accountPeerId, postbox: self.postbox, network: self.network, stableId: id, accessHash: accessHash, b: b, maxLayer: self.maxLayer, versions: acceptVersions) |> deliverOn(self.queue)).start(next: { [weak self] result in
+                    context.state = .accepting(id: id, accessHash: accessHash, gAHash: gAHash, b: b, disposable: (acceptCallSession(accountPeerId: self.accountPeerId, postbox: self.postbox, network: self.network, stableId: id, accessHash: accessHash, b: b, maxLayer: self.maxLayer, versions: acceptVersions) |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                         if let strongSelf = self, let context = strongSelf.contexts[internalId] {
                             if case .accepting = context.state {
                                 switch result {
@@ -1048,13 +1048,13 @@ private final class CallSessionManagerContext {
                     network: self.network,
                     accountPeerId: self.accountPeerId
                 )
-                |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+                |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                      guard let self else {
                         return
                     }
 
                     self.dropToConference(internalId: internalId, slug: result.slug)
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -1117,7 +1117,7 @@ private final class CallSessionManagerContext {
                             
                             let keyVisualHash = MTSha256(key + gA)
                             
-                            context.state = .confirming(id: id, accessHash: accessHash, key: key, keyId: keyId, keyVisualHash: keyVisualHash, disposable: (confirmCallSession(network: self.network, stableId: id, accessHash: accessHash, gA: gA, keyFingerprint: keyId, maxLayer: self.maxLayer, versions: selectedVersions) |> deliverOnMainQueue).start(next: { [weak self] updatedCall in
+                            context.state = .confirming(id: id, accessHash: accessHash, key: key, keyId: keyId, keyVisualHash: keyVisualHash, disposable: (confirmCallSession(network: self.network, stableId: id, accessHash: accessHash, gA: gA, keyFingerprint: keyId, maxLayer: self.maxLayer, versions: selectedVersions) |> deliverOnMainQueue).start(next: { [weak self = self] updatedCall in
                                 if let strongSelf = self, let context = strongSelf.contexts[internalId], case .confirming = context.state {
                                     if let updatedCall = updatedCall {
                                         strongSelf.updateSession(updatedCall, completion: { _ in })
@@ -1337,7 +1337,7 @@ private final class CallSessionManagerContext {
         for (id, externalInfo) in ids {
             if self.incomingConferenceInvitationContexts[id] == nil {
                 Logger.shared.log("CallSessionManagerContext", "Adding incoming conference invitation context for message \(id)")
-                let context = IncomingConferenceInvitationContext(queue: self.queue, postbox: self.postbox, internalId: CallSessionManager.getStableIncomingUUID(peerId: id.peerId.id._internalGetInt64Value(), messageId: id.id), messageId: id, externalInfo: externalInfo, updated: { [weak self] in
+                let context = IncomingConferenceInvitationContext(queue: self.queue, postbox: self.postbox, internalId: CallSessionManager.getStableIncomingUUID(peerId: id.peerId.id._internalGetInt64Value(), messageId: id.id), messageId: id, externalInfo: externalInfo, updated: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1396,7 +1396,7 @@ private final class CallSessionManagerContext {
         let randomStatus = SecRandomCopyBytes(nil, 256, aBytes.assumingMemoryBound(to: UInt8.self))
         let a = Data(bytesNoCopy: aBytes, count: 256, deallocator: .free)
         if randomStatus == 0 {
-            self.contexts[internalId] = CallSessionContext(peerId: peerId, isOutgoing: true, type: isVideo ? .video : .audio, isVideoPossible: enableVideo || isVideo, state: .requesting(a: a, disposable: (requestCallSession(postbox: self.postbox, network: self.network, peerId: peerId, a: a, maxLayer: self.maxLayer, versions: self.filteredVersions(enableVideo: true), isVideo: isVideo) |> deliverOn(queue)).start(next: { [weak self] result in
+            self.contexts[internalId] = CallSessionContext(peerId: peerId, isOutgoing: true, type: isVideo ? .video : .audio, isVideoPossible: enableVideo || isVideo, state: .requesting(a: a, disposable: (requestCallSession(postbox: self.postbox, network: self.network, peerId: peerId, a: a, maxLayer: self.maxLayer, versions: self.filteredVersions(enableVideo: true), isVideo: isVideo) |> deliverOn(queue)).start(next: { [weak self = self] result in
                 if let strongSelf = self, let context = strongSelf.contexts[internalId] {
                     if case .requesting = context.state {
                         switch result {
@@ -1511,7 +1511,7 @@ public final class CallSessionManager {
     }
     
     public func request(peerId: PeerId, isVideo: Bool, enableVideo: Bool, internalId: CallSessionInternalId = CallSessionInternalId()) -> Signal<CallSessionInternalId, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             
             self?.withContext { context in
@@ -1550,7 +1550,7 @@ public final class CallSessionManager {
     }
     
     public func ringingStates() -> Signal<[CallSessionRingingState], NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             self?.withContext { context in
                 disposable.set(context.ringingStates().start(next: { next in
@@ -1562,7 +1562,7 @@ public final class CallSessionManager {
     }
     
     public func callState(internalId: CallSessionInternalId) -> Signal<CallSession, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             self?.withContext { context in
                 disposable.set(context.callState(internalId: internalId).start(next: { next in

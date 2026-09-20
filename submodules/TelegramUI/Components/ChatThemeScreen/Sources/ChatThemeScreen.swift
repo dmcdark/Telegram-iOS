@@ -328,7 +328,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         self.emojiContainerNode.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.emojiImageNode.imageUpdated = { [weak self] image in
+        self.emojiImageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -351,7 +351,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -396,7 +396,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             var updatedEmoticon = false
             var updatedThemeReference = false
             var updatedTheme = false
@@ -497,7 +497,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
                             animatedStickerNode = current
                         } else {
                             animatedStickerNode = DefaultAnimatedStickerNodeImpl()
-                            animatedStickerNode.started = { [weak self] in
+                            animatedStickerNode.started = { [weak self = self] in
                                 self?.emojiImageNode.isHidden = true
                             }
                             strongSelf.animatedStickerNode = animatedStickerNode
@@ -691,7 +691,7 @@ public final class ChatThemeScreen: ViewController {
         self.blocksBackgroundWhenInOverlay = true
         
         self.presentationDataDisposable = (updatedPresentationData.signal
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
                 strongSelf.controllerNode.updatePresentationData(presentationData)
@@ -712,16 +712,16 @@ public final class ChatThemeScreen: ViewController {
     override public func loadDisplayNode() {
         self.displayNode = ChatThemeSheetScreenNode(context: self.context, presentationData: self.presentationData, controller: self, animatedEmojiStickers: self.animatedEmojiStickers, initiallySelectedTheme: self.initiallySelectedTheme, peerName: self.peerName)
         self.controllerNode.passthroughHitTestImpl = self.passthroughHitTestImpl
-        self.controllerNode.previewTheme = { [weak self] chatTheme, dark in
+        self.controllerNode.previewTheme = { [weak self = self] chatTheme, dark in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.previewTheme((chatTheme ?? .emoticon("")), dark)
         }
-        self.controllerNode.present = { [weak self] c in
+        self.controllerNode.present = { [weak self = self] c in
             self?.present(c, in: .current)
         }
-        self.controllerNode.completion = { [weak self] chatTheme in
+        self.controllerNode.completion = { [weak self = self] chatTheme in
             guard let strongSelf = self else {
                 return
             }
@@ -731,10 +731,10 @@ public final class ChatThemeScreen: ViewController {
                 strongSelf.completion(chatTheme)
             }
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.dismiss(animated: false)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1118,7 +1118,7 @@ private final class ChatThemeSheetContentComponent: Component {
             self.addSubview(self.listNode.view)
             self.listNode.view.disablesInteractiveTransitionGestureRecognizer = true
             
-            self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+            self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
                 guard let self, let state = self.currentUniqueGiftChatThemesState, case .ready(true) = state.dataState else {
                     return
                 }
@@ -1179,7 +1179,7 @@ private final class ChatThemeSheetContentComponent: Component {
                         }
                     )
                 }
-            ).startStrict(next: { [weak self] themes, uniqueGiftChatThemesStateAndPeers in
+            ).startStrict(next: { [weak self = self] themes, uniqueGiftChatThemesStateAndPeers in
                 guard let self else {
                     return
                 }
@@ -1312,7 +1312,7 @@ private final class ChatThemeSheetContentComponent: Component {
                 }
             }
             
-            let action: (ChatTheme?) -> Void = { [weak self] chatTheme in
+            let action: (ChatTheme?) -> Void = { [weak self = self] chatTheme in
                 guard let self, self.selectedTheme != chatTheme else {
                     return
                 }
@@ -1447,7 +1447,7 @@ private final class ChatThemeSheetContentComponent: Component {
             guard let component = self.component else {
                 return
             }
-            let proceed = { [weak self] in
+            let proceed = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1457,7 +1457,7 @@ private final class ChatThemeSheetContentComponent: Component {
             }
             if case let .gift(gift, _) = self.selectedTheme, case let .unique(uniqueGift) = gift, let themePeerId = uniqueGift.themePeerId {
                 let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: themePeerId))
-                |> deliverOnMainQueue).start(next: { [weak self] peer in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                     guard let self, let peer else {
                         return
                     }
@@ -1483,7 +1483,7 @@ private final class ChatThemeSheetContentComponent: Component {
             if !self.hasChanges() {
                 self.closeOrBackPressed()
             } else {
-                let alertController = textAlertController(context: component.context, updatedPresentationData: (component.presentationData, .single(component.presentationData)), title: nil, text: component.presentationData.strings.Conversation_Theme_DismissAlert, actions: [TextAlertAction(type: .genericAction, title: component.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: component.presentationData.strings.Conversation_Theme_DismissAlertApply, action: { [weak self] in
+                let alertController = textAlertController(context: component.context, updatedPresentationData: (component.presentationData, .single(component.presentationData)), title: nil, text: component.presentationData.strings.Conversation_Theme_DismissAlert, actions: [TextAlertAction(type: .genericAction, title: component.presentationData.strings.Common_Cancel, action: {}), TextAlertAction(type: .defaultAction, title: component.presentationData.strings.Conversation_Theme_DismissAlertApply, action: { [weak self = self] in
                     self?.complete()
                 })], actionLayout: .horizontal, dismissOnOutsideTap: true)
                 component.present(alertController)
@@ -1495,7 +1495,7 @@ private final class ChatThemeSheetContentComponent: Component {
                 return
             }
             self.isSwitchThemeEnabled = false
-            Queue.mainQueue().after(0.5) { [weak self] in
+            Queue.mainQueue().after(0.5) { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1508,7 +1508,7 @@ private final class ChatThemeSheetContentComponent: Component {
             component.previewTheme(self.selectedTheme, isDarkAppearance)
             self.rebuildEntries(crossfade: false)
             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: ChatThemeScreen.themeCrossfadeDuration, curve: .easeInOut)))
-            Queue.mainQueue().justDispatch { [weak self] in
+            Queue.mainQueue().justDispatch { [weak self = self] in
                 self?.switchThemePlayOnce.invoke(Void())
             }
             
@@ -1536,7 +1536,7 @@ private final class ChatThemeSheetContentComponent: Component {
             }
             
             let _ = (signal
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] count, timestamp in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] count, timestamp in
                 guard let self, count < 2 && currentTimestamp > timestamp + 24 * 60 * 60 else {
                     return
                 }
@@ -1591,7 +1591,7 @@ private final class ChatThemeSheetContentComponent: Component {
                             tintColor: component.presentationData.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.closeOrBackPressed()
                     }
                 )),
@@ -1622,7 +1622,7 @@ private final class ChatThemeSheetContentComponent: Component {
                             playOnce: self.switchThemePlayOnce
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.switchThemePressed()
                     }
                 )),
@@ -1730,7 +1730,7 @@ private final class ChatThemeSheetContentComponent: Component {
                     ),
                     isEnabled: !self.isCompleting,
                     displaysProgress: self.isCompleting,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.primaryPressed()
                     }
                 )),
@@ -1776,7 +1776,7 @@ private final class ChatThemeSheetContentComponent: Component {
                                 badgeForeground: component.presentationData.theme.actionSheet.itemBackgroundColor
                             ))
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.resetWallpaperPressed()
                         }
                     )),
@@ -1870,7 +1870,7 @@ private final class ChatThemeSheetScreenNode: ViewControllerTracingNode {
             theme: self.presentationData.theme,
             strings: self.presentationData.strings,
             dateTimeFormat: self.presentationData.dateTimeFormat,
-            controller: { [weak self] in
+            controller: { [weak self = self] in
                 return self?.controller
             }
         )
@@ -1882,25 +1882,25 @@ private final class ChatThemeSheetScreenNode: ViewControllerTracingNode {
             initiallySelectedTheme: self.initiallySelectedTheme,
             peerName: self.peerName,
             canResetWallpaper: self.controller?.canResetWallpaper == true,
-            present: { [weak self] controller in
+            present: { [weak self = self] controller in
                 self?.present?(controller)
             },
-            presentInRoot: { [weak self] controller in
+            presentInRoot: { [weak self = self] controller in
                 self?.controller?.present(controller, in: .window(.root))
             },
-            previewTheme: { [weak self] chatTheme, dark in
+            previewTheme: { [weak self = self] chatTheme, dark in
                 self?.previewTheme?(chatTheme, dark)
             },
-            changeWallpaper: { [weak self] in
+            changeWallpaper: { [weak self = self] in
                 self?.controller?.changeWallpaper()
             },
-            resetWallpaper: { [weak self] in
+            resetWallpaper: { [weak self = self] in
                 self?.controller?.resetWallpaper()
             },
-            completion: { [weak self] chatTheme in
+            completion: { [weak self = self] chatTheme in
                 self?.completion?(chatTheme)
             },
-            cancel: { [weak self] in
+            cancel: { [weak self = self] in
                 self?.cancel?()
             }
         )
@@ -1932,7 +1932,7 @@ private final class ChatThemeSheetScreenNode: ViewControllerTracingNode {
     func animateOut(completion: (() -> Void)? = nil) {
         self.animatedOut = true
         if let rootView = self.hostView.componentView as? ChatThemeScreenComponent.View {
-            rootView.animateOut { [weak self] in
+            rootView.animateOut { [weak self = self] in
                 self?.dismiss?()
                 completion?()
             }

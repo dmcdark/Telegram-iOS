@@ -38,7 +38,7 @@ final class AvatarEditorPreviewView: UIView {
         
         self.disposable = (context.engine.data.subscribe(TelegramEngine.EngineData.Item.OrderedLists.ListItems(collectionId: Namespaces.OrderedItemList.CloudFeaturedProfilePhotoEmoji))
         |> runOn(Queue.concurrentDefaultQueue())
-        |> deliverOnMainQueue).start(next: { [weak self] items in
+        |> deliverOnMainQueue).start(next: { [weak self = self] items in
             guard let self else {
                 return
             }
@@ -111,7 +111,7 @@ final class AvatarEditorPreviewView: UIView {
         }
         
         if self.timer == nil {
-            self.timer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }

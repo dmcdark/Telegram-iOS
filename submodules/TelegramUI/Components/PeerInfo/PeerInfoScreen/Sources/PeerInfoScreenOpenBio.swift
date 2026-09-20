@@ -17,7 +17,7 @@ extension PeerInfoScreenNode {
     func openBioContextMenu(node: ASDisplayNode, gesture: ContextGesture?) {
         let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.translationSettings])
         |> take(1)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] sharedData in
             guard let self else {
                 return
             }
@@ -49,7 +49,7 @@ extension PeerInfoScreenNode {
                 return
             }
             
-            let copyAction = { [weak self] in
+            let copyAction = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -68,7 +68,7 @@ extension PeerInfoScreenNode {
             var items: [ContextMenuItem] = []
             
             if self.isMyProfile {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_BioActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.MyProfile_BioActionEdit, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return
@@ -103,13 +103,13 @@ extension PeerInfoScreenNode {
             
             let (canTranslate, language) = canTranslateText(context: self.context, text: bioText, showTranslate: translationSettings.showTranslate, showTranslateIfTopical: false, ignoredLanguages: translationSettings.ignoredLanguages)
             if canTranslate {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuTranslate, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuTranslate, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return
                         }
 
-                        Task { @MainActor [weak self] in
+                        Task { @MainActor [weak self = self] in
                             guard let self, let parentController = self.controller else {
                                 return
                             }

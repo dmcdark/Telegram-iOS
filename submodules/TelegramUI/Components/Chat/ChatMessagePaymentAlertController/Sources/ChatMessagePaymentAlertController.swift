@@ -72,7 +72,7 @@ public class ChatMessagePaymentAlertController: AlertScreen {
         
         self.currencyDisposable = (currencySignal
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] currency in
+        |> deliverOnMainQueue).start(next: { [weak self = self] currency in
             guard let self else {
                 return
             }
@@ -167,7 +167,7 @@ public class ChatMessagePaymentAlertController: AlertScreen {
                         peerId: self.chatPeerId.namespace == Namespaces.Peer.CloudChannel ? self.chatPeerId : context.account.peerId,
                         theme: self.presentationData.theme,
                         currency: currency,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let starsContext = context.starsContext, let navigationController = self.parentNavigationController, let currency = self.currency else {
                                 return
                             }

@@ -32,7 +32,7 @@ public final class AnimationNode: ASDisplayNode {
         
         super.init()
         
-        self.setViewBlock({ [weak self] in
+        self.setViewBlock({ [weak self = self] in
             guard let self else {
                 return UIView()
             }
@@ -169,7 +169,7 @@ public final class AnimationNode: ASDisplayNode {
     public func play() {
         if let animationView = self.animationView(), !animationView.isAnimationPlaying && !self.didPlay {
             self.didPlay = true
-            animationView.play { [weak self] _ in
+            animationView.play { [weak self = self] _ in
                 self?.completion?()
             }
         }
@@ -178,10 +178,10 @@ public final class AnimationNode: ASDisplayNode {
     public func playOnce() {
         if let animationView = self.animationView(), !animationView.isAnimationPlaying && !self.didPlay {
             self.didPlay = true
-            self.internalCompletion = { [weak self] in
+            self.internalCompletion = { [weak self = self] in
                 self?.didPlay = false
             }
-            animationView.play { [weak self] _ in
+            animationView.play { [weak self = self] _ in
                 self?.internalCompletion?()
             }
         }

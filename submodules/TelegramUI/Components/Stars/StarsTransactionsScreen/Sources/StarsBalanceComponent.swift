@@ -160,7 +160,7 @@ final class StarsBalanceComponent: Component {
             
             if remainingCooldownSeconds > 0 || remainingSecondaryCooldownSeconds > 0  {
                 if self.timer == nil {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -291,7 +291,7 @@ final class StarsBalanceComponent: Component {
                         isEnabled: component.actionIsEnabled,
                         allowActionWhenDisabled: false,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -348,7 +348,7 @@ final class StarsBalanceComponent: Component {
                             isEnabled: component.actionIsEnabled,
                             allowActionWhenDisabled: false,
                             displaysProgress: false,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }

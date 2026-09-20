@@ -163,7 +163,7 @@ private let registeredProtocols: Void = {
             /*if self.urlTask != nil {
                 return
             }
-            self.urlTask = URLSession.shared.dataTask(with: self.request, completionHandler: { [weak self] _, response, error in
+            self.urlTask = URLSession.shared.dataTask(with: self.request, completionHandler: { [weak self = self] _, response, error in
                 guard let self else {
                     return
                 }
@@ -279,10 +279,10 @@ public final class WebAppController: ViewController, AttachmentContainable {
             webView.scrollView.delegate = self.wrappedScrollViewDelegate
             webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: [], context: nil)
             webView.tintColor = self.presentationData.theme.rootController.tabBar.iconColor
-            webView.handleScriptMessage = { [weak self] message in
+            webView.handleScriptMessage = { [weak self = self] message in
                 self?.handleScriptMessage(message)
             }
-            webView.onFirstTouch = { [weak self] in
+            webView.onFirstTouch = { [weak self = self] in
                 if let self, !self.delayedScriptMessages.isEmpty {
                     let delayedScriptMessages = self.delayedScriptMessages
                     self.delayedScriptMessages.removeAll()
@@ -380,7 +380,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 }
             } else {
                 self.placeholderDisposable.set((placeholder
-                |> deliverOnMainQueue).start(next: { [weak self] fileReferenceAndIsPlaceholder in
+                |> deliverOnMainQueue).start(next: { [weak self = self] fileReferenceAndIsPlaceholder in
                     guard let strongSelf = self else {
                         return
                     }
@@ -397,7 +397,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     if let fileReference = fileReference {
                         let _ = freeMediaFileInteractiveFetched(account: strongSelf.context.account, userLocation: .other, fileReference: fileReference).start()
                         let _ = (svgIconImageFile(account: strongSelf.context.account, fileReference: fileReference, stickToTop: isPlaceholder)
-                        |> deliverOnMainQueue).start(next: { [weak self] transform in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] transform in
                             if let strongSelf = self {
                                 let imageSize: CGSize
                                 if isPlaceholder, let (layout, _) = strongSelf.validLayout {
@@ -444,7 +444,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 }
                 return peerAvatarCompleteImage(account: context.account, peer: peer, size: CGSize(width: 32.0, height: 32.0), round: false)
             }
-            |> deliverOnMainQueue).start(next: { [weak self] icon in
+            |> deliverOnMainQueue).start(next: { [weak self = self] icon in
                 guard let self else {
                     return
                 }
@@ -550,11 +550,11 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 }
                 if let keepAliveSignal = controller.keepAliveSignal {
                     self.keepAliveDisposable = (keepAliveSignal
-                    |> deliverOnMainQueue).start(error: { [weak self] _ in
+                    |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                         if let strongSelf = self {
                             strongSelf.controller?.dismiss()
                         }
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.controller?.dismiss()
                         }
@@ -563,7 +563,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             } else {
                 if controller.source.isSimple {
                     let _ = (self.context.engine.messages.requestSimpleWebView(botId: controller.botId, url: nil, source: .settings, themeParams: generateWebAppThemeParams(presentationData.theme))
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let strongSelf = self else {
                             return
                         }
@@ -576,7 +576,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 } else {
                     if let url = controller.url, isTelegramMeLink(url), let internalUrl = parseFullInternalUrl(sharedContext: self.context.sharedContext, context: self.context, url: url), case .peer(_, .appStart) = internalUrl {
                         let _ = (self.context.sharedContext.resolveUrl(context: self.context, peerId: controller.peerId, url: url, skipUrlAuth: false)
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] result in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result in
                             guard let self, let controller = self.controller else {
                                 return
                             }
@@ -585,7 +585,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 return
                             }
                             let _ = (self.context.engine.messages.requestAppWebView(peerId: peer.id, appReference: .id(id: botApp.id, accessHash: botApp.accessHash), payload: appStart.payload, themeParams: generateWebAppThemeParams(self.presentationData.theme), compact: appStart.mode == .compact, fullscreen: appStart.mode == .fullscreen, allowWrite: true)
-                            |> deliverOnMainQueue).startStandalone(next: { [weak self] result in
+                            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result in
                                 guard let self, let parsedUrl = URL(string: result.url) else {
                                     return
                                 }
@@ -596,7 +596,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                         })
                     } else {
                         let _ = (self.context.engine.messages.requestWebView(peerId: controller.peerId, botId: controller.botId, url: controller.url, payload: controller.payload, themeParams: generateWebAppThemeParams(presentationData.theme), fromMenu: controller.source == .menu, replyToMessageId: controller.replyToMessageId, threadId: controller.threadId)
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let strongSelf = self, let parsedUrl = URL(string: result.url) else {
                                 return
                             }
@@ -606,11 +606,11 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                                         
                             if let keepAliveSignal = result.keepAliveSignal {
                                 strongSelf.keepAliveDisposable = (keepAliveSignal
-                                |> deliverOnMainQueue).start(error: { [weak self] _ in
+                                |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                                     if let strongSelf = self {
                                         strongSelf.controller?.dismiss()
                                     }
-                                }, completed: { [weak self] in
+                                }, completed: { [weak self = self] in
                                     if let strongSelf = self {
                                         strongSelf.controller?.completion()
                                         strongSelf.controller?.dismiss()
@@ -936,19 +936,19 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             insets: UIEdgeInsets(top: 0.0, left: layout.safeInsets.left, bottom: 0.0, right: layout.safeInsets.right),
                             statusBarStyle: self.fullScreenStatusBarStyle,
                             hasBack: self.hasBackButton,
-                            backPressed: { [weak self] in
+                            backPressed: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
                                 self.controller?.cancelPressed()
                             },
-                            minimizePressed: { [weak self] in
+                            minimizePressed: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
                                 self.controller?.requestMinimize(topEdgeOffset: nil, initialVelocity: nil)
                             },
-                            morePressed: { [weak self] node, gesture in
+                            morePressed: { [weak self = self] node, gesture in
                                 guard let self else {
                                     return
                                 }
@@ -1010,7 +1010,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 if previousLayout != nil && (previousLayout?.inputHeight ?? 0.0).isZero, let inputHeight = layout.inputHeight, inputHeight > 44.0, transition.isAnimated {
                     Queue.mainQueue().after(0.4, {
                         if let inputHeight = self.validLayout?.0.inputHeight, inputHeight > 44.0 {
-                            webView.scrollToActiveElement(layout: layout, completion: { [weak self] contentOffset in
+                            webView.scrollToActiveElement(layout: layout, completion: { [weak self = self] contentOffset in
                                 let _ = self
                             //    self?.targetContentOffset = contentOffset
                             }, transition: transition)
@@ -1273,7 +1273,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     |> `catch` { _ -> Signal<TelegramMediaInvoice?, NoError> in
                         return .single(nil)
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] invoice in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] invoice in
                         if let strongSelf = self, let invoice, let navigationController = strongSelf.controller?.getNavigationController() {
                             let inputData = Promise<BotCheckoutController.InputData?>()
                             inputData.set(BotCheckoutController.InputData.fetch(context: strongSelf.context, source: .slug(slug))
@@ -1301,7 +1301,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                         source: .slug(slug),
                                         extendedMedia: [],
                                         inputData: starsInputData,
-                                        completion: { [weak self] paid in
+                                        completion: { [weak self = self] paid in
                                             guard let self else {
                                                 return
                                             }
@@ -1313,9 +1313,9 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             } else {
                                 let checkoutController = BotCheckoutController(context: strongSelf.context, invoice: invoice, source: .slug(slug), inputData: inputData, completed: { currencyValue, receiptMessageId in
                                     self?.sendInvoiceClosedEvent(slug: slug, result: .paid)
-                                }, cancelled: { [weak self] in
+                                }, cancelled: { [weak self = self] in
                                     self?.sendInvoiceClosedEvent(slug: slug, result: .cancelled)
-                                }, failed: { [weak self] in
+                                }, failed: { [weak self = self] in
                                     self?.sendInvoiceClosedEvent(slug: slug, result: .failed)
                                 })
                                 checkoutController.navigationPresentation = .modal
@@ -1344,7 +1344,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 }
                                 return .single(result)
                             }
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -1537,7 +1537,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     info = text
                 }
                 let controller = QrCodeScanScreen(context: self.context, subject: .custom(info: info))
-                controller.completion = { [weak self] result in
+                controller.completion = { [weak self = self] result in
                     if let strongSelf = self {
                         if let result = result {
                             strongSelf.sendQrCodeScannedEvent(dataString: result)
@@ -1560,7 +1560,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     
                     let _ = (self.context.engine.messages.attachMenuBots()
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] attachMenuBots in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] attachMenuBots in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -1774,7 +1774,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             self.webView?.sendEvent(name: "device_storage_failed", data: data.string)
                             return
                         }
-                        let _ = self.context.engine.peers.setBotStorageValue(peerId: controller.botId, key: key, value: effectiveValue).start(error: { [weak self] error in
+                        let _ = self.context.engine.peers.setBotStorageValue(peerId: controller.botId, key: key, value: effectiveValue).start(error: { [weak self = self] error in
                             var errorValue = "UNKNOWN_ERROR"
                             if case .quotaExceeded = error {
                                 errorValue = "QUOTA_EXCEEDED"
@@ -1784,7 +1784,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 "error": errorValue
                             ]
                             self?.webView?.sendEvent(name: "device_storage_failed", data: data.string)
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             let data: JSON = [
                                 "req_id": requestId
                             ]
@@ -1802,7 +1802,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 if let json, let requestId = json["req_id"] as? String {
                     if let key = json["key"] as? String {
                         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.BotStorageValue(id: controller.botId, key: key))
-                        |> deliverOnMainQueue).start(next: { [weak self] value in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] value in
                             let data: JSON = [
                                 "req_id": requestId,
                                 "value": value ?? NSNull()
@@ -1820,7 +1820,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             case "web_app_device_storage_clear":
                 if let json, let requestId = json["req_id"] as? String {
                     let _ = (self.context.engine.peers.clearBotStorage(peerId: controller.botId)
-                    |> deliverOnMainQueue).start(completed: { [weak self] in
+                    |> deliverOnMainQueue).start(completed: { [weak self = self] in
                         let data: JSON = [
                             "req_id": requestId
                         ]
@@ -1846,7 +1846,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             return
                         }
                         let _ = (WebAppSecureStorage.setValue(context: self.context, botId: controller.botId, key: key, value: effectiveValue)
-                        |> deliverOnMainQueue).start(error: { [weak self] error in
+                        |> deliverOnMainQueue).start(error: { [weak self = self] error in
                             var errorValue = "UNKNOWN_ERROR"
                             if case .quotaExceeded = error {
                                 errorValue = "QUOTA_EXCEEDED"
@@ -1856,7 +1856,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 "error": errorValue
                             ]
                             self?.webView?.sendEvent(name: "secure_storage_failed", data: data.string)
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             let data: JSON = [
                                 "req_id": requestId
                             ]
@@ -1874,13 +1874,13 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 if let json, let requestId = json["req_id"] as? String {
                     if let key = json["key"] as? String {
                         let _ = (WebAppSecureStorage.getValue(context: self.context, botId: controller.botId, key: key)
-                        |> deliverOnMainQueue).start(next: { [weak self] value in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] value in
                             let data: JSON = [
                                 "req_id": requestId,
                                 "value": value ?? NSNull()
                             ]
                             self?.webView?.sendEvent(name: "secure_storage_key_received", data: data.string)
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             if case .canRestore = error {
                                 let data: JSON = [
                                     "req_id": requestId,
@@ -1908,7 +1908,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 if let json, let requestId = json["req_id"] as? String {
                     if let key = json["key"] as? String {
                         let _ = (WebAppSecureStorage.checkRestoreAvailability(context: self.context, botId: controller.botId, key: key)
-                        |> deliverOnMainQueue).start(next: { [weak self] storedKeys in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] storedKeys in
                             guard let self else {
                                 return
                             }
@@ -1921,7 +1921,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 return
                             }
                             self.openSecureBotStorageTransfer(requestId: requestId, key: key, storedKeys: storedKeys)
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             var errorValue = "UNKNOWN_ERROR"
                             if case .storageNotEmpty = error {
                                 errorValue = "STORAGE_NOT_EMPTY"
@@ -1937,7 +1937,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             case "web_app_secure_storage_clear":
                 if let json, let requestId = json["req_id"] as? String {
                     let _ = (WebAppSecureStorage.clearStorage(context: self.context, botId: controller.botId)
-                    |> deliverOnMainQueue).start(completed: { [weak self] in
+                    |> deliverOnMainQueue).start(completed: { [weak self = self] in
                         let data: JSON = [
                             "req_id": requestId
                         ]
@@ -2198,7 +2198,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             }
             
             let _ = (self.context.engine.messages.canBotSendMessages(botId: controller.botId)
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let self, let controller = self.controller else {
                     return
                 }
@@ -2213,7 +2213,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             .init(title: self.presentationData.strings.Common_Cancel, action: {
                                 sendEvent(false)
                             }),
-                            .init(title: self.presentationData.strings.Common_OK, type: .default, action: { [weak self] in
+                            .init(title: self.presentationData.strings.Common_OK, type: .default, action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -2274,7 +2274,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                         .init(title: self.presentationData.strings.Common_Cancel, action: {
                             sendEvent(false)
                         }),
-                        .init(title: self.presentationData.strings.Common_OK, type: .default, action: { [weak self] in
+                        .init(title: self.presentationData.strings.Common_OK, type: .default, action: { [weak self = self] in
                             guard let self, case let .user(user) = accountPeer, let phone = user.phone, !phone.isEmpty else {
                                 return
                             }
@@ -2330,7 +2330,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 return
             }
             let _ = (self.context.engine.messages.requestMiniAppButton(peerId: controller.botId, requestId: requestId)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] button in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] button in
                 guard let self, let button else {
                     return
                 }
@@ -2340,7 +2340,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     
                     switch peerType {
                     case let .createBot(createBot):
-                        Task { @MainActor [weak self] in
+                        Task { @MainActor [weak self = self] in
                             guard let self, let controller = self.controller else {
                                 return
                             }
@@ -2350,18 +2350,18 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 initialUsername: createBot.suggestedUsername,
                                 initialTitle: createBot.suggestedName,
                                 openAutomatically: false,
-                                completion: { [weak self] resultId in
+                                completion: { [weak self = self] resultId in
                                     guard let self, let controller = self.controller else {
                                         return
                                     }
                                     if let resultId {
                                         let _ = self.context.engine.peers.sendBotRequestedPeer(peerId: controller.botId, requestId: requestId, buttonId: buttonId, requestedPeerIds: [resultId]
-                                        ).startStandalone(error: { [weak self] _ in
+                                        ).startStandalone(error: { [weak self = self] _ in
                                             guard let self else {
                                                 return
                                             }
                                             self.webView?.sendEvent(name: "requested_chat_failed", data: nil)
-                                        }, completed: { [weak self] in
+                                        }, completed: { [weak self = self] in
                                             guard let self else {
                                                 return
                                             }
@@ -2394,7 +2394,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 return
             }
             let _ = (self.context.engine.messages.invokeBotCustomMethod(botId: controller.botId, method: method, params: params)
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -2426,7 +2426,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.BotBiometricsState(id: controller.botId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -2469,7 +2469,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 TelegramEngine.EngineData.Item.Peer.Peer(id: controller.botId),
                 TelegramEngine.EngineData.Item.Peer.BotBiometricsState(id: controller.botId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] botPeer, currentState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] botPeer, currentState in
                 guard let self, let botPeer, let controller = self.controller else {
                     return
                 }
@@ -2479,7 +2479,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     return
                 }
                 
-                let updateAccessGranted: (Bool) -> Void = { [weak self] granted in
+                let updateAccessGranted: (Bool) -> Void = { [weak self = self] granted in
                     guard let self else {
                         return
                     }
@@ -2537,7 +2537,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 TelegramEngine.EngineData.Item.Peer.Peer(id: controller.botId),
                 TelegramEngine.EngineData.Item.Peer.BotBiometricsState(id: controller.botId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] botPeer, state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] botPeer, state in
                 guard let self else {
                     return
                 }
@@ -2554,7 +2554,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     }
                     let appBundleId = self.context.sharedContext.applicationBindings.appBundleId
                     
-                    Thread { [weak self] in
+                    Thread { [weak self = self] in
                         let key = LocalAuth.getOrCreatePrivateKey(baseAppBundleId: appBundleId, keyId: keyId)
                         
                         let decryptedData: LocalAuth.DecryptionResult
@@ -2630,7 +2630,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             
             if let tokenData {
                 let appBundleId = self.context.sharedContext.applicationBindings.appBundleId
-                Thread { [weak self] in
+                Thread { [weak self = self] in
                     let key = LocalAuth.getOrCreatePrivateKey(baseAppBundleId: appBundleId, keyId: keyId)
                     
                     var encryptedData: TelegramBotBiometricsState.OpaqueToken?
@@ -2745,7 +2745,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 } else {
                     self.motionManager.accelerometerUpdateInterval = 1.0
                 }
-                self.motionManager.startAccelerometerUpdates(to: OperationQueue.main) { [weak self] accelerometerData, error in
+                self.motionManager.startAccelerometerUpdates(to: OperationQueue.main) { [weak self = self] accelerometerData, error in
                     guard let self, let accelerometerData else {
                         return
                     }
@@ -2804,7 +2804,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     }
                     effectiveIsAbsolute = false
                 }
-                self.motionManager.startDeviceMotionUpdates(using: referenceFrame, to: OperationQueue.main) { [weak self] motionData, error in
+                self.motionManager.startDeviceMotionUpdates(using: referenceFrame, to: OperationQueue.main) { [weak self = self] motionData, error in
                     guard let self, let motionData else {
                         return
                     }
@@ -2857,7 +2857,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 } else {
                     self.motionManager.gyroUpdateInterval = 1.0
                 }
-                self.motionManager.startGyroUpdates(to: OperationQueue.main) { [weak self] gyroData, error in
+                self.motionManager.startGyroUpdates(to: OperationQueue.main) { [weak self = self] gyroData, error in
                     guard let self, let gyroData else {
                         return
                     }
@@ -2889,7 +2889,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     self?.webView?.sendEvent(name: "prepared_message_failed", data: data.string)
                     return
                 }
-                let previewController = WebAppMessagePreviewScreen(context: controller.context, botName: controller.botName, botAddress: controller.botAddress, preparedMessage: preparedMessage, completion: { [weak self] result in
+                let previewController = WebAppMessagePreviewScreen(context: controller.context, botName: controller.botName, botAddress: controller.botAddress, preparedMessage: preparedMessage, completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -2947,7 +2947,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             let _ = combineLatest(queue: Queue.mainQueue(),
                 FileDownload.getFileSize(url: url),
                 self.context.engine.messages.checkBotDownload(botId: controller.botId, fileName: fileName, url: url)
-            ).start(next: { [weak self] fileSize, canDownload in
+            ).start(next: { [weak self = self] fileSize, canDownload in
                 guard let self else {
                     return
                 }
@@ -2970,18 +2970,18 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     title: title,
                     text: text,
                     actions: [
-                        .init(title: self.presentationData.strings.Common_Cancel, action: { [weak self] in
+                        .init(title: self.presentationData.strings.Common_Cancel, action: { [weak self = self] in
                             let data: JSON = [
                                 "status": "cancelled"
                             ]
                             self?.webView?.sendEvent(name: "file_download_requested", data: data.string)
                         }),
-                        .init(title: self.presentationData.strings.WebApp_Download_Download, type: .default, action: { [weak self] in
+                        .init(title: self.presentationData.strings.WebApp_Download_Download, type: .default, action: { [weak self = self] in
                             self?.startDownload(url: url, fileName: fileName, fileSize: fileSize, isMedia: isMedia)
                         })
                     ]
                 )
-                alertController.dismissed = { [weak self] byOutsideTap in
+                alertController.dismissed = { [weak self = self] byOutsideTap in
                     let data: JSON = [
                         "status": "cancelled"
                     ]
@@ -3007,7 +3007,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 fileName: fileName,
                 fileSize: fileSize,
                 isMedia: isMedia,
-                progressHandler: { [weak self] progress in
+                progressHandler: { [weak self = self] progress in
                     guard let self else {
                         return
                     }
@@ -3026,7 +3026,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                         undoText: self.presentationData.strings.WebApp_Download_Cancel
                     )
                 },
-                completion: { [weak self] resultUrl, _ in
+                completion: { [weak self = self] resultUrl, _ in
                     if let resultUrl, let self {
                         removeImpl?()
                         
@@ -3149,7 +3149,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     }
                 }
                 |> take(1)
-            ).start(next: { [weak self] accountPeer, botPeer, iconStatusEmoji in
+            ).start(next: { [weak self = self] accountPeer, botPeer, iconStatusEmoji in
                 guard let self, let accountPeer, let controller = self.controller else {
                     return
                 }
@@ -3158,7 +3158,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     accountPeer: accountPeer,
                     botName: controller.botName,
                     icons: iconStatusEmoji,
-                    completion: { [weak self] result, byOutsideTap in
+                    completion: { [weak self = self] result, byOutsideTap in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -3184,7 +3184,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             }
                             
                             let _ = (context.engine.peers.toggleBotEmojiStatusAccess(peerId: botId, enabled: true)
-                            |> deliverOnMainQueue).startStandalone(completed: { [weak self] in
+                            |> deliverOnMainQueue).startStandalone(completed: { [weak self = self] in
                                 let data: JSON = [
                                     "status": "allowed"
                                 ]
@@ -3233,7 +3233,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 self.context.engine.stickers.resolveInlineStickers(fileIds: [fileId]),
                 self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId)),
                 self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: controller.botId))
-            ).start(next: { [weak self] files, accountPeer, botPeer in
+            ).start(next: { [weak self = self] files, accountPeer, botPeer in
                 guard let self, let accountPeer, let controller = self.controller else {
                     return
                 }
@@ -3279,7 +3279,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                                 expirationDate = Int32(CFAbsoluteTimeGetCurrent() + NSTimeIntervalSince1970) + duration
                             }
                             let _ = (self.context.engine.accountData.setEmojiStatus(file: file, expirationDate: expirationDate)
-                            |> deliverOnMainQueue).start(completed: { [weak self] in
+                            |> deliverOnMainQueue).start(completed: { [weak self = self] in
                                 self?.webView?.sendEvent(name: "emoji_status_set", data: nil)
                             })
                             let text: String
@@ -3345,7 +3345,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             }
             
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: controller.botId))
-            |> deliverOnMainQueue).start(next: { [weak self] botPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] botPeer in
                 guard let self, let botPeer, let controller = self.controller else {
                     return
                 }
@@ -3353,7 +3353,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                     context: self.context,
                     peer: botPeer,
                     existingKeys: storedKeys,
-                    completion: { [weak self] uuid in
+                    completion: { [weak self = self] uuid in
                         guard let self else {
                             return
                         }
@@ -3367,12 +3367,12 @@ public final class WebAppController: ViewController, AttachmentContainable {
                         }
                         
                         let _ = (WebAppSecureStorage.transferAllValues(context: self.context, fromUuid: uuid, botId: controller.botId)
-                        |> deliverOnMainQueue).start(completed: { [weak self] in
+                        |> deliverOnMainQueue).start(completed: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             let _ = (WebAppSecureStorage.getValue(context: self.context, botId: controller.botId, key: key)
-                            |> deliverOnMainQueue).start(next: { [weak self] value in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                                 let data: JSON = [
                                     "req_id": requestId,
                                     "value": value ?? NSNull()
@@ -3391,7 +3391,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 return
             }
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: controller.botId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let controller = self.controller, let peer else {
                     return
                 }
@@ -3407,7 +3407,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             }
             let _ = (webAppPermissionsState(context: self.context, peerId: controller.botId)
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -3430,7 +3430,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
         private let locationManager = LocationManager()
         fileprivate func requestLocation() {
             let context = self.context
-            DeviceAccess.authorizeAccess(to: .location(.send), locationManager: self.locationManager, presentationData: self.presentationData, present: { [weak self] c, a in
+            DeviceAccess.authorizeAccess(to: .location(.send), locationManager: self.locationManager, presentationData: self.presentationData, present: { [weak self = self] c, a in
                 self?.controller?.present(c, in: .window(.root), with: a)
             }, openSettings: {
                 context.sharedContext.applicationBindings.openSettings()
@@ -3650,14 +3650,14 @@ public final class WebAppController: ViewController, AttachmentContainable {
             self.titleView = titleView
         }
         
-        self.moreButtonNode.action = { [weak self] _, gesture in
+        self.moreButtonNode.action = { [weak self = self] _, gesture in
             if let strongSelf = self {
                 strongSelf.morePressed(view: strongSelf.moreButtonNode.contextSourceNode.view, gesture: gesture)
             }
         }
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let updatedTheme = presentationData.theme.withModalBlocksBackground()
                 let presentationData = presentationData.withUpdated(theme: updatedTheme)
@@ -3675,14 +3675,14 @@ public final class WebAppController: ViewController, AttachmentContainable {
             }
         })
         
-        self.longTapWithTabBar = { [weak self] in
+        self.longTapWithTabBar = { [weak self = self] in
             guard let self else {
                 return
             }
             
             let _ = (context.engine.messages.attachMenuBots()
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] attachMenuBots in
+            |> deliverOnMainQueue).start(next: { [weak self = self] attachMenuBots in
                 guard let self else {
                     return
                 }
@@ -3727,7 +3727,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.cancelPressed()
                     }
                 ))
@@ -3750,7 +3750,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                             playOnce: self.moreButtonPlayOnce
                         )
                     )),
-                    action: { [weak self] view in
+                    action: { [weak self = self] view in
                         self?.morePressed(view: view, gesture: nil)
                         self?.moreButtonPlayOnce.invoke(Void())
                     }
@@ -3812,7 +3812,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             let _ = (self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: self.peerId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] chatPeer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] chatPeer in
                 guard let self, let chatPeer else {
                     return
                 }
@@ -3902,7 +3902,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             context.engine.data.get(TelegramEngine.EngineData.Item.Peer.BotPrivacyPolicyUrl(id: self.botId)),
             activeDownloadProgress
         )
-        |> map { [weak self] attachMenuBots, botPeer, botCommands, privacyPolicyUrl, activeDownloadProgress -> ContextController.Items in
+        |> map { [weak self = self] attachMenuBots, botPeer, botCommands, privacyPolicyUrl, activeDownloadProgress -> ContextController.Items in
             var items: [ContextMenuItem] = []
             
             if let activeDownload, let progress = activeDownloadProgress {
@@ -3935,7 +3935,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             if hasSettings {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_Settings, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Settings"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     if let strongSelf = self {
@@ -3947,7 +3947,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             if peerId != botId {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_OpenBot, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Bots"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     guard let strongSelf = self else {
@@ -3972,13 +3972,13 @@ public final class WebAppController: ViewController, AttachmentContainable {
             if let addressName = botPeer?.addressName {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_Share, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     guard let self else {
                         return
                     }
-                    let shareController = context.sharedContext.makeShareController(context: context, params: ShareControllerParams(subject: .url("https://t.me/\(addressName)?profile"), actionCompleted: { [weak self] in
+                    let shareController = context.sharedContext.makeShareController(context: context, params: ShareControllerParams(subject: .url("https://t.me/\(addressName)?profile"), actionCompleted: { [weak self = self] in
                         let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                         self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
                     }))
@@ -3988,7 +3988,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_ReloadPage, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reload"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 self?.controllerNode.webView?.reload()
@@ -3997,7 +3997,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             if let _ = self?.appName {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_AddToHomeScreen, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddSquare"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     self?.controllerNode.addToHomeScreen()
@@ -4006,7 +4006,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                         
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_TermsOfUse, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 guard let self, let navigationController = self.getNavigationController() else {
@@ -4017,7 +4017,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
                 let _ = (cachedWebAppTermsPage(context: context)
                 |> deliverOnMainQueue).startStandalone(next: { resolvedUrl in
                     context.sharedContext.openResolvedUrl(resolvedUrl, context: context, urlContext: .generic, navigationController: navigationController, forceExternal: true, forceUpdate: false, openPeer: { peer, navigation in
-                    }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak self] c, arguments in
+                    }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak self = self] c, arguments in
                         self?.push(c)
                     }, dismissInput: {}, contentContext: nil, progress: nil, completion: nil)
                 })
@@ -4025,7 +4025,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_PrivacyPolicy, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Privacy"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 guard let self else {
@@ -4049,7 +4049,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             if let _ = attachMenuBot, [.attachMenu, .settings, .generic].contains(source) {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.WebApp_RemoveBot, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: nil)
                     
                     if let self {
@@ -4073,7 +4073,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
             text: presentationData.strings.WebApp_RemoveAllConfirmationText(self.botName).string,
             actions: [
                 .init(title: presentationData.strings.Common_Cancel),
-                .init(title: presentationData.strings.Common_OK, type: .default, action: { [weak self] in
+                .init(title: presentationData.strings.Common_OK, type: .default, action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -4196,7 +4196,7 @@ public final class WebAppController: ViewController, AttachmentContainable {
     
     fileprivate var _isPanGestureEnabled = true
     public var isInnerPanGestureEnabled: (() -> Bool)? {
-        return { [weak self] in
+        return { [weak self = self] in
             guard let self else {
                 return true
             }

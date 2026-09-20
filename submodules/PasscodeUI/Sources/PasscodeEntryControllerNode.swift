@@ -104,7 +104,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
         self.backgroundColor = .clear
         self.iconNode.unlockedColor = theme.rootController.navigationBar.primaryTextColor
         
-        self.keyboardNode.charactedEntered = { [weak self] character in
+        self.keyboardNode.charactedEntered = { [weak self = self] character in
             if let strongSelf = self {
                 strongSelf.inputFieldNode.append(character)
                 if let gradientNode = strongSelf.backgroundCustomNode as? GradientBackgroundNode {
@@ -114,7 +114,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
                 }
             }
         }
-        self.keyboardNode.backspace = { [weak self] in
+        self.keyboardNode.backspace = { [weak self = self] in
             if let strongSelf = self {
                 let _ = strongSelf.inputFieldNode.delete()
                 if let gradientNode = strongSelf.backgroundCustomNode as? GradientBackgroundNode {
@@ -124,7 +124,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
                 }
             }
         }
-        self.inputFieldNode.complete = { [weak self] passcode in
+        self.inputFieldNode.complete = { [weak self = self] passcode in
             guard let strongSelf = self else {
                 return
             }
@@ -167,7 +167,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
         }
         
         self.energyUsageSettingsDisposable = (accountManager.sharedData(keys: Set([ApplicationSpecificSharedDataKeys.automaticMediaDownloadSettings]))
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             guard let self else {
                 return
             }
@@ -347,7 +347,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
                 text = NSAttributedString(string: self.strings.PasscodeSettings_TryAgainIn1Minute, font: subtitleFont, textColor: .white)
                 
                 self.timer?.invalidate()
-                let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self {
                         if !strongSelf.shouldWaitBeforeNextAttempt() {
                             strongSelf.updateInvalidAttempts(strongSelf.invalidAttempts, animated: true)
@@ -366,7 +366,7 @@ final class PasscodeEntryControllerNode: ASDisplayNode {
     }
     
     func hideBiometrics() {
-        self.biometricButtonNode.layer.animateScale(from: 1.0, to: 0.00001, duration: 0.25, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, completion: { [weak self] _ in
+        self.biometricButtonNode.layer.animateScale(from: 1.0, to: 0.00001, duration: 0.25, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, completion: { [weak self = self] _ in
             self?.biometricButtonNode.isHidden = true
         })
         self.animateError()

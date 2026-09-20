@@ -156,10 +156,10 @@ class PercentChartComponentController: GeneralChartComponentController {
                                               isLoading: false,
                                               values: values,
                                               totalValue: nil,
-                                              tapAction: { [weak self] in
+                                              tapAction: { [weak self = self] in
                                                 self?.hideDetailsView(animated: true)
                                                 self?.zoomInOnDateClosure?(closestDate) },
-                                              hideAction: { [weak self] in
+                                              hideAction: { [weak self = self] in
                                                 self?.hideDetailsView(animated: true)
                                             })
         return viewModel

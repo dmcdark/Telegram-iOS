@@ -276,7 +276,7 @@ private final class SavedTagNameAlertContentNode: AlertContentNode {
             self.addSubnode(separatorNode)
         }
         
-        self.inputFieldNode.updateHeight = { [weak self] in
+        self.inputFieldNode.updateHeight = { [weak self = self] in
             if let strongSelf = self {
                 if let _ = strongSelf.validLayout {
                     strongSelf.requestLayout?(.immediate)
@@ -284,7 +284,7 @@ private final class SavedTagNameAlertContentNode: AlertContentNode {
             }
         }
         
-        self.inputFieldNode.textChanged = { [weak self] text in
+        self.inputFieldNode.textChanged = { [weak self = self] text in
             if let strongSelf = self, let lastNode = strongSelf.actionNodes.last {
                 lastNode.actionEnabled = text.count <= characterLimit
                 strongSelf.requestLayout?(.immediate)

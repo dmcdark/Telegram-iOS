@@ -1095,7 +1095,7 @@ final class StorageUsageScreenComponent: Component {
                     },
                     cacheSettingsExceptionCount
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] cacheSettings, cacheSettingsExceptionCount in
+                |> deliverOnMainQueue).start(next: { [weak self = self] cacheSettings, cacheSettingsExceptionCount in
                     guard let self else {
                         return
                     }
@@ -1159,7 +1159,7 @@ final class StorageUsageScreenComponent: Component {
                 component: AnyComponent(Button(
                     content: AnyComponent(Text(text: environment.strings.Common_Edit, font: Font.regular(17.0), color: environment.theme.chat.inputPanel.panelControlColor)),
                     contentInsets: UIEdgeInsets(top: 0.0, left: 6.0, bottom: 0.0, right: 6.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1184,7 +1184,7 @@ final class StorageUsageScreenComponent: Component {
                 component: AnyComponent(Button(
                     content: AnyComponent(Text(text: environment.strings.Common_Done, font: Font.semibold(17.0), color: environment.theme.chat.inputPanel.panelControlColor)),
                     contentInsets: UIEdgeInsets(top: 0.0, left: 6.0, bottom: 0.0, right: 6.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let aggregatedData = self.aggregatedData else {
                             return
                         }
@@ -1267,7 +1267,7 @@ final class StorageUsageScreenComponent: Component {
                         label: bottomPanelSelectionData.size == 0 ? nil : dataSizeString(Int(bottomPanelSelectionData.size), formatting: DataSizeStringFormatting(strings: environment.strings, decimalSeparator: ".")),
                         isEnabled: bottomPanelSelectionData.size != 0,
                         insets: UIEdgeInsets(top: 0.0, left: sideInset, bottom: environment.safeInsets.bottom, right: sideInset),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1721,7 +1721,7 @@ final class StorageUsageScreenComponent: Component {
                         categories: listCategories,
                         isOtherExpanded: self.isOtherCategoryExpanded,
                         displayAction: component.peer == nil,
-                        toggleCategorySelection: { [weak self] key in
+                        toggleCategorySelection: { [weak self = self] key in
                             guard let self, let aggregatedData = self.aggregatedData else {
                                 return
                             }
@@ -1747,7 +1747,7 @@ final class StorageUsageScreenComponent: Component {
                             }
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                         },
-                        toggleOtherExpanded: { [weak self] in
+                        toggleOtherExpanded: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1755,7 +1755,7 @@ final class StorageUsageScreenComponent: Component {
                             self.isOtherCategoryExpanded = !self.isOtherCategoryExpanded
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                         },
-                        clearAction: { [weak self] in
+                        clearAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1885,7 +1885,7 @@ final class StorageUsageScreenComponent: Component {
                             subtitle: subtitle,
                             value: optionText,
                             hasNext: i != 4 - 1,
-                            action: { [weak self] sourceView in
+                            action: { [weak self = self] sourceView in
                                 guard let self else {
                                     return
                                 }
@@ -1967,7 +1967,7 @@ final class StorageUsageScreenComponent: Component {
                         theme: environment.theme,
                         strings: environment.strings,
                         value: cacheSettings?.defaultCacheStorageLimitGigabytes ?? 16,
-                        updateValue: { [weak self] value in
+                        updateValue: { [weak self = self] value in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -2028,7 +2028,7 @@ final class StorageUsageScreenComponent: Component {
                         context: component.context,
                         items: peerItems,
                         selectionState: aggregatedData.isSelectingPeers ? aggregatedData.selectionState : nil,
-                        peerAction: { [weak self] peer in
+                        peerAction: { [weak self = self] peer in
                             guard let self, let aggregatedData = self.aggregatedData else {
                                 return
                             }
@@ -2040,7 +2040,7 @@ final class StorageUsageScreenComponent: Component {
                                 self.openPeer(peer: peer)
                             }
                         },
-                        contextAction: { [weak self] peer, sourceView, gesture in
+                        contextAction: { [weak self = self] peer, sourceView, gesture in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -2051,8 +2051,8 @@ final class StorageUsageScreenComponent: Component {
                             itemList.append(.action(ContextMenuActionItem(
                                 text: presentationData.strings.StorageManagement_PeerShowDetails,
                                 icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.contextMenu.primaryColor) },
-                                action: { [weak self] c, _ in
-                                    c?.dismiss(completion: { [weak self] in
+                                action: { [weak self = self] c, _ in
+                                    c?.dismiss(completion: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -2069,8 +2069,8 @@ final class StorageUsageScreenComponent: Component {
                                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Groups"), color: theme.contextMenu.primaryColor)
                                     }
                                 },
-                                action: { [weak self] c, _ in
-                                    c?.dismiss(completion: { [weak self] in
+                                action: { [weak self = self] c, _ in
+                                    c?.dismiss(completion: { [weak self = self] in
                                         guard let self, let component = self.component, let controller = self.controller?() else {
                                             return
                                         }
@@ -2092,7 +2092,7 @@ final class StorageUsageScreenComponent: Component {
                             itemList.append(.action(ContextMenuActionItem(
                                 text: presentationData.strings.StorageManagement_ContextSelect,
                                 icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor) },
-                                action: { [weak self] c, _ in
+                                action: { [weak self = self] c, _ in
                                     c?.dismiss(completion: {
                                     })
                                     
@@ -2128,7 +2128,7 @@ final class StorageUsageScreenComponent: Component {
                         context: component.context,
                         items: aggregatedData.imageItems,
                         selectionState: aggregatedData.selectionState,
-                        action: { [weak self] messageId in
+                        action: { [weak self = self] messageId in
                             guard let self, let aggregatedData = self.aggregatedData else {
                                 return
                             }
@@ -2138,7 +2138,7 @@ final class StorageUsageScreenComponent: Component {
                             aggregatedData.toggleMessageSelection(id: messageId)
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                         },
-                        contextAction: { [weak self] messageId, containerView, sourceRect, gesture in
+                        contextAction: { [weak self = self] messageId, containerView, sourceRect, gesture in
                             guard let self else {
                                 return
                             }
@@ -2155,7 +2155,7 @@ final class StorageUsageScreenComponent: Component {
                         context: component.context,
                         items: fileItems,
                         selectionState: aggregatedData.selectionState,
-                        action: { [weak self] messageId in
+                        action: { [weak self = self] messageId in
                             guard let self, let aggregatedData = self.aggregatedData else {
                                 return
                             }
@@ -2165,7 +2165,7 @@ final class StorageUsageScreenComponent: Component {
                             aggregatedData.toggleMessageSelection(id: messageId)
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                         },
-                        contextAction: { [weak self] messageId, containerView, gesture in
+                        contextAction: { [weak self = self] messageId, containerView, gesture in
                             guard let self else {
                                 return
                             }
@@ -2182,7 +2182,7 @@ final class StorageUsageScreenComponent: Component {
                         context: component.context,
                         items: musicItems,
                         selectionState: aggregatedData.selectionState,
-                        action: { [weak self] messageId in
+                        action: { [weak self = self] messageId in
                             guard let self, let aggregatedData = self.aggregatedData else {
                                 return
                             }
@@ -2192,7 +2192,7 @@ final class StorageUsageScreenComponent: Component {
                             aggregatedData.toggleMessageSelection(id: messageId)
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.4, curve: .spring)))
                         },
-                        contextAction: { [weak self] messageId, containerView, gesture in
+                        contextAction: { [weak self = self] messageId, containerView, gesture in
                             guard let self else {
                                 return
                             }
@@ -2211,7 +2211,7 @@ final class StorageUsageScreenComponent: Component {
                         dateTimeFormat: environment.dateTimeFormat,
                         insets: UIEdgeInsets(top: environment.navigationHeight, left: environment.safeInsets.left, bottom: bottomInset, right: environment.safeInsets.right),
                         items: panelItems,
-                        currentPanelUpdated: { [weak self] id, transition in
+                        currentPanelUpdated: { [weak self = self] id, transition in
                             guard let self else {
                                 return
                             }
@@ -2336,7 +2336,7 @@ final class StorageUsageScreenComponent: Component {
             }
             
             self.statsDisposable = (component.context.engine.resources.collectStorageUsageStats()
-            |> deliverOnMainQueue).start(next: { [weak self] stats in
+            |> deliverOnMainQueue).start(next: { [weak self = self] stats in
                 guard let self, let component = self.component else {
                     completion()
                     return
@@ -2477,7 +2477,7 @@ final class StorageUsageScreenComponent: Component {
                     
                     return result
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] result in
+                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                     guard let self, let component = self.component else {
                         completion()
                         return
@@ -2492,7 +2492,7 @@ final class StorageUsageScreenComponent: Component {
                             }
                             
                             if totalSize == 0 {
-                                childCompleted({ [weak self] in
+                                childCompleted({ [weak self = self] in
                                     completion()
                                     
                                     if let self {
@@ -2538,7 +2538,7 @@ final class StorageUsageScreenComponent: Component {
             }
             
             let childController = StorageUsageScreen(context: component.context, makeStorageUsageExceptionsScreen: component.makeStorageUsageExceptionsScreen, peer: peer)
-            childController.childCompleted = { [weak self] completed in
+            childController.childCompleted = { [weak self = self] completed in
                 guard let self else {
                     return
                 }
@@ -2565,7 +2565,7 @@ final class StorageUsageScreenComponent: Component {
                 reverseMessageGalleryOrder: false,
                 navigationController: self.controller?()?.navigationController as? NavigationController
             )
-            |> deliverOnMainQueue).start(next: { [weak self] previewData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] previewData in
                 guard let self, let component = self.component, let previewData else {
                     gesture.cancel()
                     return
@@ -2593,8 +2593,8 @@ final class StorageUsageScreenComponent: Component {
                 items.append(.action(ContextMenuActionItem(
                     text: openTitle,
                     icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Expand"), color: theme.contextMenu.primaryColor) },
-                    action: { [weak self] c, _ in
-                        c?.dismiss(completion: { [weak self] in
+                    action: { [weak self = self] c, _ in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2603,8 +2603,8 @@ final class StorageUsageScreenComponent: Component {
                     })
                 ))
                 
-                items.append(.action(ContextMenuActionItem(text: strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                    c?.dismiss(completion: { [weak self] in
+                items.append(.action(ContextMenuActionItem(text: strings.SharedMedia_ViewInChat, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self, let component = self.component, let controller = self.controller?(), let navigationController = controller.navigationController as? NavigationController else {
                             return
                         }
@@ -2629,7 +2629,7 @@ final class StorageUsageScreenComponent: Component {
                     
                 items.append(.action(ContextMenuActionItem(text: strings.Conversation_ContextMenuSelect, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     c?.dismiss(completion: {
                     })
                     
@@ -2690,8 +2690,8 @@ final class StorageUsageScreenComponent: Component {
                 itemList.append(.action(ContextMenuActionItem(
                     text: openTitle,
                     icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Expand"), color: theme.contextMenu.primaryColor) },
-                    action: { [weak self] c, _ in
-                        c?.dismiss(completion: { [weak self] in
+                    action: { [weak self = self] c, _ in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -2706,8 +2706,8 @@ final class StorageUsageScreenComponent: Component {
                 icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/GoToMessage"), color: theme.contextMenu.primaryColor)
                 },
-                action: { [weak self] c, _ in
-                    c?.dismiss(completion: { [weak self] in
+                action: { [weak self = self] c, _ in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self, let component = self.component, let controller = self.controller?(), let navigationController = controller.navigationController as? NavigationController else {
                             return
                         }
@@ -2733,7 +2733,7 @@ final class StorageUsageScreenComponent: Component {
             itemList.append(.action(ContextMenuActionItem(
                 text: aggregatedData.selectionState.selectedMessages.contains(messageId) ? presentationData.strings.StorageManagement_ContextDeselect : presentationData.strings.StorageManagement_ContextSelect,
                 icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor) },
-                action: { [weak self] c, _ in
+                action: { [weak self = self] c, _ in
                     c?.dismiss(completion: {
                     })
                     
@@ -2777,16 +2777,16 @@ final class StorageUsageScreenComponent: Component {
                 standalone: true,
                 reverseMessageGalleryOrder: true,
                 navigationController: navigationController,
-                dismissInput: { [weak self] in
+                dismissInput: { [weak self = self] in
                     self?.endEditing(true)
                 },
-                present: { [weak self] c, a, _ in
+                present: { [weak self = self] c, a, _ in
                     guard let self else {
                         return
                     }
                     self.controller?()?.present(c, in: .window(.root), with: a, blockInteraction: true)
                 },
-                transitionNode: { [weak self] messageId, media, _ in
+                transitionNode: { [weak self = self] messageId, media, _ in
                     guard let self else {
                         return nil
                     }
@@ -2798,19 +2798,19 @@ final class StorageUsageScreenComponent: Component {
                     }
                     
                     return nil
-                }, addToTransitionSurface: { [weak self] view in
+                }, addToTransitionSurface: { [weak self = self] view in
                     guard let self else {
                         return
                     }
                     if let panelContainerView = self.panelContainer.view as? StorageUsagePanelContainerComponent.View {
                         panelContainerView.currentPanelView?.addSubview(view)
                     }
-                }, openUrl: { [weak self] url in
+                }, openUrl: { [weak self = self] url in
                     guard let self else {
                         return
                     }
                     let _ = self
-                }, openPeer: { [weak self] peer, navigation in
+                }, openPeer: { [weak self = self] peer, navigation in
                     guard let self else {
                         return
                     }
@@ -2825,28 +2825,28 @@ final class StorageUsageScreenComponent: Component {
                 sendEmoji: nil,
                 setupTemporaryHiddenMedia: { _, _, _ in },
                 chatAvatarHiddenMedia: { _, _ in },
-                actionInteraction: GalleryControllerActionInteraction(openUrl: { [weak self] url, concealed, forceExternal in
+                actionInteraction: GalleryControllerActionInteraction(openUrl: { [weak self = self] url, concealed, forceExternal in
                     guard let self else {
                         return
                     }
                     let _ = self
                     //strongSelf.openUrl(url: url, concealed: false, external: false)
-                }, openUrlIn: { [weak self] url in
+                }, openUrlIn: { [weak self = self] url in
                     guard let self else {
                         return
                     }
                     let _ = self
-                }, openPeerMention: { [weak self] mention in
+                }, openPeerMention: { [weak self = self] mention in
                     guard let self else {
                         return
                     }
                     let _ = self
-                }, openPeer: { [weak self] peer in
+                }, openPeer: { [weak self = self] peer in
                     guard let self else {
                         return
                     }
                     let _ = self
-                }, openHashtag: { [weak self] peerName, hashtag in
+                }, openHashtag: { [weak self = self] peerName, hashtag in
                     guard let self else {
                         return
                     }
@@ -2854,7 +2854,7 @@ final class StorageUsageScreenComponent: Component {
                 }, openBotCommand: { _ in
                 }, openAd: { _ in
                 }, addContact: { _ in
-                }, storeMediaPlaybackState: { [weak self] messageId, timestamp, playbackRate in
+                }, storeMediaPlaybackState: { [weak self = self] messageId, timestamp, playbackRate in
                     guard let self else {
                         return
                     }
@@ -2862,7 +2862,7 @@ final class StorageUsageScreenComponent: Component {
                 }, editMedia: { _, _, _ in
                 }, updateCanReadHistory: { _ in
                 }, sendSticker: nil),
-                centralItemUpdated: { [weak self] messageId in
+                centralItemUpdated: { [weak self = self] messageId in
                     //let _ = self?.paneContainerNode.requestExpandTabs?()
                     //self?.paneContainerNode.currentPane?.node.ensureMessageIsVisible(id: messageId)
                     
@@ -2945,17 +2945,17 @@ final class StorageUsageScreenComponent: Component {
                 let totalSize = aggregatedData.selectedSize
                 
                 let _ = (component.context.engine.resources.clearStorage(peerId: component.peer?.id, categories: mappedCategories, includeMessages: aggregatedData.clearIncludeMessages, excludeMessages: aggregatedData.clearExcludeMessages)
-                |> deliverOnMainQueue).start(next: { [weak self] progress in
+                |> deliverOnMainQueue).start(next: { [weak self = self] progress in
                     guard let self else {
                         return
                     }
                     self.updateClearProgress(progress: progress)
-                }, completed: { [weak self] in
+                }, completed: { [weak self = self] in
                     guard let self, let _ = self.component else {
                         return
                     }
                     
-                    self.reloadStats(firstTime: false, completion: { [weak self] in
+                    self.reloadStats(firstTime: false, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -3026,17 +3026,17 @@ final class StorageUsageScreenComponent: Component {
                     }
                     
                     let _ = (component.context.engine.resources.clearStorage(peerId: component.peer?.id, categories: mappedCategories, includeMessages: [], excludeMessages: [])
-                    |> deliverOnMainQueue).start(next: { [weak self] progress in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] progress in
                         guard let self else {
                             return
                         }
                         self.updateClearProgress(progress: progress)
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         
-                        self.reloadStats(firstTime: false, completion: { [weak self] in
+                        self.reloadStats(firstTime: false, completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -3074,17 +3074,17 @@ final class StorageUsageScreenComponent: Component {
                     }
 
                     let _ = (component.context.engine.resources.clearStorage(peerIds: aggregatedData.selectionState.selectedPeers, includeMessages: includeMessages, excludeMessages: excludeMessages)
-                    |> deliverOnMainQueue).start(next: { [weak self] progress in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] progress in
                         guard let self else {
                             return
                         }
                         self.updateClearProgress(progress: progress)
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         
-                        self.reloadStats(firstTime: false, completion: { [weak self] in
+                        self.reloadStats(firstTime: false, completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -3110,13 +3110,13 @@ final class StorageUsageScreenComponent: Component {
             let context = component.context
             let makeStorageUsageExceptionsScreen = component.makeStorageUsageExceptionsScreen
             
-            let pushControllerImpl: ((ViewController) -> Void)? = { [weak self] c in
+            let pushControllerImpl: ((ViewController) -> Void)? = { [weak self = self] c in
                 guard let self else {
                     return
                 }
                 self.controller?()?.push(c)
             }
-            let presentInGlobalOverlay: ((ViewController) -> Void)? = { [weak self] c in
+            let presentInGlobalOverlay: ((ViewController) -> Void)? = { [weak self = self] c in
                 guard let self else {
                     return
                 }
@@ -3427,7 +3427,7 @@ private final class MultiplePeerAvatarsContextItemNode: ASDisplayNode, ContextMe
         self.addSubnode(self.avatarsNode)
         self.addSubnode(self.buttonNode)
 
-        self.buttonNode.highligthedChanged = { [weak self] highligted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highligted in
             guard let strongSelf = self else {
                 return
             }
@@ -3448,11 +3448,11 @@ private final class MultiplePeerAvatarsContextItemNode: ASDisplayNode, ContextMe
     override func didLoad() {
         super.didLoad()
 
-        self.pointerInteraction = PointerInteraction(node: self.buttonNode, style: .hover, willEnter: { [weak self] in
+        self.pointerInteraction = PointerInteraction(node: self.buttonNode, style: .hover, willEnter: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.highlightedBackgroundNode.alpha = 0.75
             }
-        }, willExit: { [weak self] in
+        }, willExit: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.highlightedBackgroundNode.alpha = 0.0
             }
@@ -3527,14 +3527,14 @@ private final class MultiplePeerAvatarsContextItemNode: ASDisplayNode, ContextMe
             return
         }
         self.actionTemporarilyDisabled = true
-        Queue.mainQueue().async { [weak self] in
+        Queue.mainQueue().async { [weak self = self] in
             self?.actionTemporarilyDisabled = false
         }
 
         guard let controller = self.getController() else {
             return
         }
-        self.item.action(controller, { [weak self] result in
+        self.item.action(controller, { [weak self = self] result in
             self?.actionSelected(result)
         })
     }
@@ -3610,7 +3610,7 @@ private class StorageUsageClearProgressOverlayNode: ASDisplayNode {
     
     func setProgressSignal(_ signal: Signal<Float, NoError>) {
         self.progressDisposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] progress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] progress in
             if let strongSelf = self {
                 strongSelf.setProgress(progress)
             }

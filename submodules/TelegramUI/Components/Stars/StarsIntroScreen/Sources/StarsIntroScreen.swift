@@ -345,12 +345,12 @@ public final class StarsIntroScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .flatModal
         
-        openExamplesImpl = { [weak self] in
+        openExamplesImpl = { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (context.sharedContext.makeMiniAppListScreenInitialData(context: context)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] initialData in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] initialData in
                 guard let self, let navigationController = self.navigationController as? NavigationController else {
                     return
                 }

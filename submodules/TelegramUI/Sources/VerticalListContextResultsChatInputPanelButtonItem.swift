@@ -103,7 +103,7 @@ final class VerticalListContextResultsChatInputPanelButtonItemNode: ListViewItem
         self.addSubnode(self.titleNode)
         self.addSubnode(self.buttonNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.titleNode.layer.removeAnimation(forKey: "opacity")
@@ -131,7 +131,7 @@ final class VerticalListContextResultsChatInputPanelButtonItemNode: ListViewItem
     func asyncLayout() -> (_ item: VerticalListContextResultsChatInputPanelButtonItem, _ params: ListViewItemLayoutParams, _ mergedTop: Bool, _ mergedBottom: Bool) -> (ListViewItemNodeLayout, (ListViewItemUpdateAnimation) -> Void) {
         let makeTitleLayout = TextNode.asyncLayout(self.titleNode)
         
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let titleFont: UIFont
             switch item.style {
             case .regular:

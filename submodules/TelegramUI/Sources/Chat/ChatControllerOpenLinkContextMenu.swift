@@ -122,10 +122,10 @@ extension ChatControllerImpl {
             skipUrlAuth: false,
             skipConcealedAlert: false,
             forceDark: false,
-            present: { [weak self] c in
+            present: { [weak self = self] c in
                 self?.present(c, in: .window(.root))
             },
-            openResolved: { [weak self] result in
+            openResolved: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -157,7 +157,7 @@ extension ChatControllerImpl {
                     if case .externalUrl = result {
                         let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.webBrowserSettings])
                         |> take(1)
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] sharedData in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] sharedData in
                             guard let self else {
                                 return
                             }
@@ -188,7 +188,7 @@ extension ChatControllerImpl {
             },
             progress: nil,
             alertDisplayUpdated: nil,
-            concealedAlertOption: OpenUserGeneratedUrlConcealedAlertOption(title: target.title(strings: self.presentationData.strings), action: { [weak self] in
+            concealedAlertOption: OpenUserGeneratedUrlConcealedAlertOption(title: target.title(strings: self.presentationData.strings), action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -236,7 +236,7 @@ extension ChatControllerImpl {
             }
 
             let _ = (chatLinkContextMenuOpenMode(context: self.context, url: url)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] openMode in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] openMode in
                 guard let self else {
                     return
                 }
@@ -346,7 +346,7 @@ extension ChatControllerImpl {
 
         let itemsSignal = chatLinkContextMenuOpenMode(context: self.context, url: url)
         |> deliverOnMainQueue
-        |> map { [weak self] openMode -> ContextController.Items in
+        |> map { [weak self = self] openMode -> ContextController.Items in
             guard let self else {
                 return ContextController.Items(content: .list([]))
             }
@@ -354,7 +354,7 @@ extension ChatControllerImpl {
             var items: [ContextMenuItem] = []
 
             items.append(
-                .action(ContextMenuActionItem(text: openText, icon: { theme in return generateTintedImage(image: openMode?.shouldOpenInApp == true ? UIImage(bundleImageName: "Chat/Context Menu/Browser") : UIImage(bundleImageName: "Chat/Context Menu/Globe"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                .action(ContextMenuActionItem(text: openText, icon: { theme in return generateTintedImage(image: openMode?.shouldOpenInApp == true ? UIImage(bundleImageName: "Chat/Context Menu/Browser") : UIImage(bundleImageName: "Chat/Context Menu/Globe"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                     f(.default)
 
                     guard let self else {
@@ -367,7 +367,7 @@ extension ChatControllerImpl {
             if let openMode {
                 let reverseText = openMode.shouldOpenInApp ? self.presentationData.strings.Chat_ContextMenu_OpenInBrowser : self.presentationData.strings.Chat_ContextMenu_OpenInApp
                 items.append(
-                    .action(ContextMenuActionItem(text: reverseText, icon: { theme in return generateTintedImage(image: openMode.shouldOpenInApp ? UIImage(bundleImageName: "Chat/Context Menu/Globe") : UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                    .action(ContextMenuActionItem(text: reverseText, icon: { theme in return generateTintedImage(image: openMode.shouldOpenInApp ? UIImage(bundleImageName: "Chat/Context Menu/Globe") : UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                         f(.default)
 
                         guard let self else {
@@ -383,7 +383,7 @@ extension ChatControllerImpl {
             }
 
             items.append(
-                .action(ContextMenuActionItem(text: copyText, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                .action(ContextMenuActionItem(text: copyText, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                     f(.default)
 
                     guard let self else {
@@ -414,7 +414,7 @@ extension ChatControllerImpl {
         self.canReadHistory.set(false)
 
         let controller = makeContextController(presentationData: self.presentationData, source: source, items: itemsSignal, recognizer: recognizer, gesture: gesture, disableScreenshots: false)
-        controller.dismissed = { [weak self] in
+        controller.dismissed = { [weak self = self] in
             self?.canReadHistory.set(true)
         }
 

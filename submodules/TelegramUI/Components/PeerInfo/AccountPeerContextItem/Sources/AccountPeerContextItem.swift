@@ -167,7 +167,7 @@ private final class AccountPeerContextItemNode: ASDisplayNode, ContextMenuCustom
         guard let controller = self.getController() else {
             return
         }
-        self.item.action(controller, { [weak self] result in
+        self.item.action(controller, { [weak self = self] result in
             self?.actionSelected(result)
         })
     }

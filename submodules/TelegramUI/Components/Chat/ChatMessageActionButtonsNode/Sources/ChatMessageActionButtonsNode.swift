@@ -102,7 +102,7 @@ private final class ChatMessageActionButtonNode: ASDisplayNode {
         
         self.addSubnode(self.accessibilityArea)
         
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             self?.buttonPressed()
             return true
         }
@@ -120,7 +120,7 @@ private final class ChatMessageActionButtonNode: ASDisplayNode {
         self.buttonView = buttonView
         buttonView.isAccessibilityElement = false
         self.view.addSubview(buttonView)
-        buttonView.highligthedChanged = { [weak self] highlighted in
+        buttonView.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     //strongSelf.backgroundBlurNode.layer.removeAnimation(forKey: "opacity")
@@ -161,7 +161,7 @@ private final class ChatMessageActionButtonNode: ASDisplayNode {
             
             self.progressDisposable?.dispose()
             self.progressDisposable = (progressPromise.get()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] isLoading in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] isLoading in
                 guard let self else {
                     return
                 }
@@ -636,13 +636,13 @@ public final class ChatMessageActionButtonsNode: ASDisplayNode {
     override public init() {
         super.init()
         
-        self.buttonPressedWrapper = { [weak self] button, promise in
+        self.buttonPressedWrapper = { [weak self = self] button, promise in
             if let buttonPressed = self?.buttonPressed {
                 buttonPressed(button, promise)
             }
         }
         
-        self.buttonLongTappedWrapper = { [weak self] button in
+        self.buttonLongTappedWrapper = { [weak self = self] button in
             if let buttonLongTapped = self?.buttonLongTapped {
                 buttonLongTapped(button)
             }

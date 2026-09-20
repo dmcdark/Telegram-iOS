@@ -37,7 +37,7 @@ final class ManagedMonkeyAnimationNode: ManagedAnimationNode {
     
     private func startIdleTimer() {
         self.timer?.invalidate()
-        let timer = SwiftSignalKit.Timer(timeout: Double.random(in: 1.0 ..< 1.5), repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: Double.random(in: 1.0 ..< 1.5), repeat: false, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

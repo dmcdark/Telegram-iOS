@@ -1080,7 +1080,7 @@ final class VideoChatParticipantsComponent: Component {
                         controlInsets: itemControlInsets,
                         interfaceOrientation: component.interfaceOrientation,
                         enableVideoSharpening: component.enableVideoSharpening,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1099,13 +1099,13 @@ final class VideoChatParticipantsComponent: Component {
                                 }
                             }
                         },
-                        contextAction: !isItemExpanded ? { [weak self] peer, sourceView, gesture in
+                        contextAction: !isItemExpanded ? { [weak self = self] peer, sourceView, gesture in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.openParticipantContextMenu(peer.id, sourceView, gesture)
                         } : nil,
-                        activatePinch: isItemExpanded ? { [weak self] sourceNode in
+                        activatePinch: isItemExpanded ? { [weak self = self] sourceNode in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1116,7 +1116,7 @@ final class VideoChatParticipantsComponent: Component {
                             })
                             component.call.accountContext.sharedContext.mainWindow?.presentInGlobalOverlay(pinchController)
                         } : nil,
-                        deactivatedPinch: isItemExpanded ? { [weak self] in
+                        deactivatedPinch: isItemExpanded ? { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1284,13 +1284,13 @@ final class VideoChatParticipantsComponent: Component {
                                 inset: 2.0,
                                 background: UIColor(white: 0.1, alpha: 1.0)
                             ),
-                            action: { [weak self] peer, _, itemView in
+                            action: { [weak self = self] peer, _, itemView in
                                 guard let self, let component = self.component else {
                                     return
                                 }
                                 component.openParticipantContextMenu(peer.id, itemView.extractedContainerView, nil)
                             },
-                            contextAction: { [weak self] peer, sourceView, gesture in
+                            contextAction: { [weak self = self] peer, sourceView, gesture in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1332,13 +1332,13 @@ final class VideoChatParticipantsComponent: Component {
                                 inset: 2.0,
                                 background: UIColor(white: 0.1, alpha: 1.0)
                             ),
-                            action: { [weak self] peer, _, itemView in
+                            action: { [weak self = self] peer, _, itemView in
                                 guard let self, let component = self.component else {
                                     return
                                 }
                                 component.openInvitedParticipantContextMenu(peer.id, itemView.extractedContainerView, nil)
                             },
-                            contextAction: { [weak self] peer, sourceView, gesture in
+                            contextAction: { [weak self = self] peer, sourceView, gesture in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1464,7 +1464,7 @@ final class VideoChatParticipantsComponent: Component {
             if self.expandedGridItemContainer.frame != expandedGridItemContainerFrame {
                 self.expandedGridItemContainer.layer.cornerRadius = 16.0
                 
-                transition.setFrame(view: self.expandedGridItemContainer, frame: expandedGridItemContainerFrame, completion: { [weak self] completed in
+                transition.setFrame(view: self.expandedGridItemContainer, frame: expandedGridItemContainerFrame, completion: { [weak self = self] completed in
                     guard let self, completed else {
                         return
                     }
@@ -1505,13 +1505,13 @@ final class VideoChatParticipantsComponent: Component {
                         },
                         speakingParticipants: component.speakingParticipants,
                         interfaceOrientation: component.interfaceOrientation,
-                        updateSelectedParticipant: { [weak self] key in
+                        updateSelectedParticipant: { [weak self = self] key in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.updateMainParticipant(VideoParticipantKey(id: key.id, isPresentation: key.isPresentation), nil)
                         },
-                        contextAction: { [weak self] peer, sourceView, gesture in
+                        contextAction: { [weak self = self] peer, sourceView, gesture in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1562,13 +1562,13 @@ final class VideoChatParticipantsComponent: Component {
                         theme: component.theme,
                         strings: component.strings,
                         isPinned: expandedVideoState.isMainParticipantPinned,
-                        backAction: { [weak self] in
+                        backAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.updateMainParticipant(nil, nil)
                         },
-                        pinAction: { [weak self] in
+                        pinAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1666,7 +1666,7 @@ final class VideoChatParticipantsComponent: Component {
                         peer: speakingPeer,
                         strings: component.strings,
                         theme: component.theme,
-                        action: { [weak self] peer in
+                        action: { [weak self = self] peer in
                             guard let self, let component = self.component, let participants = component.participants else {
                                 return
                             }
@@ -1774,7 +1774,7 @@ final class VideoChatParticipantsComponent: Component {
                 if self.stopRequestingNonCentralVideoTimer == nil || previousComponent?.expandedVideoState != expandedVideoState {
                     self.stopRequestingNonCentralVideoTimer?.invalidate()
                     
-                    self.stopRequestingNonCentralVideoTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+                    self.stopRequestingNonCentralVideoTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1903,7 +1903,7 @@ final class VideoChatParticipantsComponent: Component {
                             icon: iconType,
                             theme: component.theme,
                             hasNext: i != participants.inviteOptions.count - 1,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }

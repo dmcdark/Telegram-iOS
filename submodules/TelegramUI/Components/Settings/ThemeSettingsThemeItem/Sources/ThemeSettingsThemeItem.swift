@@ -237,7 +237,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         
         self.addSubnode(self.activateAreaNode)
 
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture.cancel()
                 return
@@ -258,7 +258,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
         
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             var updatedThemeReference = false
             var updatedAccentColor = false
             var updatedTheme = false
@@ -345,7 +345,7 @@ private final class ThemeSettingsThemeItemIconNode : ListViewItemNode {
             return
         }
         
-        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.snapshotView?.removeFromSuperview()
             self?.snapshotView = nil
         })
@@ -607,7 +607,7 @@ public class ThemeSettingsThemeItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
 
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -719,7 +719,7 @@ public class ThemeSettingsThemeItemNode: ListViewItemNode, ItemListItemNode {
                         index += 1
                     }
                     
-                    let action: (PresentationThemeReference) -> Void = { [weak self] themeReference in
+                    let action: (PresentationThemeReference) -> Void = { [weak self = self] themeReference in
                         if let strongSelf = self {
                             strongSelf.tapping = true
                             strongSelf.item?.updatedTheme(themeReference)

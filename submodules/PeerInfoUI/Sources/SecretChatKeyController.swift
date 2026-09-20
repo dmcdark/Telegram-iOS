@@ -38,7 +38,7 @@ public final class SecretChatKeyController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = SecretChatKeyControllerNode(context: self.context, presentationData: self.presentationData, fingerprint: self.fingerprint, peer: self.peer, getNavigationController: { [weak self] in
+        self.displayNode = SecretChatKeyControllerNode(context: self.context, presentationData: self.presentationData, fingerprint: self.fingerprint, peer: self.peer, getNavigationController: { [weak self = self] in
             return self?.navigationController as? NavigationController
         })
         self.displayNodeDidLoad()

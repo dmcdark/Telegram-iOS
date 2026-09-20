@@ -95,7 +95,7 @@ private class DownArrowsIconNode: ASDisplayNode {
             NSValue(cgPoint: CGPoint(x: 0.0, y: -0.5)),
             NSValue(cgPoint: CGPoint(x: 0.0, y: 4.0)),
             NSValue(cgPoint: CGPoint(x: 0.0, y: 0.0))
-        ], duration: 1.1, keyPath: "position", additive: true, completion: { [weak self] _ in
+        ], duration: 1.1, keyPath: "position", additive: true, completion: { [weak self = self] _ in
             Queue.mainQueue().after(2.9) {
                 self?.setupAnimations()
             }
@@ -585,7 +585,7 @@ private final class TooltipScreenNode: ViewControllerTracingNode {
             }
             return nil
         }
-        let tapAction: (([NSAttributedString.Key: Any], Int) -> Void)? = { [weak self] attributes, index in
+        let tapAction: (([NSAttributedString.Key: Any], Int) -> Void)? = { [weak self = self] attributes, index in
             guard let strongSelf = self else {
                 return
             }
@@ -605,7 +605,7 @@ private final class TooltipScreenNode: ViewControllerTracingNode {
                 strongSelf.openActiveTextItem?(.hashtag(hashtag.hashtag), .tap)
             }
         }
-        let longTapAction: (([NSAttributedString.Key: Any], Int) -> Void)? = { [weak self] attributes, index in
+        let longTapAction: (([NSAttributedString.Key: Any], Int) -> Void)? = { [weak self = self] attributes, index in
             guard let strongSelf = self else {
                 return
             }
@@ -1107,7 +1107,7 @@ private final class TooltipScreenNode: ViewControllerTracingNode {
             animationDelay = 0.0
         }
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + animationDelay, execute: { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + animationDelay, execute: { [weak self = self] in
             self?.animatedStickerNode.visibility = true
         })
     }
@@ -1363,7 +1363,7 @@ public final class TooltipScreen: ViewController {
                 self.f()
             }
         }
-        let dismissTimer = Foundation.Timer(timeInterval: timeout, target: TimerTarget { [weak self] in
+        let dismissTimer = Foundation.Timer(timeInterval: timeout, target: TimerTarget { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1374,7 +1374,7 @@ public final class TooltipScreen: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = TooltipScreenNode(context: self.context, account: self.account, sharedContext: self.sharedContext, text: self.text, textBadge: self.textBadge, textAlignment: self.textAlignment, balancedTextLayout: self.balancedTextLayout, constrainWidth: self.constrainWidth, style: self.style, arrowStyle: self.arrowStyle, icon: self.icon, action: self.action, location: self.location, displayDuration: self.displayDuration, inset: self.inset, cornerRadius: self.cornerRadius, isShimmering: self.isShimmering, shouldDismissOnTouch: self.shouldDismissOnTouch, requestDismiss: { [weak self] in
+        self.displayNode = TooltipScreenNode(context: self.context, account: self.account, sharedContext: self.sharedContext, text: self.text, textBadge: self.textBadge, textAlignment: self.textAlignment, balancedTextLayout: self.balancedTextLayout, constrainWidth: self.constrainWidth, style: self.style, arrowStyle: self.arrowStyle, icon: self.icon, action: self.action, location: self.location, displayDuration: self.displayDuration, inset: self.inset, cornerRadius: self.cornerRadius, isShimmering: self.isShimmering, shouldDismissOnTouch: self.shouldDismissOnTouch, requestDismiss: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1406,7 +1406,7 @@ public final class TooltipScreen: ViewController {
         }
         self.isDismissed = true
         self.willBecomeDismissed?(self)
-        self.controllerNode.animateOut(inPlace: inPlace, completion: { [weak self] in
+        self.controllerNode.animateOut(inPlace: inPlace, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

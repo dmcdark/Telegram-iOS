@@ -127,7 +127,7 @@ private final class StorageUsageItemNode: ListViewItemNode {
     func asyncLayout() -> (_ item: StorageUsageItem, _ params: ListViewItemLayoutParams, _ neighbors: ItemListNeighbors) -> (ListViewItemNodeLayout, () -> Void) {
         let currentItem = self.item
         
-        return { [weak self] item, params, neighbors in
+        return { [weak self = self] item, params, neighbors in
             if let strongSelf = self, strongSelf.lineNodes.count != item.categories.count {
                 for node in strongSelf.lineNodes {
                     node.removeFromSupernode()
@@ -208,7 +208,7 @@ private final class StorageUsageItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

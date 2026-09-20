@@ -143,21 +143,21 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = AuthorizationSequencePhoneEntryControllerNode(sharedContext: self.sharedContext, account: self.account, strings: self.presentationData.strings, theme: self.presentationData.theme, debugAction: { [weak self] in
+        self.displayNode = AuthorizationSequencePhoneEntryControllerNode(sharedContext: self.sharedContext, account: self.account, strings: self.presentationData.strings, theme: self.presentationData.theme, debugAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.view.endEditing(true)
             self?.present(debugController(sharedContext: strongSelf.sharedContext, context: nil, modal: true), in: .window(.root), with: ViewControllerPresentationArguments(presentationAnimation: .modalSheet))
         }, hasOtherAccounts: self.otherAccountPhoneNumbers.0 != nil)
-        self.controllerNode.accountUpdated = { [weak self] account in
+        self.controllerNode.accountUpdated = { [weak self = self] account in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.account = account
             strongSelf.accountUpdated?(account)
         }
-        self.controllerNode.retryPasskey = { [weak self] in
+        self.controllerNode.retryPasskey = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -171,7 +171,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
         
         self.controllerNode.view.disableAutomaticKeyboardHandling = [.forward, .backward]
         
-        self.controllerNode.selectCountryCode = { [weak self] in
+        self.controllerNode.selectCountryCode = { [weak self = self] in
             if let strongSelf = self {
                 let controller = AuthorizationSequenceCountrySelectionController(strings: strongSelf.presentationData.strings, theme: strongSelf.presentationData.theme, glass: true)
                 controller.completeWithCountryCode = { code, name in
@@ -186,12 +186,12 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
                 strongSelf.push(controller)
             }
         }
-        self.controllerNode.checkPhone = { [weak self] in
+        self.controllerNode.checkPhone = { [weak self = self] in
             self?.nextPressed()
         }
         
         if let account = self.account {
-            loadServerCountryCodes(accountManager: sharedContext.accountManager, engine: TelegramEngineUnauthorized(account: account), completion: { [weak self] in
+            loadServerCountryCodes(accountManager: sharedContext.accountManager, engine: TelegramEngineUnauthorized(account: account), completion: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.controllerNode.updateCountryCode()
                 }
@@ -205,7 +205,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
     
     private func loadAndPresentPasskey(force: Bool) {
         if #available(iOS 16.0, *) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self, let account = self.account else {
                     return
                 }
@@ -255,7 +255,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
     }
     
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        Task { @MainActor [weak self] in
+        Task { @MainActor [weak self = self] in
             guard let self, let account = self.account else {
                 return
             }
@@ -398,7 +398,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
             if let (_, id) = existing {
                 var actions: [TextAlertAction] = []
                 if let (current, _, _) = self.otherAccountPhoneNumbers.0, logInNumber != cleanPhoneNumber(current, removePlus: true) {
-                    actions.append(TextAlertAction(type: .genericAction, title: self.presentationData.strings.Login_PhoneNumberAlreadyAuthorizedSwitch, action: { [weak self] in
+                    actions.append(TextAlertAction(type: .genericAction, title: self.presentationData.strings.Login_PhoneNumberAlreadyAuthorizedSwitch, action: { [weak self = self] in
                         self?.sharedContext.switchToAccount(id: id, fromSettingsController: nil, withChatListController: nil)
                         self?.back()
                     }))
@@ -410,7 +410,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
                     let (code, formattedNumber) = self.controllerNode.formattedCodeAndNumber
 
                     let confirmationController = PhoneConfirmationController(theme: self.presentationData.theme, strings: self.presentationData.strings, code: code, number: formattedNumber, sourceController: self)
-                    confirmationController.proceed = { [weak self] in
+                    confirmationController.proceed = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.loginWithNumber?(strongSelf.controllerNode.currentNumber, strongSelf.controllerNode.syncContacts)
                         }
@@ -420,7 +420,7 @@ public final class AuthorizationSequencePhoneEntryController: ViewController, MF
                 } else {
                     var actions: [TextAlertAction] = []
                     actions.append(TextAlertAction(type: .genericAction, title: self.presentationData.strings.Login_Edit, action: {}))
-                    actions.append(TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_Yes, action: { [weak self] in
+                    actions.append(TextAlertAction(type: .defaultAction, title: self.presentationData.strings.Login_Yes, action: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.loginWithNumber?(strongSelf.controllerNode.currentNumber, strongSelf.controllerNode.syncContacts)
                         }

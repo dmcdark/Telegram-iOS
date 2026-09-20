@@ -35,7 +35,7 @@ open class LegacyPresentedController: ViewController {
         
         super.init(navigationBarPresentationData: nil)
         
-        /*legacyController.navigation_setDismiss { [weak self] in
+        /*legacyController.navigation_setDismiss { [weak self = self] in
             self?.dismiss()
         }*/
         if !asPresentable {
@@ -128,7 +128,7 @@ open class LegacyPresentedController: ViewController {
     override open func dismiss(completion: (() -> Void)? = nil) {
         switch self.presentation {
             case .modal:
-                self.controllerNode.animateModalOut { [weak self] in
+                self.controllerNode.animateModalOut { [weak self = self] in
                     /*if let controller = self?.legacyController as? TGViewController {
                         controller.didDismiss()
                     } else if let controller = self?.legacyController as? TGNavigationController {

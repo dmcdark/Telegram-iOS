@@ -112,7 +112,7 @@ public final class ChannelAdminEventLogContext {
     
     public func get() -> Signal<([ChannelAdminEventLogEntry], Bool, ChannelAdminEventLogUpdateType, Bool), NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 subscriber.putNext((strongSelf.entries.0, strongSelf.hasEarlier, .initial, strongSelf.hasEntries))
                 
@@ -169,7 +169,7 @@ public final class ChannelAdminEventLogContext {
         
         self.loadingMoreEarlier = true
         self.loadMoreDisposable.set((channelAdminLogEvents(accountPeerId: self.accountPeerId, postbox: self.postbox, network: self.network, peerId: self.peerId, maxId: maxId, minId: AdminLogEventId.min, limit: 100, query: self.filter.query, filter: self.filter.events, admins: self.filter.adminPeerIds)
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 var events = result.events.sorted()
                 if strongSelf.entries.1 == strongSelf.filter {

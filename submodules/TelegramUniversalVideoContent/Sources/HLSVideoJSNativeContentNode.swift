@@ -381,7 +381,7 @@ private final class SharedHLSVideoJSContext: NSObject {
     }
     
     private func createJsContext() {
-        let handleScriptMessage: ([String: Any]) -> Void = {  [weak self] message in
+        let handleScriptMessage: ([String: Any]) -> Void = {  [weak self = self] message in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -420,7 +420,7 @@ private final class SharedHLSVideoJSContext: NSObject {
                         className: className,
                         methodName: methodName,
                         params: params,
-                        completion: { [weak self] result in
+                        completion: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -869,7 +869,7 @@ private final class SharedHLSVideoJSContext: NSObject {
                 disposeTimeout = 10.0
                 #endif
                 
-                self.emptyTimer = Foundation.Timer.scheduledTimer(withTimeInterval: disposeTimeout, repeats: false, block: { [weak self] timer in
+                self.emptyTimer = Foundation.Timer.scheduledTimer(withTimeInterval: disposeTimeout, repeats: false, block: { [weak self = self] timer in
                     guard let self else {
                         return
                     }
@@ -1113,7 +1113,7 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
         
         var didProcessFramesToDisplay = false
         self.playerNode.isHidden = true
-        self.playerNode.hasSentFramesToDisplay = { [weak self] in
+        self.playerNode.hasSentFramesToDisplay = { [weak self = self] in
             guard let self, !didProcessFramesToDisplay else {
                 return
             }
@@ -1123,7 +1123,7 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
 
         let thumbnailVideoReference = HLSVideoContent.minimizedHLSQuality(file: fileReference, codecConfiguration: self.codecConfiguration)?.file ?? fileReference
         
-        self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: userLocation, videoReference: thumbnailVideoReference, previewSourceFileReference: fileReference, imageReference: nil, onlyFullSize: onlyFullSizeThumbnail, useLargeThumbnail: useLargeThumbnail, autoFetchFullSizeThumbnail: autoFetchFullSizeThumbnail || fileReference.media.isInstantVideo) |> map { [weak self] getSize, getData in
+        self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: userLocation, videoReference: thumbnailVideoReference, previewSourceFileReference: fileReference, imageReference: nil, onlyFullSize: onlyFullSizeThumbnail, useLargeThumbnail: useLargeThumbnail, autoFetchFullSizeThumbnail: autoFetchFullSizeThumbnail || fileReference.media.isInstantVideo) |> map { [weak self = self] getSize, getData in
             Queue.mainQueue().async {
                 if let strongSelf = self, strongSelf.dimensions == nil {
                     if let dimensions = getSize() {
@@ -1141,35 +1141,35 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
         self.addSubnode(self.imageNode)
         self.addSubnode(self.playerNode)
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         
         self._bufferingStatus.set(.single(nil))
         
-        self.didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        self.didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             let _ = self
         })
-        self.willResignActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        self.willResignActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             let _ = self
         })
         
         self.playerStatusDisposable = (self.player.status
-        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
             guard let self else {
                 return
             }
             self.updatePlayerStatus(status: status)
         })
         
-        self.statusTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 25.0, repeats: true, block: { [weak self] _ in
+        self.statusTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 25.0, repeats: true, block: { [weak self = self] _ in
             guard let self else {
                 return
             }
             self.updateStatus()
         })
         
-        onSeeked = { [weak self] in
+        onSeeked = { [weak self = self] in
             Queue.mainQueue().async {
                 guard let self else {
                     return
@@ -1502,7 +1502,7 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
     
     func playOnceWithSound(playAndRecord: Bool, seek: MediaPlayerSeek, actionAtEnd: MediaPlayerPlayOnceWithSoundActionAtEnd) {
         assert(Queue.mainQueue().isCurrent())
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             Queue.mainQueue().async {
                 self?.performActionAtEnd()
             }
@@ -1518,12 +1518,12 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
         case .repeatIfNeeded:
             let _ = (self.player.status
             |> deliverOnMainQueue
-            |> take(1)).start(next: { [weak self] status in
+            |> take(1)).start(next: { [weak self = self] status in
                 guard let strongSelf = self else {
                     return
                 }
                 if status.timestamp > status.duration * 0.1 {
-                    strongSelf.player.actionAtEnd = .loop({ [weak self] in
+                    strongSelf.player.actionAtEnd = .loop({ [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1554,7 +1554,7 @@ final class HLSVideoJSNativeContentNode: ASDisplayNode, UniversalVideoContentNod
     
     func continuePlayingWithoutSound(actionAtEnd: MediaPlayerPlayOnceWithSoundActionAtEnd) {
         assert(Queue.mainQueue().isCurrent())
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             Queue.mainQueue().async {
                 self?.performActionAtEnd()
             }
@@ -1806,7 +1806,7 @@ private final class SourceBuffer {
         self.currentUpdateId += 1
         let updateId = self.currentUpdateId
         
-        SourceBuffer.sharedQueue.async { [weak self] in
+        SourceBuffer.sharedQueue.async { [weak self = self] in
             let tempFile = TempBox.shared.tempFile(fileName: "data.mp4")
             
             var combinedData = Data()

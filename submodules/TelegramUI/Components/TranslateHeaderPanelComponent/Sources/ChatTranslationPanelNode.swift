@@ -76,7 +76,7 @@ final class ChatTranslationPanelNode: ASDisplayNode {
         self.button.addSubnode(self.buttonTextNode)
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: [.touchUpInside])
-        self.moreButton.action = { [weak self] _, gesture in
+        self.moreButton.action = { [weak self = self] _, gesture in
             if let strongSelf = self {
                 strongSelf.morePressed(node: strongSelf.moreButton.contextSourceNode, gesture: gesture)
             }
@@ -293,7 +293,7 @@ final class ChatTranslationPanelNode: ASDisplayNode {
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_Translation_ChooseLanguage, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Translate"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 guard let self else {
                     return
                 }
@@ -372,7 +372,7 @@ final class ChatTranslationPanelNode: ASDisplayNode {
             
             items.append(.action(ContextMenuActionItem(text: doNotTranslateTitle, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 guard let self, let info = self.currentInfo else {
@@ -383,7 +383,7 @@ final class ChatTranslationPanelNode: ASDisplayNode {
             
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_Translation_Hide, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 self?.close()
@@ -409,7 +409,7 @@ final class ChatTranslationPanelNode: ASDisplayNode {
             )
 
             let (cocoonText, entities) = parseCocoonMenuTextEntities(presentationData.strings.Conversation_Translation_CocoonInfo, emojiFileId: cocoonFile.fileId.id)
-            items.append(.action(ContextMenuActionItem(text: cocoonText, entities: entities, entityFiles: [cocoonFile.fileId.id: cocoonFile], enableEntityAnimations: true, textLayout: .multiline, textFont: .small, icon: { _ in return nil }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: cocoonText, entities: entities, entityFiles: [cocoonFile.fileId.id: cocoonFile], enableEntityAnimations: true, textLayout: .multiline, textFont: .small, icon: { _ in return nil }, action: { [weak self = self] c, _ in
                 c?.dismiss(completion: nil)
                 
                 if let controller = self?.controller() {

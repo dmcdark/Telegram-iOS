@@ -83,7 +83,7 @@ private final class ChatParticipantRightsContent: CombinedComponent {
                 TelegramEngine.EngineData.Item.Peer.Peer(id: participantId),
                 TelegramEngine.EngineData.Item.Peer.Presence(id: participantId)
             )
-            |> deliverOnMainQueue).start(next: { [weak self] peer, presence in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer, presence in
                 guard let self else {
                     return
                 }

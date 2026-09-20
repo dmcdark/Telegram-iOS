@@ -145,7 +145,7 @@ final class VoicePlaybackController {
         let url = URL(fileURLWithPath: path)
         let decoder = self.decoder
         decodeTask?.cancel()
-        decodeTask = Task { [weak self] in
+        decodeTask = Task { [weak self = self] in
             do {
                 let decoded = try await decoder.decodePCM(url: url)
                 self?.handleDecoded(tok: tok, note: note, decoded: decoded)
@@ -159,7 +159,7 @@ final class VoicePlaybackController {
         guard tok == activeTok else { return }
         do {
             try backend.prepare()
-            try backend.play(buffer: decoded.pcm) { [weak self] in
+            try backend.play(buffer: decoded.pcm) { [weak self = self] in
                 self?.handlePlaybackEnded(tok: tok, voiceFileId: note.voiceFileId)
             }
             state = .playing(voiceFileId: note.voiceFileId)
@@ -188,7 +188,7 @@ final class VoicePlaybackController {
     /// `.playing`.
     private func startTicker(tok: Int) {
         tickerTask?.cancel()
-        tickerTask = Task { @MainActor [weak self] in
+        tickerTask = Task { @MainActor [weak self = self] in
             while !Task.isCancelled {
                 guard let self else { return }
                 guard tok == self.activeTok else { return }
@@ -251,9 +251,9 @@ final class AVEngineBackend: VoicePlaybackBackend {
         lastBufferDuration = Double(buffer.frameLength) / lastSampleRate
         pendingCompletion = completion
         let captured = completion
-        player.scheduleBuffer(buffer, at: nil, options: []) { [weak self] in
+        player.scheduleBuffer(buffer, at: nil, options: []) { [weak self = self] in
             // AVAudioEngine fires this on a non-main queue.
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else { return }
                 guard self.pendingCompletion != nil else { return }
                 self.pendingCompletion = nil

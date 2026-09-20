@@ -119,7 +119,7 @@ public final class RichTextMediaContentComponent: Component {
             self.addSubview(self.moreButtonBackgroundContainer)
             
             self.moreButton.addTarget(self, action: #selector(self.moreButtonPressed), for: .touchUpInside)
-            self.moreButton.highligthedChanged = { [weak self] highlighted in
+            self.moreButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }

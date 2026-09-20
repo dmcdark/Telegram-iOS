@@ -94,7 +94,7 @@ final class CallVideoNode: ASDisplayNode, PreviewVideoNode {
             self.addSubnode(self.videoPausedNode)
         }
         
-        self.videoView.setOnFirstFrameReceived { [weak self] aspectRatio in
+        self.videoView.setOnFirstFrameReceived { [weak self = self] aspectRatio in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -115,7 +115,7 @@ final class CallVideoNode: ASDisplayNode, PreviewVideoNode {
             }
         }
         
-        self.videoView.setOnOrientationUpdated { [weak self] orientation, aspect in
+        self.videoView.setOnOrientationUpdated { [weak self = self] orientation, aspect in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -128,7 +128,7 @@ final class CallVideoNode: ASDisplayNode, PreviewVideoNode {
             }
         }
         
-        self.videoView.setOnIsMirroredUpdated { [weak self] _ in
+        self.videoView.setOnIsMirroredUpdated { [weak self = self] _ in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -138,7 +138,7 @@ final class CallVideoNode: ASDisplayNode, PreviewVideoNode {
         }
         
         if assumeReadyAfterTimeout {
-            self.isReadyTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self] in
+            self.isReadyTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -195,7 +195,7 @@ final class CallVideoNode: ASDisplayNode, PreviewVideoNode {
         
         let transition: ContainedViewLayoutTransition = .animated(duration: 0.3, curve: .easeInOut)
         transition.updatePosition(layer: maskLayer, position: targetFrame.center)
-        transition.updateTransformScale(layer: maskLayer, scale: maxRadius * 2.0 / fromRect.width, completion: { [weak self] _ in
+        transition.updateTransformScale(layer: maskLayer, scale: maxRadius * 2.0 / fromRect.width, completion: { [weak self = self] _ in
             self?.layer.mask = nil
         })
     }

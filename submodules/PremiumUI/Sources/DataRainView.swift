@@ -87,7 +87,7 @@ public final class MatrixView: MTKView, MTKViewDelegate, PhoneDemoDecorationView
 
         self.framebufferOnly = true
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
             self?.tick()
         }
         self.displayLink?.isPaused = true
@@ -113,7 +113,7 @@ public final class MatrixView: MTKView, MTKViewDelegate, PhoneDemoDecorationView
         }
 
         let transition = ContainedViewLayoutTransition.animated(duration: 0.3, curve: .linear)
-        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.4 : 0.0, completion: { [weak self] finished in
+        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.4 : 0.0, completion: { [weak self = self] finished in
             if let strongSelf = self, finished && !visible {
                 strongSelf.displayLink?.isPaused = false
             }

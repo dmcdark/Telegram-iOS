@@ -35,7 +35,7 @@ final class LoadingEffectView: UIView {
         super.init(frame: .zero)
         
         self.layer.addSublayer(self.hierarchyTrackingLayer)
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let self, self.bounds.width != 0.0 else {
                 return
             }

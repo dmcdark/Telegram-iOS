@@ -29,7 +29,7 @@ final class NavigationOverlayContainer: ASDisplayNode {
         
         super.init()
         
-        self.controller.navigation_setDismiss({ [weak self] in
+        self.controller.navigation_setDismiss({ [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -47,7 +47,7 @@ final class NavigationOverlayContainer: ASDisplayNode {
         self.isReadyDisposable = (self.controller.ready.get()
         |> filter { $0 }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

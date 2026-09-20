@@ -60,13 +60,13 @@ private final class SortHeaderButton: HighlightableButtonNode {
         self.referenceNode.addSubnode(self.textNode)
         self.addSubnode(self.containerNode)
 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self, let _ = strongSelf.contextAction else {
                 return false
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -171,14 +171,14 @@ public class ContactsController: ViewController {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: PresentationResourcesRootController.navigationAddIcon(self.presentationData.theme), style: .plain, target: self, action: #selector(self.addPressed))
         self.navigationItem.rightBarButtonItem?.accessibilityLabel = self.presentationData.strings.Contacts_VoiceOver_AddContact
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.contactsNode.scrollToTop()
             }
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -210,7 +210,7 @@ public class ContactsController: ViewController {
                     return (false, sortOrder)
                 }
             })
-            |> deliverOnMainQueue).start(next: { [weak self] status, suppressedAndSortOrder in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status, suppressedAndSortOrder in
                 if let strongSelf = self {
                     let (suppressed, sortOrder) = suppressedAndSortOrder
                     strongSelf.tabBarItem.badgeValue = status != .allowed && !suppressed ? "!" : nil
@@ -268,7 +268,7 @@ public class ContactsController: ViewController {
                 return sortOrder
             }
         }
-        self.displayNode = ContactsControllerNode(context: self.context, sortOrder: sortOrderSignal |> distinctUntilChanged, present: { [weak self] c, a in
+        self.displayNode = ContactsControllerNode(context: self.context, sortOrder: sortOrderSignal |> distinctUntilChanged, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         }, controller: self)
         self._ready.set(combineLatest(queue: .mainQueue(),
@@ -281,7 +281,7 @@ public class ContactsController: ViewController {
         |> take(1)
         |> map { _ -> Bool in true })
         
-        let openPeer: (ContactListPeer, Bool) -> Void = { [weak self] peer, fromSearch in
+        let openPeer: (ContactListPeer, Bool) -> Void = { [weak self = self] peer, fromSearch in
             if let strongSelf = self {
                 switch peer {
                     case let .peer(peer, _, _):
@@ -291,12 +291,12 @@ public class ContactsController: ViewController {
                                 scrollToEndIfExists = true
                             }
                             
-                            strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .peer(peer), purposefulAction: { [weak self] in
+                            strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .peer(peer), purposefulAction: { [weak self = self] in
                                 if fromSearch {
                                     self?.deactivateSearch(animated: false)
                                     self?.switchToChatsController?()
                                 }
-                                }, scrollToEndIfExists: scrollToEndIfExists, options: [.removeOnMasterDetails], completion: { [weak self] _ in
+                                }, scrollToEndIfExists: scrollToEndIfExists, options: [.removeOnMasterDetails], completion: { [weak self = self] _ in
                                 if let strongSelf = self {
                                     strongSelf.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
                                 }
@@ -309,7 +309,7 @@ public class ContactsController: ViewController {
                             guard let strongSelf = self, let value = value else {
                                 return
                             }
-                            (strongSelf.navigationController as? NavigationController)?.pushViewController(strongSelf.context.sharedContext.makeDeviceContactInfoController(context: ShareControllerAppAccountContext(context: strongSelf.context), environment: ShareControllerAppEnvironment(sharedContext: strongSelf.context.sharedContext), subject: .vcard(nil, id, value), completed: nil, cancelled: nil), completion: { [weak self] in
+                            (strongSelf.navigationController as? NavigationController)?.pushViewController(strongSelf.context.sharedContext.makeDeviceContactInfoController(context: ShareControllerAppAccountContext(context: strongSelf.context), environment: ShareControllerAppEnvironment(sharedContext: strongSelf.context.sharedContext), subject: .vcard(nil, id, value), completed: nil, cancelled: nil), completion: { [weak self = self] in
                                 if let strongSelf = self {
                                     strongSelf.contactsNode.contactListNode.listNode.clearHighlightAnimated(true)
                                 }
@@ -319,7 +319,7 @@ public class ContactsController: ViewController {
             }
         }
         
-        self.contactsNode.requestDeactivateSearch = { [weak self] in
+        self.contactsNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch(animated: true)
         }
         
@@ -327,13 +327,13 @@ public class ContactsController: ViewController {
             openPeer(peer, true)
         }
         
-        self.contactsNode.contactListNode.openPrivacyPolicy = { [weak self] in
+        self.contactsNode.contactListNode.openPrivacyPolicy = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: "https://telegram.org/privacy", forceExternal: true, presentationData: strongSelf.presentationData, navigationController: strongSelf.navigationController as? NavigationController, dismissInput: {})
             }
         }
         
-        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self] in
+        self.contactsNode.contactListNode.suppressPermissionWarning = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.presentContactsWarningSuppression(context: strongSelf.context, present: { c, a in
                     strongSelf.present(c, in: .window(.root), with: a)
@@ -341,11 +341,11 @@ public class ContactsController: ViewController {
             }
         }
         
-        self.contactsNode.contactListNode.activateSearch = { [weak self] in
+        self.contactsNode.contactListNode.activateSearch = { [weak self = self] in
             self?.activateSearch(isFromTabBar: false)
         }
         
-        self.contactsNode.contactListNode.openPeer = { [weak self] peer, _, _, _ in
+        self.contactsNode.contactListNode.openPeer = { [weak self = self] peer, _, _, _ in
             guard let self else {
                 return
             }
@@ -362,12 +362,12 @@ public class ContactsController: ViewController {
             }
         }
         
-        self.contactsNode.requestAddContact = { [weak self] phoneNumber in
+        self.contactsNode.requestAddContact = { [weak self = self] phoneNumber in
             if let strongSelf = self {
                 strongSelf.view.endEditing(true)
-                strongSelf.context.sharedContext.openAddContact(context: strongSelf.context, peer: nil, firstName: "", lastName: "", phoneNumber: phoneNumber, label: defaultContactLabel, present: { [weak self] controller, arguments in
+                strongSelf.context.sharedContext.openAddContact(context: strongSelf.context, peer: nil, firstName: "", lastName: "", phoneNumber: phoneNumber, label: defaultContactLabel, present: { [weak self = self] controller, arguments in
                     self?.present(controller, in: .window(.root), with: arguments)
-                }, pushController: { [weak self] controller in
+                }, pushController: { [weak self = self] controller in
                     (self?.navigationController as? NavigationController)?.pushViewController(controller)
                 }, completed: {
                     self?.deactivateSearch(animated: false)
@@ -375,7 +375,7 @@ public class ContactsController: ViewController {
             }
         }
         
-        self.contactsNode.openInvite = { [weak self] in
+        self.contactsNode.openInvite = { [weak self = self] in
             let _ = (DeviceAccess.authorizationStatus(subject: .contacts)
             |> take(1)
             |> deliverOnMainQueue).start(next: { value in
@@ -402,7 +402,7 @@ public class ContactsController: ViewController {
             })
         }
         
-        self.contactsNode.openQrScan = { [weak self] in
+        self.contactsNode.openQrScan = { [weak self = self] in
             if let strongSelf = self {
                 let context = strongSelf.context
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
@@ -411,7 +411,7 @@ public class ContactsController: ViewController {
                     context.sharedContext.mainWindow?.present(c, on: .root)
                 }, openSettings: {
                     context.sharedContext.applicationBindings.openSettings()
-                }, { [weak self] granted in
+                }, { [weak self = self] granted in
                     guard let strongSelf = self else {
                         return
                     }
@@ -446,13 +446,13 @@ public class ContactsController: ViewController {
             }
         }
         
-        self.sortButton.contextAction = { [weak self] sourceNode, gesture in
+        self.sortButton.contextAction = { [weak self = self] sourceNode, gesture in
             self?.presentSortMenu(sourceView: sourceNode.view, gesture: gesture)
         }
         
         let previousToolbarValue = Atomic<Toolbar?>(value: nil)
         self.selectionDisposable = (self.contactsNode.contactListNode.selectionStateSignal
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let self, let layout = self.validLayout else {
                 return
             }
@@ -528,7 +528,7 @@ public class ContactsController: ViewController {
         
         self.contactsNode.containerLayoutUpdated(layout, navigationBarHeight: self.cleanNavigationHeight, actualNavigationBarHeight: self.navigationLayout(layout: layout).navigationFrame.maxY, transition: transition)
         
-        self.contactsNode.openStories = { [weak self] peer, sourceNode in
+        self.contactsNode.openStories = { [weak self = self] peer, sourceNode in
             guard let self else {
                 return
             }
@@ -566,7 +566,7 @@ public class ContactsController: ViewController {
     }
     
     func presentSortMenu(sourceView: UIView, gesture: ContextGesture?) {
-        let updateSortOrder: (ContactsSortOrder) -> Void = { [weak self] sortOrder in
+        let updateSortOrder: (ContactsSortOrder) -> Void = { [weak self = self] sortOrder in
             if let strongSelf = self {
                 strongSelf.sortOrderPromise.set(.single(sortOrder))
                 let _ = updateContactSettingsInteractively(accountManager: strongSelf.context.sharedContext.accountManager, { current -> ContactSynchronizationSettings in
@@ -651,7 +651,7 @@ public class ContactsController: ViewController {
             
             let text = self.presentationData.strings.ContactList_DeletedContacts(Int32(peerIds.count))
             
-            self.present(UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: text), text: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] value in
+            self.present(UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: text), text: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] value in
                 guard let self else {
                     return false
                 }
@@ -710,7 +710,7 @@ public class ContactsController: ViewController {
     @objc func addPressed() {
         let _ = (DeviceAccess.authorizationStatus(subject: .contacts)
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let strongSelf = self else {
                 return
             }
@@ -725,7 +725,7 @@ public class ContactsController: ViewController {
                             lastName: nil,
                             phoneNumber: nil,
                             shareViaException: false,
-                            completion: { [weak self] peer, stableId, contactData in
+                            completion: { [weak self = self] peer, stableId, contactData in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -763,8 +763,8 @@ public class ContactsController: ViewController {
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Contacts_AddContact, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddUser"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] c, f in
-            c?.dismiss(completion: { [weak self] in
+        }, action: { [weak self = self] c, f in
+            c?.dismiss(completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

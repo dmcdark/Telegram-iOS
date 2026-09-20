@@ -582,7 +582,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 content.addToRecentlyVisited()
             }
             
-            self.performAction.connect { [weak self] action in
+            self.performAction.connect { [weak self = self] action in
                 guard let self, let content = self.content.last, let url = self.contentState?.url else {
                     return
                 }
@@ -655,9 +655,9 @@ public class BrowserScreen: ViewController, MinimizableController {
                     } else {
                         subject = .url(url)
                     }
-                    let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: subject, actionCompleted: { [weak self] in
+                    let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: subject, actionCompleted: { [weak self = self] in
                         self?.controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .window(.root))
-                    }, completed: { [weak self] peerIds in
+                    }, completed: { [weak self = self] peerIds in
                         guard let self else {
                             return
                         }
@@ -666,7 +666,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                                 peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                             )
                         )
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                             guard let self else {
                                 return
                             }
@@ -696,10 +696,10 @@ public class BrowserScreen: ViewController, MinimizableController {
                                 }
                             }
 
-                            self.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+                            self.controller?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                                 if savedMessages, let self, action == .info {
                                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                         guard let self, let peer else {
                                             return
                                         }
@@ -747,7 +747,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                         content.setSearch(nil, completion: nil)
                     }
                 case let .updateSearchQuery(query):
-                    content.setSearch(query, completion: { [weak self] count in
+                    content.setSearch(query, completion: { [weak self = self] count in
                         self?.updatePresentationState({ state in
                             var updatedState = state
                             updatedState.searchResultIndex = 0
@@ -758,7 +758,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                     })
                 case .scrollToPreviousSearchResult:
                     self.view.window?.endEditing(true)
-                    content.scrollToPreviousSearchResult(completion: { [weak self] index, count in
+                    content.scrollToPreviousSearchResult(completion: { [weak self = self] index, count in
                         self?.updatePresentationState({ state in
                             var updatedState = state
                             updatedState.searchResultIndex = index
@@ -768,7 +768,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                     })
                 case .scrollToNextSearchResult:
                     self.view.window?.endEditing(true)
-                    content.scrollToNextSearchResult(completion: { [weak self] index, count in
+                    content.scrollToNextSearchResult(completion: { [weak self = self] index, count in
                         self?.updatePresentationState({ state in
                             var updatedState = state
                             updatedState.searchResultIndex = index
@@ -878,7 +878,7 @@ public class BrowserScreen: ViewController, MinimizableController {
             }
             
             self.presentationDataDisposable = (controller.context.sharedContext.presentationData
-            |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
                 guard let self else {
                     return
                 }
@@ -912,7 +912,7 @@ public class BrowserScreen: ViewController, MinimizableController {
             switch content {
             case let .webPage(url):
                 let webContent = BrowserWebContent(context: self.context, presentationData: self.presentationData, url: url, preferredConfiguration: self.controller?.preferredConfiguration)
-                webContent.cancelInteractiveTransitionGestures = { [weak self] in
+                webContent.cancelInteractiveTransitionGestures = { [weak self = self] in
                     if let self, let view = self.controller?.view {
                         cancelInteractiveTransitionGestures(view: view)
                     }
@@ -921,7 +921,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 self.controller?.preferredConfiguration = nil
             case let .instantPage(webPage, anchor, sourceLocation, preloadedResouces):
                 let instantPageContent = BrowserInstantPageContent(context: self.context, presentationData: self.presentationData, webPage: webPage, anchor: anchor, url: webPage.content.url ?? "", sourceLocation: sourceLocation, preloadedResouces: preloadedResouces, originalContent: additionalContent)
-                instantPageContent.openPeer = { [weak self] peer in
+                instantPageContent.openPeer = { [weak self = self] peer in
                     guard let self else {
                         return
                     }
@@ -953,7 +953,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                     browserContent = BrowserDocumentContent(context: self.context, presentationData: self.presentationData, file: file)
                 }
             }
-            browserContent.pushContent = { [weak self] content, additionalContent in
+            browserContent.pushContent = { [weak self = self] content, additionalContent in
                 guard let self else {
                     return
                 }
@@ -965,36 +965,36 @@ public class BrowserScreen: ViewController, MinimizableController {
                 }
                 self.pushContent(content, additionalContent: additionalContent, transition: transition)
             }
-            browserContent.openAppUrl = { [weak self] url in
+            browserContent.openAppUrl = { [weak self = self] url in
                 guard let self else {
                     return
                 }
-                self.context.sharedContext.openExternalUrl(context: self.context, urlContext: .generic, url: url, forceExternal: false, presentationData: self.presentationData, navigationController: self.controller?.navigationController as? NavigationController, dismissInput: { [weak self] in
+                self.context.sharedContext.openExternalUrl(context: self.context, urlContext: .generic, url: url, forceExternal: false, presentationData: self.presentationData, navigationController: self.controller?.navigationController as? NavigationController, dismissInput: { [weak self = self] in
                     self?.view.window?.endEditing(true)
                 })
             }
-            browserContent.present = { [weak self] c, a in
+            browserContent.present = { [weak self = self] c, a in
                 guard let self, let controller = self.controller else {
                     return
                 }
                 controller.present(c, in: .window(.root), with: a)
             }
-            browserContent.presentInGlobalOverlay = { [weak self] c in
+            browserContent.presentInGlobalOverlay = { [weak self = self] c in
                 guard let self, let controller = self.controller else {
                     return
                 }
                 controller.presentInGlobalOverlay(c)
             }
-            browserContent.getNavigationController = { [weak self] in
+            browserContent.getNavigationController = { [weak self = self] in
                 return self?.controller?.navigationController as? NavigationController
             }
-            browserContent.minimize = { [weak self] in
+            browserContent.minimize = { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.minimize()
             }
-            browserContent.close = { [weak self] in
+            browserContent.close = { [weak self = self] in
                 guard let self, let controller = self.controller else {
                     return
                 }
@@ -1061,10 +1061,10 @@ public class BrowserScreen: ViewController, MinimizableController {
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
             
             let lastController = self.controller?.navigationController?.viewControllers.last as? ViewController
-            lastController?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: true, text: presentationData.strings.WebBrowser_LinkAddedToBookmarks), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] action in
+            lastController?.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: true, text: presentationData.strings.WebBrowser_LinkAddedToBookmarks), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] action in
                 if let self, action == .info {
                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                        |> deliverOnMainQueue).start(next: { [weak self] peer in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let self, let peer else {
                             return
                         }
@@ -1102,7 +1102,7 @@ public class BrowserScreen: ViewController, MinimizableController {
             }
             
             self.contentStateDisposable.set((content.state
-            |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -1130,7 +1130,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 }
             }))
                         
-            content.onScrollingUpdate = { [weak self] update in
+            content.onScrollingUpdate = { [weak self = self] update in
                 self?.onContentScrollingUpdate(update)
             }
         }
@@ -1141,7 +1141,7 @@ public class BrowserScreen: ViewController, MinimizableController {
             }
             navigationController.minimizeViewController(controller, topEdgeOffset: topEdgeOffset, damping: damping, velocity: initialVelocity, beforeMaximize: { _, completion in
                 completion()
-            }, setupContainer: { [weak self] current in
+            }, setupContainer: { [weak self = self] current in
                 let minimizedContainer: MinimizedContainerImpl?
                 if let current = current as? MinimizedContainerImpl {
                     minimizedContainer = current
@@ -1158,11 +1158,11 @@ public class BrowserScreen: ViewController, MinimizableController {
             guard let url = self.contentState?.url else {
                 return
             }
-            let controller = BrowserBookmarksScreen(context: self.context, url: url, openUrl: { [weak self] url in
+            let controller = BrowserBookmarksScreen(context: self.context, url: url, openUrl: { [weak self = self] url in
                 if let self {
                     self.performAction.invoke(.navigateTo(url, true))
                 }
-            }, addBookmark: { [weak self] in
+            }, addBookmark: { [weak self = self] in
                 self?.addBookmark(url, showArrow: false)
             })
             self.controller?.push(controller)
@@ -1200,7 +1200,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 settings,
                 content.state
             )
-            |> map { [weak self] settings, contentState -> ContextController.Items in
+            |> map { [weak self = self] settings, contentState -> ContextController.Items in
                 guard let self, let layout = self.validLayout?.0 else {
                     return ContextController.Items(content: .list([]))
                 }
@@ -1208,14 +1208,14 @@ public class BrowserScreen: ViewController, MinimizableController {
                 let performAction = self.performAction
                 let fontItem = BrowserFontSizeContextMenuItem(
                     value: self.presentationState.fontState.size,
-                    decrease: { [weak self] in
+                    decrease: { [weak self = self] in
                         performAction.invoke(.decreaseFontSize)
                         if let self {
                             return self.presentationState.fontState.size
                         } else {
                             return 100
                         }
-                    }, increase: { [weak self] in
+                    }, increase: { [weak self = self] in
                         performAction.invoke(.increaseFontSize)
                         if let self {
                             return self.presentationState.fontState.size
@@ -1283,7 +1283,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 
                 if toolbarMode != .markdown && [.webPage, .instantPage].contains(contentState.contentType) {
                     if !layout.metrics.isTablet && canOpenIn {
-                        items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.InstantPage_OpenInBrowser(openInTitle).string, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: theme.contextMenu.primaryColor) }, action: { [weak self] (controller, action) in
+                        items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.InstantPage_OpenInBrowser(openInTitle).string, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Browser"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] (controller, action) in
                             if let self {
                                 self.context.sharedContext.applicationBindings.openUrl(openInUrl)
                             }
@@ -1431,14 +1431,14 @@ public class BrowserScreen: ViewController, MinimizableController {
             switch action {
             case .navigateBack:
                 for item in contentState.backList {
-                    items.append(.action(ContextMenuActionItem(text: item.title, textLayout: .secondLineWithValue(item.url), icon: { _ in return nil }, action: { [weak self] (_, action) in
+                    items.append(.action(ContextMenuActionItem(text: item.title, textLayout: .secondLineWithValue(item.url), icon: { _ in return nil }, action: { [weak self = self] (_, action) in
                         self?.navigateTo(item)
                         action(.default)
                     })))
                 }
             case .navigateForward:
                 for item in contentState.forwardList {
-                    items.append(.action(ContextMenuActionItem(text: item.title, textLayout: .secondLineWithValue(item.url), icon: { _ in return nil }, action: { [weak self] (_, action) in
+                    items.append(.action(ContextMenuActionItem(text: item.title, textLayout: .secondLineWithValue(item.url), icon: { _ in return nil }, action: { [weak self = self] (_, action) in
                         self?.navigateTo(item)
                         action(.default)
                     })))
@@ -1484,7 +1484,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -1509,7 +1509,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                         toolbarMode: self.toolbarMode,
                         canShare: canShare,
                         performAction: self.performAction,
-                        performHoldAction: { [weak self] view, gesture, action in
+                        performHoldAction: { [weak self = self] view, gesture, action in
                             if let self {
                                 self.performHoldAction(view: view, gesture: gesture, action: action)
                             }
@@ -1557,7 +1557,7 @@ public class BrowserScreen: ViewController, MinimizableController {
                 component: AnyComponent(
                     NavigationStackComponent(
                         items: items,
-                        requestPop: { [weak self] in
+                        requestPop: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1658,7 +1658,7 @@ public class BrowserScreen: ViewController, MinimizableController {
         
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .allButUpsideDown)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             self?.node.content.last?.scrollToTop()
         }
     }

@@ -1117,7 +1117,7 @@ private final class ChatListFilterPresetController: ItemListController {
             )
         )
         self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -1140,7 +1140,7 @@ private final class ChatListFilterPresetController: ItemListController {
             },
             updateChoosingSticker: { _ in
             },
-            switchToTextInput: { [weak self] in
+            switchToTextInput: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1149,7 +1149,7 @@ private final class ChatListFilterPresetController: ItemListController {
             },
             dismissTextInput: {
             },
-            insertText: { [weak self] text in
+            insertText: { [weak self = self] text in
                 guard let self else {
                     return
                 }
@@ -1164,7 +1164,7 @@ private final class ChatListFilterPresetController: ItemListController {
                     textFieldView.insertText(text: text)
                 }
             },
-            backwardsDeleteText: { [weak self] in
+            backwardsDeleteText: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1180,19 +1180,19 @@ private final class ChatListFilterPresetController: ItemListController {
             },
             openStickerEditor: {
             },
-            presentController: { [weak self] c, a in
+            presentController: { [weak self = self] c, a in
                 guard let self else {
                     return
                 }
                 self.present(c, in: .window(.root), with: a)
             },
-            presentGlobalOverlayController: { [weak self] c, a in
+            presentGlobalOverlayController: { [weak self = self] c, a in
                 guard let self else {
                     return
                 }
                 self.presentInGlobalOverlay(c, with: a)
             },
-            getNavigationController: { [weak self] () -> NavigationController? in
+            getNavigationController: { [weak self = self] () -> NavigationController? in
                 guard let self else {
                     return nil
                 }
@@ -1202,7 +1202,7 @@ private final class ChatListFilterPresetController: ItemListController {
                 }
                 return nil
             },
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 guard let self else {
                     return
                 }
@@ -1337,13 +1337,13 @@ private final class ChatListFilterPresetController: ItemListController {
                         }
                     }
                 })
-                transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self] _ in
+                transition.setFrame(layer: self.inputMediaNodeBackground, frame: targetFrame, completion: { [weak self = self] _ in
                     Queue.mainQueue().after(0.3) {
                         guard let self else {
                             return
                         }
                         if self.currentInputMode == .keyboard {
-                            self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self] finished in
+                            self.inputMediaNodeBackground.animateAlpha(from: 1.0, to: 0.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self = self] finished in
                                 guard let self else {
                                     return
                                 }

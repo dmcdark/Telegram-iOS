@@ -730,7 +730,7 @@ final class GiftOptionsScreenComponent: Component {
                                         )
                                     ),
                                     effectAlignment: .center,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -1012,7 +1012,7 @@ final class GiftOptionsScreenComponent: Component {
             
             if self.component == nil {
                 self.starsStateDisposable = (component.starsContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -1083,7 +1083,7 @@ final class GiftOptionsScreenComponent: Component {
                         hasIdleAnimations: true,
                         color: UIColor(rgb: 0xf9b004),
                         hasLargeParticles: true,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let controller = controller(), let navigationController = controller.navigationController as? NavigationController else {
                                 return
                             }
@@ -1331,7 +1331,7 @@ final class GiftOptionsScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -1461,7 +1461,7 @@ final class GiftOptionsScreenComponent: Component {
                                         giftItemComponent
                                     ),
                                     effectAlignment: .center,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         if let self, let component = self.component {
                                             if let controller = controller() as? GiftOptionsScreen {
                                                 let mainController: ViewController
@@ -1580,7 +1580,7 @@ final class GiftOptionsScreenComponent: Component {
                                     return nil
                                 }
                             },
-                            tapAction: { [weak self] _, _ in
+                            tapAction: { [weak self = self] _, _ in
                                 guard let self, let component = self.component, let environment = self.environment else {
                                     return
                                 }
@@ -1659,7 +1659,7 @@ final class GiftOptionsScreenComponent: Component {
                         theme: theme,
                         items: tabSelectorItems,
                         selectedId: AnyHashable(self.starsFilter.rawValue),
-                        setSelectedId: { [weak self] id in
+                        setSelectedId: { [weak self = self] id in
                             guard let self, let idValue = id.base as? Int64 else {
                                 return
                             }
@@ -1785,7 +1785,7 @@ final class GiftOptionsScreenComponent: Component {
                 availableProducts,
                 context.engine.payments.cachedStarGifts(),
                 self.starGiftsContext.state
-            ).start(next: { [weak self] peer, disallowedGifts, availableProducts, starGifts, profileGiftsState in
+            ).start(next: { [weak self = self] peer, disallowedGifts, availableProducts, starGifts, profileGiftsState in
                 guard let self else {
                     return
                 }
@@ -1956,7 +1956,7 @@ open class GiftOptionsScreen: ViewControllerComponentContainer, GiftOptionsScree
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.context.sharedContext.currentPresentationData.with { $0 }.strings.Common_Back, style: .plain, target: nil, action: nil)
         
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? GiftOptionsScreenComponent.View else {
                 return
             }

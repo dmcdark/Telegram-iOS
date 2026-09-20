@@ -75,7 +75,7 @@ final class TextProcessingRichContentView: UIView {
 
         self.addSubview(self.pageView)
 
-        self.pageView.detailsTapped = { [weak self] index in
+        self.pageView.detailsTapped = { [weak self = self] index in
             guard let self else {
                 return
             }

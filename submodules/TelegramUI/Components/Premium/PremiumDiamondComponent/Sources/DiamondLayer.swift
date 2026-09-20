@@ -106,11 +106,11 @@ final class DiamondLayer: MetalEngineSubjectLayer, MetalEngineSubject {
         
         self.isOpaque = false
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
-            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.displayLinkSubscription = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -119,7 +119,7 @@ final class DiamondLayer: MetalEngineSubjectLayer, MetalEngineSubject {
             }
         }
         
-        self.didExitHierarchy = { [weak self] in
+        self.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }

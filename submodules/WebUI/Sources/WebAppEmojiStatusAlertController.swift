@@ -175,7 +175,7 @@ private final class AlertEmojiStatusComponent: Component {
             }
             
             if self.timer == nil {
-                self.timer = SwiftSignalKit.Timer(timeout: 2.5, repeat: true, completion: { [weak self] in
+                self.timer = SwiftSignalKit.Timer(timeout: 2.5, repeat: true, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }

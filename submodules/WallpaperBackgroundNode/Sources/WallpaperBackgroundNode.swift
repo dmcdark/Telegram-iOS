@@ -1357,7 +1357,7 @@ public final class WallpaperBackgroundNodeImpl: ASDisplayNode, WallpaperBackgrou
                     }
                 } else {
                     self.wallpaperDisposable.set((chatControllerBackgroundImageSignal(wallpaper: wallpaper, mediaBox: self.context.sharedContext.accountManager.mediaBox, accountMediaBox: self.context.account.postbox.mediaBox)
-                    |> deliverOnMainQueue).start(next: { [weak self] image in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] image in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1558,7 +1558,7 @@ public final class WallpaperBackgroundNodeImpl: ASDisplayNode, WallpaperBackgrou
                             }
                         }
                     }
-                    self.patternImageDisposable.set(combineLatest(queue: Queue.mainQueue(), signal, symbolImage).start(next: { [weak self] generator, symbolImage in
+                    self.patternImageDisposable.set(combineLatest(queue: Queue.mainQueue(), signal, symbolImage).start(next: { [weak self = self] generator, symbolImage in
                         guard let self else {
                             return
                         }
@@ -1628,7 +1628,7 @@ public final class WallpaperBackgroundNodeImpl: ASDisplayNode, WallpaperBackgrou
                         }
                     } else {
                         self.isGeneratingPatternImage = true
-                        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+                        DispatchQueue.global(qos: .userInteractive).async { [weak self = self] in
                             let image = validPatternImage.generate(patternArguments)?.generateImage()
                             Queue.mainQueue().async {
                                 guard let strongSelf = self else {
@@ -1792,7 +1792,7 @@ public final class WallpaperBackgroundNodeImpl: ASDisplayNode, WallpaperBackgrou
             return
         }
         self.isAnimating = true
-        self.gradientBackgroundNode?.animateEvent(transition: transition, extendAnimation: extendAnimation, backwards: false, completion: { [weak self] in
+        self.gradientBackgroundNode?.animateEvent(transition: transition, extendAnimation: extendAnimation, backwards: false, completion: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.isAnimating = false
                 if strongSelf.isLooping && strongSelf.validLayout != nil {

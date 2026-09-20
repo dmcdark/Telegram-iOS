@@ -93,7 +93,7 @@ final class PictureInPictureVideoControlsNode: ASDisplayNode {
         self.closeButton.addTarget(self, action: #selector(self.closePressed), for: .touchUpInside)
         
         self.statusDisposable = (self.statusValuePromise.get()
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let strongSelf = self {
                     strongSelf.statusValue = status
                 }

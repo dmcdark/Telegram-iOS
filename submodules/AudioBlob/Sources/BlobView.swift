@@ -115,7 +115,7 @@ public final class VoiceBlobView: UIView, TGModernConversationInputMicButtonDeco
         self.addSubnode(self.mediumBlob)
         self.addSubnode(self.smallBlob)
         
-        displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let strongSelf = self else { return }
             
             strongSelf.presentationAudioLevel = strongSelf.presentationAudioLevel * 0.9 + strongSelf.audioLevel * 0.1
@@ -125,7 +125,7 @@ public final class VoiceBlobView: UIView, TGModernConversationInputMicButtonDeco
             strongSelf.bigBlob.level = strongSelf.presentationAudioLevel
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
             }
@@ -350,7 +350,7 @@ final class BlobNode: ASDisplayNode {
             self.view.addSubview(backgroundView)
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isCurrentlyInHierarchy = value
             }
@@ -403,7 +403,7 @@ final class BlobNode: ASDisplayNode {
         animation.toValue = nextPath
         animation.isRemovedOnCompletion = false
         animation.fillMode = .forwards
-        animation.completion = { [weak self] finished in
+        animation.completion = { [weak self = self] finished in
             if finished {
                 self?.animateToNewShape()
             }

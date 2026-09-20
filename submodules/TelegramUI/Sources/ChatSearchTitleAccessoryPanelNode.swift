@@ -99,7 +99,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
             self.addSubview(self.containerButton)
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -259,7 +259,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
             self.containerButton.addSubview(self.background)
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let topScale: CGFloat = (self.bounds.width - 1.0) / self.bounds.width
                     let maxScale: CGFloat = (self.bounds.width + 1.0) / self.bounds.width
@@ -273,7 +273,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                         let transition: ContainedViewLayoutTransition = .immediate
                         transition.updateTransformScale(layer: self.layer, scale: 1.0)
                         
-                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        self.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -284,7 +284,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                 }
             }
             
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self else {
                     return
                 }
@@ -501,7 +501,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
             context.engine.stickers.savedMessageTagData(),
             tagsAndFiles
         )
-        |> deliverOnMainQueue).start(next: { [weak self] availableReactions, savedMessageTags, tagsAndFiles in
+        |> deliverOnMainQueue).start(next: { [weak self = self] availableReactions, savedMessageTags, tagsAndFiles in
             guard let self else {
                 return
             }
@@ -587,7 +587,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                 promoView = current
             } else {
                 itemTransition = .immediate
-                promoView = PromoView(action: { [weak self] in
+                promoView = PromoView(action: { [weak self = self] in
                     guard let self, let interfaceInteraction = self.interfaceInteraction else {
                         return
                     }
@@ -631,7 +631,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                 itemTransition = .immediate
                 animateIn = true
                 let reaction = item.reaction
-                itemView = ItemView(context: self.context, action: { [weak self] in
+                itemView = ItemView(context: self.context, action: { [weak self = self] in
                     guard let self, let params = self.params else {
                         return
                     }
@@ -656,7 +656,7 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                     self.interfaceInteraction?.updateHistoryFilter({ filter in
                         return updatedFilter
                     })
-                }, contextGesture: { [weak self] gesture, sourceNode in
+                }, contextGesture: { [weak self = self] gesture, sourceNode in
                     guard let self, let params = self.params, let interfaceInteraction = self.interfaceInteraction, let chatController = interfaceInteraction.chatController() else {
                         gesture.cancel()
                         return
@@ -676,13 +676,13 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
                     let presentationData = self.context.sharedContext.currentPresentationData.with({ $0 })
                     items.append(.action(ContextMenuActionItem(text: item.title != nil ? presentationData.strings.Chat_ReactionContextMenu_EditTagLabel : presentationData.strings.Chat_ReactionContextMenu_SetTagLabel, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/TagEditName"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] c, a in
+                    }, action: { [weak self = self] c, a in
                         guard let self else {
                             a(.default)
                             return
                         }
                         
-                        c?.dismiss(completion: { [weak self] in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self, let item = self.items.first(where: { $0.reaction == reaction }) else {
                                 return
                             }
@@ -783,12 +783,12 @@ final class ChatSearchTitleAccessoryPanelNode: ChatTitleAccessoryPanelNode, Chat
             reactionFile
         )
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] savedMessageTags, reactionFile in
+        |> deliverOnMainQueue).start(next: { [weak self = self] savedMessageTags, reactionFile in
             guard let self, let reactionFile else {
                 return
             }
             
-            let promptController = savedTagNameAlertController(context: self.context, updatedPresentationData: nil, text: optionTitle, subtext: presentationData.strings.Chat_EditTagTitle_Text, value: savedMessageTags?.tags.first(where: { $0.reaction == reaction })?.title ?? "", reaction: reaction, file: reactionFile, characterLimit: 12, apply: { [weak self] value in
+            let promptController = savedTagNameAlertController(context: self.context, updatedPresentationData: nil, text: optionTitle, subtext: presentationData.strings.Chat_EditTagTitle_Text, value: savedMessageTags?.tags.first(where: { $0.reaction == reaction })?.title ?? "", reaction: reaction, file: reactionFile, characterLimit: 12, apply: { [weak self = self] value in
                 guard let self else {
                     return
                 }

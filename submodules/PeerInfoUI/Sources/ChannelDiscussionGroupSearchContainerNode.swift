@@ -194,7 +194,7 @@ final class ChannelDiscussionGroupSearchContainerNode: SearchDisplayControllerCo
         let previousSearchItems = Atomic<[ChannelDiscussionGroupSearchEntry]?>(value: nil)
         
         self.searchDisposable.set((combineLatest(foundItems, self.presentationDataPromise.get())
-        |> deliverOnMainQueue).start(next: { [weak self] entries, presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entries, presentationData in
             if let strongSelf = self {
                 let previousEntries = previousSearchItems.swap(entries)
                 let firstTime = previousEntries == nil
@@ -204,7 +204,7 @@ final class ChannelDiscussionGroupSearchContainerNode: SearchDisplayControllerCo
         }))
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -217,7 +217,7 @@ final class ChannelDiscussionGroupSearchContainerNode: SearchDisplayControllerCo
             }
         })
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -264,7 +264,7 @@ final class ChannelDiscussionGroupSearchContainerNode: SearchDisplayControllerCo
             options.insert(.PreferSynchronousResourceLoading)
             
             let isSearching = transition.isSearching
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 self?.listNode.isHidden = !isSearching
                 self?.dimNode.isHidden = isSearching
             })

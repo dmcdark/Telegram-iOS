@@ -127,7 +127,7 @@ public final class PremiumGradientBackgroundComponent: Component {
                 animation.fromValue = previousValue
                 animation.toValue = newValue
                 
-                CATransaction.setCompletionBlock { [weak self] in
+                CATransaction.setCompletionBlock { [weak self = self] in
                     self?.setupGradientAnimations()
                 }
                 
@@ -367,7 +367,7 @@ final class DemoPagerComponent: Component {
         func update(component: DemoPagerComponent, availableSize: CGSize, transition: ComponentTransition) -> CGSize {
             var validIds: [AnyHashable] = []
             
-            component.nextAction?.connect { [weak self] in
+            component.nextAction?.connect { [weak self = self] in
                 if let self {
                     var nextContentOffset = self.scrollView.contentOffset
                     nextContentOffset.x += self.scrollView.frame.width
@@ -637,7 +637,7 @@ private final class DemoSheetContent: CombinedComponent {
                 } else {
                     return ([], [], nil, nil)
                 }
-            }).start(next: { [weak self] reactions, stickers, isPremium, promoConfiguration in
+            }).start(next: { [weak self = self] reactions, stickers, isPremium, promoConfiguration in
                 guard let strongSelf = self else {
                     return
                 }

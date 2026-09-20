@@ -85,7 +85,7 @@ final class QuickReplyEmptyStateComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

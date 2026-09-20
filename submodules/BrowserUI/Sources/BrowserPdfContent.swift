@@ -113,7 +113,7 @@ final class BrowserPdfContent: UIView, BrowserContent, UIScrollViewDelegate, PDF
         
         self.startPageIndicatorTimer()
         
-        self.pdfView.interactiveTransitionGestureRecognizerTest = { [weak self] point in
+        self.pdfView.interactiveTransitionGestureRecognizerTest = { [weak self = self] point in
             if let self {
                 if let result = self.pdfView.hitTest(point, with: nil), let scrollView = findScrollView(view: result), scrollView.isDescendant(of: self.pdfView) {
                     if scrollView.contentSize.width > scrollView.frame.width, scrollView.contentOffset.x > -scrollView.contentInset.left {
@@ -160,7 +160,7 @@ final class BrowserPdfContent: UIView, BrowserContent, UIScrollViewDelegate, PDF
     func startPageIndicatorTimer() {
         self.pageTimer?.invalidate()
         
-        self.pageTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self] in
+        self.pageTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: false, completion: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -547,7 +547,7 @@ final class BrowserPdfContent: UIView, BrowserContent, UIScrollViewDelegate, PDF
     
     private func share(url: String) {
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self] in
+        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .url(url), actionCompleted: { [weak self = self] in
             self?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
         }))
         self.present(shareController, nil)

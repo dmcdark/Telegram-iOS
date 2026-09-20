@@ -69,7 +69,7 @@ private final class FdReadConnection {
         self.didRead = didRead
 
         self.channel = DispatchSource.makeReadSource(fileDescriptor: fd, queue: queue.queue)
-        self.channel.setEventHandler(handler: { [weak self] in
+        self.channel.setEventHandler(handler: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -145,7 +145,7 @@ private final class FdWriteConnection {
         self.buffer = malloc(self.bufferSize)
 
         self.channel = DispatchSource.makeWriteSource(fileDescriptor: fd, queue: queue.queue)
-        self.channel.setEventHandler(handler: { [weak self] in
+        self.channel.setEventHandler(handler: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -417,7 +417,7 @@ public final class IpcGroupCallBufferAppContext {
             audioDataPipe.putNext(data)
         })
 
-        let framePollTimer = SwiftSignalKit.Timer(timeout: 1.0 / 30.0, repeat: true, completion: { [weak self] in
+        let framePollTimer = SwiftSignalKit.Timer(timeout: 1.0 / 30.0, repeat: true, completion: { [weak self = self] in
             guard let strongSelf = self, let mappedFile = strongSelf.mappedFile else {
                 return
             }
@@ -435,13 +435,13 @@ public final class IpcGroupCallBufferAppContext {
 
         self.updateCallIsActive()
 
-        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateCallIsActive()
         }, queue: .mainQueue())
         self.callActiveInfoTimer = callActiveInfoTimer
         callActiveInfoTimer.start()
 
-        let isActiveCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let isActiveCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateKeepaliveInfo()
         }, queue: .mainQueue())
         self.isActiveCheckTimer = isActiveCheckTimer
@@ -542,13 +542,13 @@ public final class IpcGroupCallBufferBroadcastContext {
 
         self.client = NamedPipeWriter(path: broadcastAppSocketPath(basePath: basePath))
 
-        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateCallIsActive()
         }, queue: .mainQueue())
         self.callActiveInfoTimer = callActiveInfoTimer
         callActiveInfoTimer.start()
         
-        let screencastCutoffTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let screencastCutoffTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateScreencastCutoff()
         }, queue: .mainQueue())
         self.screencastCutoffTimer = screencastCutoffTimer
@@ -618,7 +618,7 @@ public final class IpcGroupCallBufferBroadcastContext {
 
             self.writeKeepaliveInfo()
 
-            let keepaliveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            let keepaliveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 self?.writeKeepaliveInfo()
             }, queue: .mainQueue())
             self.keepaliveInfoTimer = keepaliveInfoTimer
@@ -892,13 +892,13 @@ public final class IpcGroupCallEmbeddedAppContext {
 
         self.updateCallIsActive()
 
-        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateCallIsActive()
         }, queue: .mainQueue())
         self.callActiveInfoTimer = callActiveInfoTimer
         callActiveInfoTimer.start()
 
-        let isActiveCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let isActiveCheckTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateKeepaliveInfo()
         }, queue: .mainQueue())
         self.isActiveCheckTimer = isActiveCheckTimer
@@ -1014,13 +1014,13 @@ public final class IpcGroupCallEmbeddedBroadcastContext {
         self.basePath = basePath
         let _ = try? FileManager.default.createDirectory(atPath: basePath, withIntermediateDirectories: true, attributes: nil)
 
-        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let callActiveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateCallIsActive()
         }, queue: .mainQueue())
         self.callActiveInfoTimer = callActiveInfoTimer
         callActiveInfoTimer.start()
         
-        let screencastCutoffTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        let screencastCutoffTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.updateScreencastCutoff()
         }, queue: .mainQueue())
         self.screencastCutoffTimer = screencastCutoffTimer
@@ -1080,7 +1080,7 @@ public final class IpcGroupCallEmbeddedBroadcastContext {
 
             self.writeKeepaliveInfo()
 
-            let keepaliveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            let keepaliveInfoTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 self?.writeKeepaliveInfo()
             }, queue: .mainQueue())
             self.keepaliveInfoTimer = keepaliveInfoTimer

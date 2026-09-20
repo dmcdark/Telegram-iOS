@@ -91,7 +91,7 @@ private final class ProxyServerPreviewSheetContent: CombinedComponent {
                 return
             }
             
-            self.displayWarningIfNeeded { [weak self] in
+            self.displayWarningIfNeeded { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -105,7 +105,7 @@ private final class ProxyServerPreviewSheetContent: CombinedComponent {
                 self.statusDisposable.set((statusesContext.statuses()
                 |> map { return $0.first?.value }
                 |> distinctUntilChanged
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     if let self, let status {
                         self.status = status
                         self.updated()
@@ -121,7 +121,7 @@ private final class ProxyServerPreviewSheetContent: CombinedComponent {
             
             let presentationData = self.sharedContext.currentPresentationData.with { $0 }
             
-            self.displayWarningIfNeeded { [weak self] in
+            self.displayWarningIfNeeded { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -143,7 +143,7 @@ private final class ProxyServerPreviewSheetContent: CombinedComponent {
                         return settings
                     })
                     return currentSettings ?? ProxySettings.defaultSettings
-                } |> deliverOnMainQueue).start(next: { [weak self] previousSettings in
+                } |> deliverOnMainQueue).start(next: { [weak self = self] previousSettings in
                     if let self {
                         self.revertSettings = previousSettings
                         
@@ -169,7 +169,7 @@ private final class ProxyServerPreviewSheetContent: CombinedComponent {
                         |> distinctUntilChanged
                         |> timeout(15.0, queue: Queue.mainQueue(), alternate: .single(false))
                         |> deliverOnMainQueue
-                        self.disposable.set(signal.start(next: { [weak self] value in
+                        self.disposable.set(signal.start(next: { [weak self = self] value in
                             if let self {
                                 self.inProgress = false
                                 self.updated()

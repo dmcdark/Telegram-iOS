@@ -122,7 +122,7 @@ public final class MediaRecordingPanelComponent: Component {
             self.vibrancyContainer.addSubview(self.vibrancyCancelContainerView)
             self.addSubview(self.cancelContainerView)
             
-            self.trackingLayer.didEnterHierarchy = { [weak self] in
+            self.trackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -248,7 +248,7 @@ public final class MediaRecordingPanelComponent: Component {
                 
                 if let audioRecorder = component.audioRecorder {
                     var updateNow = false
-                    self.timerTextDisposable = audioRecorder.recordingState.start(next: { [weak self] state in
+                    self.timerTextDisposable = audioRecorder.recordingState.start(next: { [weak self = self] state in
                         Queue.mainQueue().async {
                             guard let self else {
                                 return
@@ -277,7 +277,7 @@ public final class MediaRecordingPanelComponent: Component {
                     updateNow = true
                 } else if let videoRecordingStatus = component.videoRecordingStatus {
                     var updateNow = false
-                    self.timerTextDisposable = videoRecordingStatus.duration.start(next: { [weak self] duration in
+                    self.timerTextDisposable = videoRecordingStatus.duration.start(next: { [weak self = self] duration in
                         Queue.mainQueue().async {
                             guard let self else {
                                 return
@@ -439,7 +439,7 @@ public final class MediaRecordingPanelComponent: Component {
                     self.cancelButton = cancelButton
                     self.addSubview(cancelButton)
                     
-                    cancelButton.highligthedChanged = { [weak self] highlighted in
+                    cancelButton.highligthedChanged = { [weak self = self] highlighted in
                         guard let self else {
                             return
                         }

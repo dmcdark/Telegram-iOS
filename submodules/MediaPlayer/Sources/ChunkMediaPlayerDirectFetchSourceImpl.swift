@@ -508,7 +508,7 @@ final class ChunkMediaPlayerDirectFetchSourceImpl: ChunkMediaPlayerSourceImpl {
             
             if self.resourceSizeDisposable == nil {
                 self.resourceSizeDisposable = (self.resource.postbox.mediaBox.resourceData(self.resource.reference.resource, option: .complete(waitUntilFetchStatus: false))
-                |> deliverOnMainQueue).start(next: { [weak self] data in
+                |> deliverOnMainQueue).start(next: { [weak self = self] data in
                     guard let self else {
                         return
                     }
@@ -535,7 +535,7 @@ final class ChunkMediaPlayerDirectFetchSourceImpl: ChunkMediaPlayerSourceImpl {
         let resource = self.resource
         let resourceSize = self.resolvedResourceSize ?? Int64(resource.size)
         
-        let updateState: (FFMpegLookahead.State) -> Void = { [weak self] state in
+        let updateState: (FFMpegLookahead.State) -> Void = { [weak self = self] state in
             Queue.mainQueue().async {
                 guard let self else {
                     return

@@ -225,7 +225,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
         self.createActionButtonNode.setTitle(self.presentationData.strings.ImportStickerPack_CreateNewStickerSet, with: Font.regular(20.0), with: self.presentationData.theme.actionSheet.controlAccentColor, for: .normal)
         self.addToExistingActionButtonNode.setTitle(self.presentationData.strings.ImportStickerPack_AddToExistingStickerSet, with: Font.regular(20.0), with: self.presentationData.theme.actionSheet.controlAccentColor, for: .normal)
         
-        self.contentGridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.contentGridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             self?.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
         }
     }
@@ -241,12 +241,12 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
         if #available(iOSApplicationExtension 11.0, iOS 11.0, *) {
             self.wrappingScrollNode.view.contentInsetAdjustmentBehavior = .never
         }
-        self.contentGridNode.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
+        self.contentGridNode.view.addGestureRecognizer(PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point -> Signal<(UIView, CGRect, PeekControllerContent)?, NoError>? in
             if let strongSelf = self {
                 if let itemNode = strongSelf.contentGridNode.itemNodeAtPoint(point) as? StickerPackPreviewGridItemNode, let item = itemNode.stickerPackItem {
                     var menuItems: [ContextMenuItem] = []
                     if strongSelf.currentItems.count > 1 {
-                        menuItems.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.ImportStickerPack_RemoveFromImport, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, f in
+                        menuItems.append(.action(ContextMenuActionItem(text: strongSelf.presentationData.strings.ImportStickerPack_RemoveFromImport, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, f in
                             f(.dismissWithoutContent)
                             
                             if let strongSelf = self {
@@ -264,12 +264,12 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
                 }
             }
             return nil
-        }, present: { [weak self] content, sourceView, sourceRect in
+        }, present: { [weak self = self] content, sourceView, sourceRect in
             if let strongSelf = self {
                 let controller = makePeekController(presentationData: strongSelf.presentationData, content: content, sourceView: {
                     return (sourceView, sourceRect)
                 })
-                controller.visibilityUpdated = { [weak self] visible in
+                controller.visibilityUpdated = { [weak self = self] visible in
                     if let strongSelf = self {
                         strongSelf.contentGridNode.forceHidden = visible
                     }
@@ -278,7 +278,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
                 return controller
             }
             return nil
-        }, updateContent: { [weak self] content in
+        }, updateContent: { [weak self = self] content in
             if let strongSelf = self {
                 var item: ImportStickerPack.Sticker?
                 if let content = content as? StickerPreviewPeekContent {
@@ -651,7 +651,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
         }
         
         self.disposable.set((self.context.engine.stickers.createStickerSet(title: title, shortName: shortName, stickers: stickers, thumbnail: thumbnailSticker, type: stickerPack.type.importType, software: stickerPack.software)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 if case let .complete(info, items) = status {
                     if let (_, _, count) = strongSelf.progress {
@@ -669,19 +669,19 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
                     
                     strongSelf.radialCheck.transitionToState(.progress(color: .clear, lineWidth: 6.0, value: 1.0, cancelEnabled: false, animateRotation: false), animated: false, synchronous: true, completion: {})
                     strongSelf.radialCheck.transitionToState(.check(strongSelf.presentationData.theme.list.itemAccentColor), animated: true, synchronous: true, completion: {})
-                    strongSelf.radialStatus.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    strongSelf.radialStatus.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.radialStatus.layer.animateScale(from: 1.05, to: 1.0, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, additive: false)
                     })
-                    strongSelf.radialStatusBackground.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    strongSelf.radialStatusBackground.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.radialStatusBackground.layer.animateScale(from: 1.05, to: 1.0, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, additive: false)
                     })
-                    strongSelf.radialCheck.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self] _ in
+                    strongSelf.radialCheck.layer.animateScale(from: 1.0, to: 1.05, duration: 0.07, delay: 0.0, timingFunction: CAMediaTimingFunctionName.linear.rawValue, removeOnCompletion: false, additive: false, completion: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -720,14 +720,14 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
     
     @objc private func createActionButtonPressed() {
         var proceedImpl: ((String, String?) -> Void)?
-        let titleController = stickerPackEditTitleController(context: self.context, title: self.presentationData.strings.ImportStickerPack_ChooseName, text: self.presentationData.strings.ImportStickerPack_ChooseNameDescription, placeholder: self.presentationData.strings.ImportStickerPack_NamePlaceholder, value: nil, maxLength: 64, apply: { [weak self] title in
+        let titleController = stickerPackEditTitleController(context: self.context, title: self.presentationData.strings.ImportStickerPack_ChooseName, text: self.presentationData.strings.ImportStickerPack_ChooseNameDescription, placeholder: self.presentationData.strings.ImportStickerPack_NamePlaceholder, value: nil, maxLength: 64, apply: { [weak self = self] title in
             if let strongSelf = self, let title = title {
                 strongSelf.shortNameSuggestionDisposable.set((strongSelf.context.engine.stickers.getStickerSetShortNameSuggestion(title: title)
                 |> deliverOnMainQueue).start(next: { suggestedShortName in
                     proceedImpl?(title, suggestedShortName)
                 }))
             }
-        }, cancel: { [weak self] in
+        }, cancel: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.shortNameSuggestionDisposable.set(nil)
             }
@@ -736,7 +736,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
             guard let strongSelf = self else {
                 return
             }
-            let controller = importStickerPackShortNameController(context: strongSelf.context, title: strongSelf.presentationData.strings.ImportStickerPack_ChooseLink, text: strongSelf.presentationData.strings.ImportStickerPack_ChooseLinkDescription, placeholder: "", value: suggestedShortName, maxLength: 64, existingAlertController: titleController, apply: { [weak self] shortName in
+            let controller = importStickerPackShortNameController(context: strongSelf.context, title: strongSelf.presentationData.strings.ImportStickerPack_ChooseLink, text: strongSelf.presentationData.strings.ImportStickerPack_ChooseLinkDescription, placeholder: "", value: suggestedShortName, maxLength: 64, existingAlertController: titleController, apply: { [weak self = self] shortName in
                 if let shortName = shortName {
                     self?.createStickerSet(title: title, shortName: shortName)
                 }
@@ -764,7 +764,7 @@ final class ImportStickerPackControllerNode: ViewControllerTracingNode, ASScroll
         var dimCompleted = false
         var offsetCompleted = false
         
-        let internalCompletion: () -> Void = { [weak self] in
+        let internalCompletion: () -> Void = { [weak self = self] in
             if let strongSelf = self, dimCompleted && offsetCompleted {
                 strongSelf.dismiss?()
             }

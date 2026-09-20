@@ -292,7 +292,7 @@ final class ChatViewOnceMessageContextExtractedContentSource: ContextExtractedCo
             }
         }
         
-        let displayTooltip = { [weak self] in
+        let displayTooltip = { [weak self = self] in
             guard let self else {
                 return
             }

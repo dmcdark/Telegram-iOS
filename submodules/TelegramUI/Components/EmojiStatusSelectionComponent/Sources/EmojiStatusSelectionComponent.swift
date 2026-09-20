@@ -191,7 +191,7 @@ public final class EmojiStatusSelectionComponent: Component {
                     topPanelExtensionUpdated: { _, _ in },
                     topPanelScrollingOffset: { _, _ in },
                     hideInputUpdated: { _, _, _ in },
-                    hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                    hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                         guard let strongSelf = self else {
                             return
                         }
@@ -371,7 +371,7 @@ public final class EmojiStatusSelectionController: ViewController {
             self.stableEmptyResultEmojiDisposable.set((self.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Collections.FeaturedEmojiPacks()
             )
-            |> deliverOnMainQueue).start(next: { [weak self] featuredEmojiPacks in
+            |> deliverOnMainQueue).start(next: { [weak self = self] featuredEmojiPacks in
                 guard let strongSelf = self else {
                     return
                 }
@@ -393,7 +393,7 @@ public final class EmojiStatusSelectionController: ViewController {
                 emojiContent,
                 self.emojiSearchState.get()
             )
-            |> deliverOnMainQueue).start(next: { [weak self] emojiContent, emojiSearchState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] emojiContent, emojiSearchState in
                 guard let strongSelf = self else {
                     return
                 }
@@ -650,7 +650,7 @@ public final class EmojiStatusSelectionController: ViewController {
                                 self.emojiSearchStateValue.isSearching = true
                                 self.emojiSearchDisposable.set((resultSignal
                                 |> delay(0.15, queue: .mainQueue())
-                                |> deliverOnMainQueue).start(next: { [weak self] result in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                     guard let self else {
                                         return
                                     }
@@ -706,7 +706,7 @@ public final class EmojiStatusSelectionController: ViewController {
                                 
                             var version = 0
                             self.emojiSearchDisposable.set((resultSignal
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 guard let self else {
                                     return
                                 }
@@ -767,7 +767,7 @@ public final class EmojiStatusSelectionController: ViewController {
             
             self.availableReactionsDisposable = (context.engine.stickers.availableReactions()
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] availableReactions in
+            |> deliverOnMainQueue).start(next: { [weak self = self] availableReactions in
                 guard let strongSelf = self else {
                     return
                 }
@@ -775,7 +775,7 @@ public final class EmojiStatusSelectionController: ViewController {
             })
             
             self.genericReactionEffectDisposable = (randomGenericReactionEffect(context: context)
-            |> deliverOnMainQueue).start(next: { [weak self] path in
+            |> deliverOnMainQueue).start(next: { [weak self = self] path in
                 self?.genericReactionEffect = path
             })
         }
@@ -830,7 +830,7 @@ public final class EmojiStatusSelectionController: ViewController {
             var itemCompleted = false
             var contentCompleted = false
             var effectCompleted = false
-            let completion: () -> Void = { [weak self] in
+            let completion: () -> Void = { [weak self = self] in
                 guard let strongSelf = self, itemCompleted, contentCompleted, effectCompleted else {
                     return
                 }
@@ -1072,7 +1072,7 @@ public final class EmojiStatusSelectionController: ViewController {
                     separatorColor: separatorColor,
                     hideTopPanel: self.isReactionSearchActive,
                     disableTopPanel: false,
-                    hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                    hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1167,7 +1167,7 @@ public final class EmojiStatusSelectionController: ViewController {
                 transition.setFrame(view: componentView, frame: CGRect(origin: componentFrame.origin, size: CGSize(width: componentFrame.width, height: componentFrame.height)))
                 
                 if animateIn {
-                    self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, completion: { [weak self] _ in
+                    self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, completion: { [weak self = self] _ in
                         self?.allowsGroupOpacity = false
                     })
                     
@@ -1234,7 +1234,7 @@ public final class EmojiStatusSelectionController: ViewController {
                             useSharedAnimation: false,
                             action: nil
                         ),
-                        dismiss: { [weak self] result in
+                        dismiss: { [weak self = self] result in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -1381,7 +1381,7 @@ public final class EmojiStatusSelectionController: ViewController {
                         animateOutToView = false
                         
                         let _ = (ApplicationSpecificNotice.getStarGiftWearTips(accountManager: self.context.sharedContext.accountManager)
-                        |> deliverOnMainQueue).start(next: { [weak self] count in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] count in
                             guard let self else {
                                 return
                             }
@@ -1471,7 +1471,7 @@ public final class EmojiStatusSelectionController: ViewController {
                         }
                         return .single(nil)
                     }
-                    |> deliverOnMainQueue).start(next: { [weak self] filePath in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] filePath in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1539,7 +1539,7 @@ public final class EmojiStatusSelectionController: ViewController {
     }
     
     override public func dismiss(completion: (() -> Void)? = nil) {
-        (self.displayNode as! Node).animateOut(completion: { [weak self] in
+        (self.displayNode as! Node).animateOut(completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
             completion?()
         }, fromBackground: false)

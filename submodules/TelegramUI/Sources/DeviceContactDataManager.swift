@@ -34,7 +34,7 @@ private final class DeviceContactDataModernContext: DeviceContactDataContext {
         
         self.retrieveContactsDisposable?.dispose()
         self.retrieveContactsDisposable = (self.retrieveContacts()
-        |> deliverOn(self.queue)).startStrict(next: { [weak self] contacts, references in
+        |> deliverOn(self.queue)).startStrict(next: { [weak self = self] contacts, references in
             guard let self else {
                 return
             }
@@ -43,14 +43,14 @@ private final class DeviceContactDataModernContext: DeviceContactDataContext {
             self.currentAppSpecificReferences = references
             updated(self.currentContacts)
             appSpecificReferencesUpdated(self.currentAppSpecificReferences)
-            let handle = NotificationCenter.default.addObserver(forName: NSNotification.Name.CNContactStoreDidChange, object: nil, queue: nil, using: { [weak self] _ in
+            let handle = NotificationCenter.default.addObserver(forName: NSNotification.Name.CNContactStoreDidChange, object: nil, queue: nil, using: { [weak self = self] _ in
                 queue.async {
                     guard let self else {
                         return
                     }
                     self.retrieveContactsDisposable?.dispose()
                     self.retrieveContactsDisposable = (self.retrieveContacts()
-                    |> deliverOn(self.queue)).startStrict(next: { [weak self] contacts, references in
+                    |> deliverOn(self.queue)).startStrict(next: { [weak self = self] contacts, references in
                         guard let self else {
                             return
                         }
@@ -512,7 +512,7 @@ private final class DeviceContactDataManagerPrivateImpl {
         self.accountManager = accountManager
         self.accessDisposable = (DeviceAccess.authorizationStatus(subject: .contacts)
         |> delay(2.0, queue: .mainQueue())
-        |> deliverOn(self.queue)).startStrict(next: { [weak self] authorizationStatus in
+        |> deliverOn(self.queue)).startStrict(next: { [weak self = self] authorizationStatus in
             guard let strongSelf = self, authorizationStatus != .notDetermined else {
                 return
             }
@@ -640,7 +640,7 @@ private final class DeviceContactDataManagerPrivateImpl {
         
         updated(self.stableIdToBasicContactData)
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 guard let strongSelf = self else {
                     return
@@ -701,7 +701,7 @@ private final class DeviceContactDataManagerPrivateImpl {
             updated(self.importableContacts)
         }
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 guard let strongSelf = self else {
                     return
@@ -721,7 +721,7 @@ private final class DeviceContactDataManagerPrivateImpl {
             updated(self.appSpecificReferences)
         }
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 guard let strongSelf = self else {
                     return

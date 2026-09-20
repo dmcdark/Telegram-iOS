@@ -144,8 +144,8 @@ extension MediaEditorScreenImpl {
         if self.isEmbeddedEditor && !(hasAnyChanges || hasEntityChanges) {
             self.saveDraft(id: randomId, isEdit: true)
             
-            self.completion([MediaEditorScreenImpl.Result(media: nil, mediaAreas: [], caption: caption, coverTimestamp: mediaEditor.values.coverImageTimestamp, options: self.state.privacy, stickers: stickers, music: mediaEditor.values.audioTrack?.file, randomId: randomId)], { [weak self] finished in
-                self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+            self.completion([MediaEditorScreenImpl.Result(media: nil, mediaAreas: [], caption: caption, coverTimestamp: mediaEditor.values.coverImageTimestamp, options: self.state.privacy, stickers: stickers, music: mediaEditor.values.audioTrack?.file, randomId: randomId)], { [weak self = self] finished in
+                self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                     self?.dismiss()
                     Queue.mainQueue().justDispatch {
                         finished()
@@ -451,7 +451,7 @@ extension MediaEditorScreenImpl {
             }
             
             let _ = combineLatest(queue: Queue.mainQueue(), firstFrame, videoResult)
-            .start(next: { [weak self] images, videoResult in
+            .start(next: { [weak self = self] images, videoResult in
                 if let self {
                     let (image, additionalImage) = images
                     var currentImage = mediaEditor.resultImage
@@ -484,15 +484,15 @@ extension MediaEditorScreenImpl {
                         values = values.withUpdatedVideoTrimRange(0 ..< avatarMaxVideoDuration)
                     }
 
-                    makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: inputImage, dimensions: storyDimensions, values: values, time: firstFrameTime, textScale: 2.0, completion: { [weak self] coverImage in
+                    makeEditorImageComposition(context: self.node.ciContext, postbox: self.context.account.postbox, inputImage: inputImage, dimensions: storyDimensions, values: values, time: firstFrameTime, textScale: 2.0, completion: { [weak self = self] coverImage in
                         if let self {
-                            self.willComplete(coverImage, true, { [weak self] in
+                            self.willComplete(coverImage, true, { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
                                 Logger.shared.log("MediaEditor", "Completed with video \(videoResult)")
-                                self.completion([MediaEditorScreenImpl.Result(media: .video(video: videoResult, coverImage: coverImage, values: values, duration: duration, dimensions: values.resultDimensions), mediaAreas: mediaAreas, caption: caption, coverTimestamp: values.coverImageTimestamp, options: self.state.privacy, stickers: stickers, music: values.audioTrack?.file, randomId: randomId)], { [weak self] finished in
-                                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                                self.completion([MediaEditorScreenImpl.Result(media: .video(video: videoResult, coverImage: coverImage, values: values, duration: duration, dimensions: values.resultDimensions), mediaAreas: mediaAreas, caption: caption, coverTimestamp: values.coverImageTimestamp, options: self.state.privacy, stickers: stickers, music: values.audioTrack?.file, randomId: randomId)], { [weak self = self] finished in
+                                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                                         self?.dismiss()
                                         Queue.mainQueue().justDispatch {
                                             finished()
@@ -526,15 +526,15 @@ extension MediaEditorScreenImpl {
                 values: values,
                 time: .zero,
                 textScale: 2.0,
-                completion: { [weak self] resultImage in
+                completion: { [weak self = self] resultImage in
                 if let self, let resultImage {
-                    self.willComplete(resultImage, false, { [weak self] in
+                    self.willComplete(resultImage, false, { [weak self = self] in
                         guard let self else {
                             return
                         }
                         Logger.shared.log("MediaEditor", "Completed with image \(resultImage)")
-                        self.completion([MediaEditorScreenImpl.Result(media: .image(image: resultImage, dimensions: PixelDimensions(resultImage.size)), mediaAreas: mediaAreas, caption: caption, coverTimestamp: nil, options: self.state.privacy, stickers: stickers, music: values.audioTrack?.file, randomId: randomId)], { [weak self] finished in
-                            self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                        self.completion([MediaEditorScreenImpl.Result(media: .image(image: resultImage, dimensions: PixelDimensions(resultImage.size)), mediaAreas: mediaAreas, caption: caption, coverTimestamp: nil, options: self.state.privacy, stickers: stickers, music: values.audioTrack?.file, randomId: randomId)], { [weak self = self] finished in
+                            self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                                 self?.dismiss()
                                 Queue.mainQueue().justDispatch {
                                     finished()
@@ -623,8 +623,8 @@ extension MediaEditorScreenImpl {
                         orderedResults.append(item)
                     }
                 }
-                self.completion(orderedResults, { [weak self] finished in
-                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self] in
+                self.completion(orderedResults, { [weak self = self] finished in
+                    self?.node.animateOut(finished: true, saveDraft: false, completion: { [weak self = self] in
                         self?.dismiss()
                         Queue.mainQueue().justDispatch {
                             finished()
@@ -657,7 +657,7 @@ extension MediaEditorScreenImpl {
             firstFrameTime = CMTime(seconds: item.values?.videoTrimRange?.lowerBound ?? 0.0, preferredTimescale: CMTimeScale(60))
         }
         
-        let process: (AVAsset?, MediaResult.VideoResult) -> Void = { [weak self] avAsset, videoResult in
+        let process: (AVAsset?, MediaResult.VideoResult) -> Void = { [weak self = self] avAsset, videoResult in
             guard let self else {
                 return
             }
@@ -677,7 +677,7 @@ extension MediaEditorScreenImpl {
                         
             let avAssetGenerator = AVAssetImageGenerator(asset: avAsset)
             avAssetGenerator.appliesPreferredTrackTransform = true
-            avAssetGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: firstFrameTime)]) { [weak self] _, cgImage, _, _, _ in
+            avAssetGenerator.generateCGImagesAsynchronously(forTimes: [NSValue(time: firstFrameTime)]) { [weak self = self] _, cgImage, _, _, _ in
                 guard let self else {
                     return
                 }
@@ -759,7 +759,7 @@ extension MediaEditorScreenImpl {
             }
         }
         
-        let process: (UIImage?) -> Void = { [weak self] image in
+        let process: (UIImage?) -> Void = { [weak self = self] image in
             guard let self else {
                 return
             }

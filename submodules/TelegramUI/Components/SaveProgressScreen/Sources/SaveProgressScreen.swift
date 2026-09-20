@@ -120,7 +120,7 @@ private final class ProgressComponent: Component {
                                 tintColor: UIColor.white
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self, let component = self.component {
                                 component.cancel()
                             }
@@ -457,7 +457,7 @@ public final class SaveProgressScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -468,7 +468,7 @@ public final class SaveProgressScreen: ViewController {
                     SaveProgressScreenComponent(
                         context: self.context,
                         content: controller.content,
-                        cancel: { [weak self] in
+                        cancel: { [weak self = self] in
                             if let self, let controller = self.controller {
                                 controller.cancel()
                             }
@@ -540,7 +540,7 @@ public final class SaveProgressScreen: ViewController {
     fileprivate func cancel() {
         self.cancelled()
         
-        self.node.animateOut(completion: { [weak self] in
+        self.node.animateOut(completion: { [weak self = self] in
             if let self {
                 self.dismiss()
             }
@@ -551,9 +551,9 @@ public final class SaveProgressScreen: ViewController {
         if case .completion = self.content {
             self.node.isUserInteractionEnabled = false
             if self.dismissTimer == nil {
-                let timer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: 3.0, repeat: false, completion: { [weak self = self] in
                     if let self {
-                        self.node.animateOut(completion: { [weak self] in
+                        self.node.animateOut(completion: { [weak self = self] in
                             if let self {
                                 self.dismiss()
                             }

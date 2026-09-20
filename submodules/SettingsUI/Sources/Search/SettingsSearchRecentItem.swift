@@ -155,7 +155,7 @@ class SettingsSearchRecentItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -176,7 +176,7 @@ class SettingsSearchRecentItemNode: ItemListRevealOptionsItemNode {
         
         let currentItem = self.item
         
-        return { [weak self] item, params, last, firstWithHeader in
+        return { [weak self = self] item, params, last, firstWithHeader in
             let leftInset: CGFloat = 15.0 + params.leftInset
             let rightInset: CGFloat = params.rightInset
             
@@ -194,7 +194,7 @@ class SettingsSearchRecentItemNode: ItemListRevealOptionsItemNode {
             let contentSize = CGSize(width: params.width, height: height)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets(top: firstWithHeader ? 29.0 : 0.0, left: 0.0, bottom: 0.0, right: 0.0))
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 var updatedTheme: PresentationTheme?
                 if currentItem?.theme !== item.theme {
                     updatedTheme = item.theme

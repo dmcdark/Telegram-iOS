@@ -94,14 +94,14 @@ public final class SharedDisplayLinkDriver {
     private var isUpdateRequested: Bool = false
     
     private init() {
-        let _ = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        let _ = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let self else {
                 return
             }
             self.isInForeground = true
             self.update()
         })
-        let _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        let _ = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -292,7 +292,7 @@ public final class DisplayLinkAnimator {
         
         self.startTime = CACurrentMediaTime()
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
             self?.tick()
         }
         self.displayLink?.isPaused = false
@@ -347,7 +347,7 @@ public final class ConstantDisplayLinkAnimator {
         didSet {
             if self.isPaused != oldValue {
                 if !self.isPaused && self.displayLink == nil {
-                    let displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                    let displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                         self?.tick()
                     }
                     self.displayLink = displayLink

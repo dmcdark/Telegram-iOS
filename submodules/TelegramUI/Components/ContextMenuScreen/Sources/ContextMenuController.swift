@@ -8,7 +8,7 @@ public final class ContextMenuControllerImpl: ViewController, KeyShortcutRespond
     }
     
     public var keyShortcuts: [KeyShortcut] {
-        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self] in
+        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }
@@ -46,12 +46,12 @@ public final class ContextMenuControllerImpl: ViewController, KeyShortcutRespond
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = ContextMenuNode(actions: self.actions, dismiss: { [weak self] in
+        self.displayNode = ContextMenuNode(actions: self.actions, dismiss: { [weak self = self] in
             self?.dismissed?()
             self?.contextMenuNode.animateOut(bounce: (self?.presentationArguments as? ContextMenuControllerPresentationArguments)?.bounce ?? true, completion: {
                 self?.presentingViewController?.dismiss(animated: false)
             })
-        }, dismissOnTap: { [weak self] view, point in
+        }, dismissOnTap: { [weak self = self] view, point in
             guard let self, let dismissOnTap = self.dismissOnTap else {
                 return false
             }
@@ -68,7 +68,7 @@ public final class ContextMenuControllerImpl: ViewController, KeyShortcutRespond
     
     override public func dismiss(completion: (() -> Void)? = nil) {
         self.dismissed?()
-        self.contextMenuNode.animateOut(bounce: (self.presentationArguments as? ContextMenuControllerPresentationArguments)?.bounce ?? true, completion: { [weak self] in
+        self.contextMenuNode.animateOut(bounce: (self.presentationArguments as? ContextMenuControllerPresentationArguments)?.bounce ?? true, completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false)
         })
     }
@@ -79,7 +79,7 @@ public final class ContextMenuControllerImpl: ViewController, KeyShortcutRespond
         self.contextMenuNode.centerHorizontally = self.centerHorizontally
         if self.layout != nil && self.layout! != layout {
             self.dismissed?()
-            self.contextMenuNode.animateOut(bounce: (self.presentationArguments as? ContextMenuControllerPresentationArguments)?.bounce ?? true, completion: { [weak self] in
+            self.contextMenuNode.animateOut(bounce: (self.presentationArguments as? ContextMenuControllerPresentationArguments)?.bounce ?? true, completion: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false)
             })
         } else {

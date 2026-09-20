@@ -94,7 +94,7 @@ final class SampleBufferVideoRenderingView: UIView, VideoRenderingView {
     init(input: Signal<OngoingGroupCallContext.VideoFrameData, NoError>) {
         super.init(frame: CGRect())
 
-        self.disposable = input.start(next: { [weak self] videoFrameData in
+        self.disposable = input.start(next: { [weak self = self] videoFrameData in
             Queue.mainQueue().async {
                 self?.addFrame(videoFrameData)
             }

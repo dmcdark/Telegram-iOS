@@ -775,7 +775,7 @@ private final class DrawingScreenComponent: CombinedComponent {
             
             self.loadToolState()
             
-            self.toggleWithEraser.connect { [weak self] _ in
+            self.toggleWithEraser.connect { [weak self = self] _ in
                 if let self {
                     if self.drawingState.selectedTool == .eraser {
                         self.updateSelectedTool(self.nextToEraserTool)
@@ -785,19 +785,19 @@ private final class DrawingScreenComponent: CombinedComponent {
                 }
             }
             
-            self.toggleWithPreviousTool.connect { [weak self] _ in
+            self.toggleWithPreviousTool.connect { [weak self = self] _ in
                 if let self {
                     self.updateSelectedTool(self.previousTool)
                 }
             }
             
-            self.insertText.connect { [weak self] _ in
+            self.insertText.connect { [weak self = self] _ in
                 if let self {
                     self.addTextEntity()
                 }
             }
             
-            self.insertSticker.connect { [weak self] _ in
+            self.insertSticker.connect { [weak self = self] _ in
                 if let self {
                     self.presentStickerPicker()
                 }
@@ -807,7 +807,7 @@ private final class DrawingScreenComponent: CombinedComponent {
         func loadToolState() {
             let _ = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.drawingSettings])
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
                 guard let strongSelf = self else {
                     return
                 }
@@ -930,7 +930,7 @@ private final class DrawingScreenComponent: CombinedComponent {
                     ContextMenuActionItem(
                         text: strings.Paint_Rectangle,
                         icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/ShapeRectangle"), color: theme.contextMenu.primaryColor)},
-                        action: { [weak self] f in
+                        action: { [weak self = self] f in
                             f.dismissWithResult(.default)
                             if let strongSelf = self {
                                 strongSelf.insertEntity.invoke(DrawingSimpleShapeEntity(shapeType: .rectangle, drawType: .stroke, color: strongSelf.currentColor, lineWidth: 0.15))
@@ -942,7 +942,7 @@ private final class DrawingScreenComponent: CombinedComponent {
                     ContextMenuActionItem(
                         text: strings.Paint_Ellipse,
                         icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/ShapeEllipse"), color: theme.contextMenu.primaryColor)},
-                        action: { [weak self] f in
+                        action: { [weak self = self] f in
                             f.dismissWithResult(.default)
                             if let strongSelf = self {
                                 strongSelf.insertEntity.invoke(DrawingSimpleShapeEntity(shapeType: .ellipse, drawType: .stroke, color: strongSelf.currentColor, lineWidth: 0.15))
@@ -954,7 +954,7 @@ private final class DrawingScreenComponent: CombinedComponent {
                     ContextMenuActionItem(
                         text: strings.Paint_Bubble,
                         icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/ShapeBubble"), color: theme.contextMenu.primaryColor)},
-                        action: { [weak self] f in
+                        action: { [weak self = self] f in
                             f.dismissWithResult(.default)
                             if let strongSelf = self {
                                 strongSelf.insertEntity.invoke(DrawingBubbleEntity(drawType: .stroke, color: strongSelf.currentColor, lineWidth: 0.15))
@@ -966,7 +966,7 @@ private final class DrawingScreenComponent: CombinedComponent {
                     ContextMenuActionItem(
                         text: strings.Paint_Star,
                         icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/ShapeStar"), color: theme.contextMenu.primaryColor)},
-                        action: { [weak self] f in
+                        action: { [weak self = self] f in
                             f.dismissWithResult(.default)
                             if let strongSelf = self {
                                 strongSelf.insertEntity.invoke(DrawingSimpleShapeEntity(shapeType: .star, drawType: .stroke, color: strongSelf.currentColor, lineWidth: 0.15))
@@ -978,7 +978,7 @@ private final class DrawingScreenComponent: CombinedComponent {
                     ContextMenuActionItem(
                         text: strings.Paint_Arrow,
                         icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Media Editor/ShapeArrow"), color: theme.contextMenu.primaryColor)},
-                        action: { [weak self] f in
+                        action: { [weak self = self] f in
                             f.dismissWithResult(.default)
                             if let strongSelf = self {
                                 strongSelf.insertEntity.invoke(DrawingVectorEntity(type: .oneSidedArrow, color: strongSelf.currentColor, lineWidth: 0.3))
@@ -1017,7 +1017,7 @@ private final class DrawingScreenComponent: CombinedComponent {
             if let presentGallery = self.presentGallery {
                 controller.presentGallery = presentGallery
             }
-            controller.completion = { [weak self] content in
+            controller.completion = { [weak self = self] content in
                 self?.updateEntitiesPlayback.invoke(true)
                 
                 if let content {
@@ -2201,7 +2201,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                     self._drawingView = DrawingView(size: controller.size)
                 }
                 self._drawingView?.animationsEnabled = self.context.sharedContext.energyUsageSettings.fullTranslucency
-                self._drawingView?.shouldBegin = { [weak self] _ in
+                self._drawingView?.shouldBegin = { [weak self = self] _ in
                     if let strongSelf = self {
                         if strongSelf._entitiesView?.hasSelection == true {
                             strongSelf._entitiesView?.selectEntity(nil)
@@ -2212,12 +2212,12 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         return false
                     }
                 }
-                self._drawingView?.stateUpdated = { [weak self] state in
+                self._drawingView?.stateUpdated = { [weak self = self] state in
                     if let strongSelf = self {
                         strongSelf.updateState.invoke(state)
                     }
                 }
-                self._drawingView?.requestedColorPicker = { [weak self] in
+                self._drawingView?.requestedColorPicker = { [weak self = self] in
                     if let self, let interaction = self.interaction {
                         if let _ = interaction.colorPickerScreen {
                             interaction.dismissColorPicker()
@@ -2226,17 +2226,17 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         }
                     }
                 }
-                self._drawingView?.requestedEraserToggle = { [weak self] in
+                self._drawingView?.requestedEraserToggle = { [weak self = self] in
                     if let self {
                         self.toggleWithEraser.invoke(Void())
                     }
                 }
-                self._drawingView?.requestedToolsToggle = { [weak self] in
+                self._drawingView?.requestedToolsToggle = { [weak self = self] in
                     if let self {
                         self.toggleWithPreviousTool.invoke(Void())
                     }
                 }
-                self.performAction.connect { [weak self] action in
+                self.performAction.connect { [weak self = self] action in
                     if let self {
                         if case .clear = action {
                             let sourceView: UIView
@@ -2249,7 +2249,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                             let items: [ContextMenuItem] = [
                                 .action(ContextMenuActionItem(text: self.presentationData.strings.Paint_ClearConfirm, textColor: .destructive, icon: { _ in
                                     return nil
-                                }, action: { [weak self] f in
+                                }, action: { [weak self = self] f in
                                     f.dismissWithResult(.default)
                                     self?._drawingView?.performAction(.clear)
                                 }))
@@ -2262,17 +2262,17 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         }
                     }
                 }
-                self.updateToolState.connect { [weak self] state in
+                self.updateToolState.connect { [weak self = self] state in
                     if let self {
                         self._drawingView?.updateToolState(state)
                     }
                 }
-                self.previewBrushSize.connect { [weak self] size in
+                self.previewBrushSize.connect { [weak self = self] size in
                     if let self {
                         self._drawingView?.setBrushSizePreview(size)
                     }
                 }
-                self.dismissEyedropper.connect { [weak self] in
+                self.dismissEyedropper.connect { [weak self = self] in
                     if let self {
                         self.interaction?.dismissCurrentEyedropper()
                     }
@@ -2291,13 +2291,13 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                 }
                 self._drawingView?.entitiesView = self._entitiesView
                 self._entitiesView?.drawingView = self._drawingView
-                self._entitiesView?.entityAdded = { [weak self] entity in
+                self._entitiesView?.entityAdded = { [weak self = self] entity in
                     self?._drawingView?.onEntityAdded(entity)
                 }
-                self._entitiesView?.entityRemoved = { [weak self] entity in
+                self._entitiesView?.entityRemoved = { [weak self = self] entity in
                     self?._drawingView?.onEntityRemoved(entity)
                 }
-                self._drawingView?.getFullImage = { [weak self] in
+                self._drawingView?.getFullImage = { [weak self = self] in
                     if let strongSelf = self, let controller = strongSelf.controller, let currentImage = controller.getCurrentImage() {
                         let size = controller.size.fitted(CGSize(width: 256.0, height: 256.0))
                         
@@ -2322,22 +2322,22 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                     }
                 }
                 self._entitiesView?.selectionContainerView = self.selectionContainerView
-                self._entitiesView?.selectionChanged = { [weak self] entity in
+                self._entitiesView?.selectionChanged = { [weak self = self] entity in
                     if let strongSelf = self {
                         strongSelf.updateSelectedEntity.invoke(entity)
                     }
                 }
-                self.insertEntity.connect { [weak self] entity in
+                self.insertEntity.connect { [weak self = self] entity in
                     if let self, let interaction = self.interaction {
                         interaction.insertEntity(entity)
                     }
                 }
-                self.deselectEntity.connect { [weak self] in
+                self.deselectEntity.connect { [weak self = self] in
                     if let strongSelf = self, let entitiesView = strongSelf._entitiesView {
                         entitiesView.selectEntity(nil)
                     }
                 }
-                self.updateEntitiesPlayback.connect { [weak self] play in
+                self.updateEntitiesPlayback.connect { [weak self = self] play in
                     if let strongSelf = self, let entitiesView = strongSelf._entitiesView {
                         if play {
                             entitiesView.play()
@@ -2346,12 +2346,12 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         }
                     }
                 }
-                self.updateEntityView.connect { [weak self] uuid, animated in
+                self.updateEntityView.connect { [weak self = self] uuid, animated in
                     if let strongSelf = self, let entitiesView = strongSelf._entitiesView {
                         entitiesView.getView(for: uuid)?.update(animated: animated)
                     }
                 }
-                self.endEditingTextEntityView.connect { [weak self] uuid, reset in
+                self.endEditingTextEntityView.connect { [weak self = self] uuid, reset in
                     if let strongSelf = self, let entitiesView = strongSelf._entitiesView {
                         if let textEntityView = entitiesView.getView(for: uuid) as? DrawingTextEntityView {
                             textEntityView.endEditing(reset: reset)
@@ -2412,19 +2412,19 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         
             super.init()
             
-            self.apply.connect { [weak self] _ in
+            self.apply.connect { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.controller?.requestApply()
                 }
             }
-            self.dismiss.connect { [weak self] _ in
+            self.dismiss.connect { [weak self = self] _ in
                 if let strongSelf = self {
                     if strongSelf.drawingView.canUndo || strongSelf.entitiesView.hasChanges {
                         let sourceView = strongSelf.componentHost.findTaggedView(tag: cancelButtonTag) ?? strongSelf.view
                         let items: [ContextMenuItem] = [
                             .action(ContextMenuActionItem(text: strongSelf.presentationData.strings.PhotoEditor_DiscardChanges, textColor: .destructive, icon: { _ in
                                 return nil
-                            }, action: { [weak self] f in
+                            }, action: { [weak self = self] f in
                                 f.dismissWithResult(.default)
                                 self?.controller?.requestDismiss()
                             }))
@@ -2456,7 +2456,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                 selectionContainerView: self.selectionContainerView,
                 isVideo: controller.isVideo,
                 autoselectEntityOnPan: false,
-                updateSelectedEntity: { [weak self] entity in
+                updateSelectedEntity: { [weak self = self] entity in
                     if let self {
                         self.updateSelectedEntity.invoke(entity)
                     }
@@ -2466,12 +2466,12 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         controller.updateVideoPlayback(isPlaying)
                     }
                 },
-                updateColor: { [weak self] color in
+                updateColor: { [weak self = self] color in
                     if let self {
                         self.updateColor.invoke(color)
                     }
                 },
-                onInteractionUpdated: { [weak self] isInteracting in
+                onInteractionUpdated: { [weak self = self] isInteracting in
                     if let self {
                         self.isInteractingWithEntities = isInteracting
                         self.requestUpdate(transition: .easeInOut(duration: 0.2))
@@ -2485,15 +2485,15 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                 getCurrentImage: { [weak controller] in
                     return controller?.getCurrentImage()
                 },
-                getControllerNode: { [weak self] in
+                getControllerNode: { [weak self = self] in
                     return self
                 },
-                present: { [weak self] c, i, a in
+                present: { [weak self = self] c, i, a in
                     if let self {
                         self.controller?.present(c, in: i, with: a)
                     }
                 },
-                addSubview: { [weak self] view in
+                addSubview: { [weak self = self] view in
                     if let self {
                         self.view.addSubview(view)
                     }
@@ -2660,7 +2660,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -2682,7 +2682,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         isVideo: controller.isVideo,
                         isAvatar: controller.isAvatar,
                         isInteractingWithEntities: self.isInteractingWithEntities,
-                        present: { [weak self] c in
+                        present: { [weak self = self] c in
                             self?.controller?.present(c, in: .window(.root))
                         },
                         updateState: self.updateState,
@@ -2702,7 +2702,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         insertText: self.insertText,
                         updateEntityView: self.updateEntityView,
                         endEditingTextEntityView: self.endEditingTextEntityView,
-                        entityViewForEntity: { [weak self] entity in
+                        entityViewForEntity: { [weak self = self] entity in
                             if let self, let entityView = self.entitiesView.getView(for: entity.uuid) {
                                 return entityView
                             } else {
@@ -2712,19 +2712,19 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
                         presentGallery: self.controller?.presentGallery,
                         apply: self.apply,
                         dismiss: self.dismiss,
-                        presentColorPicker: { [weak self] initialColor in
+                        presentColorPicker: { [weak self = self] initialColor in
                             self?.interaction?.presentColorPicker(initialColor: initialColor)
                         },
-                        presentFastColorPicker: { [weak self] sourceView in
+                        presentFastColorPicker: { [weak self = self] sourceView in
                             self?.interaction?.presentFastColorPicker(sourceView: sourceView)
                         },
-                        updateFastColorPickerPan: { [weak self] point in
+                        updateFastColorPickerPan: { [weak self = self] point in
                             self?.interaction?.updateFastColorPickerPan(point)
                         },
-                        dismissFastColorPicker: { [weak self] in
+                        dismissFastColorPicker: { [weak self = self] in
                             self?.interaction?.dismissFastColorPicker()
                         },
-                        presentFontPicker: { [weak self] sourceView in
+                        presentFontPicker: { [weak self = self] sourceView in
                             self?.interaction?.presentFontPicker(sourceView: sourceView)
                         }
                     )
@@ -2975,7 +2975,7 @@ public class DrawingScreen: ViewController, TGPhotoDrawingInterfaceController, U
     
     @available(iOSApplicationExtension 11.0, iOS 11.0, *)
     public func dropInteraction(_ interaction: UIDropInteraction, performDrop session: UIDropSession) {
-        session.loadObjects(ofClass: UIImage.self) { [weak self] imageItems in
+        session.loadObjects(ofClass: UIImage.self) { [weak self = self] imageItems in
             guard let strongSelf = self else {
                 return
             }
@@ -3083,22 +3083,22 @@ public final class DrawingToolsInteraction {
         
         self.entitiesView.autoSelectEntities = self.autoSelectEntityOnPan
         self.entitiesView.selectionContainerView = self.selectionContainerView
-        self.entitiesView.selectionChanged = { [weak self] entity in
+        self.entitiesView.selectionChanged = { [weak self = self] entity in
             if let self {
                 self.updateSelectedEntity(entity)
             }
         }
-        self.entitiesView.onInteractionUpdated = { [weak self] isInteracting in
+        self.entitiesView.onInteractionUpdated = { [weak self = self] isInteracting in
             if let self {
                 self.onInteractionUpdated(isInteracting)
             }
         }
-        self.entitiesView.onTextEditingEnded = { [weak self] reset in
+        self.entitiesView.onTextEditingEnded = { [weak self = self] reset in
             if let self {
                 self.onTextEditingEnded(reset)
             }
         }
-        self.entitiesView.requestedMenuForEntityView = { [weak self] entityView, isTopmost in
+        self.entitiesView.requestedMenuForEntityView = { [weak self = self] entityView, isTopmost in
             guard let self, let node = self.getControllerNode() else {
                 return
             }
@@ -3159,7 +3159,7 @@ public final class DrawingToolsInteraction {
                     }
                 }))
             } else if (entityView is DrawingStickerEntityView || entityView is DrawingBubbleEntityView) && !isVideo && !isMessage {
-                actions.append(ContextMenuAction(content: .text(title: presentationData.strings.Paint_Flip, accessibilityLabel: presentationData.strings.Paint_Flip), action: { [weak self] in
+                actions.append(ContextMenuAction(content: .text(title: presentationData.strings.Paint_Flip, accessibilityLabel: presentationData.strings.Paint_Flip), action: { [weak self = self] in
                     if let self {
                         self.flipSelectedEntity()
                     }
@@ -3249,12 +3249,12 @@ public final class DrawingToolsInteraction {
             if let textEntityView = entityView as? DrawingTextEntityView {
                 textEntityView.beginEditing(accessoryView: self.textEditAccessoryView)
                 
-                textEntityView.replaceWithImage = { [weak self] image, isSticker in
+                textEntityView.replaceWithImage = { [weak self = self] image, isSticker in
                     if let self {
                         self.insertEntity(DrawingStickerEntity(content: .image(image, isSticker ? .sticker : .rectangle)), scale: 2.5)
                     }
                 }
-                textEntityView.replaceWithAnimatedImage = { [weak self] data, thumbnailImage in
+                textEntityView.replaceWithAnimatedImage = { [weak self = self] data, thumbnailImage in
                     if let self {
                         self.insertEntity(DrawingStickerEntity(content: .animatedImage(data, thumbnailImage)), scale: 2.5)
                     }
@@ -3354,7 +3354,7 @@ public final class DrawingToolsInteraction {
         }
         
         let eyedropperView = EyedropperView(containerSize: contentWrapperView.frame.size, drawingView: self.drawingView, sourceImage: sourceImage)
-        eyedropperView.completed = { [weak self] color in
+        eyedropperView.completed = { [weak self = self] color in
             if let self {
                 self.updateColor(color)
                 self.entitiesView.play()
@@ -3363,7 +3363,7 @@ public final class DrawingToolsInteraction {
                 dismissed()
             }
         }
-        eyedropperView.dismissed = { [weak self] in
+        eyedropperView.dismissed = { [weak self = self] in
             if let self {
                 self.entitiesView.play()
                 self.updateVideoPlayback(true)
@@ -3388,11 +3388,11 @@ public final class DrawingToolsInteraction {
         
         self.hapticFeedback.impact(.medium)
         var didDismiss = false
-        let colorController = ColorPickerScreen(context: self.context, initialColor: initialColor, updated: { [weak self] color in
+        let colorController = ColorPickerScreen(context: self.context, initialColor: initialColor, updated: { [weak self = self] color in
             if let self {
                 self.updateColor(color)
             }
-        }, openEyedropper: { [weak self] in
+        }, openEyedropper: { [weak self = self] in
             if let self {
                 self.presentEyedropper(dismissed: dismissed)
             }
@@ -3427,7 +3427,7 @@ public final class DrawingToolsInteraction {
         let size = CGSize(width: min(350.0, superview.frame.width - 8.0 - 24.0), height: 296.0)
         
         let fastColorPickerView = ColorSpectrumPickerView(frame: CGRect(origin: CGPoint(x: sourceView.frame.minX + 5.0, y: sourceView.frame.maxY - size.height - 6.0), size: size))
-        fastColorPickerView.selected = { [weak self] color in
+        fastColorPickerView.selected = { [weak self = self] color in
             if let self {
                 self.updateColor(color)
             }
@@ -3464,7 +3464,7 @@ public final class DrawingToolsInteraction {
         }
         
         if let entityView = self.entitiesView.selectedEntityView as? DrawingTextEntityView {
-            entityView.textChanged = { [weak self] in
+            entityView.textChanged = { [weak self = self] in
                 self?.dismissFontPicker()
             }
         }
@@ -3482,7 +3482,7 @@ public final class DrawingToolsInteraction {
         
         var items: [ContextMenuItem] = []
         for font in fonts {
-            items.append(.action(ContextMenuActionItem(text: font.title, textFont: .custom(font: font.uiFont(size: 17.0), height: 42.0, verticalOffset: font.title == "Noteworthy" ? -6.0 : nil), icon: { _ in return nil }, animationName: nil, action: { [weak self] f in
+            items.append(.action(ContextMenuActionItem(text: font.title, textFont: .custom(font: font.uiFont(size: 17.0), height: 42.0, verticalOffset: font.title == "Noteworthy" ? -6.0 : nil), icon: { _ in return nil }, animationName: nil, action: { [weak self = self] f in
                 f.dismissWithResult(.default)
                 guard let strongSelf = self, let entityView = strongSelf.entitiesView.selectedEntityView as? DrawingTextEntityView, let textEntity = entityView.entity as? DrawingTextEntity else {
                     return
@@ -3542,7 +3542,7 @@ public final class DrawingToolsInteraction {
             inputView.deleteBackwards = { [weak textView] in
                 textView?.deleteBackward()
             }
-            inputView.switchToKeyboard = { [weak self] in
+            inputView.switchToKeyboard = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -3589,7 +3589,7 @@ public final class DrawingToolsInteraction {
                             isEmojiKeyboard: entityView.textView.inputView != nil,
                             tag: nil,
                             fontTag: fontTag,
-                            presentColorPicker: { [weak self] in
+                            presentColorPicker: { [weak self = self] in
                                 guard let strongSelf = self, let entityView = strongSelf.entitiesView.selectedEntityView as? DrawingTextEntityView, let textEntity = entityView.entity as? DrawingTextEntity else {
                                     return
                                 }
@@ -3598,18 +3598,18 @@ public final class DrawingToolsInteraction {
                                     entityView.resumeEditing()
                                 })
                             },
-                            presentFastColorPicker: { [weak self] buttonTag in
+                            presentFastColorPicker: { [weak self = self] buttonTag in
                                 if let buttonView = self?.textEditAccessoryHost.findTaggedView(tag: buttonTag) {
                                     self?.presentFastColorPicker(sourceView: buttonView)
                                 }
                             },
-                            updateFastColorPickerPan: { [weak self] point in
+                            updateFastColorPickerPan: { [weak self = self] point in
                                 self?.updateFastColorPickerPan(point)
                             },
-                            dismissFastColorPicker: { [weak self] in
+                            dismissFastColorPicker: { [weak self = self] in
                                 self?.dismissFastColorPicker()
                             },
-                            toggleStyle: { [weak self] in
+                            toggleStyle: { [weak self = self] in
                                 self?.dismissFontPicker()
                                 guard let strongSelf = self, let entityView = strongSelf.entitiesView.selectedEntityView as? DrawingTextEntityView, let textEntity = entityView.entity as? DrawingTextEntity else {
                                     return
@@ -3634,7 +3634,7 @@ public final class DrawingToolsInteraction {
                                     strongSelf.containerLayoutUpdated(layout: layout, transition: .immediate)
                                 }
                             },
-                            toggleAnimation: { [weak self] in
+                            toggleAnimation: { [weak self = self] in
                                 self?.dismissFontPicker()
                                 guard let strongSelf = self, let entityView = strongSelf.entitiesView.selectedEntityView as? DrawingTextEntityView, let textEntity = entityView.entity as? DrawingTextEntity else {
                                     return
@@ -3657,7 +3657,7 @@ public final class DrawingToolsInteraction {
                                     strongSelf.containerLayoutUpdated(layout: layout, transition: .immediate)
                                 }
                             },
-                            toggleAlignment: { [weak self] in
+                            toggleAlignment: { [weak self = self] in
                                 self?.dismissFontPicker()
                                 guard let strongSelf = self, let entityView = strongSelf.entitiesView.selectedEntityView as? DrawingTextEntityView, let textEntity = entityView.entity as? DrawingTextEntity else {
                                     return
@@ -3678,12 +3678,12 @@ public final class DrawingToolsInteraction {
                                     strongSelf.containerLayoutUpdated(layout: layout, transition: .immediate)
                                 }
                             },
-                            presentFontPicker: { [weak self] in
+                            presentFontPicker: { [weak self = self] in
                                 if let buttonView = self?.textEditAccessoryHost.findTaggedView(tag: fontTag) {
                                     self?.presentFontPicker(sourceView: buttonView)
                                 }
                             },
-                            toggleKeyboard: { [weak self] in
+                            toggleKeyboard: { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }

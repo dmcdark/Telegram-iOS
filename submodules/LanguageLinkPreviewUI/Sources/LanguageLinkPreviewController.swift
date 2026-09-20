@@ -43,28 +43,28 @@ public final class LanguageLinkPreviewController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = LanguageLinkPreviewControllerNode(context: self.context, requestLayout: { [weak self] transition in
+        self.displayNode = LanguageLinkPreviewControllerNode(context: self.context, requestLayout: { [weak self = self] transition in
             self?.requestLayout(transition: transition)
-        }, openUrl: { [weak self] url in
+        }, openUrl: { [weak self = self] url in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.context.sharedContext.openExternalUrl(context: strongSelf.context, urlContext: .generic, url: url, forceExternal: false, presentationData: strongSelf.presentationData, navigationController: nil, dismissInput: {
             })
         })
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
-        self.controllerNode.activate = { [weak self] in
+        self.controllerNode.activate = { [weak self = self] in
             self?.activate()
         }
         self.displayNodeDidLoad()
         
         self.disposable.set((self.context.engine.localization.requestLocalizationPreview(identifier: self.identifier)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let strongSelf = self else {
                 return
             }
@@ -75,7 +75,7 @@ public final class LanguageLinkPreviewController: ViewController {
                 strongSelf.localizationInfo = result
                 strongSelf.controllerNode.setData(localizationInfo: result)
             }
-        }, error: { [weak self] _ in
+        }, error: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -114,13 +114,13 @@ public final class LanguageLinkPreviewController: ViewController {
         }
         self.controllerNode.setInProgress(true)
         self.disposable.set((self.context.engine.localization.downloadAndApplyLocalization(accountManager: self.context.sharedContext.accountManager, languageCode: localizationInfo.languageCode)
-        |> deliverOnMainQueue).start(error: { [weak self] _ in
+        |> deliverOnMainQueue).start(error: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controllerNode.setInProgress(false)
             strongSelf.present(textAlertController(context: strongSelf.context, title: nil, text: strongSelf.presentationData.strings.Login_UnknownError, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})]), in: .window(.root))
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

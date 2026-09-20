@@ -170,7 +170,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
                     contentNode.frame = previous.frame
                     contentNode.updateLayout(size: previous.bounds.size, isLandscape: layout.size.width > layout.size.height, bottomInset: bottomGridInset, transition: .immediate)
                     
-                    contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                    contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                         self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                     })
                     self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -190,7 +190,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
                     previous.deactivate()
                 } else {
                     if let contentNode = self.contentNode {
-                        contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                        contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                             self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                         })
                         self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -199,7 +199,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
                     self.containerLayoutUpdated(layout, navigationBarHeight: navigationBarHeight, transition: transition)
                 }
             } else if let contentNode = contentNode {
-                contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                     self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                 })
                 self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -321,7 +321,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
             var dimCompleted = false
             var offsetCompleted = false
             
-            let internalCompletion: () -> Void = { [weak self] in
+            let internalCompletion: () -> Void = { [weak self = self] in
                 if let strongSelf = self, dimCompleted && offsetCompleted {
                     strongSelf.dismiss?()
                     strongSelf.animatingOut = true
@@ -382,7 +382,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -395,7 +395,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
     
     func setInvitePeer(image: TelegramMediaImageRepresentation?, title: String, about: String?, memberCount: Int32, members: [EnginePeer], data: JoinLinkPreviewData) {
         let contentNode = JoinLinkPreviewPeerContentNode(context: self.context, theme: self.presentationData.theme, strings: self.presentationData.strings, content: .invite(isGroup: data.isGroup, image: image, title: title, about: about, memberCount: memberCount, members: members))
-        contentNode.join = { [weak self] in
+        contentNode.join = { [weak self = self] in
             self?.join?()
         }
         self.transitionToContentNode(contentNode)
@@ -403,7 +403,7 @@ final class JoinLinkPreviewControllerNode: ViewControllerTracingNode, ASScrollVi
     
     func setRequestPeer(image: TelegramMediaImageRepresentation?, title: String, about: String?, memberCount: Int32, isGroup: Bool, isVerified: Bool, isFake: Bool, isScam: Bool) {
         let contentNode = JoinLinkPreviewPeerContentNode(context: self.context, theme: self.presentationData.theme, strings: self.presentationData.strings, content: .request(isGroup: isGroup, image: image, title: title, about: about, memberCount: memberCount, isVerified: isVerified, isFake: isFake, isScam: isScam))
-        contentNode.join = { [weak self] in
+        contentNode.join = { [weak self = self] in
             self?.join?()
         }
         self.transitionToContentNode(contentNode)

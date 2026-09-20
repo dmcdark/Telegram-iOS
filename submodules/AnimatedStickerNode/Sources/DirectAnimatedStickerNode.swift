@@ -106,7 +106,7 @@ public final class DirectAnimatedStickerNode: ASDisplayNode, AnimatedStickerNode
         self.sourceDisposable = (source.directDataPath(attemptSynchronously: false)
         |> filter { $0 != nil }
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] path in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] path in
             guard let strongSelf = self, let path = path else {
                 return
             }
@@ -158,7 +158,7 @@ public final class DirectAnimatedStickerNode: ASDisplayNode, AnimatedStickerNode
         }
         
         if self.nextFrameTimer == nil, let frameRate = frameRate, self.frameImages[self.frameIndex] != nil {
-            let nextFrameTimer = SwiftSignalKit.Timer(timeout: 1.0 / frameRate, repeat: false, completion: { [weak self] in
+            let nextFrameTimer = SwiftSignalKit.Timer(timeout: 1.0 / frameRate, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -299,7 +299,7 @@ public final class DirectAnimatedStickerNode: ASDisplayNode, AnimatedStickerNode
         let lottieInstance = self.lottieInstance
         let videoSource = self.videoSource
         
-        DirectAnimatedStickerNode.sharedQueue.async { [weak self] in
+        DirectAnimatedStickerNode.sharedQueue.async { [weak self = self] in
             var image: UIImage?
             
             if !task.isCancelled {

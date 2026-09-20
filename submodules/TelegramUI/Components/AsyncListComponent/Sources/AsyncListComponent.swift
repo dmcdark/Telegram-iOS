@@ -474,7 +474,7 @@ public final class AsyncListComponent: Component {
             
             self.addSubview(self.listNode.view)
             
-            self.listNode.onContentsUpdated = { [weak self] transition in
+            self.listNode.onContentsUpdated = { [weak self = self] transition in
                 guard let self else {
                     return
                 }
@@ -670,7 +670,7 @@ public final class AsyncListComponent: Component {
             self.listNode.position = mappedListFrame.origin
             self.listNode.bounds = CGRect(origin: CGPoint(), size: mappedListFrame.size)
             
-            self.listNode.reorderItem = { [weak self] fromIndex, toIndex, _ in
+            self.listNode.reorderItem = { [weak self = self] fromIndex, toIndex, _ in
                 guard let self, let component = self.component else {
                     return .single(false)
                 }

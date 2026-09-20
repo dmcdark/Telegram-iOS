@@ -253,7 +253,7 @@ private final class LineView: UIView {
                     let animation = dashBackgroundView.layer.makeAnimation(from: 18.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "position.y", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: 0.2, delay: 0.0, mediaTimingFunction: nil, removeOnCompletion: true, additive: true)
                     animation.repeatCount = 1.0
                     self.isAnimating = true
-                    animation.completion = { [weak self] _ in
+                    animation.completion = { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -267,7 +267,7 @@ private final class LineView: UIView {
                         let animation = dashThirdBackgroundView.layer.makeAnimation(from: 18.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "position.y", timingFunction: CAMediaTimingFunctionName.linear.rawValue, duration: 0.2, delay: 0.0, mediaTimingFunction: nil, removeOnCompletion: true, additive: true)
                         animation.repeatCount = 1.0
                         self.isAnimating = true
-                        animation.completion = { [weak self] _ in
+                        animation.completion = { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -283,7 +283,7 @@ private final class LineView: UIView {
                     let animation = self.backgroundView.layer.makeAnimation(from: 0.0 as NSNumber, to: -params.size.height as NSNumber, keyPath: "position.y", timingFunction: kCAMediaTimingFunctionSpring, duration: phaseDuration * 0.5, delay: 0.0, mediaTimingFunction: nil, removeOnCompletion: false, additive: true)
                     animation.repeatCount = 1.0
                     self.isAnimating = true
-                    animation.completion = { [weak self] _ in
+                    animation.completion = { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -291,7 +291,7 @@ private final class LineView: UIView {
                         let animation = self.backgroundView.layer.makeAnimation(from: params.size.height as NSNumber, to: 0.0 as NSNumber, keyPath: "position.y", timingFunction: kCAMediaTimingFunctionSpring, duration: phaseDuration * 0.5, delay: self.params?.displayProgress == true ? 0.1 : 0.0, mediaTimingFunction: nil, removeOnCompletion: true, additive: true)
                         animation.repeatCount = 1.0
                         self.isAnimating = true
-                        animation.completion = { [weak self] _ in
+                        animation.completion = { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -595,7 +595,7 @@ public final class MessageInlineBlockBackgroundView: UIView {
                 keyframeOnly: false,
                 customColor: .white
             ),
-            completion: { [weak self] _, _ in
+            completion: { [weak self = self] _, _ in
                 guard let self else {
                     return
                 }
@@ -676,7 +676,7 @@ public final class MessageInlineBlockBackgroundView: UIView {
                 }
                 
                 if self.patternContentsTarget == nil {
-                    self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self] in
+                    self.patternContentsTarget = PatternContentsTarget(imageUpdated: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -696,7 +696,7 @@ public final class MessageInlineBlockBackgroundView: UIView {
                     } else {
                         let fileId = pattern.fileId
                         self.patternFileDisposable = (pattern.context.engine.stickers.resolveInlineStickers(fileIds: [pattern.fileId])
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] files in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] files in
                             guard let self else {
                                 return
                             }
@@ -841,7 +841,7 @@ public final class MessageInlineBlockBackgroundView: UIView {
                     let hierarchyTrackingLayer = HierarchyTrackingLayer()
                     self.hierarchyTrackingLayer = hierarchyTrackingLayer
                     self.layer.addSublayer(hierarchyTrackingLayer)
-                    hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] _ in
+                    hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] _ in
                         self?.updateAnimations()
                     }
                 }

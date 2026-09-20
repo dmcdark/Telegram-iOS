@@ -316,7 +316,7 @@ final class ChatHistoryPreloadManager {
             }
         }
         |> distinctUntilChanged
-        |> deliverOn(self.queue)).start(next: { [weak self] value in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] value in
             guard let strongSelf = self, strongSelf.canPreloadHistoryValue != value else {
                 return
             }
@@ -356,7 +356,7 @@ final class ChatHistoryPreloadManager {
         
         self.automaticChatListDisposable.set((combineLatest(queue: .mainQueue(), self.preloadItemsSignal, additionalPeerIds)
         |> delay(1.0, queue: .mainQueue())
-        |> deliverOnMainQueue).start(next: { [weak self] loadItems, additionalPeerIds in
+        |> deliverOnMainQueue).start(next: { [weak self = self] loadItems, additionalPeerIds in
             guard let strongSelf = self else {
                 return
             }
@@ -439,7 +439,7 @@ final class ChatHistoryPreloadManager {
                         key = .messageOfInterestHole(location: .peer(peerId: peerId, threadId: threadId), namespace: Namespaces.Message.Cloud, count: 50)
                     }
                     view.disposable.set((self.postbox.combinedView(keys: [key])
-                    |> deliverOn(self.queue)).start(next: { [weak self] next in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] next in
                         if let strongSelf = self, let value = next.views[key] as? MessageOfInterestHolesView {
                             if let view = strongSelf.views[index.entity] {
                                 let previousHole = view.currentHole

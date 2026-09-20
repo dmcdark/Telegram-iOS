@@ -245,7 +245,7 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
         
         self.addSubnode(self.gridNode)
         
-        self.gridNode.scrollingInitiated = { [weak self] in
+        self.gridNode.scrollingInitiated = { [weak self = self] in
             self?.scrollingInitiated?()
         }
     }
@@ -307,7 +307,7 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
                 ),
                 elevatedLayout: false,
                 animateInAsReplacement: animateInAsReplacement,
-                action: { [weak self] overlayAction in
+                action: { [weak self = self] overlayAction in
                     if case .undo = overlayAction {
                         let _ = self?.context.engine.stickers.addStickerPackInteractively(info: action.info, items: action.items, positionInList: positionInList).start()
                     }
@@ -325,7 +325,7 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
         }
         self.isActivated = true
         
-        let interaction = TrendingPaneInteraction(installPack: { [weak self] info in
+        let interaction = TrendingPaneInteraction(installPack: { [weak self = self] info in
             if let strongSelf = self, let info = info as? StickerPackCollectionInfo {
                 let context = strongSelf.context
                 var installSignal = context.engine.stickers.loadedStickerPack(reference: .id(id: info.id.id, accessHash: info.accessHash), forceActualized: false)
@@ -410,7 +410,7 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
                     }))
                 }))
             }
-        }, openPack: { [weak self] info in
+        }, openPack: { [weak self = self] info in
             if let strongSelf = self, let info = info as? StickerPackCollectionInfo {
                 strongSelf.view.window?.endEditing(true)
                 let packReference: StickerPackReference = .id(id: info.id.id, accessHash: info.accessHash)
@@ -437,14 +437,14 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
                             return false
                         }
                     },
-                    actionPerformed: { [weak self] actions in
+                    actionPerformed: { [weak self = self] actions in
                         self?.presentStickerPackActionOverlay(actions)
                     }
                 )
                 strongSelf.interaction.presentController(controller, nil)
             }
         }, getItemIsPreviewed: self.getItemIsPreviewed,
-        openSearch: { [weak self] in
+        openSearch: { [weak self = self] in
             self?.inputNodeInteraction?.toggleSearch(true, .trending, "")
         })
         interaction.itemContext.canPlayMedia = true
@@ -468,7 +468,7 @@ public final class ChatMediaInputTrendingPane: ChatMediaInputPane {
             
             return preparedTransition(from: previous ?? [], to: entries, context: context, interaction: interaction, initial: previous == nil)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] transition in
+        |> deliverOnMainQueue).start(next: { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }

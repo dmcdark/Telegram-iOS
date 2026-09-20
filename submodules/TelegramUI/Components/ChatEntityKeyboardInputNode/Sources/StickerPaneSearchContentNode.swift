@@ -379,10 +379,10 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
         self.view.addSubview(self.bottomEdgeEffectView)
 
         self.gridNode.scrollView.alwaysBounceVertical = true
-        self.gridNode.scrollingInitiated = { [weak self] in
+        self.gridNode.scrollingInitiated = { [weak self = self] in
             self?.deactivateSearchBar?()
         }
-        self.gridNode.visibleItemsUpdated = { [weak self] visibleItems in
+        self.gridNode.visibleItemsUpdated = { [weak self = self] visibleItems in
             guard let self else {
                 return
             }
@@ -399,11 +399,11 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
             }
         }
 
-        self.trendingPane.scrollingInitiated = { [weak self] in
+        self.trendingPane.scrollingInitiated = { [weak self = self] in
             self?.deactivateSearchBar?()
         }
 
-        self.searchInteraction = StickerPaneSearchInteraction(open: { [weak self] info in
+        self.searchInteraction = StickerPaneSearchInteraction(open: { [weak self = self] info in
             if let strongSelf = self {
                 strongSelf.view.window?.endEditing(true)
                 let packReference: StickerPackReference = .id(id: info.id.id, accessHash: info.accessHash)
@@ -420,20 +420,20 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
                     isEditing: false,
                     expandIfNeeded: false,
                     parentNavigationController: strongSelf.interaction.getNavigationController(),
-                    sendSticker: { [weak self] fileReference, sourceView, sourceRect in
+                    sendSticker: { [weak self = self] fileReference, sourceView, sourceRect in
                         if let strongSelf = self {
                             return strongSelf.interaction.sendSticker(fileReference, false, false, nil, false, sourceView, sourceRect, nil, [])
                         } else {
                             return false
                         }
                     },
-                    actionPerformed: { [weak self] actions in
+                    actionPerformed: { [weak self = self] actions in
                         self?.presentStickerPackActionOverlay(actions)
                     }
                 )
                 strongSelf.interaction.presentController(controller, nil)
             }
-        }, install: { [weak self] info, items, install in
+        }, install: { [weak self = self] info, items, install in
             guard let strongSelf = self else {
                 return
             }
@@ -509,7 +509,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
                 |> deliverOnMainQueue).start(next: { _ in
                 })
             }
-        }, sendSticker: { [weak self] file, sourceView, sourceLayer, sourceRect in
+        }, sendSticker: { [weak self = self] file, sourceView, sourceLayer, sourceRect in
             if let self {
                 let sourceRect = sourceView.convert(sourceRect, to: self.view)
                 let _ = self.interaction.sendSticker(file, false, false, nil, false, self.view, sourceRect, sourceLayer, [])
@@ -580,7 +580,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
                 ),
                 elevatedLayout: false,
                 animateInAsReplacement: animateInAsReplacement,
-                action: { [weak self] overlayAction in
+                action: { [weak self = self] overlayAction in
                     if case .undo = overlayAction {
                         let _ = self?.context.engine.stickers.addStickerPackInteractively(info: action.info, items: action.items, positionInList: positionInList).start()
                         self?.setPackInstalledState(id: action.info.id, installed: true)
@@ -707,7 +707,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
         }
 
         self.searchDisposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] result in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] result in
             Queue.mainQueue().async {
                 guard let strongSelf = self, let interaction = strongSelf.searchInteraction else {
                     return
@@ -949,7 +949,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
 
         let packId = pack.info.id
         self.selectedPackDisposable.set((self.context.engine.stickers.loadedStickerPack(reference: .id(id: pack.info.id.id, accessHash: pack.info.accessHash), forceActualized: false)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self, let interaction = self.searchInteraction, self.selectedPack?.info.id == packId else {
                 return
             }
@@ -1001,7 +1001,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
         }
         |> deliverOnMainQueue)
 
-        self.installDisposable.set(installSignal.start(next: { [weak self] info, items in
+        self.installDisposable.set(installSignal.start(next: { [weak self = self] info, items in
             guard let self else {
                 return
             }
@@ -1110,7 +1110,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
                                 theme: self.theme,
                                 info: pack.info,
                                 topItem: pack.topItems.first,
-                                pressed: { [weak self] in
+                                pressed: { [weak self = self] in
                                     self?.selectPack(pack)
                                 }
                             ))
@@ -1180,7 +1180,7 @@ final class StickerPaneSearchContentNode: ASDisplayNode, PaneSearchContentNode {
                         id: AnyHashable(buttonTitle),
                         component: AnyComponent(Text(text: buttonTitle, font: Font.semibold(17.0), color: buttonForegroundColor))
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.installSelectedStickerPack()
                     }
                 )),

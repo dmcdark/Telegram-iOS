@@ -207,7 +207,7 @@ final class SelectGiftPageContent: Component {
                                 isPinned: false,
                                 isEditing: false,
                                 mode: .grid,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let component = self.component, let environment = self.environment else {
                                         return
                                     }
@@ -341,7 +341,7 @@ final class SelectGiftPageContent: Component {
             if self.component == nil {
                 self.currentBounds = CGRect(origin: .zero, size: availableSize)
                 
-                component.boundsUpdated.connect { [weak self] update in
+                component.boundsUpdated.connect { [weak self = self] update in
                     guard let self else {
                         return
                     }
@@ -358,7 +358,7 @@ final class SelectGiftPageContent: Component {
                 ]
                 
                 self.craftStateDisposable = (component.craftContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -472,7 +472,7 @@ final class SelectGiftPageContent: Component {
                         starsTopUpOptions: component.starsTopUpOptions,
                         scrollToTop: {},
                         controller: environment.controller,
-                        completion: { [weak self] uniqueGift in
+                        completion: { [weak self = self] uniqueGift in
                             guard let self, let component = self.component, let controller = self.environment?.controller() as? SelectCraftGiftScreen, let navigationController = controller.navigationController else {
                                 return
                             }

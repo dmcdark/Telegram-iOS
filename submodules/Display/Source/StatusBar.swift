@@ -125,7 +125,7 @@ public final class StatusBar: ASDisplayNode {
         } else {
             self.removeProxyNodeScheduled = true
             
-            DispatchQueue.main.async(execute: { [weak self] in
+            DispatchQueue.main.async(execute: { [weak self = self] in
                 if let strongSelf = self {
                     if strongSelf.removeProxyNodeScheduled {
                         strongSelf.removeProxyNodeScheduled = false

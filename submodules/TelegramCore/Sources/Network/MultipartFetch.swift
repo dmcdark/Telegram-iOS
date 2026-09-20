@@ -253,7 +253,7 @@ private final class MultipartCdnHashSource {
 
     private func cluster(offset: Int64) -> Signal<[Int64: Data], MultipartFetchDownloadError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
 
             queue.async {
@@ -655,7 +655,7 @@ private final class MultipartFetchManager {
             }).start()
             
             self.rangesDisposable = (tempRanges.get()
-            |> deliverOn(self.queue)).start(next: { [weak self] intervals in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] intervals in
                 if let strongSelf = self {
                     if let _ = strongSelf.currentIntervals {
                         strongSelf.currentIntervals = intervals
@@ -668,7 +668,7 @@ private final class MultipartFetchManager {
             })
         } else {*/
             self.rangesDisposable = (intervals
-            |> deliverOn(self.queue)).start(next: { [weak self] intervals in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] intervals in
                 if let strongSelf = self {
                     if let _ = strongSelf.currentIntervals {
                         strongSelf.currentIntervals = intervals
@@ -682,7 +682,7 @@ private final class MultipartFetchManager {
         //}
         
         /*self.markSpeedRecord()
-        self.speedTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+        self.speedTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
             self?.markSpeedRecord()
         }, queue: self.queue)
         self.speedTimer?.start()*/
@@ -867,7 +867,7 @@ private final class MultipartFetchManager {
             
             let partSize: Int32 = Int32(downloadRange.upperBound - downloadRange.lowerBound)
             let queue = self.queue
-            let part = self.source.request(offset: downloadRange.lowerBound, limit: downloadRange.upperBound - downloadRange.lowerBound, tag: self.parameters?.tag, resource: self.resource, resourceReference: self.resourceReference, fileReference: self.fileReference, continueInBackground: self.continueInBackground, onFloodWaitError: { [weak self] error in
+            let part = self.source.request(offset: downloadRange.lowerBound, limit: downloadRange.upperBound - downloadRange.lowerBound, tag: self.parameters?.tag, resource: self.resource, resourceReference: self.resourceReference, fileReference: self.fileReference, continueInBackground: self.continueInBackground, onFloodWaitError: { [weak self = self] error in
                 queue.async {
                     guard let self else {
                         return
@@ -880,7 +880,7 @@ private final class MultipartFetchManager {
             self.fetchingParts[downloadRange.lowerBound] = FetchingPart(size: Int64(downloadRange.count), disposable: partDisposable)
             let partStartTimestamp = CFAbsoluteTimeGetCurrent()
             let effectiveDatacenterId = self.source.effectiveDatacenterId
-            partDisposable.set(part.start(next: { [weak self] data, info in
+            partDisposable.set(part.start(next: { [weak self = self] data, info in
                 guard let strongSelf = self else {
                     return
                 }
@@ -900,7 +900,7 @@ private final class MultipartFetchManager {
                 let _ = strongSelf.fetchingParts.removeValue(forKey: downloadRange.lowerBound)
                 strongSelf.fetchedParts[downloadRange.lowerBound] = (rawRange.lowerBound, data)
                 strongSelf.checkState()
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 guard let strongSelf = self else {
                     return
                 }

@@ -62,7 +62,7 @@ public final class AdRemainingProgressComponent: Component {
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.layer.removeAnimation(forKey: "opacity")
@@ -94,7 +94,7 @@ public final class AdRemainingProgressComponent: Component {
 
         func update(component: AdRemainingProgressComponent, availableSize: CGSize, state: EmptyComponentState, environment: Environment<Empty>, transition: ComponentTransition) -> CGSize {
             if self.component == nil {
-                self.timer = SwiftSignalKit.Timer(timeout: 0.25, repeat: true, completion: { [weak self] progress in
+                self.timer = SwiftSignalKit.Timer(timeout: 0.25, repeat: true, completion: { [weak self = self] progress in
                     guard let self else {
                         return
                     }

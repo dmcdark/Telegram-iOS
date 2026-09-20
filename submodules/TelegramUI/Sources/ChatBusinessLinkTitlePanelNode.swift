@@ -83,7 +83,7 @@ private final class ChatBusinessLinkTitlePanelComponent: Component {
                     effectAlignment: .center,
                     minSize: CGSize(width: floor(availableSize.width * 0.5), height: size.height),
                     contentInsets: UIEdgeInsets(),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -112,7 +112,7 @@ private final class ChatBusinessLinkTitlePanelComponent: Component {
                     effectAlignment: .center,
                     minSize: CGSize(width: floor(availableSize.width * 0.5), height: size.height),
                     contentInsets: UIEdgeInsets(),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -216,10 +216,10 @@ final class ChatBusinessLinkTitlePanelNode: ChatTitleAccessoryPanelNode {
                 theme: interfaceState.theme,
                 strings: interfaceState.strings,
                 insets: UIEdgeInsets(top: 0.0, left: leftInset, bottom: 0.0, right: rightInset),
-                copyAction: { [weak self] in
+                copyAction: { [weak self = self] in
                     self?.copyAction()
                 },
-                shareAction: { [weak self] in
+                shareAction: { [weak self = self] in
                     self?.shareAction()
                 }
             )),

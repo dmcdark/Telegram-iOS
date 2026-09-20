@@ -1562,7 +1562,7 @@ public final class ThemeSettingsCrossfadeController: ViewController {
     override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.displayNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+        self.displayNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         })
         

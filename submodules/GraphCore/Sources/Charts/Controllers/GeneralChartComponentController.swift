@@ -389,9 +389,9 @@ class GeneralChartComponentController: ChartThemeContainer {
                                               isLoading: false,
                                               values: values,
                                               totalValue: nil, 
-                                              tapAction: { [weak self] in
+                                              tapAction: { [weak self = self] in
                                                 self?.zoomInOnDateClosure?(closestDate) },
-                                              hideAction: { [weak self] in
+                                              hideAction: { [weak self = self] in
                                                 self?.setDetailsChartVisibleClosure?(false, true)
                                               })
         return viewModel

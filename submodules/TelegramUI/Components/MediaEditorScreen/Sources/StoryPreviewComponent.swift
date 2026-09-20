@@ -109,7 +109,7 @@ final class StoryPreviewComponent: Component {
             super.init()
             
             self.peerDisposable = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 if let self {
                     self.accountPeer = peer
                     self.updated()

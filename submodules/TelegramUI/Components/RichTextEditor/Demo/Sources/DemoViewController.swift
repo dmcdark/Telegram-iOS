@@ -148,22 +148,22 @@ final class DemoViewController: UIViewController, PHPickerViewControllerDelegate
         }
 
         let buttons: [UIButton] = [
-            button("B") { [weak self] in self?.editor.toggleBold() },
-            button("I") { [weak self] in self?.editor.toggleItalic() },
-            button("S") { [weak self] in self?.editor.toggleStrikethrough() },
-            button("<>") { [weak self] in self?.editor.toggleInlineCode() },
-            button("Spoiler") { [weak self] in self?.editor.toggleSpoiler() },
+            button("B") { [weak self = self] in self?.editor.toggleBold() },
+            button("I") { [weak self = self] in self?.editor.toggleItalic() },
+            button("S") { [weak self = self] in self?.editor.toggleStrikethrough() },
+            button("<>") { [weak self = self] in self?.editor.toggleInlineCode() },
+            button("Spoiler") { [weak self = self] in self?.editor.toggleSpoiler() },
             menuButton("Style", styleMenu()),
             menuButton("List", listMenu()),
-            button("Indent") { [weak self] in self?.editor.indent() },
-            button("Outdent") { [weak self] in self?.editor.outdent() },
+            button("Indent") { [weak self = self] in self?.editor.indent() },
+            button("Outdent") { [weak self = self] in self?.editor.outdent() },
             menuButton("Align", alignMenu()),
             menuButton("Table", tableMenu()),
-            button("Image") { [weak self] in self?.presentImagePicker() },
-            button("Link") { [weak self] in self?.presentLinkPrompt() },
+            button("Image") { [weak self = self] in self?.presentImagePicker() },
+            button("Link") { [weak self = self] in self?.presentLinkPrompt() },
             menuButton("Emoji", emojiMenu()),
-            button("Undo") { [weak self] in self?.editor.undo() },
-            button("Redo") { [weak self] in self?.editor.redo() },
+            button("Undo") { [weak self = self] in self?.editor.undo() },
+            button("Redo") { [weak self = self] in self?.editor.redo() },
         ]
 
         let stack = UIStackView(arrangedSubviews: buttons)
@@ -191,42 +191,42 @@ final class DemoViewController: UIViewController, PHPickerViewControllerDelegate
         let names: [(String, ParagraphStyleName)] = [("Heading 1", .heading1),
             ("Heading 2", .heading2), ("Heading 3", .heading3), ("Body", .body), ("Quote", .quote)]
         return UIMenu(title: "Style", children: names.map { n in
-            UIAction(title: n.0) { [weak self] _ in self?.editor.setParagraphStyle(n.1) }
+            UIAction(title: n.0) { [weak self = self] _ in self?.editor.setParagraphStyle(n.1) }
         })
     }
     private func listMenu() -> UIMenu {
         UIMenu(title: "List", children: [
-            UIAction(title: "None") { [weak self] _ in self?.editor.setList(nil) },
-            UIAction(title: "Bullet") { [weak self] _ in self?.editor.setList(.bullet) },
-            UIAction(title: "Numbered") { [weak self] _ in self?.editor.setList(.ordered) },
+            UIAction(title: "None") { [weak self = self] _ in self?.editor.setList(nil) },
+            UIAction(title: "Bullet") { [weak self = self] _ in self?.editor.setList(.bullet) },
+            UIAction(title: "Numbered") { [weak self = self] _ in self?.editor.setList(.ordered) },
         ])
     }
     private func alignMenu() -> UIMenu {
         let items: [(String, TextAlignment)] = [("Left", .left), ("Center", .center), ("Right", .right), ("Justify", .justified)]
         return UIMenu(title: "Align", children: items.map { i in
-            UIAction(title: i.0) { [weak self] _ in self?.editor.setAlignment(i.1) }
+            UIAction(title: i.0) { [weak self = self] _ in self?.editor.setAlignment(i.1) }
         })
     }
     private func emojiMenu() -> UIMenu {
         UIMenu(title: "Emoji", children: [
-            UIAction(title: "Insert ★ (static)") { [weak self] _ in self?.editor.insertEmoji(id: "star", altText: ":star:") },
-            UIAction(title: "Insert ◐ (animated)") { [weak self] _ in self?.editor.insertEmoji(id: "spinner", altText: ":spinner:") },
+            UIAction(title: "Insert ★ (static)") { [weak self = self] _ in self?.editor.insertEmoji(id: "star", altText: ":star:") },
+            UIAction(title: "Insert ◐ (animated)") { [weak self = self] _ in self?.editor.insertEmoji(id: "spinner", altText: ":spinner:") },
         ])
     }
 
     private func tableMenu() -> UIMenu {
         UIMenu(title: "Table", children: [
-            UIAction(title: "Insert Table 2×2") { [weak self] _ in self?.editor.insertTable(rows: 2, cols: 2) },
-            UIAction(title: "Insert Wide Table 7×3") { [weak self] _ in self?.editor.insertTable(rows: 3, cols: 7) },
-            UIAction(title: "Insert Row Above") { [weak self] _ in self?.editor.insertTableRowAbove() },
-            UIAction(title: "Insert Row Below") { [weak self] _ in self?.editor.insertTableRowBelow() },
-            UIAction(title: "Delete Row") { [weak self] _ in self?.editor.deleteTableRow() },
-            UIAction(title: "Insert Column Left") { [weak self] _ in self?.editor.insertTableColumnLeft() },
-            UIAction(title: "Insert Column Right") { [weak self] _ in self?.editor.insertTableColumnRight() },
-            UIAction(title: "Delete Column") { [weak self] _ in self?.editor.deleteTableColumn() },
-            UIAction(title: "Align Column Left") { [weak self] _ in self?.editor.setSelectionHorizontalAlignment(.left) },
-            UIAction(title: "Align Column Center") { [weak self] _ in self?.editor.setSelectionHorizontalAlignment(.center) },
-            UIAction(title: "Align Column Right") { [weak self] _ in self?.editor.setSelectionHorizontalAlignment(.right) },
+            UIAction(title: "Insert Table 2×2") { [weak self = self] _ in self?.editor.insertTable(rows: 2, cols: 2) },
+            UIAction(title: "Insert Wide Table 7×3") { [weak self = self] _ in self?.editor.insertTable(rows: 3, cols: 7) },
+            UIAction(title: "Insert Row Above") { [weak self = self] _ in self?.editor.insertTableRowAbove() },
+            UIAction(title: "Insert Row Below") { [weak self = self] _ in self?.editor.insertTableRowBelow() },
+            UIAction(title: "Delete Row") { [weak self = self] _ in self?.editor.deleteTableRow() },
+            UIAction(title: "Insert Column Left") { [weak self = self] _ in self?.editor.insertTableColumnLeft() },
+            UIAction(title: "Insert Column Right") { [weak self = self] _ in self?.editor.insertTableColumnRight() },
+            UIAction(title: "Delete Column") { [weak self = self] _ in self?.editor.deleteTableColumn() },
+            UIAction(title: "Align Column Left") { [weak self = self] _ in self?.editor.setSelectionHorizontalAlignment(.left) },
+            UIAction(title: "Align Column Center") { [weak self = self] _ in self?.editor.setSelectionHorizontalAlignment(.center) },
+            UIAction(title: "Align Column Right") { [weak self = self] _ in self?.editor.setSelectionHorizontalAlignment(.right) },
         ])
     }
 
@@ -244,7 +244,7 @@ final class DemoViewController: UIViewController, PHPickerViewControllerDelegate
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         guard let provider = results.first?.itemProvider, provider.canLoadObject(ofClass: UIImage.self) else { return }
-        provider.loadObject(ofClass: UIImage.self) { [weak self] object, _ in
+        provider.loadObject(ofClass: UIImage.self) { [weak self = self] object, _ in
             guard let image = object as? UIImage else { return }
             let naturalSize = image.size
             DispatchQueue.main.async {
@@ -271,7 +271,7 @@ final class DemoViewController: UIViewController, PHPickerViewControllerDelegate
             self?.editor.setLink(url)
         })
         if existing != nil {
-            alert.addAction(UIAlertAction(title: "Remove", style: .destructive) { [weak self] _ in
+            alert.addAction(UIAlertAction(title: "Remove", style: .destructive) { [weak self = self] _ in
                 self?.editor.becomeFirstResponder()
                 self?.editor.removeLink()
             })

@@ -136,9 +136,9 @@ public final class UndoOverlayController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = UndoOverlayControllerNode(presentationData: self.presentationData, content: self.content, elevatedLayout: self.elevatedLayout, placementPosition: self.position, appearance: self.appearance, additionalView: self.additionalView, action: { [weak self] value in
+        self.displayNode = UndoOverlayControllerNode(presentationData: self.presentationData, content: self.content, elevatedLayout: self.elevatedLayout, placementPosition: self.position, appearance: self.appearance, additionalView: self.additionalView, action: { [weak self = self] value in
             return self?.action(value) ?? false
-        }, dismiss: { [weak self] in
+        }, dismiss: { [weak self = self] in
             self?.dismiss()
         })
         self.displayNodeDidLoad()
@@ -151,7 +151,7 @@ public final class UndoOverlayController: ViewController {
     
     public func dismissWithCommitActionAndReplacementAnimation() {
         let _ = self.action(.commit)
-        (self.displayNode as! UndoOverlayControllerNode).animateOutWithReplacement(completion: { [weak self] in
+        (self.displayNode as! UndoOverlayControllerNode).animateOutWithReplacement(completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         })
     }
@@ -176,7 +176,7 @@ public final class UndoOverlayController: ViewController {
             return
         }
         self.dismissed = true
-        (self.displayNode as! UndoOverlayControllerNode).animateOut(completion: { [weak self] in
+        (self.displayNode as! UndoOverlayControllerNode).animateOut(completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
             completion?()
         })

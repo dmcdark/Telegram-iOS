@@ -375,7 +375,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
                     return .complete()
                 }
                 |> deliverOnMainQueue
-                |> beforeCompleted { [weak self] in
+                |> beforeCompleted { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.impl.with { impl in
                             for (contextPeerId, context) in impl.contexts {
@@ -392,7 +392,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
             } else {
                 return engine.peers.updateChannelMemberBannedRights(peerId: peerId, memberId: memberId, rights: bannedRights)
                 |> deliverOnMainQueue
-                |> beforeNext { [weak self] (previous, updated, isMember) in
+                |> beforeNext { [weak self = self] (previous, updated, isMember) in
                     if let strongSelf = self {
                         strongSelf.impl.with { impl in
                             for (contextPeerId, context) in impl.contexts {
@@ -417,7 +417,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     public func updateMemberRank(engine: TelegramEngine, peerId: PeerId, memberId: PeerId, rank: String?) -> Signal<Void, UpdateChatRankError> {
         return engine.peers.updateChatRank(peerId: peerId, userId: memberId, rank: rank)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] result in
+        |> beforeNext { [weak self = self] result in
             if let strongSelf = self, let (previous, updated) = result {
                 strongSelf.impl.with { impl in
                     for (contextPeerId, context) in impl.contexts {
@@ -437,7 +437,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
         return engine.peers.updateChannelAdminRights(peerId: peerId, adminId: memberId, rights: adminRights, rank: rank)
         |> map(Optional.init)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] result in
+        |> beforeNext { [weak self = self] result in
             if let strongSelf = self, let (previous, updated) = result {
                 strongSelf.impl.with { impl in
                     for (contextPeerId, context) in impl.contexts {
@@ -457,7 +457,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
         return engine.peers.updateChatOwnership(peerId: peerId, memberId: memberId, password: password)
         |> map(Optional.init)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] results in
+        |> beforeNext { [weak self = self] results in
             if let strongSelf = self, let results = results {
                 strongSelf.impl.with { impl in
                     for (contextPeerId, context) in impl.contexts {
@@ -476,7 +476,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     public func join(engine: TelegramEngine, peerId: PeerId, hash: String?) -> Signal<JoinChannelResult, JoinChannelError> {
         return engine.peers.joinChannel(peerId: peerId, hash: hash)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] result in
+        |> beforeNext { [weak self = self] result in
             if let self {
                 self.impl.with { impl in
                     for (contextPeerId, context) in impl.contexts {
@@ -499,7 +499,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     public func addMember(engine: TelegramEngine, peerId: PeerId, memberId: PeerId) -> Signal<Never, AddChannelMemberError> {
         return engine.peers.addChannelMember(peerId: peerId, memberId: memberId)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] result in
+        |> beforeNext { [weak self = self] result in
             if let strongSelf = self {
                 let (previous, updated) = result
                 strongSelf.impl.with { impl in
@@ -524,7 +524,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
         })
         return combineLatest(signals)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] results in
+        |> beforeNext { [weak self = self] results in
             if let strongSelf = self {
                 strongSelf.impl.with { impl in
                     for result in results {
@@ -556,7 +556,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
         })
         return combineLatest(signals)
         |> deliverOnMainQueue
-        |> beforeNext { [weak self] results in
+        |> beforeNext { [weak self = self] results in
             if let strongSelf = self {
                 strongSelf.impl.with { impl in
                     for (result, _, _) in results {
@@ -585,7 +585,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     }
     
     public func recentOnline(account: Account, accountPeerId: PeerId, peerId: PeerId) -> Signal<Int32, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let strongSelf = self else {
                 subscriber.putNext(0)
                 subscriber.putCompletion()
@@ -602,7 +602,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     }
     
     public func recentOnlineSmall(engine: TelegramEngine, accountPeerId: PeerId, peerId: PeerId) -> Signal<(total: Int32, recent: Int32), NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             var previousIds: Set<PeerId>?
             let statusesDisposable = MetaDisposable()
             let disposableAndControl = self?.recent(engine: engine, accountPeerId: accountPeerId, peerId: peerId, updated: { state in
@@ -651,7 +651,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     }
     
     public func profileData(postbox: Postbox, network: Network, peerId: PeerId, customData: Signal<Never, NoError>?) -> Signal<Never, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let strongSelf = self else {
                 subscriber.putCompletion()
                 return EmptyDisposable
@@ -665,7 +665,7 @@ public final class PeerChannelMemberCategoriesContextsManager {
     }
     
     public func profilePhotos(postbox: Postbox, network: Network, peerId: PeerId, fetch: Signal<Any, NoError>) -> Signal<Any?, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let strongSelf = self else {
                 subscriber.putNext(0)
                 subscriber.putCompletion()

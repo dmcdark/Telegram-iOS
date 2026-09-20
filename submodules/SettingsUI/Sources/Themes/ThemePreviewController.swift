@@ -152,7 +152,7 @@ public final class ThemePreviewController: ViewController {
         }
         
         self.disposable = (combineLatest(self.theme.get(), self.presentationTheme.get())
-        |> deliverOnMainQueue).start(next: { [weak self] theme, presentationTheme in
+        |> deliverOnMainQueue).start(next: { [weak self = self] theme, presentationTheme in
             if let strongSelf = self, let theme = theme {
                 let titleView = CounterControllerTitleView(theme: strongSelf.previewTheme)
                 titleView.title = CounterControllerTitle(title: themeName, counter: hasInstallsCount ? strongSelf.presentationData.strings.Theme_UsersCount(max(1, theme.installCount ?? 0)) : "")
@@ -162,7 +162,7 @@ public final class ThemePreviewController: ViewController {
         })
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
             }
@@ -208,11 +208,11 @@ public final class ThemePreviewController: ViewController {
             }
         }
         
-        self.displayNode = ThemePreviewControllerNode(context: self.context, previewTheme: self.previewTheme, initialWallpaper: initialWallpaper, dismiss: { [weak self] in
+        self.displayNode = ThemePreviewControllerNode(context: self.context, previewTheme: self.previewTheme, initialWallpaper: initialWallpaper, dismiss: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }
-        }, apply: { [weak self] in
+        }, apply: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.apply()
             }
@@ -419,7 +419,7 @@ public final class ThemePreviewController: ViewController {
         }
         
         var cancelImpl: (() -> Void)?
-        let progress = Signal<Never, NoError> { [weak self] subscriber in
+        let progress = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -443,7 +443,7 @@ public final class ThemePreviewController: ViewController {
                 progressDisposable.dispose()
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] previousDefaultTheme in
+        |> deliverOnMainQueue).start(next: { [weak self = self] previousDefaultTheme in
             if let strongSelf = self, let layout = strongSelf.validLayout {
                 Queue.mainQueue().after(0.3) {
                     if case .settings = strongSelf.source {
@@ -452,7 +452,7 @@ public final class ThemePreviewController: ViewController {
                         let navigationController = strongSelf.navigationController as? NavigationController
                         if let (previousDefaultTheme, previousAccentColor, autoNightMode, theme, _) = previousDefaultTheme {
                             let _ = (ApplicationSpecificNotice.getThemeChangeTip(accountManager: strongSelf.context.sharedContext.accountManager)
-                            |> deliverOnMainQueue).start(next: { [weak self] displayed in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] displayed in
                                 guard let strongSelf = self, !displayed else {
                                     return
                                 }

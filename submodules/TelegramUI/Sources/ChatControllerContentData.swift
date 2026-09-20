@@ -539,7 +539,7 @@ extension ChatControllerImpl {
                     messageOptionsTitleInfo,
                     savedMessagesChatsTip
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerView, onlineMemberCount, displayedCount, subtitleText, configuration, hasPeerInfo, messageOptionsTitleInfo, savedMessagesChatsTip in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView, onlineMemberCount, displayedCount, subtitleText, configuration, hasPeerInfo, messageOptionsTitleInfo, savedMessagesChatsTip in
                     guard let strongSelf = self else {
                         return
                     }
@@ -738,7 +738,7 @@ extension ChatControllerImpl {
                     displayedPeerVerification,
                     globalPrivacySettings,
                     canStopIncomingStreamingMessage
-                ).startStrict(next: { [weak self] peerView, globalNotificationSettings, onlineMemberCount, hasScheduledMessages, hasTopics, pinnedCount, threadInfo, hasSearchTags, hasSavedChats, isPremiumRequiredForMessaging, managingBot, adMessage, displayedPeerVerification, globalPrivacySettings, canStopIncomingStreamingMessage in
+                ).startStrict(next: { [weak self = self] peerView, globalNotificationSettings, onlineMemberCount, hasScheduledMessages, hasTopics, pinnedCount, threadInfo, hasSearchTags, hasSavedChats, isPremiumRequiredForMessaging, managingBot, adMessage, displayedPeerVerification, globalPrivacySettings, canStopIncomingStreamingMessage in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1431,7 +1431,7 @@ extension ChatControllerImpl {
                     globalPrivacySettings,
                     canStopIncomingStreamingMessage
                 )
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerView, messageAndTopic, savedMessagesPeer, onlineMemberCount, hasScheduledMessages, hasSearchTags, hasSavedChats, isPremiumRequiredForMessaging, managingBot, globalPrivacySettings, canStopIncomingStreamingMessage in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView, messageAndTopic, savedMessagesPeer, onlineMemberCount, hasScheduledMessages, hasSearchTags, hasSavedChats, isPremiumRequiredForMessaging, managingBot, globalPrivacySettings, canStopIncomingStreamingMessage in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1867,7 +1867,7 @@ extension ChatControllerImpl {
                 }
                 
                 self.peerDisposable = (peerView
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerView in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView in
                     guard let self else {
                         return
                     }
@@ -1907,7 +1907,7 @@ extension ChatControllerImpl {
             let initialData = historyNode.initialData
             |> take(1)
             |> deliverOnMainQueue
-            |> beforeNext { [weak self] combinedInitialData in
+            |> beforeNext { [weak self = self] combinedInitialData in
                 guard let strongSelf = self, let combinedInitialData else {
                     return
                 }
@@ -2052,7 +2052,7 @@ extension ChatControllerImpl {
             }
             let initialPersistentPeerDataReady = initialPersistentPeerData
             |> deliverOnMainQueue
-            |> beforeNext { [weak self] value in
+            |> beforeNext { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -2076,7 +2076,7 @@ extension ChatControllerImpl {
             |> distinctUntilChanged)
             
             self.buttonKeyboardMessageDisposable?.dispose()
-            self.buttonKeyboardMessageDisposable = historyNode.buttonKeyboardMessage.startStrict(next: { [weak self] message in
+            self.buttonKeyboardMessageDisposable = historyNode.buttonKeyboardMessage.startStrict(next: { [weak self = self] message in
                 guard let strongSelf = self else {
                     return
                 }
@@ -2153,7 +2153,7 @@ extension ChatControllerImpl {
                 } else if peerId.namespace != Namespaces.Peer.SecretChat && peerId != context.account.peerId && initialSubject != .scheduledMessages {
                     self.premiumGiftSuggestionDisposable?.dispose()
                     self.premiumGiftSuggestionDisposable = (ApplicationSpecificNotice.dismissedPremiumGiftSuggestion(accountManager: context.sharedContext.accountManager, peerId: peerId)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] timestamp in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] timestamp in
                         guard let strongSelf = self else {
                             return
                         }
@@ -2211,7 +2211,7 @@ extension ChatControllerImpl {
                             return .single(nil)
                         }
                     }
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] chatTranslationState in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] chatTranslationState in
                         guard let strongSelf = self else {
                             return
                         }
@@ -2289,7 +2289,7 @@ extension ChatControllerImpl {
                     threadData,
                     forumTopicData,
                     premiumGiftOptions
-                ).startStrict(next: { [weak self] cachedDataAndMessages, hasPendingMessages, isTopReplyThreadMessageShown, topPinnedMessage, customEmojiAvailable, isForum, threadData, forumTopicData, premiumGiftOptions in
+                ).startStrict(next: { [weak self = self] cachedDataAndMessages, hasPendingMessages, isTopReplyThreadMessageShown, topPinnedMessage, customEmojiAvailable, isForum, threadData, forumTopicData, premiumGiftOptions in
                     guard let strongSelf = self else {
                         return
                     }

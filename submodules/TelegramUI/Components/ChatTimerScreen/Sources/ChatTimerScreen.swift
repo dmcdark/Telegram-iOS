@@ -560,7 +560,7 @@ public final class ChatTimerPickerContentComponent: Component {
                                     tintColor: component.theme.chat.inputPanel.panelControlColor
                                 )
                             )),
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 self?.component?.leadingAction?.action()
                             }
                         )
@@ -634,7 +634,7 @@ public final class ChatTimerPickerContentComponent: Component {
                     )),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.complete(selectedValue: self?.selectedValue())
                     }
                 )),
@@ -674,7 +674,7 @@ public final class ChatTimerPickerContentComponent: Component {
                         )),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.complete(selectedValue: secondaryAction.value())
                         }
                     )),
@@ -809,11 +809,11 @@ private final class ChatTimerSheetContentComponent: Component {
                     safeInsets: environment.safeInsets,
                     leadingAction: ChatTimerPickerContentComponent.LeadingAction(
                         icon: .close,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.component?.dismiss()
                         }
                     ),
-                    completion: { [weak self] value in
+                    completion: { [weak self = self] value in
                         guard let self, let controller = self.environment?.controller() as? ChatTimerScreen else {
                             return
                         }
@@ -873,7 +873,7 @@ private final class ChatTimerSheetComponent: Component {
         }
 
         private func dismiss() {
-            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                 guard let self, let controller = self.environment?.controller() else {
                     return
                 }
@@ -894,7 +894,7 @@ private final class ChatTimerSheetComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     self?.dismiss()
                 }
             )
@@ -912,7 +912,7 @@ private final class ChatTimerSheetComponent: Component {
                 component: AnyComponent(SheetComponent(
                     content: AnyComponent(ChatTimerSheetContentComponent(
                         configuration: component.configuration,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss()
                         }
                     )),

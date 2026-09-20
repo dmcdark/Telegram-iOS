@@ -169,7 +169,7 @@ final class DrawingBubbleEntitySelectionView: DrawingEntitySelectionView {
             self.layer.addSublayer(handle)
         }
                                 
-        self.snapTool.onSnapUpdated = { [weak self] type, snapped in
+        self.snapTool.onSnapUpdated = { [weak self = self] type, snapped in
             if let self, let entityView = self.entityView {
                 entityView.onSnapUpdated(type, snapped)
             }

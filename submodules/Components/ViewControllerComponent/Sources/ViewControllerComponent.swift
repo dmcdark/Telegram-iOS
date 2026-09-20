@@ -191,7 +191,7 @@ open class ViewControllerComponentContainer: ViewController {
                 theme: self.resolvedTheme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -339,7 +339,7 @@ open class ViewControllerComponentContainer: ViewController {
     
     private func setupPresentationData(_ updatedPresentationData: (initial: PresentationData, signal: Signal<PresentationData, NoError>), navigationBarAppearance: NavigationBarAppearance, statusBarStyle: StatusBarStyle, presentationMode: PresentationMode) {
         self.presentationDataDisposable = (updatedPresentationData.signal
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 var theme = presentationData.theme
                 

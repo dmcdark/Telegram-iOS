@@ -235,7 +235,7 @@ private final class BadgeComponent: Component {
                 badgeAnimation.toValue = badgeNewValue
                 badgeAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 
-                CATransaction.setCompletionBlock { [weak self] in
+                CATransaction.setCompletionBlock { [weak self = self] in
                     self?.setupGradientAnimations()
                 }
                 self.badgeForeground.add(badgeAnimation, forKey: "movement")
@@ -1041,13 +1041,13 @@ private final class ChatSendStarsScreenComponent: Component {
             
             self.containerView.addSubnode(self.hierarchyTrackingNode)
             
-            self.hierarchyTrackingNode.updated = { [weak self] value in
+            self.hierarchyTrackingNode.updated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
                 if value {
                     if self.badgePhysicsLink == nil {
-                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1331,7 +1331,7 @@ private final class ChatSendStarsScreenComponent: Component {
                     }
                     return context?.generateImage()
                 }
-                items.append(.action(ContextMenuActionItem(text: peer.displayTitle(strings: environment.strings, displayOrder: presentationData.nameDisplayOrder), textLayout: .secondLineWithValue(peerLabel), icon: { _ in nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: peer.displayTitle(strings: environment.strings, displayOrder: presentationData.nameDisplayOrder), textLayout: .secondLineWithValue(peerLabel), icon: { _ in nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: avatarSignal), action: { [weak self = self] c, _ in
                     c?.dismiss(completion: {})
                     
                     guard let self, let component = self.component else {
@@ -1421,7 +1421,7 @@ private final class ChatSendStarsScreenComponent: Component {
                             peerId: component.context.account.peerId,
                             theme: environment.theme,
                             currency: .stars,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component, let starsContext = context.starsContext, let navigationController = self.environment?.controller()?.navigationController as? NavigationController else {
                                     return
                                 }
@@ -1501,7 +1501,7 @@ private final class ChatSendStarsScreenComponent: Component {
                     switch reactData.reactSubject {
                     case .message:
                         self.channelsForPublicReactionDisposable = (component.context.engine.peers.channelsForPublicReaction(useLocalCache: false)
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] peers in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers in
                             guard let self else {
                                 return
                             }
@@ -1526,7 +1526,7 @@ private final class ChatSendStarsScreenComponent: Component {
                 
                 if let starsContext = component.context.starsContext {
                     self.balanceDisposable = (starsContext.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -1570,7 +1570,7 @@ private final class ChatSendStarsScreenComponent: Component {
                         valueCount: self.amount.maxSliderValue + 1,
                         value: self.amount.sliderValue,
                         markPositions: false,
-                        valueUpdated: { [weak self] value in
+                        valueUpdated: { [weak self = self] value in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1613,7 +1613,7 @@ private final class ChatSendStarsScreenComponent: Component {
                     trackForegroundColor: .clear,
                     knobSize: 26.0,
                     knobColor: .white,
-                    isTrackingUpdated: { [weak self] isTracking in
+                    isTrackingUpdated: { [weak self = self] isTracking in
                         guard let self else {
                             return
                         }
@@ -1825,7 +1825,7 @@ private final class ChatSendStarsScreenComponent: Component {
                         theme: environment.theme,
                         strings: environment.strings,
                         peer: currentMyPeer,
-                        action: { [weak self] sourceView in
+                        action: { [weak self = self] sourceView in
                             guard let self else {
                                 return
                             }
@@ -1872,7 +1872,7 @@ private final class ChatSendStarsScreenComponent: Component {
                 component: AnyComponent(PlainButtonComponent(
                     content: AnyComponent(Image(image: closeImage)),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -2272,7 +2272,7 @@ private final class ChatSendStarsScreenComponent: Component {
                                     color: peerColor
                                 )),
                                 effectAlignment: .center,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     guard let self, let component = self.component, let peer = topPeer.peer else {
                                         return
                                     }
@@ -2409,7 +2409,7 @@ private final class ChatSendStarsScreenComponent: Component {
                                 )))
                             ], spacing: 10.0)),
                             effectAlignment: .center,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -2536,7 +2536,7 @@ private final class ChatSendStarsScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -2560,7 +2560,7 @@ private final class ChatSendStarsScreenComponent: Component {
                         if balance < StarsAmount(value: Int64(self.amount.realValue), nanos: 0) {
                             let _ = (component.context.engine.payments.starsTopUpOptions()
                             |> take(1)
-                            |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -2655,7 +2655,7 @@ private final class ChatSendStarsScreenComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             if let controller = self?.environment?.controller(), let navigationController = controller.navigationController as? NavigationController, let url = attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.URL)] as? String {
                                 let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }
                                 component.context.sharedContext.openExternalUrl(context: component.context, urlContext: .generic, url: url, forceExternal: false, presentationData: presentationData, navigationController: navigationController, dismissInput: {})
@@ -3133,7 +3133,7 @@ public class ChatSendStarsScreen: ViewControllerComponentContainer {
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? ChatSendStarsScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

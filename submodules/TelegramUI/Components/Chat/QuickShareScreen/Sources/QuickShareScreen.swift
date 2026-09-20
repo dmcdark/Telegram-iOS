@@ -234,7 +234,7 @@ private final class QuickShareScreenComponent: Component {
                 self.disposable = combineLatest(queue: Queue.mainQueue(),
                     peers,
                     component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: component.context.account.peerId))
-                ).start(next: { [weak self] peers, accountPeer in
+                ).start(next: { [weak self = self] peers, accountPeer in
                     guard let self else {
                         return
                     }
@@ -247,7 +247,7 @@ private final class QuickShareScreenComponent: Component {
                     }
                 })
                 
-                component.gesture.externalUpdated = { [weak self] view, point in
+                component.gesture.externalUpdated = { [weak self = self] view, point in
                     guard let self else {
                         return
                     }
@@ -272,7 +272,7 @@ private final class QuickShareScreenComponent: Component {
                         }
                     }
                 }
-                component.gesture.externalEnded = { [weak self] viewAndPoint in
+                component.gesture.externalEnded = { [weak self = self] viewAndPoint in
                     guard let self, let gesture = self.component?.gesture else {
                         return
                     }
@@ -460,7 +460,7 @@ public class QuickShareScreen: ViewControllerComponentContainer {
             self.processedDidDisappear = true
             
             if let componentView = self.node.hostView.componentView as? QuickShareScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     if let self {
                         self.superDismiss()
                     }

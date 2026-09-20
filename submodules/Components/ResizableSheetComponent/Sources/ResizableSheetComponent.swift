@@ -465,7 +465,7 @@ public final class ResizableSheetComponent<ChildEnvironmentType: Sendable & Equa
                     if shouldDismiss {
                         let animateOffset = self.bounds.height - self.backgroundLayer.frame.minY
                         let initialVelocity = animateOffset > 0.0 ? max(0.0, velocityY) / animateOffset : 0.0
-                        self.animateOut(initialVelocity: initialVelocity, completion: { [weak self] in
+                        self.animateOut(initialVelocity: initialVelocity, completion: { [weak self = self] in
                             self?.environment?.dismiss(false)
                         })
                     } else {
@@ -658,7 +658,7 @@ public final class ResizableSheetComponent<ChildEnvironmentType: Sendable & Equa
             }
 
             let sheetEnvironment = environment[ResizableSheetComponentEnvironment.self].value
-            component.animateOut.connect { [weak self] completion in
+            component.animateOut.connect { [weak self = self] completion in
                 guard let self else {
                     return
                 }
@@ -686,7 +686,7 @@ public final class ResizableSheetComponent<ChildEnvironmentType: Sendable & Equa
                 self.registeredExternalState?.trackedScrollViewUpdated = nil
                 self.registeredExternalState = component.externalState
                 if let externalState = component.externalState {
-                    externalState.trackedScrollViewUpdated = { [weak self] scrollView in
+                    externalState.trackedScrollViewUpdated = { [weak self = self] scrollView in
                         self?.setTrackedScrollView(scrollView)
                     }
                 } else {

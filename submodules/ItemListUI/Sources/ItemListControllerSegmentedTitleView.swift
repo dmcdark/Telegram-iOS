@@ -76,7 +76,7 @@ public final class ItemListControllerSegmentedTitleView: UIView {
                 id: AnyHashable(index),
                 content: .title(HorizontalTabsComponent.Tab.Title(text: segment, entities: [], enableAnimations: false)),
                 badge: nil,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }

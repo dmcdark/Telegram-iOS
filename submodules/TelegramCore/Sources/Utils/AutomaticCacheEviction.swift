@@ -71,7 +71,7 @@ final class AutomaticCacheEvictionContext {
                 )
             }
             |> distinctUntilChanged
-            |> deliverOn(self.queue)).start(next: { [weak self] combinedSettings in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] combinedSettings in
                 self?.restart(settings: combinedSettings)
             })
         }

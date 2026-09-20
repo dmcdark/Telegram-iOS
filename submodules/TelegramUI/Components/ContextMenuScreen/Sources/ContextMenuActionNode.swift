@@ -106,7 +106,7 @@ final class ContextMenuActionNode: ASDisplayNode {
             self.view.addSubview(iconView)
         }
         
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             if isDark {
                 if blurred {
                     self?.backgroundColor = highlighted ? UIColor(rgb: 0xffffff, alpha: 0.5) : .clear
@@ -120,7 +120,7 @@ final class ContextMenuActionNode: ASDisplayNode {
         self.view.addSubview(self.button)
         self.addSubnode(self.actionArea)
         
-        self.actionArea.activate = { [weak self] in
+        self.actionArea.activate = { [weak self = self] in
             self?.buttonPressed()
             return true
         }

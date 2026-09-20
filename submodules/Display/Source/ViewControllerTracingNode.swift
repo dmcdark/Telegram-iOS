@@ -30,7 +30,7 @@ open class ViewControllerTracingNode: ASDisplayNode {
     override open func didLoad() {
         super.didLoad()
         
-        (self.view as! ViewControllerTracingNodeView).hitTestImpl = { [weak self] point, event in
+        (self.view as! ViewControllerTracingNodeView).hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
     }

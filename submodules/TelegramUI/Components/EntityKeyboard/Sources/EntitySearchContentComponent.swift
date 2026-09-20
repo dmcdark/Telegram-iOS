@@ -60,7 +60,7 @@ public final class EntitySearchContainerController: ViewController {
             
             self.addSubnode(containerNode)
             
-            containerNode.onCancel = { [weak self] in
+            containerNode.onCancel = { [weak self = self] in
                 self?.controller?.dismiss()
             }
         }

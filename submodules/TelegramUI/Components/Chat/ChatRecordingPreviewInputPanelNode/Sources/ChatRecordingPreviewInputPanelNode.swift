@@ -276,7 +276,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
         self.tintMaskView.layer.addSublayer(self.tintWaveformNode.layer)
         
         self.viewForOverlayContent = ChatRecordingPreviewViewForOverlayContent(
-            ignoreHit: { [weak self] view, point in
+            ignoreHit: { [weak self = self] view, point in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -297,14 +297,14 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
         self.view.addSubview(self.trimViewImpl)
         self.addSubnode(self.playButtonNodeImpl)
         
-        self.playButtonNodeImpl.pressed = { [weak self] in
+        self.playButtonNodeImpl.pressed = { [weak self = self] in
             guard let self else {
                 return
             }
             self.waveformPressed()
         }
                 
-        self.waveformScrubberNodeImpl.seek = { [weak self] timestamp in
+        self.waveformScrubberNodeImpl.seek = { [weak self = self] timestamp in
             guard let self else {
                 return
             }
@@ -316,7 +316,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
         }
         
         self.scrubbingDisposable = (self.waveformScrubberNodeImpl.scrubbingPosition
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -342,7 +342,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
     
     private func ensureHasTimer() {
         if self.positionTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.checkPosition()
             }, queue: Queue.mainQueue())
             self.positionTimer = timer
@@ -375,7 +375,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
             return
         }
         let _ = (ApplicationSpecificNotice.getVoiceMessagesPlayOnceSuggestion(accountManager: context.sharedContext.accountManager)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] counter in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] counter in
             guard let self, let interfaceState = self.presentationInterfaceState else {
                 return
             }
@@ -428,7 +428,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
                         }
                         let mediaManager = context.sharedContext.mediaManager
                         let mediaPlayer = MediaPlayer(audioSessionManager: mediaManager.audioSession, postbox: context.account.postbox, userLocation: .other, userContentType: .audio, resourceReference: .standalone(resource: audio.resource), streamable: .none, video: false, preferSoftwareDecoding: false, enableSound: true, fetchAutomatically: true)
-                        mediaPlayer.actionAtEnd = .action { [weak self] in
+                        mediaPlayer.actionAtEnd = .action { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -450,7 +450,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
                         self.waveformScrubberNodeImpl.status = mediaPlayer.status
                         
                         self.statusDisposable.set((mediaPlayer.status
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                             if let self {
                                 switch status.status {
                                 case .playing, .buffering(_, true, _, _):
@@ -488,7 +488,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
                     
                     self.waveformNode.updateClipping(minX: leftHandleFrame.minX - 19.0, maxX: rightHandleFrame.maxX - 19.0, transition: transition)
                     
-                    self.trimViewImpl.trimUpdated = { [weak self] start, end, updatedEnd, apply in
+                    self.trimViewImpl.trimUpdated = { [weak self = self] start, end, updatedEnd, apply in
                         if let self {
                             self.mediaPlayer?.pause()
                             self.interfaceInteraction?.updateRecordingTrimRange(start, end, updatedEnd, apply)
@@ -549,7 +549,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
                                 ],
                                 isCollage: false,
                                 positionUpdated: { _, _ in },
-                                trackTrimUpdated: { [weak self] _, start, end, updatedEnd, apply in
+                                trackTrimUpdated: { [weak self = self] _, start, end, updatedEnd, apply in
                                     if let self {
                                         self.interfaceInteraction?.updateRecordingTrimRange(start, end, updatedEnd, apply)
                                     }
@@ -642,7 +642,7 @@ public final class ChatRecordingPreviewInputPanelNodeImpl: ChatInputPanelNode {
             |> map(Optional.init)
             |> timeout(0.3, queue: Queue.mainQueue(), alternate: .single(nil))
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 guard let self, let mediaPlayer = self.mediaPlayer else {
                     return
                 }

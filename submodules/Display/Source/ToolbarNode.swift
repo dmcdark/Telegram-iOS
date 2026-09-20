@@ -80,7 +80,7 @@ public final class ToolbarNode: ASDisplayNode {
         self.updateTheme(theme)
         
         self.leftButton.addTarget(self, action: #selector(self.leftPressed), forControlEvents: .touchUpInside)
-        self.leftButton.highligthedChanged = { [weak self] highlighted in
+        self.leftButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.leftTitle.layer.removeAnimation(forKey: "opacity")
@@ -93,7 +93,7 @@ public final class ToolbarNode: ASDisplayNode {
         }
         self.leftButton.accessibilityTraits = .button
         self.rightButton.addTarget(self, action: #selector(self.rightPressed), forControlEvents: .touchUpInside)
-        self.rightButton.highligthedChanged = { [weak self] highlighted in
+        self.rightButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.rightTitle.layer.removeAnimation(forKey: "opacity")
@@ -106,7 +106,7 @@ public final class ToolbarNode: ASDisplayNode {
         }
         self.rightButton.accessibilityTraits = .button
         self.middleButton.addTarget(self, action: #selector(self.middlePressed), forControlEvents: .touchUpInside)
-        self.middleButton.highligthedChanged = { [weak self] highlighted in
+        self.middleButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.middleTitle.layer.removeAnimation(forKey: "opacity")

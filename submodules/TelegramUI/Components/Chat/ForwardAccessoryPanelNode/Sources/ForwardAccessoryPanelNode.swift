@@ -174,7 +174,7 @@ public final class ForwardAccessoryPanelNode: AccessoryPanelNode {
         |> map { messageMap -> [EngineRawMessage] in
             return messageIds.compactMap { messageMap[$0]??._asMessage() }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] messages in
+        |> deliverOnMainQueue).start(next: { [weak self = self] messages in
             if let strongSelf = self {
                 if messages.isEmpty {
                     strongSelf.dismiss?()
@@ -186,7 +186,7 @@ public final class ForwardAccessoryPanelNode: AccessoryPanelNode {
                     }
                     
                     let _ = (ApplicationSpecificNotice.getChatForwardOptionsTip(accountManager: strongSelf.context.sharedContext.accountManager)
-                    |> deliverOnMainQueue).start(next: { [weak self] count in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] count in
                         if let strongSelf = self, count < 3 {
                             Queue.mainQueue().after(3.0) {
                                 if let snapshotView = strongSelf.textNode.view.snapshotContentTree() {
@@ -422,7 +422,7 @@ public final class ForwardAccessoryPanelNode: AccessoryPanelNode {
             configuration: AlertScreen.Configuration(actionAlignment: .vertical),
             content: content,
             actions: [
-                .init(title: strings.Conversation_ForwardOptions_ShowOptions, action: { [weak self] in
+                .init(title: strings.Conversation_ForwardOptions_ShowOptions, action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -432,7 +432,7 @@ public final class ForwardAccessoryPanelNode: AccessoryPanelNode {
                     }
                     let _ = ApplicationSpecificNotice.incrementChatForwardOptionsTip(accountManager: self.context.sharedContext.accountManager, count: 3).start()
                 }),
-                .init(title: strings.Conversation_ForwardOptions_CancelForwarding, type: .destructive, action: { [weak self] in
+                .init(title: strings.Conversation_ForwardOptions_CancelForwarding, type: .destructive, action: { [weak self = self] in
                     self?.dismiss?()
                 })
             ]

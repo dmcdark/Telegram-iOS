@@ -62,7 +62,7 @@ final class VoiceRecorder {
             return
         }
         do {
-            try backend.begin { [weak self] level in self?.lastLevel = level }
+            try backend.begin { [weak self = self] level in self?.lastLevel = level }
             startDate = Date()
             state = .recording(elapsed: 0, level: 0)
             startTicker()
@@ -137,7 +137,7 @@ final class VoiceRecorder {
     }
 
     private func startTicker() {
-        ticker = Task { @MainActor [weak self] in
+        ticker = Task { @MainActor [weak self = self] in
             while !Task.isCancelled {
                 guard let self, let start = self.startDate else { return }
                 self.tick(elapsed: Date().timeIntervalSince(start))

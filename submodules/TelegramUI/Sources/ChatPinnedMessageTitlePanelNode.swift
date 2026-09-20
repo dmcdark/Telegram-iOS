@@ -166,7 +166,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
         
         super.init()
         
-        self.tapButton.highligthedChanged = { [weak self] highlighted in
+        self.tapButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.titleNode.layer.removeAnimation(forKey: "opacity")
@@ -186,7 +186,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
             }
         }
         
-        self.actionButton.highligthedChanged = { [weak self] highlighted in
+        self.actionButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.actionButton.layer.removeAnimation(forKey: "opacity")
@@ -225,7 +225,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
         self.tapButton.addTarget(self, action: #selector(self.tapped), forControlEvents: [.touchUpInside])
         self.contextContainer.addSubnode(self.tapButton)
         
-        self.contextContainer.activated = { [weak self] gesture, _ in
+        self.contextContainer.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -275,7 +275,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
             |> map { status -> Bool in
                 return status == .pinnedMessage
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] isLoading in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] isLoading in
                 guard let self else {
                     return
                 }
@@ -364,7 +364,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
                     self.closeButton.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
                     self.closeButton.layer.animateScale(from: 0.01, to: 1.0, duration: 0.2)
                 } else {
-                    self.closeButton.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] completed in
+                    self.closeButton.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] completed in
                         guard let strongSelf = self, completed else {
                             return
                         }
@@ -387,7 +387,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
                     self.listButton.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
                     self.listButton.layer.animateScale(from: 0.01, to: 1.0, duration: 0.2)
                 } else {
-                    self.listButton.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] completed in
+                    self.listButton.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] completed in
                         guard let strongSelf = self, completed else {
                             return
                         }
@@ -555,7 +555,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
             }
         } else {
             if !self.activityIndicator.alpha.isZero {
-                transition.updateAlpha(node: self.activityIndicator, alpha: 0.0, completion: { [weak self] completed in
+                transition.updateAlpha(node: self.activityIndicator, alpha: 0.0, completion: { [weak self = self] completed in
                     if completed {
                         self?.activityIndicator.transitionToState(.none, animated: false, completion: {
                         })
@@ -960,7 +960,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
                         controllerInteraction.requestMessageActionCallback(message, nil, true, false, progressPromise)
                         self.progressDisposable?.dispose()
                         self.progressDisposable = (progressPromise.get()
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                             guard let self else {
                                 return
                             }
@@ -973,7 +973,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
                         controllerInteraction.requestMessageActionCallback(message, data, false, requiresPassword, progressPromise)
                         self.progressDisposable?.dispose()
                         self.progressDisposable = (progressPromise.get()
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                             guard let self else {
                                 return
                             }
@@ -1050,7 +1050,7 @@ final class ChatPinnedMessageTitlePanelNode: ChatTitleAccessoryPanelNode {
                     
                     self.progressDisposable?.dispose()
                     self.progressDisposable = (progressPromise.get()
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                         guard let self else {
                             return
                         }

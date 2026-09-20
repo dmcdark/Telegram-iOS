@@ -188,7 +188,7 @@ class ChatDocumentGalleryItemNode: ZoomableContentGalleryItemNode, WKNavigationD
     
     private func setupStatus(context: AccountContext, resource: EngineRawMediaResource) {
         self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(resource))
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             if let strongSelf = self {
                 let previousStatus = strongSelf.status
                 strongSelf.status = status
@@ -239,7 +239,7 @@ class ChatDocumentGalleryItemNode: ZoomableContentGalleryItemNode, WKNavigationD
             }
             let data = context.engine.resources.data(resource: EngineMediaResource(fileReference.media.resource), pathExtension: pathExtension)
             |> deliverOnMainQueue
-            self.dataDisposable.set(data.start(next: { [weak self] data in
+            self.dataDisposable.set(data.start(next: { [weak self = self] data in
                 if let strongSelf = self {
                     if data.isComplete {
                         if let webView = strongSelf.webView as? WKWebView {

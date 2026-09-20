@@ -81,7 +81,7 @@ final class ActionSheetControllerNode: ASDisplayNode, ASScrollViewDelegate {
         
         self.updateTheme()
         
-        self.itemGroupsContainerNode.requestLayout = { [weak self] in
+        self.itemGroupsContainerNode.requestLayout = { [weak self = self] in
             if let strongSelf = self, let layout = strongSelf.validLayout {
                 strongSelf.containerLayoutUpdated(layout, transition: .animated(duration: 0.2, curve: .easeInOut))
             }

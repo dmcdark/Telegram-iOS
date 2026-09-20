@@ -193,7 +193,7 @@ final class MediaPickerGridItemNode: GridItemNode {
         self.addSubnode(self.imageNode)
         self.addSubnode(self.activateAreaNode)
         
-        self.imageNode.contentUpdated = { [weak self] image in
+        self.imageNode.contentUpdated = { [weak self = self] image in
             self?.spoilerNode?.setImage(image)
         }
     }
@@ -245,7 +245,7 @@ final class MediaPickerGridItemNode: GridItemNode {
     func updateSelectionState(isFirstTime: Bool = false, animated: Bool = false) {
         if self.checkNode == nil, let _ = self.interaction?.selectionState, self.selectable, let theme = self.theme {
             let checkNode = InteractiveCheckNode(theme: CheckNodeTheme(theme: theme, style: .overlay))
-            checkNode.valueChanged = { [weak self] value in
+            checkNode.valueChanged = { [weak self = self] value in
                 if let strongSelf = self, let interaction = strongSelf.interaction, let selectableItem = strongSelf.selectableItem {
                     if !interaction.toggleSelection(selectableItem, value, false) {
                         strongSelf.checkNode?.setSelected(false, animated: false)
@@ -465,7 +465,7 @@ final class MediaPickerGridItemNode: GridItemNode {
             
             self.progressDisposable.set(
                 (interaction.downloadManager.downloadProgress(identifier: asset.localIdentifier)
-                 |> deliverOnMainQueue).start(next: { [weak self] status in
+                 |> deliverOnMainQueue).start(next: { [weak self = self] status in
                      if let self {
                          switch status {
                          case .none, .completed:
@@ -517,7 +517,7 @@ final class MediaPickerGridItemNode: GridItemNode {
 //            )
 
             if stories {
-                self.imageNode.contentUpdated = { [weak self] image in
+                self.imageNode.contentUpdated = { [weak self = self] image in
                     if let self {
                         if self.backgroundNode.image == nil {
                             if let image, image.size.width > image.size.height {
@@ -642,7 +642,7 @@ final class MediaPickerGridItemNode: GridItemNode {
             }
             
             self.spoilerDisposable.set((combineLatest(spoilerSignal, priceSignal, livePhotoModeSignal, self.selectionPromise.get())
-            |> deliverOnMainQueue).start(next: { [weak self] hasSpoiler, price, livePhotoMode, selectionState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] hasSpoiler, price, livePhotoMode, selectionState in
                 guard let self else {
                     return
                 }

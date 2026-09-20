@@ -53,7 +53,7 @@ private final class PeerInputActivityContext {
                     nextUpdateId += 1
                 }
                 let currentId = record.id
-                let timer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self] in
+                let timer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self = self] in
                     if let strongSelf = self {
                         for currentActivity in strongSelf.activities {
                             if currentActivity.id == currentId {
@@ -72,7 +72,7 @@ private final class PeerInputActivityContext {
             updated = true
             let activityId = self.nextId
             self.nextId += 1
-            let timer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self] in
+            let timer = SignalKitTimer(timeout: timeout, repeat: false, completion: { [weak self = self] in
                 if let strongSelf = self {
                     for currentActivity in strongSelf.activities {
                         if currentActivity.id == activityId {
@@ -128,7 +128,7 @@ private final class PeerInputActivityContext {
         if !self.scheduledUpdateSubscribers {
             self.scheduledUpdateSubscribers = true
             
-            self.queue.async { [weak self] in
+            self.queue.async { [weak self = self] in
                 self?.updateSubscribers()
             }
         }
@@ -217,7 +217,7 @@ final class PeerInputActivityManager {
             if let currentContext = self.contexts[peerId] {
                 context = currentContext
             } else {
-                context = PeerInputActivityContext(queue: queue, notifyEmpty: { [weak self] in
+                context = PeerInputActivityContext(queue: queue, notifyEmpty: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -227,7 +227,7 @@ final class PeerInputActivityManager {
                         let activities = self.collectActivities()
                         globalContext.notify(activities)
                     }
-                }, notifyUpdated: { [weak self] in
+                }, notifyUpdated: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -243,7 +243,7 @@ final class PeerInputActivityManager {
             })
             onNext(context.topActivities())
             let queue = self.queue
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     guard let self else {
                         return
@@ -272,7 +272,7 @@ final class PeerInputActivityManager {
             onNext(self.collectActivities())
             
             let queue = self.queue
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     guard let self else {
                         return
@@ -302,7 +302,7 @@ final class PeerInputActivityManager {
             if let currentContext = self.contexts[chatPeerId] {
                 context = currentContext
             } else {
-                context = PeerInputActivityContext(queue: self.queue, notifyEmpty: { [weak self] in
+                context = PeerInputActivityContext(queue: self.queue, notifyEmpty: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -312,7 +312,7 @@ final class PeerInputActivityManager {
                         let activities = self.collectActivities()
                         globalContext.notify(activities)
                     }
-                }, notifyUpdated: { [weak self] in
+                }, notifyUpdated: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -373,7 +373,7 @@ final class PeerInputActivityManager {
             let episodeId = self.nextEpisodeId
             self.nextEpisodeId += 1
             
-            let update: () -> Void = { [weak self] in
+            let update: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -394,7 +394,7 @@ final class PeerInputActivityManager {
             timer.start()
             update()
             
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     timer.invalidate()
                     

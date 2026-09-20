@@ -131,14 +131,14 @@ public class ChatMessageGiveawayBubbleContentNode: ChatMessageBubbleContentNode,
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
-        self.dateAndStatusNode.reactionSelected = { [weak self] _, value, sourceView in
+        self.dateAndStatusNode.reactionSelected = { [weak self = self] _, value, sourceView in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
             item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
         }
         
-        self.dateAndStatusNode.openReactionPreview = { [weak self] gesture, sourceView, value in
+        self.dateAndStatusNode.openReactionPreview = { [weak self = self] gesture, sourceView, value in
             guard let strongSelf = self, let item = strongSelf.item else {
                 gesture?.cancel()
                 return
@@ -147,7 +147,7 @@ public class ChatMessageGiveawayBubbleContentNode: ChatMessageBubbleContentNode,
             item.controllerInteraction.openMessageReactionContextMenu(item.topMessage, sourceView, gesture, value)
         }
         
-        self.channelButtons.openPeer = { [weak self] peer in
+        self.channelButtons.openPeer = { [weak self = self] peer in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -200,7 +200,7 @@ public class ChatMessageGiveawayBubbleContentNode: ChatMessageBubbleContentNode,
         if !animated {
             self.placeholderNode.removeFromSupernode()
         } else {
-            self.placeholderNode.layer.animateAlpha(from: self.placeholderNode.alpha, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: self.placeholderNode.alpha, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -696,7 +696,7 @@ public class ChatMessageGiveawayBubbleContentNode: ChatMessageBubbleContentNode,
                     }
                     let buttonFrame = CGRect(origin: CGPoint(x: layoutConstants.text.bubbleInsets.right, y: layoutSize.height - 9.0 - buttonSize.height), size: buttonSize)
                     
-                    return (layoutSize, { [weak self] animation, synchronousLoads, _ in
+                    return (layoutSize, { [weak self = self] animation, synchronousLoads, _ in
                         if let strongSelf = self {
                             if strongSelf.item == nil {
                                 strongSelf.animationNode.autoplay = true
@@ -899,7 +899,7 @@ public class ChatMessageGiveawayBubbleContentNode: ChatMessageBubbleContentNode,
         self.currentProgressDisposable?.dispose()
         self.currentProgressDisposable = (progress.get()
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+        |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
             guard let self else {
                 return
             }
@@ -1053,7 +1053,7 @@ private final class PeerButtonsStackNode: ASDisplayNode {
                     for i in 0 ..< buttonNodes.count {
                         let peer = peers[i]
                         let buttonNode = buttonNodes[i]
-                        buttonNode.pressed = { [weak targetNode] in
+                        buttonNode.pressed = { [weak targetNode = targetNode] in
                             targetNode?.openPeer(peer)
                         }
                         if buttonNode.supernode == nil {
@@ -1099,7 +1099,7 @@ private final class PeerButtonNode: HighlightTrackingButtonNode {
         self.addSubnode(self.textNode)
         self.addSubnode(self.avatarNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.layer.removeAnimation(forKey: "opacity")

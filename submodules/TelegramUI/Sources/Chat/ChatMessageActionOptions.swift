@@ -1087,7 +1087,7 @@ extension ChatControllerImpl {
             }
             
             if isFromAdmin {
-                subject = .postSuggestionModification(current: postSuggestionState.price ?? CurrencyAmount(amount: .zero, currency: .stars), timestamp: postSuggestionState.timestamp, completion: { [weak self] price, timestamp in
+                subject = .postSuggestionModification(current: postSuggestionState.price ?? CurrencyAmount(amount: .zero, currency: .stars), timestamp: postSuggestionState.timestamp, completion: { [weak self = self] price, timestamp in
                     guard let self else {
                         return
                     }
@@ -1114,7 +1114,7 @@ extension ChatControllerImpl {
                     isFromAdmin: false,
                     current: postSuggestionState.price ?? CurrencyAmount(amount: .zero, currency: .stars),
                     timestamp: postSuggestionState.timestamp,
-                    completion: { [weak self] price, timestamp in
+                    completion: { [weak self = self] price, timestamp in
                         guard let self else {
                             return
                         }
@@ -1149,7 +1149,7 @@ extension ChatControllerImpl {
                 isFromAdmin: isFromAdmin,
                 current: postSuggestionState.price ?? CurrencyAmount(amount: .zero, currency: .stars),
                 timestamp: postSuggestionState.timestamp,
-                completion: { [weak self] price, timestamp in
+                completion: { [weak self = self] price, timestamp in
                     guard let self else {
                         return
                     }

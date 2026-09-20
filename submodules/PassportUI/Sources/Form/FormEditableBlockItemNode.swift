@@ -60,7 +60,7 @@ class FormEditableBlockItemNode<Item: FormControllerItem>: ASDisplayNode, FormCo
         self.addSubnode(self.highlightedBackgroundNode)
         
         if selectable {
-            self.selectionButtonNode.highligthedChanged = { [weak self] highlighted in
+            self.selectionButtonNode.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self, strongSelf.canBeSelected {
                     if highlighted {
                         strongSelf.highlightedBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -254,9 +254,9 @@ class FormEditableBlockItemNode<Item: FormControllerItem>: ASDisplayNode, FormCo
     
     private func setupAndAddLeftRevealNode() {
         if !self.revealOptions.left.isEmpty {
-            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self] option in
+            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected(option, animated: false)
-            }, tapticAction: { [weak self] in
+            }, tapticAction: { [weak self = self] in
                     self?.hapticImpact()
             })
             revealNode.setOptions(self.revealOptions.left, isLeft: true, enableAnimations: true)
@@ -276,9 +276,9 @@ class FormEditableBlockItemNode<Item: FormControllerItem>: ASDisplayNode, FormCo
     
     private func setupAndAddRightRevealNode() {
         if !self.revealOptions.right.isEmpty {
-            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self] option in
+            let revealNode = ItemListRevealOptionsNode(optionSelected: { [weak self = self] option in
                 self?.revealOptionSelected(option, animated: false)
-                }, tapticAction: { [weak self] in
+                }, tapticAction: { [weak self = self] in
                     self?.hapticImpact()
             })
             revealNode.setOptions(self.revealOptions.right, isLeft: false, enableAnimations: true)

@@ -108,7 +108,7 @@ private final class GiftUpgradeCostScreenComponent: Component {
             if isFirstTime {
                 let currentTime = Int32(CFAbsoluteTimeGetCurrent() + kCFAbsoluteTimeIntervalSince1970)
                 if let _ = component.upgradePreview.nextPrices.first(where: { currentTime < $0.date }) {
-                    self.upgradePreviewTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                    self.upgradePreviewTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                         self?.upgradePreviewTimerTick()
                     }, queue: Queue.mainQueue())
                     self.upgradePreviewTimer?.start()

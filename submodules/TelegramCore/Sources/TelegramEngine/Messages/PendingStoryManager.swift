@@ -417,7 +417,7 @@ final class PendingStoryManager {
             self.auxiliaryMethods = auxiliaryMethods
             
             self.itemsDisposable = (postbox.combinedView(keys: [PostboxViewKey.storiesState(key: .local)])
-            |> deliverOn(self.queue)).start(next: { [weak self] views in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] views in
                 guard let `self` = self else {
                     return
                 }
@@ -461,7 +461,7 @@ final class PendingStoryManager {
             if self.currentPendingItemContext == nil, let firstItem = localState.items.first {
                 let queue = self.queue
                 let itemStableId = firstItem.stableId
-                let pendingItemContext = PendingItemContext(queue: queue, item: firstItem, updated: { [weak self] in
+                let pendingItemContext = PendingItemContext(queue: queue, item: firstItem, updated: { [weak self = self] in
                     queue.async {
                         guard let `self` = self else {
                             return
@@ -510,7 +510,7 @@ final class PendingStoryManager {
                         embeddedStickers: firstItem.embeddedStickers,
                         randomId: firstItem.randomId
                     )
-                    |> deliverOn(self.queue)).start(next: { [weak self] event in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] event in
                         guard let self else {
                             return
                         }
@@ -540,7 +540,7 @@ final class PendingStoryManager {
                         pendingItemContext.progress = Float(uploadInfo.index) * partTotalProgress
                     }
                     pendingItemContext.disposable = (_internal_uploadStoryImpl(postbox: self.postbox, network: self.network, accountPeerId: self.accountPeerId, stateManager: self.stateManager, messageMediaPreuploadManager: self.messageMediaPreuploadManager, revalidationContext: self.revalidationContext, auxiliaryMethods: self.auxiliaryMethods, toPeerId: toPeerId, stableId: stableId, media: firstItem.media, mediaAreas: firstItem.mediaAreas, text: firstItem.text, entities: firstItem.entities, embeddedStickers: firstItem.embeddedStickers, pin: firstItem.pin, privacy: firstItem.privacy, isForwardingDisabled: firstItem.isForwardingDisabled, period: Int(firstItem.period), folders: firstItem.folders, music: firstItem.music, randomId: firstItem.randomId, forwardInfo: firstItem.forwardInfo)
-                    |> deliverOn(self.queue)).start(next: { [weak self] event in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] event in
                         guard let `self` = self else {
                             return
                         }

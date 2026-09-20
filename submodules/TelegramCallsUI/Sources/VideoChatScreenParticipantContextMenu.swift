@@ -28,7 +28,7 @@ extension VideoChatScreenComponent.View {
         
         let muteStatePromise = Promise<GroupCallParticipantsContext.Participant.MuteState?>(participant.muteState)
            
-        let itemsForEntry: (GroupCallParticipantsContext.Participant.MuteState?) -> [ContextMenuItem] = { [weak self] muteState in
+        let itemsForEntry: (GroupCallParticipantsContext.Participant.MuteState?) -> [ContextMenuItem] = { [weak self = self] muteState in
             guard let self, let environment = self.environment, let currentCall = self.currentCall else {
                 return []
             }
@@ -54,7 +54,7 @@ extension VideoChatScreenComponent.View {
                     } else {
                         minValue = 0.0
                     }
-                    items.append(.custom(VoiceChatVolumeContextItem(minValue: minValue, value: participant.volume.flatMap { CGFloat($0) / 10000.0 } ?? 1.0, valueChanged: { [weak self] newValue, finished in
+                    items.append(.custom(VoiceChatVolumeContextItem(minValue: minValue, value: participant.volume.flatMap { CGFloat($0) / 10000.0 } ?? 1.0, valueChanged: { [weak self = self] newValue, finished in
                         guard let self, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -79,7 +79,7 @@ extension VideoChatScreenComponent.View {
                 if participant.hasRaiseHand {
                     items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_CancelSpeakRequest, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/RevokeSpeak"), color: theme.actionSheet.primaryTextColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         guard let self, case let .group(groupCall) = self.currentCall else {
                             return
                         }
@@ -90,7 +90,7 @@ extension VideoChatScreenComponent.View {
                 }
                 items.append(.action(ContextMenuActionItem(text: peer.smallProfileImage == nil ? environment.strings.VoiceChat_AddPhoto : environment.strings.VoiceChat_ChangePhoto, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Camera"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     Queue.mainQueue().after(0.1) {
                         guard let self else {
@@ -103,7 +103,7 @@ extension VideoChatScreenComponent.View {
                 
                 items.append(.action(ContextMenuActionItem(text: (participant.about?.isEmpty ?? true) ? environment.strings.VoiceChat_AddBio : environment.strings.VoiceChat_EditBio, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Info"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     
                     Queue.mainQueue().after(0.1) {
@@ -116,7 +116,7 @@ extension VideoChatScreenComponent.View {
                         } else {
                             maxBioLength = 100
                         }
-                        let controller = voiceChatTitleEditController(context: currentCall.accountContext, forceTheme: environment.theme, title: environment.strings.VoiceChat_EditBioTitle, text: environment.strings.VoiceChat_EditBioText, placeholder: environment.strings.VoiceChat_EditBioPlaceholder, doneButtonTitle: environment.strings.VoiceChat_EditBioSave, value: participant.about, maxLength: maxBioLength, apply: { [weak self] bio in
+                        let controller = voiceChatTitleEditController(context: currentCall.accountContext, forceTheme: environment.theme, title: environment.strings.VoiceChat_EditBioTitle, text: environment.strings.VoiceChat_EditBioText, placeholder: environment.strings.VoiceChat_EditBioPlaceholder, doneButtonTitle: environment.strings.VoiceChat_EditBioSave, value: participant.about, maxLength: maxBioLength, apply: { [weak self = self] bio in
                             guard let self, let environment = self.environment, let currentCall = self.currentCall, let bio else {
                                 return
                             }
@@ -141,14 +141,14 @@ extension VideoChatScreenComponent.View {
                 if case let .user(peer) = peer {
                     items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_ChangeName, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/ChangeName"), color: theme.actionSheet.primaryTextColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                            
                         Queue.mainQueue().after(0.1) {
                             guard let self, let environment = self.environment, let currentCall = self.currentCall else {
                                 return
                             }
-                            let controller = voiceChatUserNameController(context: currentCall.accountContext, forceTheme: environment.theme, title: environment.strings.VoiceChat_ChangeNameTitle, firstNamePlaceholder: environment.strings.UserInfo_FirstNamePlaceholder, lastNamePlaceholder: environment.strings.UserInfo_LastNamePlaceholder, doneButtonTitle: environment.strings.VoiceChat_EditBioSave, firstName: peer.firstName, lastName: peer.lastName, maxLength: 128, apply: { [weak self] firstAndLastName in
+                            let controller = voiceChatUserNameController(context: currentCall.accountContext, forceTheme: environment.theme, title: environment.strings.VoiceChat_ChangeNameTitle, firstNamePlaceholder: environment.strings.UserInfo_FirstNamePlaceholder, lastNamePlaceholder: environment.strings.UserInfo_LastNamePlaceholder, doneButtonTitle: environment.strings.VoiceChat_EditBioSave, firstName: peer.firstName, lastName: peer.lastName, maxLength: 128, apply: { [weak self = self] firstAndLastName in
                                 guard let self, let environment = self.environment, let currentCall = self.currentCall, let (firstName, lastName) = firstAndLastName else {
                                     return
                                 }
@@ -167,7 +167,7 @@ extension VideoChatScreenComponent.View {
                         } else {
                             items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_MutePeer, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/Mute"), color: theme.actionSheet.primaryTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 guard let self, case let .group(groupCall) = self.currentCall else {
                                     return
                                 }
@@ -180,7 +180,7 @@ extension VideoChatScreenComponent.View {
                         if let muteState = muteState, !muteState.canUnmute {
                             items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_UnmutePeer, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: participant.hasRaiseHand ? "Call/Context Menu/AllowToSpeak" : "Call/Context Menu/Unmute"), color: theme.actionSheet.primaryTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                                     return
                                 }
@@ -196,7 +196,7 @@ extension VideoChatScreenComponent.View {
                         } else {
                             items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_MutePeer, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/Mute"), color: theme.actionSheet.primaryTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 guard let self, case let .group(groupCall) = self.currentCall else {
                                     return
                                 }
@@ -210,7 +210,7 @@ extension VideoChatScreenComponent.View {
                     if let muteState = muteState, muteState.mutedByYou {
                         items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_UnmuteForMe, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/Unmute"), color: theme.actionSheet.primaryTextColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             guard let self, case let .group(groupCall) = self.currentCall else {
                                 return
                             }
@@ -220,7 +220,7 @@ extension VideoChatScreenComponent.View {
                     } else {
                         items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_MuteForMe, icon: { theme in
                             return generateTintedImage(image: UIImage(bundleImageName: "Call/Context Menu/Mute"), color: theme.actionSheet.primaryTextColor)
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             guard let self, case let .group(groupCall) = self.currentCall else {
                                 return
                             }
@@ -247,7 +247,7 @@ extension VideoChatScreenComponent.View {
                 }
                 items.append(.action(ContextMenuActionItem(text: openTitle, icon: { theme in
                     return generateTintedImage(image: openIcon, color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     guard let self else {
                         return
                     }
@@ -259,7 +259,7 @@ extension VideoChatScreenComponent.View {
                 if case let .group(groupCall) = self.currentCall, (callState.canManageCall && !callState.adminIds.contains(peer.id)), peer.id != groupCall.peerId {
                     items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_RemovePeer, textColor: .destructive, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.destructiveActionTextColor)
-                    }, action: { [weak self] c, _ in
+                    }, action: { [weak self = self] c, _ in
                         c?.dismiss(completion: {
                             guard let self, case let .group(groupCall) = self.currentCall else {
                                 return
@@ -275,7 +275,7 @@ extension VideoChatScreenComponent.View {
                             }
 
                             let _ = (chatPeer
-                            |> deliverOnMainQueue).start(next: { [weak self] chatPeer in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] chatPeer in
                                 guard let self, let environment = self.environment, case let .group(groupCall) = self.currentCall else {
                                     return
                                 }
@@ -366,7 +366,7 @@ extension VideoChatScreenComponent.View {
             return
         }
            
-        let itemsForEntry: () -> [ContextMenuItem] = { [weak self] in
+        let itemsForEntry: () -> [ContextMenuItem] = { [weak self = self] in
             guard let self, let environment = self.environment else {
                 return []
             }
@@ -375,7 +375,7 @@ extension VideoChatScreenComponent.View {
             
             items.append(.action(ContextMenuActionItem(text: environment.strings.VoiceChat_RemovePeer, textColor: .destructive, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.destructiveActionTextColor)
-            }, action: { [weak self] c, _ in
+            }, action: { [weak self = self] c, _ in
                 c?.dismiss(result: .dismissWithoutContent, completion: nil)
                 
                 guard let self else {
@@ -442,7 +442,7 @@ extension VideoChatScreenComponent.View {
             TelegramEngine.EngineData.Item.Peer.Peer(id: peerId),
             TelegramEngine.EngineData.Item.Configuration.SearchBots()
         )
-        |> deliverOnMainQueue).start(next: { [weak self] peer, searchBotsConfiguration in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer, searchBotsConfiguration in
             guard let self, let currentCall = self.currentCall, let environment = self.environment else {
                 return
             }
@@ -474,24 +474,24 @@ extension VideoChatScreenComponent.View {
             mixin.forceDark = true
             mixin.stickersContext = LegacyPaintStickersContext(context: currentCall.accountContext)
             let _ = self.currentAvatarMixin.swap(mixin)
-            mixin.didFinishWithImage = { [weak self] image in
+            mixin.didFinishWithImage = { [weak self = self] image in
                 if let image = image {
                     completion()
                     self?.updateProfilePhoto(image)
                 }
             }
-            mixin.didFinishWithVideo = { [weak self] image, asset, adjustments in
+            mixin.didFinishWithVideo = { [weak self = self] image, asset, adjustments in
                 if let image = image, let asset = asset {
                     completion()
                     self?.updateProfileVideo(image, asset: asset, adjustments: adjustments)
                 }
             }
-            mixin.didFinishWithDelete = { [weak self] in
+            mixin.didFinishWithDelete = { [weak self = self] in
                 guard let self, let environment = self.environment else {
                     return
                 }
                 
-                let proceed = { [weak self] in
+                let proceed = { [weak self = self] in
                     guard let self, let currentCall = self.currentCall else {
                         return
                     }
@@ -563,7 +563,7 @@ extension VideoChatScreenComponent.View {
         })
         
         self.updateAvatarDisposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -604,7 +604,7 @@ extension VideoChatScreenComponent.View {
 
         let context = currentCall.accountContext
         let account = context.account
-        let signal = Signal<TelegramMediaResource, UploadPeerPhotoError> { [weak self] subscriber in
+        let signal = Signal<TelegramMediaResource, UploadPeerPhotoError> { [weak self = self] subscriber in
             let entityRenderer: LegacyPaintEntityRenderer? = adjustments.flatMap { adjustments in
                 if let paintingData = adjustments.paintingData, paintingData.hasAnimation {
                     return LegacyPaintEntityRenderer(postbox: account.postbox, adjustments: adjustments)
@@ -668,7 +668,7 @@ extension VideoChatScreenComponent.View {
                     }
                     subscriber.putCompletion()
                 } else if let progress = next as? NSNumber {
-                    Queue.mainQueue().async { [weak self] in
+                    Queue.mainQueue().async { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -700,7 +700,7 @@ extension VideoChatScreenComponent.View {
                 })
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }

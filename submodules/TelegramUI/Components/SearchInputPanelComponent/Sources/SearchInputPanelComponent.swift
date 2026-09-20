@@ -265,7 +265,7 @@ public final class SearchInputPanelComponent: Component {
                     )),
                     effectAlignment: .center,
                     minSize: CGSize(width: 44.0, height: 44.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -298,7 +298,7 @@ public final class SearchInputPanelComponent: Component {
                             tintColor: component.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }

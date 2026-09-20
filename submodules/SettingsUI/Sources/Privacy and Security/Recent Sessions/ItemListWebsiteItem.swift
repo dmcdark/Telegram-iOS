@@ -302,7 +302,7 @@ class ItemListWebsiteItemNode: ItemListRevealOptionsItemNode {
                 currentDisabledOverlayNode = nil
             }
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, neighbors)
                     
@@ -764,7 +764,7 @@ private final class ItemListConnectedBotSessionItemNode: ItemListRevealOptionsIt
                 currentDisabledOverlayNode = nil
             }
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 guard let self else {
                     return
                 }

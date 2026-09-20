@@ -62,7 +62,7 @@ final class AttachmentTextInputActionButtonsNode: ASDisplayNode, ChatSendMessage
         self.isAccessibilityElement = true
         self.accessibilityTraits = [.button, .notEnabled]
         
-        self.sendButton.highligthedChanged = { [weak self] highlighted in
+        self.sendButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if !strongSelf.sendButtonLongPressEnabled {
                     if highlighted {
@@ -98,7 +98,7 @@ final class AttachmentTextInputActionButtonsNode: ASDisplayNode, ChatSendMessage
         gestureRecognizer.isEnabled = self.sendButtonLongPressEnabled
         self.gestureRecognizer = gestureRecognizer
         self.sendButton.view.addGestureRecognizer(gestureRecognizer)
-        gestureRecognizer.activated = { [weak self] recognizer, _ in
+        gestureRecognizer.activated = { [weak self = self] recognizer, _ in
             guard let strongSelf = self else {
                 return
             }

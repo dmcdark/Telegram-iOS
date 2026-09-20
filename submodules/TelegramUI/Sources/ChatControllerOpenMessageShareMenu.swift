@@ -128,7 +128,7 @@ extension ChatControllerImpl {
 ////            context: self.context,
 ////            subject: .messages(messages),
 ////            forceExternal: false,
-////            shareStory: canShareToStory ? { [weak self] in
+////            shareStory: canShareToStory ? { [weak self = self] in
 ////                guard let self else {
 ////                    return
 ////                }
@@ -175,7 +175,7 @@ extension ChatControllerImpl {
             canShareToStory = false
         }
 
-        let shareStory: (() -> Void)? = canShareToStory ? { [weak self] in
+        let shareStory: (() -> Void)? = canShareToStory ? { [weak self = self] in
             guard let self else {
                 return
             }
@@ -185,7 +185,7 @@ extension ChatControllerImpl {
             }
         } : nil
 
-        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .messages(messages), updatedPresentationData: self.updatedPresentationData, shareAsLink: true, actionCompleted: { [weak self] in
+        let shareController = self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .messages(messages), updatedPresentationData: self.updatedPresentationData, shareAsLink: true, actionCompleted: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -196,11 +196,11 @@ extension ChatControllerImpl {
                 content = .linkCopied(title: nil, text: self.presentationData.strings.Conversation_LinkCopied)
             }
             self.present(UndoOverlayController(presentationData: self.presentationData, content: content, elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
-        }, dismissed: { [weak self] shared in
+        }, dismissed: { [weak self = self] shared in
             if shared {
                 self?.commitPurposefulAction()
             }
-        }, enqueued: { [weak self] peerIds, correlationIds in
+        }, enqueued: { [weak self = self] peerIds, correlationIds in
             guard let self else {
                 return
             }
@@ -210,7 +210,7 @@ extension ChatControllerImpl {
                     peerIds.map(TelegramEngine.EngineData.Item.Peer.RenderedPeer.init)
                 )
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                 guard let self else {
                     return
                 }
@@ -249,15 +249,15 @@ extension ChatControllerImpl {
                 }
 
                 let _ = (reactionItems
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] reactionItems in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] reactionItems in
                     guard let self else {
                         return
                     }
 
-                    self.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, position: savedMessages ? .top : .bottom, animateInAsReplacement: !savedMessages, action: { [weak self] action in
+                    self.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: false, position: savedMessages ? .top : .bottom, animateInAsReplacement: !savedMessages, action: { [weak self = self] action in
                         if savedMessages, let self, action == .info {
                             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                            |> deliverOnMainQueue).start(next: { [weak self] peer in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                 guard let self, let peer else {
                                     return
                                 }

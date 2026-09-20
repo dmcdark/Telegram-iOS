@@ -797,7 +797,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Channels"), color: theme.actionSheet.primaryTextColor)
                         },
                         iconSource: nil,
-                        action: { [weak self] c, _ in
+                        action: { [weak self = self] c, _ in
                             var subItems: [ContextMenuItem] = []
 
                             subItems.append(
@@ -832,7 +832,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                                                 return nil
                                             },
                                             iconSource: nil,
-                                            action: { [weak self] c, _ in
+                                            action: { [weak self = self] c, _ in
                                                 c?.dismiss(completion: {
                                                     UIPasteboard.general.string = sponsorInfo
                                                     self?.displayUndo(.copy(text: presentationData.strings.Chat_ContextMenu_AdSponsorInfoCopied))
@@ -856,7 +856,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                                                 return nil
                                             },
                                             iconSource: nil,
-                                            action: { [weak self] c, _ in
+                                            action: { [weak self = self] c, _ in
                                                 c?.dismiss(completion: {
                                                     UIPasteboard.general.string = additionalInfo
                                                     self?.displayUndo(.copy(text: presentationData.strings.Chat_ContextMenu_AdSponsorInfoCopied))
@@ -888,7 +888,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.actionSheet.primaryTextColor)
                         },
                         iconSource: nil,
-                        action: { [weak self] _, f in
+                        action: { [weak self = self] _, f in
                             f(.default)
 
                             guard let navigationController = self?.navigationController as? NavigationController else {
@@ -933,7 +933,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
                         },
                         iconSource: nil,
-                        action: { [weak self] c, _ in
+                        action: { [weak self = self] c, _ in
                             c?.dismiss(completion: {
                                 if context.isPremium {
                                     removeAd(adAttribute.opaqueId)
@@ -961,7 +961,7 @@ public final class AdsInfoScreen: ViewControllerComponentContainer {
                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.actionSheet.primaryTextColor)
                         },
                         iconSource: nil,
-                        action: { [weak self] c, _ in
+                        action: { [weak self = self] c, _ in
                             c?.dismiss(completion: {
                                 if context.isPremium {
                                     removeAd(adAttribute.opaqueId)

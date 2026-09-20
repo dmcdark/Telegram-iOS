@@ -260,7 +260,7 @@ final class MediaEditorRenderer {
         self.resultTexture = texture
         
         if self.renderTarget == nil {
-            commandBuffer.addCompletedHandler { [weak self] _ in
+            commandBuffer.addCompletedHandler { [weak self = self] _ in
                 if let self {
                     self.didRenderFrame()
                 }
@@ -291,7 +291,7 @@ final class MediaEditorRenderer {
             self.didRenderFrame()
             return
         }
-        commandBuffer.addCompletedHandler { [weak self] _ in
+        commandBuffer.addCompletedHandler { [weak self = self] _ in
             if let self {
                 self.didRenderFrame()
                 

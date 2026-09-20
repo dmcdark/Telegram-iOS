@@ -319,7 +319,7 @@ final class PenTool: DrawingElement {
     func finishArrow(_ completion: @escaping () -> Void) {
         if let arrowStart, let arrowDirection {
             self.isFinishingArrow = true
-            (self.currentRenderView as? RenderView)?.animateArrowPaths(start: arrowStart, direction: arrowDirection, length: self.renderArrowLength, lineWidth: self.renderArrowLineWidth, completion: { [weak self] in
+            (self.currentRenderView as? RenderView)?.animateArrowPaths(start: arrowStart, direction: arrowDirection, length: self.renderArrowLength, lineWidth: self.renderArrowLineWidth, completion: { [weak self = self] in
                 self?.isFinishingArrow = false
                 completion()
             })

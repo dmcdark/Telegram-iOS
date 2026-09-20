@@ -85,7 +85,7 @@ public final class ChatMessageInvoiceBubbleContentNode: ChatMessageBubbleContent
                 return (refinedWidth, { boundingWidth in
                     let (size, apply) = finalizeLayout(boundingWidth)
                     
-                    return (size, { [weak self] animation, synchronousLoads, applyInfo in
+                    return (size, { [weak self = self] animation, synchronousLoads, applyInfo in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.invoice = invoice

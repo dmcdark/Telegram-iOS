@@ -102,7 +102,7 @@ final class AlertActionComponent: Component {
             }
             if self.component == nil {
                 self.isEnabledDisposable = (component.isEnabled
-                |> deliverOnMainQueue).start(next: { [weak self] isEnabled in
+                |> deliverOnMainQueue).start(next: { [weak self = self] isEnabled in
                     guard let self else {
                         return
                     }
@@ -113,7 +113,7 @@ final class AlertActionComponent: Component {
                 })
                 
                 self.progressDisposable = (component.progress
-                |> deliverOnMainQueue).start(next: { [weak self] hasProgress in
+                |> deliverOnMainQueue).start(next: { [weak self = self] hasProgress in
                     guard let self else {
                         return
                     }

@@ -63,7 +63,7 @@ public final class RadialTimeoutNode: ASDisplayNode {
             self.animationTimer?.invalidate()
             self.timeout = (beginTimestamp, timeout)
             
-            let animationTimer = Timer(timeInterval: 1.0 / 60.0, target: RadialTimeoutNodeTimer({ [weak self] in
+            let animationTimer = Timer(timeInterval: 1.0 / 60.0, target: RadialTimeoutNodeTimer({ [weak self = self] in
                 self?.setNeedsDisplay()
             }), selector: #selector(RadialTimeoutNodeTimer.event), userInfo: nil, repeats: true)
             self.animationTimer = animationTimer

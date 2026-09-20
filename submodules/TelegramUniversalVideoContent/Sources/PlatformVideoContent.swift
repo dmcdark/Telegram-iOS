@@ -201,7 +201,7 @@ private final class PlatformVideoContentNode: ASDisplayNode, UniversalVideoConte
         
         switch content {
         case let .file(file):
-            self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: self.userLocation, videoReference: file) |> map { [weak self] getSize, getData in
+            self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: self.userLocation, videoReference: file) |> map { [weak self = self] getSize, getData in
                 Queue.mainQueue().async {
                     if let strongSelf = self, strongSelf.dimensions == nil {
                         if let dimensions = getSize() {
@@ -223,11 +223,11 @@ private final class PlatformVideoContentNode: ASDisplayNode, UniversalVideoConte
         self.addSubnode(self.playerNode)
         self.player.actionAtItemEnd = .pause
         
-        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self] notification in
+        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self = self] notification in
             self?.performActionAtEnd()
         })
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         
@@ -244,13 +244,13 @@ private final class PlatformVideoContentNode: ASDisplayNode, UniversalVideoConte
         }
         self.setPlayerItem(playerItem)
         
-        self.didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        self.didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let strongSelf = self, let layer = strongSelf.playerNode.layer as? AVPlayerLayer else {
                 return
             }
             layer.player = strongSelf.player
         })
-        self.willResignActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self] _ in
+        self.willResignActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil, using: { [weak self = self] _ in
             guard let strongSelf = self, let layer = strongSelf.playerNode.layer as? AVPlayerLayer else {
                 return
             }
@@ -298,7 +298,7 @@ private final class PlatformVideoContentNode: ASDisplayNode, UniversalVideoConte
             playerItem.addObserver(self, forKeyPath: "playbackLikelyToKeepUp", options: .new, context: nil)
             playerItem.addObserver(self, forKeyPath: "playbackBufferFull", options: .new, context: nil)
             playerItem.addObserver(self, forKeyPath: "status", options: .new, context: nil)
-            self.playerItemFailedToPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemFailedToPlayToEndTime, object: playerItem, queue: OperationQueue.main, using: { [weak self] _ in
+            self.playerItemFailedToPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemFailedToPlayToEndTime, object: playerItem, queue: OperationQueue.main, using: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -392,10 +392,10 @@ private final class PlatformVideoContentNode: ASDisplayNode, UniversalVideoConte
             self._status.set(MediaPlayerStatus(generationTimestamp: 0.0, duration: Double(self.approximateDuration), dimensions: CGSize(), timestamp: 0.0, baseRate: 1.0, seekId: 0, status: .buffering(initial: true, whilePlaying: true, progress: 0.0, display: true), soundEnabled: true))
         }
         if !self.hasAudioSession {
-            self.audioSessionDisposable.set(self.audioSessionManager.push(audioSessionType: .play(mixWithOthers: false), activate: { [weak self] _ in
+            self.audioSessionDisposable.set(self.audioSessionManager.push(audioSessionType: .play(mixWithOthers: false), activate: { [weak self = self] _ in
                 self?.hasAudioSession = true
                 self?.player.play()
-            }, deactivate: { [weak self] _ in
+            }, deactivate: { [weak self = self] _ in
                 self?.hasAudioSession = false
                 self?.player.pause()
                 return .complete()

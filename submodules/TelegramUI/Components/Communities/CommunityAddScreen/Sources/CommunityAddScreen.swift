@@ -583,7 +583,7 @@ private final class CommunityAddScreenComponent: Component {
                 component.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: component.peerId)),
                 component.context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.CachedData(id: component.peerId))
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer, cachedData in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer, cachedData in
                 guard let self else {
                     return
                 }
@@ -633,7 +633,7 @@ private final class CommunityAddScreenComponent: Component {
                 text: alertText,
                 actions: [
                     TextAlertAction(type: .genericAction, title: environment.strings.Common_Cancel, action: {}),
-                    TextAlertAction(type: .defaultAction, title: environment.strings.Community_Add_Confirm_Add, action: { [weak self] in
+                    TextAlertAction(type: .defaultAction, title: environment.strings.Community_Add_Confirm_Add, action: { [weak self = self] in
                         self?.performExistingAdd()
                     })
                 ]
@@ -653,7 +653,7 @@ private final class CommunityAddScreenComponent: Component {
                 peerId: component.peerId,
                 action: .link(visible: self.visibility.isVisible)
             )
-            |> deliverOnMainQueue).startStrict(error: { [weak self] error in
+            |> deliverOnMainQueue).startStrict(error: { [weak self = self] error in
                 guard let self, let environment = self.environment else {
                     return
                 }
@@ -683,7 +683,7 @@ private final class CommunityAddScreenComponent: Component {
                     
                     self.state?.updated(transition: .spring(duration: 0.35))
                 }
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -726,10 +726,10 @@ private final class CommunityAddScreenComponent: Component {
                         visibility: self.visibility,
                         isSaving: self.isSaving,
                         buttonTitle: isDraft ? environment.strings.Common_Done : environment.strings.Community_Add_ActionAddToCommunity,
-                        dismiss: { [weak self] in
+                        dismiss: { [weak self = self] in
                             self?.dismiss(animated: true)
                         },
-                        selectVisibility: { [weak self] visibility in
+                        selectVisibility: { [weak self = self] visibility in
                             guard let self, !self.isSaving else {
                                 return
                             }
@@ -738,7 +738,7 @@ private final class CommunityAddScreenComponent: Component {
                                 self.state?.updated(transition: .spring(duration: 0.35))
                             }
                         },
-                        add: { [weak self] in
+                        add: { [weak self = self] in
                             self?.performAdd()
                         }
                     )),
@@ -757,7 +757,7 @@ private final class CommunityAddScreenComponent: Component {
                         isCentered: environment.metrics.widthClass == .regular,
                         hasInputHeight: !environment.inputHeight.isZero,
                         regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                        dismiss: { [weak self] animated in
+                        dismiss: { [weak self = self] animated in
                             self?.dismiss(animated: animated)
                         }
                     )

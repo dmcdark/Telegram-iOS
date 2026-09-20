@@ -113,7 +113,7 @@ final class HashtagChatInputContextPanelNode: ChatInputContextPanelNode {
         self.addSubnode(self.listView)
         
         self.backgroundView.isHidden = true
-        self.listView.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listView.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             guard let self else {
                 return
             }
@@ -218,12 +218,12 @@ final class HashtagChatInputContextPanelNode: ChatInputContextPanelNode {
     private func prepareTransition(from: [HashtagChatInputContextPanelEntry]? , to: [HashtagChatInputContextPanelEntry]) {
         let firstTime = from == nil
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, presentationData: presentationData, setHashtagRevealed: { [weak self] text in
+        let transition = preparedTransition(from: from ?? [], to: to, context: self.context, presentationData: presentationData, setHashtagRevealed: { [weak self = self] text in
             if let strongSelf = self {
                 strongSelf.revealedHashtag = text
                 strongSelf.updateResults(strongSelf.currentResults, query: strongSelf.currentQuery, peer: strongSelf.currentPeer)
             }
-        }, hashtagSelected: { [weak self] text in
+        }, hashtagSelected: { [weak self = self] text in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 interfaceInteraction.updateTextInputStateAndMode { textInputState, inputMode in
                     var hashtagQueryRange: NSRange?
@@ -247,7 +247,7 @@ final class HashtagChatInputContextPanelNode: ChatInputContextPanelNode {
                     return (textInputState, inputMode)
                 }
             }
-        }, removeRequested: { [weak self] text in
+        }, removeRequested: { [weak self = self] text in
             if let strongSelf = self {
                 let _ = strongSelf.context.engine.messages.removeRecentlyUsedHashtag(string: text).startStandalone()
                 strongSelf.revealedHashtag = nil
@@ -292,7 +292,7 @@ final class HashtagChatInputContextPanelNode: ChatInputContextPanelNode {
             
             let updateSizeAndInsets = ListViewUpdateSizeAndInsets(size: validLayout.0, insets: insets, duration: 0.0, curve: .Default(duration: nil))
             
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self, firstTime {
                     var topItemOffset: CGFloat?
                     strongSelf.listView.forEachItemNode { itemNode in

@@ -55,7 +55,7 @@ final class ProxyServersStatusesImpl {
         self.queue = queue
         
         self.serversDisposable = (servers
-            |> deliverOn(self.queue)).start(next: { [weak self] servers in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] servers in
                 if let strongSelf = self {
                     let validKeys = Set<ProxyServerSettings>(servers)
                     for key in validKeys {

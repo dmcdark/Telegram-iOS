@@ -154,7 +154,7 @@ final class StorageCategoriesComponent: Component {
                         isExpandedLevel: false,
                         isExpanded: expandedCategory == category.key,
                         hasNext: i != component.categories.count - 1,
-                        action: { [weak self] key, actionType in
+                        action: { [weak self = self] key, actionType in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -246,7 +246,7 @@ final class StorageCategoriesComponent: Component {
                             ),
                             isEnabled: totalSelectedSize != 0,
                             displaysProgress: false,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }

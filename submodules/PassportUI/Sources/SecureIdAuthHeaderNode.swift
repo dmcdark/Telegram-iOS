@@ -79,7 +79,7 @@ final class SecureIdAuthHeaderNode: ASDisplayNode {
                 })
             }
             
-            return (image.size.height, image.size.height, { [weak self] _ in
+            return (image.size.height, image.size.height, { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -104,7 +104,7 @@ final class SecureIdAuthHeaderNode: ASDisplayNode {
             }
             let compactHeight = titleSize.height
             
-            return (compactHeight, expandedHeight, { [weak self] expanded in
+            return (compactHeight, expandedHeight, { [weak self = self] expanded in
                 guard let strongSelf = self else {
                     return
                 }

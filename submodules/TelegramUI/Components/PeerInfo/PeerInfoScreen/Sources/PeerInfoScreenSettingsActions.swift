@@ -18,7 +18,7 @@ import InstantPageCache
 
 extension PeerInfoScreenNode {
     func openSettings(section: PeerInfoSettingsSection) {
-        let push: (ViewController) -> Void = { [weak self] c in
+        let push: (ViewController) -> Void = { [weak self = self] c in
             guard let strongSelf = self, let navigationController = strongSelf.controller?.navigationController as? NavigationController else {
                 return
             }
@@ -66,7 +66,7 @@ extension PeerInfoScreenNode {
             push(PeerInfoStoryGridScreen(context: self.context, peerId: self.context.account.peerId, scope: .saved))
         case .savedMessages:
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                 guard let self, let peer = peer else {
                     return
                 }
@@ -79,7 +79,7 @@ extension PeerInfoScreenNode {
         case .devices:
             let _ = (self.activeSessionsContextAndCount.get()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] activeSessionsContextAndCount in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] activeSessionsContextAndCount in
                 if let strongSelf = self, let activeSessionsContextAndCount = activeSessionsContextAndCount {
                     let (activeSessionsContext, _, webSessionsContext) = activeSessionsContextAndCount
                     push(recentSessionsController(context: strongSelf.context, activeSessionsContext: activeSessionsContext, webSessionsContext: webSessionsContext, websitesOnly: false))
@@ -96,18 +96,18 @@ extension PeerInfoScreenNode {
             if let settings = self.data?.globalSettings {
                 let _ = (combineLatest(self.blockedPeers.get(), self.hasTwoStepAuth.get())
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] blockedPeersContext, hasTwoStepAuth in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] blockedPeersContext, hasTwoStepAuth in
                     if let strongSelf = self {
                         let loginEmailPattern = strongSelf.twoStepAuthData.get() |> map { data -> String? in
                             return data?.loginEmailPattern
                         }
-                        push(privacyAndSecurityController(context: strongSelf.context, initialSettings: settings.privacySettings, updatedSettings: { [weak self] settings in
+                        push(privacyAndSecurityController(context: strongSelf.context, initialSettings: settings.privacySettings, updatedSettings: { [weak self = self] settings in
                             self?.privacySettings.set(.single(settings))
-                        }, updatedBlockedPeers: { [weak self] blockedPeersContext in
+                        }, updatedBlockedPeers: { [weak self = self] blockedPeersContext in
                             self?.blockedPeers.set(.single(blockedPeersContext))
-                        }, updatedHasTwoStepAuth: { [weak self] hasTwoStepAuthValue in
+                        }, updatedHasTwoStepAuth: { [weak self = self] hasTwoStepAuthValue in
                             self?.hasTwoStepAuth.set(.single(hasTwoStepAuthValue))
-                        }, focusOnItemTag: nil, activeSessionsContext: settings.activeSessionsContext, webSessionsContext: settings.webSessionsContext, blockedPeersContext: blockedPeersContext, hasTwoStepAuth: hasTwoStepAuth, loginEmailPattern: loginEmailPattern, updatedTwoStepAuthData: { [weak self] in
+                        }, focusOnItemTag: nil, activeSessionsContext: settings.activeSessionsContext, webSessionsContext: settings.webSessionsContext, blockedPeersContext: blockedPeersContext, hasTwoStepAuth: hasTwoStepAuth, loginEmailPattern: loginEmailPattern, updatedTwoStepAuthData: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.twoStepAuthData.set(
                                     strongSelf.context.engine.auth.twoStepAuthData()
@@ -117,11 +117,11 @@ extension PeerInfoScreenNode {
                                     }
                                 )
                             }
-                        }, requestPublicPhotoSetup: { [weak self] completion in
+                        }, requestPublicPhotoSetup: { [weak self = self] completion in
                             if let self {
                                 self.controller?.openAvatarForEditing(mode: .fallback, completion: completion)
                             }
-                        }, requestPublicPhotoRemove: { [weak self] completion in
+                        }, requestPublicPhotoRemove: { [weak self = self] completion in
                             if let self {
                                 self.controller?.openAvatarRemoval(mode: .fallback, completion: completion)
                             }
@@ -130,7 +130,7 @@ extension PeerInfoScreenNode {
                 })
             }
         case .passwordSetup:
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.6, execute: { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.6, execute: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -154,7 +154,7 @@ extension PeerInfoScreenNode {
             }
             let _ = (self.context.account.stateManager.contactBirthdays
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] birthdays in
+            |> deliverOnMainQueue).start(next: { [weak self = self] birthdays in
                 guard let self else {
                     return
                 }
@@ -163,7 +163,7 @@ extension PeerInfoScreenNode {
             })
         case .stickers:
             if let settings = self.data?.globalSettings {
-                push(installedStickerPacksController(context: self.context, mode: .general, archivedPacks: settings.archivedStickerPacks, updatedPacks: { [weak self] packs in
+                push(installedStickerPacksController(context: self.context, mode: .general, archivedPacks: settings.archivedStickerPacks, updatedPacks: { [weak self = self] packs in
                     self?.archivedPacks.set(.single(packs))
                 }))
             }
@@ -176,13 +176,13 @@ extension PeerInfoScreenNode {
             supportPeer.set(context.engine.peers.supportPeerId())
             
             self.controller?.present(textAlertController(context: self.context, updatedPresentationData: self.controller?.updatedPresentationData, title: nil, text: self.presentationData.strings.Settings_FAQ_Intro, actions: [
-                TextAlertAction(type: .genericAction, title: presentationData.strings.Settings_FAQ_Button, action: { [weak self] in
+                TextAlertAction(type: .genericAction, title: presentationData.strings.Settings_FAQ_Button, action: { [weak self = self] in
                     self?.openFaq()
-                }), TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: { [weak self] in
+                }), TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: { [weak self = self] in
                     guard let self else {
                         return
                     }
-                    self.supportPeerDisposable.set((supportPeer.get() |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self] peerId in
+                    self.supportPeerDisposable.set((supportPeer.get() |> take(1) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerId in
                         if let strongSelf = self, let peerId = peerId {
                             push(strongSelf.context.sharedContext.makeChatController(context: strongSelf.context, chatLocation: .peer(id: peerId), subject: nil, botStart: nil, mode: .standard(.default), params: nil))
                         }
@@ -197,7 +197,7 @@ extension PeerInfoScreenNode {
                 return
             }
             if case let .user(user) = self.data?.peer, let phoneNumber = user.phone {
-                let introController = PrivacyIntroController(context: self.context, mode: .changePhoneNumber(phoneNumber), proceedAction: { [weak self] in
+                let introController = PrivacyIntroController(context: self.context, mode: .changePhoneNumber(phoneNumber), proceedAction: { [weak self = self] in
                     if let strongSelf = self, let navigationController = strongSelf.controller?.navigationController as? NavigationController {
                         navigationController.replaceTopController(ChangePhoneNumberController(context: strongSelf.context), animated: true)
                     }
@@ -213,7 +213,7 @@ extension PeerInfoScreenNode {
             let _ = (activeAccountsAndPeers(context: context)
             |> take(1)
             |> deliverOnMainQueue
-            ).startStandalone(next: { [weak self] accountAndPeer, accountsAndPeers in
+            ).startStandalone(next: { [weak self = self] accountAndPeer, accountsAndPeers in
                 guard let strongSelf = self else {
                     return
                 }
@@ -308,7 +308,7 @@ extension PeerInfoScreenNode {
         self.setupFaqIfNeeded()
         
         let presentationData = self.presentationData
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: nil))
             self?.controller?.present(controller, in: .window(.root))
             return ActionDisposable { [weak controller] in
@@ -324,7 +324,7 @@ extension PeerInfoScreenNode {
         let _ = (self.cachedFaq.get()
         |> filter { $0 != nil }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] resolvedUrl in
+        |> deliverOnMainQueue).start(next: { [weak self = self] resolvedUrl in
             progressDisposable.dispose()
 
             if let strongSelf = self, let resolvedUrl = resolvedUrl {
@@ -333,7 +333,7 @@ extension PeerInfoScreenNode {
                     resolvedUrl = .instantView(webPage, customAnchor)
                 }
                 strongSelf.context.sharedContext.openResolvedUrl(resolvedUrl, context: strongSelf.context, urlContext: .generic, navigationController: strongSelf.controller?.navigationController as? NavigationController, forceExternal: false, forceUpdate: false, openPeer: { peer, navigation in
-                }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak self] controller, arguments in
+                }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak self = self] controller, arguments in
                     self?.controller?.push(controller)
                 }, dismissInput: {}, contentContext: nil, progress: nil, completion: nil)
             }

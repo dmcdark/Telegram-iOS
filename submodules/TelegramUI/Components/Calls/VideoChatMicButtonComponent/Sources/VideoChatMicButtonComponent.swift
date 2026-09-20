@@ -80,7 +80,7 @@ private final class BlobView: UIView {
         
         self.layer.addSublayer(self.blobsLayer)
         
-        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self] in
+        self.displayLinkAnimator = ConstantDisplayLinkAnimator() { [weak self = self] in
             guard let self else {
                 return
             }
@@ -93,7 +93,7 @@ private final class BlobView: UIView {
             self.updateAudioLevel()
         }
 
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -533,7 +533,7 @@ public final class VideoChatMicButtonComponent: Component {
                 }
                 
                 if !transition.animation.isImmediate, let previousComponent, case .connecting = previousComponent.content {
-                    self.layer.animateSublayerScale(from: 1.0, to: 1.07, duration: 0.12, removeOnCompletion: false, completion: { [weak self] completed in
+                    self.layer.animateSublayerScale(from: 1.0, to: 1.07, duration: 0.12, removeOnCompletion: false, completion: { [weak self = self] completed in
                         if let self, completed {
                             self.layer.removeAnimation(forKey: "sublayerTransform.scale")
                             self.layer.animateSublayerScale(from: 1.07, to: 1.0, duration: 0.12, removeOnCompletion: true)
@@ -693,7 +693,7 @@ public final class VideoChatMicButtonComponent: Component {
                 case .unmuted:
                     if self.audioLevelDisposable == nil, let call = component.call {
                         self.audioLevelDisposable = (call.myAudioLevelAndSpeaking
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] value, _ in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value, _ in
                             guard let self, let blobView = self.blobView else {
                                 return
                             }

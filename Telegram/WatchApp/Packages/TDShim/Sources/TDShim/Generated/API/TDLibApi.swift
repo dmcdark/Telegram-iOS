@@ -793,7 +793,7 @@ public class TDLibApi {
 
         let dto = DTO(query, encoder: self.encoder)
         do {
-            try self.send(query: dto) { [weak self] result in
+            try self.send(query: dto) { [weak self = self] result in
                 guard let strongSelf = self else { return }
                 if let error = try? strongSelf.decoder.decode(DTO<TDError>.self, from: result) {
                     completion(.failure(error.payload))

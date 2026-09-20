@@ -62,7 +62,7 @@ public final class ChatMessageLiveLocationTimerNode: ASDisplayNode {
             self.animationTimer?.invalidate()
             self.timeoutAndColors = (backgroundColor, foregroundColor, textColor, beginTimestamp, timeout, strings)
             
-            let animationTimer = Timer(timeInterval: 10.0, target: RadialTimeoutNodeTimer({ [weak self] in
+            let animationTimer = Timer(timeInterval: 10.0, target: RadialTimeoutNodeTimer({ [weak self = self] in
                 self?.setNeedsDisplay()
             }), selector: #selector(RadialTimeoutNodeTimer.event), userInfo: nil, repeats: true)
             self.animationTimer = animationTimer

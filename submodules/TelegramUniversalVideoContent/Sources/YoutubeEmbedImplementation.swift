@@ -633,7 +633,7 @@ public final class YoutubeEmbedFramePreview: FramePreview {
         }
         self.currentFrameTimestamp = timestamp
         
-        self.context.sharedContext.mediaManager.universalVideoManager.withUniversalVideoContent(id: content.id) { [weak self] node in
+        self.context.sharedContext.mediaManager.universalVideoManager.withUniversalVideoContent(id: content.id) { [weak self = self] node in
             guard let strongSelf = self, let node = node as? WebEmbedVideoContentNode, let youtubeImpl = node.impl as? YoutubeEmbedImplementation, youtubeImpl.duration > 0.0, let specString = youtubeImpl.storyboardSpec, let storyboardSpec = StoryboardSpec(specString: specString), let bestSize = storyboardSpec.bestSize else {
                 return
             }

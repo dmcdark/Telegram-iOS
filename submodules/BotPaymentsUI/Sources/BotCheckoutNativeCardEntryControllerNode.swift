@@ -187,14 +187,14 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
         
         self.addSubnode(self.scrollNode)
         
-        cardUpdatedImpl = { [weak self] data in
+        cardUpdatedImpl = { [weak self = self] data in
             if let strongSelf = self {
                 strongSelf.currentCardData = data
                 strongSelf.updateDone()
             }
         }
         
-        openCountrySelectionImpl = { [weak self] in
+        openCountrySelectionImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.view.endEditing(true)
                 strongSelf.openCountrySelection()
@@ -204,7 +204,7 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
         for items in itemNodes {
             for item in items {
                 if let item = item as? BotPaymentFieldItemNode {
-                    item.textUpdated = { [weak self] in
+                    item.textUpdated = { [weak self = self] in
                         self?.updateDone()
                     }
                     item.returnPressed = { [weak self, weak item] in
@@ -227,7 +227,7 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
             }
         }
         
-        self.cardItem.completed = { [weak self] in
+        self.cardItem.completed = { [weak self = self] in
             self?.cardholderItem?.activateInput()
         }
         
@@ -296,13 +296,13 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
             }
 
             self.isVerifying = true
-            self.verifyDisposable.set((createToken |> deliverOnMainQueue).start(next: { [weak self] token in
+            self.verifyDisposable.set((createToken |> deliverOnMainQueue).start(next: { [weak self = self] token in
                 if let strongSelf = self, let card = token.card {
                     let last4 = card.last4()
                     let brand = STPAPIClient.string(with: card.brand)
                     strongSelf.completion(.webToken(BotCheckoutPaymentWebToken(title: "\(brand)*\(last4)", data: "{\"type\": \"card\", \"id\": \"\(token.tokenId)\"}", saveOnServer: strongSelf.saveInfoItem.isOn)))
                 }
-            }, error: { [weak self] error in
+            }, error: { [weak self = self] error in
                 if let strongSelf = self {
                     strongSelf.isVerifying = false
                     strongSelf.updateDone()
@@ -343,7 +343,7 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
             request.httpBody = requestBody
 
             let session = URLSession.shared
-            let dataTask = session.dataTask(with: request, completionHandler: { [weak self] data, response, error in
+            let dataTask = session.dataTask(with: request, completionHandler: { [weak self = self] data, response, error in
                 Queue.mainQueue().async {
                     guard let strongSelf = self else {
                         return
@@ -538,7 +538,7 @@ final class BotCheckoutNativeCardEntryControllerNode: ViewControllerTracingNode,
     }
     
     func animateOut(completion: (() -> Void)? = nil) {
-        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animatePosition(from: self.layer.position, to: CGPoint(x: self.layer.position.x, y: self.layer.position.y + self.layer.bounds.size.height), duration: 0.2, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }

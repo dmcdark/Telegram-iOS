@@ -94,7 +94,7 @@ private final class PinnedBarMessageComponent: Component {
             self.containerNode.targetNodeForActivationProgress = self.extractedContainerNode.contentNode
             self.addSubview(self.containerNode.view)
             
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -146,7 +146,7 @@ private final class PinnedBarMessageComponent: Component {
             }
             
             if self.updateTimer == nil {
-                self.updateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true, block: { [weak self] _ in
+                self.updateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 30.0, repeats: true, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -401,7 +401,7 @@ final class PinnedBarComponent: Component {
                         theme: component.theme,
                         message: message,
                         topPlace: message.author.flatMap { component.topIndices[$0.id] },
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -409,7 +409,7 @@ final class PinnedBarComponent: Component {
                                 component.action(message)
                             }
                         },
-                        contextGesture: message.isIncoming ? { [weak self] gesture, sourceNode in
+                        contextGesture: message.isIncoming ? { [weak self = self] gesture, sourceNode in
                             guard let self, let component = self.component else {
                                 return
                             }

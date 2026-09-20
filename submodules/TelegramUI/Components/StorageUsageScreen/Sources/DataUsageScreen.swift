@@ -498,7 +498,7 @@ final class DataUsageScreenComponent: Component {
                     }
                     return automaticMediaDownloadSettings
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] settings in
+                |> deliverOnMainQueue).start(next: { [weak self = self] settings in
                     guard let self else {
                         return
                     }
@@ -903,7 +903,7 @@ final class DataUsageScreenComponent: Component {
                         SegmentControlComponent.Item(id: AnyHashable(SelectedStats.wifi), title: environment.strings.DataUsage_TopSectionWifi)
                     ],
                     selectedId: AnyHashable(self.selectedStats),
-                    action: { [weak self] id in
+                    action: { [weak self = self] id in
                         guard let self, let id = id.base as? SelectedStats else {
                             return
                         }
@@ -930,7 +930,7 @@ final class DataUsageScreenComponent: Component {
                     theme: environment.theme,
                     strings: environment.strings,
                     categories: listCategories,
-                    toggleCategoryExpanded: { [weak self] key in
+                    toggleCategoryExpanded: { [weak self = self] key in
                         guard let self else {
                             return
                         }
@@ -1047,7 +1047,7 @@ final class DataUsageScreenComponent: Component {
                         subtitle: stringForAutoDownloadSetting(strings: environment.strings, decimalSeparator: environment.dateTimeFormat.decimalSeparator, settings: self.mediaAutoDownloadSettings, isCellular: self.selectedStats == .mobile),
                         value: "",
                         hasNext: false,
-                        action: { [weak self] sourceView in
+                        action: { [weak self = self] sourceView in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1111,7 +1111,7 @@ final class DataUsageScreenComponent: Component {
                 component: AnyComponent(DataButtonComponent(
                     theme: environment.theme,
                     title: environment.strings.DataUsage_Reset,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.requestClear()
                     },
                     tag: resetTag

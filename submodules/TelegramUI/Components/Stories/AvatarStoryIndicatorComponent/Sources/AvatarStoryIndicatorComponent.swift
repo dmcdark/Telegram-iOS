@@ -520,7 +520,7 @@ public final class AvatarStoryIndicatorComponent: Component {
             self.indefiniteReplicatorLayer.transform = CATransform3DMakeRotation(-.pi / 2.0, 0.0, 0.0, 1.0)
             self.indefiniteReplicatorLayer.instanceDelay = 0.025
             
-            self.didEnterHierarchy = { [weak self] in
+            self.didEnterHierarchy = { [weak self = self] in
                 guard let self else {
                     return
                 }

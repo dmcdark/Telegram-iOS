@@ -131,7 +131,7 @@ public final class ConfettiView: UIView {
         }
         
         var previousTimestamp = CACurrentMediaTime()
-        self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             let currentTimestamp = CACurrentMediaTime()
             self?.step(dt: currentTimestamp - previousTimestamp)
             previousTimestamp = currentTimestamp

@@ -102,11 +102,11 @@ final class ActionSheetItemGroupsContainerNode: ASDisplayNode {
             let itemNodes = group.items.map({ $0.node(theme: self.theme) })
                 
             for node in itemNodes {
-                node.requestLayout = { [weak self] in
+                node.requestLayout = { [weak self = self] in
                     self?.requestLayout?()
                 }
                 let index = i
-                node.highlightedUpdated = { [weak self] highlighted in
+                node.highlightedUpdated = { [weak self = self] highlighted in
                     if highlighted {
                         self?.highlightedItemIndex = index
                     }

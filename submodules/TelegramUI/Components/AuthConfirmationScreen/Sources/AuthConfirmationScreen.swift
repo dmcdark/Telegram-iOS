@@ -88,7 +88,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
             super.init()
             
             let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
@@ -119,7 +119,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
                 let isTestEnvironment = context.account.testingEnvironment
                 let _ = (activeAccountsAndPeers(context: self.context, includePrimary: true)
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] primary, other in
+                |> deliverOnMainQueue).start(next: { [weak self = self] primary, other in
                     guard let self else {
                         return
                     }
@@ -136,7 +136,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
                                 self.accountInUseDisposable.set(self.context.sharedContext.setAccountUserInterfaceInUse(accountContext.account.id))
                                 
                                 let _ = (accountContext.engine.messages.requestMessageActionUrlAuth(subject: requestSubject)
-                                |> deliverOnMainQueue).start(next: { [weak self] result in
+                                |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                     guard let self, case .request = result else {
                                         return
                                     }
@@ -202,7 +202,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
             self.updated(transition: .easeInOut(duration: 0.2))
             
             let _ = (self.context.engine.messages.checkUrlAuthMatchCode(url: url, matchCode: matchCode)
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -237,7 +237,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
             }
             
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, case let .user(user) = peer, let phone = user.phone else {
                     return
                 }
@@ -274,7 +274,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
                 var items: [ContextMenuItem] = []
                 var existingIds = Set<EnginePeer.Id>()
                 if let (_, peer) = primary {
-                    items.append(.custom(AccountPeerContextItem(context: context, account: context.account, peer: peer, action: { [weak self] _, f in
+                    items.append(.custom(AccountPeerContextItem(context: context, account: context.account, peer: peer, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -292,7 +292,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
                     guard !existingIds.contains(peer.id), accountContext.account.testingEnvironment == isTestEnvironment else {
                         continue
                     }
-                    items.append(.custom(AccountPeerContextItem(context: accountContext, account: accountContext.account, peer: peer, action: { [weak self] _, f in
+                    items.append(.custom(AccountPeerContextItem(context: accountContext, account: accountContext.account, peer: peer, action: { [weak self = self] _, f in
                         f(.default)
                         guard let self else {
                             return
@@ -303,7 +303,7 @@ private final class AuthConfirmationSheetContent: CombinedComponent {
                         self.updated()
                         
                         let _ = (accountContext.engine.messages.requestMessageActionUrlAuth(subject: self.requestSubject)
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self, case .request = result else {
                                 return
                             }

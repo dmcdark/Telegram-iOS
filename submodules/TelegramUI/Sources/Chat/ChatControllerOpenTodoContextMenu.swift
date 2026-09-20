@@ -36,7 +36,7 @@ extension ChatControllerImpl {
         let canEdit = canEditMessage(context: self.context, limitsConfiguration: self.context.currentLimitsConfiguration.with { EngineConfiguration.Limits($0) }, message: message)
         
         let _ = (contextMenuForChatPresentationInterfaceState(chatPresentationInterfaceState: self.presentationInterfaceState, context: self.context, messages: [message], controllerInteraction: self.controllerInteraction, selectAll: false, interfaceInteraction: self.interfaceInteraction, messageNode: params.messageNode as? ChatMessageItemView)
-        |> deliverOnMainQueue).start(next: { [weak self] actions in
+        |> deliverOnMainQueue).start(next: { [weak self = self] actions in
             guard let self else {
                 return
             }
@@ -63,7 +63,7 @@ extension ChatControllerImpl {
                 items.append(.separator)
                 
                 if canMark {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_UncheckTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_UncheckTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Clear"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                         guard let self else {
                             return
                         }
@@ -73,7 +73,7 @@ extension ChatControllerImpl {
                             let controller = UndoOverlayController(
                                 presentationData: self.presentationData,
                                 content: .premiumPaywall(title: nil, text: self.presentationData.strings.Chat_Todo_PremiumRequired, customUndoText: nil, timeout: nil, linkAction: nil),
-                                action: { [weak self] action in
+                                action: { [weak self = self] action in
                                     guard let self else {
                                         return false
                                     }
@@ -94,7 +94,7 @@ extension ChatControllerImpl {
                 }
             } else {
                 if canMark {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_CheckTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  c, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_CheckTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  c, f in
                         guard let self else {
                             return
                         }
@@ -104,7 +104,7 @@ extension ChatControllerImpl {
                             let controller = UndoOverlayController(
                                 presentationData: self.presentationData,
                                 content: .premiumPaywall(title: nil, text: self.presentationData.strings.Chat_Todo_PremiumRequired, customUndoText: nil, timeout: nil, linkAction: nil),
-                                action: { [weak self] action in
+                                action: { [weak self = self] action in
                                     guard let self else {
                                         return false
                                     }
@@ -133,7 +133,7 @@ extension ChatControllerImpl {
             if canReply {
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ReplyToItem, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     guard let self else {
                         return
                     }
@@ -145,7 +145,7 @@ extension ChatControllerImpl {
                 })))
             }
             
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                 f(.default)
 
                 guard let self else {
@@ -164,7 +164,7 @@ extension ChatControllerImpl {
             if message.id.namespace == Namespaces.Message.Cloud, let channel = message.peers[message.id.peerId] as? TelegramChannel, !channel.isMonoForum, !isReplyThreadHead {
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopyLink, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     guard let self else {
                         return
                     }
@@ -176,7 +176,7 @@ extension ChatControllerImpl {
                     |> map { result -> String? in
                         return result
                     }
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] link in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] link in
                         guard let self, let link else {
                             return
                         }
@@ -203,7 +203,7 @@ extension ChatControllerImpl {
             }
             
             if canEdit {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_EditTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_EditTask, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                     f(.default)
                     
                     guard let self else {
@@ -216,7 +216,7 @@ extension ChatControllerImpl {
                 if todo.items.count > 1 {
                     items.append(.separator)
                     
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_DeleteTask, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self]  _, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Todo_ContextMenu_DeleteTask, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -273,7 +273,7 @@ extension ChatControllerImpl {
                     initialId: AnyHashable(OptionsId.item)
                 )
             )
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 self?.canReadHistory.set(true)
             }
             

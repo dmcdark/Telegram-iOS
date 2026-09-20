@@ -138,7 +138,7 @@ final class NotificationItemContainerNode: ASDisplayNode {
     @objc func tapGesture(_ recognizer: UITapGestureRecognizer) {
         if case .ended = recognizer.state {
             if let item = self.item {
-                item.tapped({ [weak self] in
+                item.tapped({ [weak self = self] in
                     if let strongSelf = self, let contentNode = strongSelf.contentNode, let _ = strongSelf.item {
                         return (contentNode, {
                             if let strongSelf = self, let item = strongSelf.item {
@@ -201,7 +201,7 @@ final class NotificationItemContainerNode: ASDisplayNode {
                             self.cancelTimeout?(item)
                         }
                         
-                        item.expand({ [weak self] in
+                        item.expand({ [weak self = self] in
                             if let strongSelf = self, let contentNode = strongSelf.contentNode, let _ = strongSelf.item {
                                 return (contentNode, {
                                     if let strongSelf = self, let item = strongSelf.item {
@@ -214,7 +214,7 @@ final class NotificationItemContainerNode: ASDisplayNode {
                         })
                     }
                 } else if bounds.minY > 5.0 || velocity.y < -200.0 {
-                    self.animateOut(completion: { [weak self] in
+                    self.animateOut(completion: { [weak self = self] in
                         if let strongSelf = self, let item = strongSelf.item {
                             strongSelf.dismissed?(item)
                         }

@@ -1029,7 +1029,7 @@ public final class ChatMessageAvatarHeaderNodeImpl: ListViewItemHeaderNode, Chat
             self.updateStoryStats(storyStats: storyStats, theme: presentationData.theme.theme, force: true)
         }
 
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let peer = strongSelf.peer else {
                 return
             }
@@ -1083,7 +1083,7 @@ public final class ChatMessageAvatarHeaderNodeImpl: ListViewItemHeaderNode, Chat
         
         if peer.isPremium && context.sharedContext.energyUsageSettings.autoplayVideo {
             self.cachedDataDisposable.set((context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.CachedData(id: peer.id))
-            |> deliverOnMainQueue).startStrict(next: { [weak self] cachedData in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] cachedData in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1123,14 +1123,14 @@ public final class ChatMessageAvatarHeaderNodeImpl: ListViewItemHeaderNode, Chat
                         
                         if strongSelf.hierarchyTrackingLayer == nil {
                             let hierarchyTrackingLayer = HierarchyTrackingLayer()
-                            hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+                            hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
                                 strongSelf.trackingIsInHierarchy = true
                             }
                             
-                            hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+                            hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }

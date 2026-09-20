@@ -39,7 +39,7 @@ final class ChatSearchResultsController: ViewController {
         self.navigationPresentation = .modal
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
                 strongSelf.navigationBar?.updatePresentationData(NavigationBarPresentationData(presentationTheme: presentationData.theme, presentationStrings: presentationData.strings), transition: .immediate)
@@ -63,14 +63,14 @@ final class ChatSearchResultsController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = ChatSearchResultsControllerNode(context: self.context, location: self.location, searchQuery: self.searchQuery, searchResult: self.searchResult, searchState: self.searchState, presentInGlobalOverlay: { [weak self] c in
+        self.displayNode = ChatSearchResultsControllerNode(context: self.context, location: self.location, searchQuery: self.searchQuery, searchResult: self.searchResult, searchState: self.searchState, presentInGlobalOverlay: { [weak self = self] c in
             self?.presentInGlobalOverlay(c)
         })
-        self.controllerNode.resultSelected = { [weak self] messageIndex in
+        self.controllerNode.resultSelected = { [weak self = self] messageIndex in
             self?.navigateToMessageIndex(messageIndex)
             self?.dismiss()
         }
-        self.controllerNode.resultsUpdated = { [weak self] result, state in
+        self.controllerNode.resultsUpdated = { [weak self = self] result, state in
             self?.resultsUpdated(result, state)
         }
     }

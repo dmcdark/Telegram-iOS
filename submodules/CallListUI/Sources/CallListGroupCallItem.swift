@@ -219,7 +219,7 @@ class CallListGroupCallItemNode: ItemListRevealOptionsItemNode {
         
         self.joinButtonNode.addTarget(self, action: #selector(self.joinPressed), forControlEvents: .touchUpInside)
         
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             guard let item = self?.layoutParams?.0 else {
                 return false
             }
@@ -255,7 +255,7 @@ class CallListGroupCallItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -275,7 +275,7 @@ class CallListGroupCallItemNode: ItemListRevealOptionsItemNode {
         let makeJoinTitleLayout = TextNode.asyncLayout(self.joinTitleNode)
         let currentItem = self.layoutParams?.0
         
-        return { [weak self] item, params, first, last, firstWithHeader, neighbors in
+        return { [weak self = self] item, params, first, last, firstWithHeader, neighbors in
             var updatedTheme: PresentationTheme?
             
             var updatedJoinBackground: UIImage?
@@ -338,7 +338,7 @@ class CallListGroupCallItemNode: ItemListRevealOptionsItemNode {
             
             let contentSize = nodeLayout.contentSize
             
-            return (nodeLayout, { [weak self] synchronousLoads in
+            return (nodeLayout, { [weak self = self] synchronousLoads in
                 if let strongSelf = self {
                     let peer = item.peer
                     var overrideImage: AvatarNodeImageOverride?

@@ -183,7 +183,7 @@ final class ThemePreviewControllerNode: ASDisplayNode, ASScrollViewDelegate {
         self.toolbarNode.cancel = {
             dismiss()
         }
-        self.toolbarNode.done = { [weak self] _ in
+        self.toolbarNode.done = { [weak self = self] _ in
             if let strongSelf = self {
                 if !strongSelf.dismissed {
                     strongSelf.dismissed = true
@@ -210,7 +210,7 @@ final class ThemePreviewControllerNode: ASDisplayNode, ASScrollViewDelegate {
         self.wallpaperNode.update(wallpaper: self.wallpaper, animated: false)
         self.wallpaperNode.updateBubbleTheme(bubbleTheme: self.previewTheme, bubbleCorners: self.presentationData.chatBubbleCorners)
 
-        self.remoteChatBackgroundNode.imageUpdated = { [weak self] image in
+        self.remoteChatBackgroundNode.imageUpdated = { [weak self = self] image in
             if let strongSelf = self, strongSelf.blurredNode.supernode != nil {
                 var image = image
                 if let imageToScale = image {
@@ -233,14 +233,14 @@ final class ThemePreviewControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 return chatServiceBackgroundColor(wallpaper: wallpaper, mediaBox: context.account.postbox.mediaBox)
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] color in
+        |> deliverOnMainQueue).start(next: { [weak self = self] color in
             if let strongSelf = self {
                 strongSelf.pageControlBackgroundNode.backgroundColor = color
             }
         })
         
         self.wallpaperDisposable = (self.wallpaperPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] wallpaper in
+        |> deliverOnMainQueue).start(next: { [weak self = self] wallpaper in
             guard let strongSelf = self else {
                 return
             }
@@ -278,7 +278,7 @@ final class ThemePreviewControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 }
                 
                 strongSelf.statusDisposable = (statusSignal
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     if let strongSelf = self, case .Local = status {
                         strongSelf.toolbarNode.setDoneEnabled(true)
                     }

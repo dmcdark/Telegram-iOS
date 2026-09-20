@@ -256,7 +256,7 @@ public final class EmojiStatusComponent: Component {
             
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
             
-            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -612,7 +612,7 @@ public final class EmojiStatusComponent: Component {
                 } else {
                     if self.emojiFileDisposable == nil {
                         self.emojiFileDisposable = (component.resolveInlineStickers([emojiFileId])
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let strongSelf = self else {
                                 return
                             }

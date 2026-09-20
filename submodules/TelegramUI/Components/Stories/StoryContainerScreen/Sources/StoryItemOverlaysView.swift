@@ -262,7 +262,7 @@ final class StoryItemOverlaysView: UIView {
             self.addSubview(self.shadowView)
             self.addSubview(self.coverView)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -351,7 +351,7 @@ final class StoryItemOverlaysView: UIView {
                     } else {
                         if self.requestStickerDisposable == nil {
                             self.requestStickerDisposable = (context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                            |> deliverOnMainQueue).start(next: { [weak self] result in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                                 guard let self else {
                                     return
                                 }
@@ -738,10 +738,10 @@ final class StoryItemOverlaysView: UIView {
                     itemView = current
                 } else {
                     itemView = ReactionView(frame: CGRect())
-                    itemView.activate = { [weak self] view, reaction in
+                    itemView.activate = { [weak self = self] view, reaction in
                         self?.activate?(view, reaction)
                     }
-                    itemView.requestUpdate = { [weak self] in
+                    itemView.requestUpdate = { [weak self = self] in
                         self?.requestUpdate?()
                     }
                     self.itemViews[itemId] = itemView

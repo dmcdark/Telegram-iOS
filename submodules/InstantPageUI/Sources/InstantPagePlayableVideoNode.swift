@@ -70,7 +70,7 @@ final class InstantPagePlayableVideoNode: ASDisplayNode, InstantPageNode, Galler
         if case let .file(file) = media.media {
             self.fetchedDisposable.set(context.engine.resources.fetch(reference: AnyMediaReference.webPage(webPage: WebpageReference(webPage), media: file).resourceReference(file.resource), userLocation: userLocation, userContentType: .video).start())
             
-            self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(file.resource)) |> deliverOnMainQueue).start(next: { [weak self] status in
+            self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(file.resource)) |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 displayLinkDispatcher.dispatch {
                     if let strongSelf = self {
                         strongSelf.fetchStatus = status
@@ -153,7 +153,7 @@ final class InstantPagePlayableVideoNode: ASDisplayNode, InstantPageNode, Galler
     
     func transitionNode(media: InstantPageMedia) -> (ASDisplayNode, CGRect, () -> (UIView?, UIView?))? {
         if media == self.media {
-            return (self, self.bounds, { [weak self] in
+            return (self, self.bounds, { [weak self = self] in
                 return (self?.view.snapshotContentTree(unhide: true), nil)
             })
         } else {

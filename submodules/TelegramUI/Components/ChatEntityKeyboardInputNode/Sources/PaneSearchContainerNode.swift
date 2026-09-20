@@ -114,37 +114,37 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
         self.addSubnode(self.contentNode)
         self.addSubnode(self.searchBar)
 
-        self.contentNode.deactivateSearchBar = { [weak self] in
+        self.contentNode.deactivateSearchBar = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
         }
-        self.contentNode.updateActivity = { [weak self] active in
+        self.contentNode.updateActivity = { [weak self = self] active in
             self?.searchBar.activity = active
         }
 
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             cancel()
             self?.onCancel?()
         }
         self.searchBar.activate()
 
-        self.searchBar.textUpdated = { [weak self] text, languageCode in
+        self.searchBar.textUpdated = { [weak self = self] text, languageCode in
             self?.contentNode.updateText(text, languageCode: languageCode)
         }
 
         self.updateThemeAndStrings(theme: theme, strings: strings)
 
         if let contentNode = self.contentNode as? GifPaneSearchContentNode {
-            contentNode.requestUpdateQuery = { [weak self] query in
+            contentNode.requestUpdateQuery = { [weak self = self] query in
                 self?.updateQuery(query)
             }
-            contentNode.openGifContextMenu = { [weak self] file, node, rect, gesture, isSaved in
+            contentNode.openGifContextMenu = { [weak self = self] file, node, rect, gesture, isSaved in
                 self?.openGifContextMenu?(file, node, rect, gesture, isSaved)
             }
         }
 
         if let contentNode = self.contentNode as? StickerPaneSearchContentNode {
-            contentNode.selectedPackUpdated = { [weak self] pack in
+            contentNode.selectedPackUpdated = { [weak self = self] pack in
                 guard let self else {
                     return
                 }
@@ -231,7 +231,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: strings.StickerPack_Share, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Share"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             f(.default)
 
             guard let self else {
@@ -242,7 +242,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
                 params: ShareControllerParams(
                     subject: .url(link),
                     externalShare: false,
-                    actionCompleted: { [weak self] in
+                    actionCompleted: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -258,7 +258,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
 
         items.append(.action(ContextMenuActionItem(text: strings.StickerPack_CopyLink, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             f(.default)
 
             UIPasteboard.general.string = link
@@ -275,7 +275,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
             items.append(.separator)
             items.append(.action(ContextMenuActionItem(text: strings.StickerPack_RemoveStickerSet, textColor: .destructive, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
 
                 guard let self else {
@@ -285,7 +285,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
                 let info = selectedStickerPack.info
                 let context = self.context
                 let _ = (context.engine.stickers.removeStickerPackInteractively(id: info.id, option: .delete)
-                |> deliverOnMainQueue).start(next: { [weak self] indexAndItems in
+                |> deliverOnMainQueue).start(next: { [weak self = self] indexAndItems in
                     guard let self, let (positionInList, items) = indexAndItems else {
                         return
                     }
@@ -306,7 +306,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
                     }
 
                     let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: self.theme)
-                    let undoController = UndoOverlayController(presentationData: presentationData, content: .stickersModified(title: presentationData.strings.StickerPackActionInfo_RemovedTitle, text: presentationData.strings.StickerPackActionInfo_RemovedText(info.title).string, undo: true, info: info, topItem: stickerItems.first, context: context), elevatedLayout: false, animateInAsReplacement: animateInAsReplacement, action: { [weak self] action in
+                    let undoController = UndoOverlayController(presentationData: presentationData, content: .stickersModified(title: presentationData.strings.StickerPackActionInfo_RemovedTitle, text: presentationData.strings.StickerPackActionInfo_RemovedText(info.title).string, undo: true, info: info, topItem: stickerItems.first, context: context), elevatedLayout: false, animateInAsReplacement: animateInAsReplacement, action: { [weak self = self] action in
                         if case .undo = action {
                             let _ = context.engine.stickers.addStickerPackInteractively(info: info, items: stickerItems, positionInList: positionInList).start()
                             if let contentNode = self?.contentNode as? StickerPaneSearchContentNode {
@@ -362,7 +362,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
                         GlassControlGroupComponent.Item(
                             id: AnyHashable("back"),
                             content: .icon("Navigation/Back"),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let contentNode = self.contentNode as? StickerPaneSearchContentNode else {
                                     return
                                 }
@@ -378,7 +378,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
                         GlassControlGroupComponent.Item(
                             id: AnyHashable("more"),
                             content: .animation("anim_morewide"),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 self?.openMore()
                             }
                         )
@@ -469,7 +469,7 @@ public final class PaneSearchContainerNode: ASDisplayNode, EntitySearchContainer
     }
 
     public func animateOut(to placeholder: PaneSearchBarPlaceholderNode, animateOutSearchBar: Bool, transition: ContainedViewLayoutTransition, completion: @escaping () -> Void) {
-        let finish: () -> Void = { [weak self] in
+        let finish: () -> Void = { [weak self = self] in
             placeholder.isHidden = false
             if let self, self.animatedPlaceholder === placeholder {
                 self.animatedPlaceholder = nil

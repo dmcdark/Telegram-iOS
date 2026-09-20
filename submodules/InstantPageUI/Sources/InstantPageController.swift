@@ -95,7 +95,7 @@ public final class InstantPageController: ViewController {
         
         self.statusBar.statusBarStyle = .White
         
-        self.webpageDisposable = (actualizedWebpage(account: context.account, webpage: webPage) |> deliverOnMainQueue).start(next: { [weak self] result in
+        self.webpageDisposable = (actualizedWebpage(account: context.account, webpage: webPage) |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 strongSelf.webPage = result
                 if strongSelf.isNodeLoaded {
@@ -105,7 +105,7 @@ public final class InstantPageController: ViewController {
         })
         
         self.settingsDisposable = (self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.instantPagePresentationSettings, ApplicationSpecificSharedDataKeys.presentationThemeSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 let settings: InstantPagePresentationSettings
                 if let current = sharedData.entries[ApplicationSpecificSharedDataKeys.instantPagePresentationSettings]?.get(InstantPagePresentationSettings.self) {
@@ -144,17 +144,17 @@ public final class InstantPageController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = InstantPageControllerNode(controller: self, context: self.context, settings: self.settings, themeSettings: self.themeSettings, presentationTheme: self.presentationData.theme, strings: self.presentationData.strings, dateTimeFormat: self.presentationData.dateTimeFormat, nameDisplayOrder: self.presentationData.nameDisplayOrder, autoNightModeTriggered: self.presentationData.autoNightModeTriggered, statusBar: self.statusBar, sourceLocation: self.sourceLocation, getNavigationController: { [weak self] in
+        self.displayNode = InstantPageControllerNode(controller: self, context: self.context, settings: self.settings, themeSettings: self.themeSettings, presentationTheme: self.presentationData.theme, strings: self.presentationData.strings, dateTimeFormat: self.presentationData.dateTimeFormat, nameDisplayOrder: self.presentationData.nameDisplayOrder, autoNightModeTriggered: self.presentationData.autoNightModeTriggered, statusBar: self.statusBar, sourceLocation: self.sourceLocation, getNavigationController: { [weak self = self] in
             return self?.navigationController as? NavigationController
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a, blockInteraction: true)
-        }, pushController: { [weak self] c in
+        }, pushController: { [weak self = self] c in
             (self?.navigationController as? NavigationController)?.pushViewController(c)
-        }, openPeer: { [weak self] peer in
+        }, openPeer: { [weak self = self] peer in
             if let strongSelf = self, let navigationController = strongSelf.navigationController as? NavigationController {
                 strongSelf.context.sharedContext.navigateToChatController(NavigateToChatControllerParams(navigationController: navigationController, context: strongSelf.context, chatLocation: .peer(peer), animated: true))
             }
-        }, navigateBack: { [weak self] in
+        }, navigateBack: { [weak self = self] in
             if let strongSelf = self, let controllers = strongSelf.navigationController?.viewControllers.reversed() {
                 for controller in controllers {
                     if !(controller is InstantPageController) {
@@ -167,7 +167,7 @@ public final class InstantPageController: ViewController {
         })
         
         self.storedStateDisposable = (instantPageStoredState(engine: self.context.engine, webPage: self.webPage)
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             if let strongSelf = self {
                 strongSelf.controllerNode.updateWebPage(strongSelf.webPage, anchor: strongSelf.anchor, state: state)
                 strongSelf._ready.set(.single(true))

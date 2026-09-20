@@ -273,20 +273,20 @@ final class StoryItemContentComponent: Component {
             self.addSubview(self.imageView)
             self.addSubview(self.overlaysView)
             
-            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] value in
+            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
                 self.updateProgressMode(update: true)
             }
             
-            self.overlaysView.activate = { [weak self] view, reaction in
+            self.overlaysView.activate = { [weak self = self] view, reaction in
                 guard let self, let component = self.component else {
                     return
                 }
                 component.activateReaction(view, reaction)
             }
-            self.overlaysView.requestUpdate = { [weak self] in
+            self.overlaysView.requestUpdate = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -360,7 +360,7 @@ final class StoryItemContentComponent: Component {
                             hintDimensions: file.dimensions?.cgSize,
                             storeAfterDownload: nil,
                             displayImage: false,
-                            hasSentFramesToDisplay: { [weak self] in
+                            hasSentFramesToDisplay: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -375,7 +375,7 @@ final class StoryItemContentComponent: Component {
                     self.videoNode = videoNode
                     self.insertSubview(videoNode.view, aboveSubview: self.imageView)
                     
-                    videoNode.playbackCompleted = { [weak self] in
+                    videoNode.playbackCompleted = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -399,7 +399,7 @@ final class StoryItemContentComponent: Component {
                             self.environment?.presentationProgressUpdated(1.0, false, true)
                         }
                     }
-                    videoNode.ownsContentNodeUpdated = { [weak self] value in
+                    videoNode.ownsContentNodeUpdated = { [weak self = self] value in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -422,7 +422,7 @@ final class StoryItemContentComponent: Component {
             if let videoNode = self.videoNode {
                 if self.videoProgressDisposable == nil {
                     self.videoProgressDisposable = (videoNode.status
-                    |> deliverOnMainQueue).start(next: { [weak self] status in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] status in
                         guard let self, let status else {
                             return
                         }
@@ -586,7 +586,7 @@ final class StoryItemContentComponent: Component {
                     self.currentProgressTimer = SwiftSignalKit.Timer(
                         timeout: 1.0 / 60.0,
                         repeat: true,
-                        completion: { [weak self] in
+                        completion: { [weak self = self] in
                             guard let self, self.progressMode.mode != .pause, self.contentLoaded, self.hierarchyTrackingLayer.isInHierarchy else {
                                 return
                             }
@@ -800,7 +800,7 @@ final class StoryItemContentComponent: Component {
         }
         
         func beginPictureInPicture(dismissController: @escaping () -> (restore: (@escaping () -> Void) -> Void, dismissWhilePictureInPicture: () -> Void)) {
-            self.activatePictureInPictureAction.invoke(Action { [weak self] in
+            self.activatePictureInPictureAction.invoke(Action { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -949,7 +949,7 @@ final class StoryItemContentComponent: Component {
                 self.fetchDisposable?.dispose()
                 self.fetchDisposable = nil
                 if let fetchSignal {
-                    self.fetchDisposable = (fetchSignal |> deliverOnMainQueue).start(completed: { [weak self] in
+                    self.fetchDisposable = (fetchSignal |> deliverOnMainQueue).start(completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1021,7 +1021,7 @@ final class StoryItemContentComponent: Component {
                         insets: environment.containerInsets,
                         isEmbeddedInCamera: component.isEmbeddedInCamera,
                         minPaidStars: minPaidStars,
-                        controller: { [weak self] in
+                        controller: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return nil
                             }
@@ -1067,7 +1067,7 @@ final class StoryItemContentComponent: Component {
                                 enablePictureInPicture: true,
                                 activatePictureInPicture: self.activatePictureInPictureAction,
                                 deactivatePictureInPicture: self.deactivatePictureInPictureAction,
-                                bringBackControllerForPictureInPictureDeactivation: { [weak self] f in
+                                bringBackControllerForPictureInPictureDeactivation: { [weak self = self] f in
                                     guard let self else {
                                         return
                                     }
@@ -1079,7 +1079,7 @@ final class StoryItemContentComponent: Component {
                                         f()
                                     }
                                 },
-                                pictureInPictureClosed: { [weak self] in
+                                pictureInPictureClosed: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1091,7 +1091,7 @@ final class StoryItemContentComponent: Component {
                                 },
                                 onVideoSizeRetrieved: { _ in
                                 },
-                                onVideoPlaybackLiveChange: { [weak self] isLive in
+                                onVideoPlaybackLiveChange: { [weak self = self] isLive in
                                     guard let self else {
                                         return
                                     }
@@ -1135,7 +1135,7 @@ final class StoryItemContentComponent: Component {
                 
                 if let messageMedia {
                     var applyState = false
-                    self.imageView.didLoadContents = { [weak self] in
+                    self.imageView.didLoadContents = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1205,7 +1205,7 @@ final class StoryItemContentComponent: Component {
             if let mediaStreamCall = self.mediaStreamCall {
                 if self.liveCallStateDisposable == nil {
                     self.liveCallStateDisposable = (mediaStreamCall.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -1228,7 +1228,7 @@ final class StoryItemContentComponent: Component {
                 
                 if self.liveCallStatsDisposable == nil {
                     self.liveCallStatsDisposable = (mediaStreamCall.members
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] members in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] members in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -1345,7 +1345,7 @@ final class StoryItemContentComponent: Component {
                         ))),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1403,7 +1403,7 @@ final class StoryItemContentComponent: Component {
                     self.addSubview(loadingEffectView)
                     
                     if self.loadingEffectAppearanceTimer == nil {
-                        let timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: false, completion: { [weak self] in
+                        let timer = SwiftSignalKit.Timer(timeout: 0.2, repeat: false, completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }

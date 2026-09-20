@@ -56,7 +56,7 @@ final class InstantPageSettingsSwitchNode: InstantPageSettingsItemNode {
         self.addSubnode(self.labelNode)
         self.addSubnode(self.switchNode)
         
-        self.switchNode.valueUpdated = { [weak self] value in
+        self.switchNode.valueUpdated = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.isOn = value
                 toggled(value)

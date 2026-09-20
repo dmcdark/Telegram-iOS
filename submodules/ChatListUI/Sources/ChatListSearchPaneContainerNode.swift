@@ -161,7 +161,7 @@ private final class ChatListSearchPendingPane {
         self.pane = ChatListSearchPaneWrapper(key: key, node: paneNode)
         self.disposable = (paneNode.isReady
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             self?.isReady = true
             hasBecomeReady(key)
         }).strict()
@@ -280,7 +280,7 @@ final class ChatListSearchPaneContainerNode: ASDisplayNode, ASGestureRecognizerD
     override func didLoad() {
         super.didLoad()
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
             guard let strongSelf = self, let (_, _, _, _, _, _, availablePanes) = strongSelf.currentParams, let currentPaneKey = strongSelf.currentPaneKey, let index = availablePanes.firstIndex(of: currentPaneKey) else {
                 return []
             }
@@ -492,7 +492,7 @@ final class ChatListSearchPaneContainerNode: ASDisplayNode, ASGestureRecognizerD
                     searchOptions: self.searchOptions,
                     globalPeerSearchContext: self.globalPeerSearchContext,
                     key: key,
-                    hasBecomeReady: { [weak self] key in
+                    hasBecomeReady: { [weak self = self] key in
                         let apply: () -> Void = {
                             guard let strongSelf = self else {
                                 return

@@ -88,7 +88,7 @@ private final class FrameSequenceThumbnailNode: ASDisplayNode {
             )
             self.sources.append(source)
             self.disposables[index] = (source.takeFrame(at: framePts)
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
@@ -510,7 +510,7 @@ private final class ItemView: UIView, SparseItemGridView {
         self.addSubnode(self.buttonNode)
         self.buttonNode.addTarget(self, action: #selector(self.pressed), forControlEvents: .touchUpInside)
 
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -1298,7 +1298,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         }
 
         let _ = (ApplicationSpecificNotice.getSharedMediaScrollingTooltip(accountManager: context.sharedContext.accountManager)
-        |> deliverOnMainQueue).start(next: { [weak self] count in
+        |> deliverOnMainQueue).start(next: { [weak self = self] count in
             guard let strongSelf = self else {
                 return
             }
@@ -1312,14 +1312,14 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             }
         })
 
-        self.itemGridBinding.loadHoleImpl = { [weak self] hole, location in
+        self.itemGridBinding.loadHoleImpl = { [weak self = self] hole, location in
             guard let strongSelf = self else {
                 return .never()
             }
             return strongSelf.loadHole(anchor: hole, at: location)
         }
 
-        self.itemGridBinding.onTapImpl = { [weak self] item in
+        self.itemGridBinding.onTapImpl = { [weak self = self] item in
             guard let strongSelf = self else {
                 return
             }
@@ -1338,14 +1338,14 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             }
         }
 
-        self.itemGridBinding.onTagTapImpl = { [weak self] in
+        self.itemGridBinding.onTagTapImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.openCurrentDate?()
         }
 
-        self.itemGridBinding.didScrollImpl = { [weak self] in
+        self.itemGridBinding.didScrollImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1354,14 +1354,14 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             strongSelf.cancelPreviewGestures()
         }
 
-        self.itemGridBinding.coveringInsetOffsetUpdatedImpl = { [weak self] transition in
+        self.itemGridBinding.coveringInsetOffsetUpdatedImpl = { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.tabBarOffsetUpdated?(transition)
         }
 
-        self.itemGridBinding.scrollingOffsetUpdatedImpl = { [weak self] transition in
+        self.itemGridBinding.scrollingOffsetUpdatedImpl = { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
@@ -1369,7 +1369,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         }
 
         var processedOnBeginFastScrolling = false
-        self.itemGridBinding.onBeginFastScrollingImpl = { [weak self] in
+        self.itemGridBinding.onBeginFastScrollingImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1405,7 +1405,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             })
         }
 
-        self.itemGridBinding.getShimmerColorsImpl = { [weak self] in
+        self.itemGridBinding.getShimmerColorsImpl = { [weak self = self] in
             guard let strongSelf = self, let presentationData = strongSelf.currentParams?.presentationData else {
                 return SparseItemGrid.ShimmerColors(background: 0xffffff, foreground: 0xffffff)
             }
@@ -1416,15 +1416,15 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             return SparseItemGrid.ShimmerColors(background: backgroundColor.argb, foreground: foregroundColor.argb)
         }
 
-        self.itemGridBinding.updateShimmerLayersImpl = { [weak self] layer in
+        self.itemGridBinding.updateShimmerLayersImpl = { [weak self = self] layer in
             self?.itemGrid.updateShimmerLayers(item: layer)
         }
 
-        self.itemGrid.cancelExternalContentGestures = { [weak self] in
+        self.itemGrid.cancelExternalContentGestures = { [weak self = self] in
             self?.contextGestureContainerNode.cancelGesture()
         }
 
-        self.itemGrid.zoomLevelUpdated = { [weak self] zoomLevel in
+        self.itemGrid.zoomLevelUpdated = { [weak self = self] zoomLevel in
             guard let strongSelf = self else {
                 return
             }
@@ -1432,13 +1432,13 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         }
         
         self._itemInteraction = VisualMediaItemInteraction(
-            openMessage: { [weak self] message in
+            openMessage: { [weak self = self] message in
                 let _ = self?.chatControllerInteraction.openMessage(message, OpenMessageParams(mode: .default))
             },
-            openMessageContextActions: { [weak self] message, sourceNode, sourceRect, gesture in
+            openMessageContextActions: { [weak self = self] message, sourceNode, sourceRect, gesture in
                 self?.chatControllerInteraction.openMessageContextActions(message, sourceNode, sourceRect, gesture)
             },
-            toggleSelection: { [weak self] id, value in
+            toggleSelection: { [weak self = self] id, value in
                 self?.chatControllerInteraction.toggleMessagesSelection([id], value)
             }
         )
@@ -1450,7 +1450,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         self.view.insertSubview(self.listBackgroundView, at: 0)
         self.view.addSubview(self.listMaskView)
 
-        self.contextGestureContainerNode.shouldBegin = { [weak self] point in
+        self.contextGestureContainerNode.shouldBegin = { [weak self = self] point in
             guard let strongSelf = self else {
                 return false
             }
@@ -1469,7 +1469,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             return true
         }
 
-        self.contextGestureContainerNode.customActivationProgress = { [weak self] progress, update in
+        self.contextGestureContainerNode.customActivationProgress = { [weak self = self] progress, update in
             guard let strongSelf = self, let currentGestureItem = strongSelf.currentGestureItem else {
                 return
             }
@@ -1508,7 +1508,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             }
         }
 
-        self.contextGestureContainerNode.activated = { [weak self] gesture, _ in
+        self.contextGestureContainerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let currentGestureItem = strongSelf.currentGestureItem else {
                 return
             }
@@ -1528,7 +1528,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         }
 
         self.storedStateDisposable = (visualMediaStoredState(engine: context.engine, peerId: peerId, messageTag: self.stateTag)
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1538,7 +1538,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             strongSelf.requestHistoryAroundVisiblePosition(synchronous: false, reloadAtTop: false)
         })
         
-        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().start(next: { [weak self] ids in
+        self.hiddenMediaDisposable = context.sharedContext.mediaManager.galleryHiddenMediaManager.hiddenIds().start(next: { [weak self = self] ids in
             guard let strongSelf = self else {
                 return
             }
@@ -1564,7 +1564,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             strongSelf.updateHiddenMedia()
         })
         
-        /*let animationTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: true, completion: { [weak self] in
+        /*let animationTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: true, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1686,7 +1686,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         }))
 
         self.presentationDataDisposable = (self.context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let strongSelf = self, let (size, topInset, sideInset, bottomInset, _, _, _, _, _, _) = strongSelf.currentParams  else {
                 return
             }
@@ -1790,7 +1790,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
         let queue = Queue()
 
         self.listDisposable.set((self.listSource.state
-        |> deliverOn(queue)).start(next: { [weak self] list in
+        |> deliverOn(queue)).start(next: { [weak self = self] list in
             let timezoneOffset = Int32(TimeZone.current.secondsFromGMT())
 
             var mappedItems: [SparseItemGrid.Item] = []
@@ -2086,7 +2086,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
             } else {
                 if let _ = self.selectionScrollActivationTimer {
                 } else {
-                    let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self] in
+                    let timer = SwiftSignalKit.Timer(timeout: 0.45, repeat: false, completion: { [weak self = self] in
                         self?.setupSelectionScrolling()
                     }, queue: .mainQueue())
                     timer.start()
@@ -2102,7 +2102,7 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
     
     private var selectionScrollSkipUpdate = false
     private func setupSelectionScrolling() {
-        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+        self.selectionScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
             self?.selectionScrollActivationTimer = nil
             if let strongSelf = self, let delta = strongSelf.selectionScrollDelta {
                 let distance: CGFloat = 15.0 * min(1.0, 0.15 + abs(delta * delta))
@@ -2182,17 +2182,17 @@ public final class PeerInfoVisualMediaPaneNode: ASDisplayNode, PeerInfoPaneNode,
                     let selectionGesture = MediaPickerGridSelectionGesture<EngineMessage.Id>()
                     selectionGesture.delegate = self.wrappedGestureRecognizerDelegate
                     selectionGesture.sideInset = 44.0
-                    selectionGesture.updateIsScrollEnabled = { [weak self] isEnabled in
+                    selectionGesture.updateIsScrollEnabled = { [weak self = self] isEnabled in
                         self?.itemGrid.isScrollEnabled = isEnabled
                     }
-                    selectionGesture.itemAt = { [weak self] point in
+                    selectionGesture.itemAt = { [weak self = self] point in
                         if let strongSelf = self, let itemLayer = strongSelf.itemGrid.item(at: point)?.layer as? ItemLayer, let messageId = itemLayer.item?.message.id {
                             return (messageId, strongSelf.chatControllerInteraction.selectionState?.selectedIds.contains(messageId) ?? false)
                         } else {
                             return nil
                         }
                     }
-                    selectionGesture.updateSelection = { [weak self] messageId, selected in
+                    selectionGesture.updateSelection = { [weak self = self] messageId, selected in
                         if let strongSelf = self {
                             strongSelf.chatControllerInteraction.toggleMessagesSelection([messageId], selected)
                         }

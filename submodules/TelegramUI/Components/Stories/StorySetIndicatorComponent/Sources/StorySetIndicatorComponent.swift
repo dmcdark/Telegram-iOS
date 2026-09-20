@@ -260,7 +260,7 @@ public final class StorySetIndicatorComponent: Component {
                 if let imageSignal {
                     var wasSynchronous = true
                     self.imageDisposable = (imageSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -275,7 +275,7 @@ public final class StorySetIndicatorComponent: Component {
                 } else if let signal {
                     var wasSynchronous = true
                     self.imageDisposable = (signal
-                    |> deliverOnMainQueue).start(next: { [weak self] process in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] process in
                         guard let self else {
                             return
                         }
@@ -338,7 +338,7 @@ public final class StorySetIndicatorComponent: Component {
             self.addSubview(self.button)
             
             self.button.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -380,7 +380,7 @@ public final class StorySetIndicatorComponent: Component {
                     imageContext = current
                 } else {
                     var update = false
-                    imageContext = ImageContext(context: component.context, item: component.items[i], displayAvatars: component.displayAvatars, updated: { [weak self] in
+                    imageContext = ImageContext(context: component.context, item: component.items[i], displayAvatars: component.displayAvatars, updated: { [weak self = self] in
                         guard let self else {
                             return
                         }

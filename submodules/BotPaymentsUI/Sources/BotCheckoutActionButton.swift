@@ -50,7 +50,7 @@ final class BotCheckoutActionButton: HighlightTrackingButtonNode {
         self.addSubnode(self.activeBackgroundNode)
         self.addSubnode(self.labelNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }

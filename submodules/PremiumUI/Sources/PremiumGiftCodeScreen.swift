@@ -107,7 +107,7 @@ private final class PremiumGiftCodeSheetContent: CombinedComponent {
                         return TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
                     }
                 )
-            ) |> deliverOnMainQueue).startStrict(next: { [weak self] peers in
+            ) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers in
                 if let strongSelf = self {
                     var peersMap: [EnginePeer.Id: EnginePeer] = [:]
                     for peerId in peerIds {
@@ -706,7 +706,7 @@ public class PremiumGiftCodeScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .flatModal
         
-        copyLinkImpl = { [weak self] link in
+        copyLinkImpl = { [weak self = self] link in
             UIPasteboard.general.string = link
             
             guard let self else {
@@ -718,7 +718,7 @@ public class PremiumGiftCodeScreen: ViewControllerComponentContainer {
             self.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, position: .top, action: { _ in return true }), in: .window(.root))
         }
         
-        displayHiddenTooltipImpl = { [weak self] in
+        displayHiddenTooltipImpl = { [weak self = self] in
             guard let self else {
                 return
             }

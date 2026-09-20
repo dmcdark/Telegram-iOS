@@ -189,7 +189,7 @@ private final class QuickShareToastScreenComponent: Component {
             let environment = environment[ViewControllerComponentContainer.Environment.self].value
             
             if self.component == nil {
-                self.doneTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false, block: { [weak self] _ in
+                self.doneTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false, block: { [weak self = self] _ in
                     guard let self, let controller = self.environment?.controller() as? QuickShareToastScreen else {
                         return
                     }
@@ -237,7 +237,7 @@ private final class QuickShareToastScreenComponent: Component {
                     )),
                     effectAlignment: .center,
                     contentInsets: UIEdgeInsets(top: -8.0, left: -8.0, bottom: -8.0, right: -8.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let _ = self.component else {
                             return
                         }
@@ -407,7 +407,7 @@ public final class QuickShareToastScreen: ViewControllerComponentContainer {
             self.processedDidDisappear = true
             
             if let componentView = self.node.hostView.componentView as? QuickShareToastScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     if let self {
                         self.superDismiss()
                     }

@@ -326,7 +326,7 @@ final class StoryContentLiveChatComponent: Component {
         }
         
         private func displayDeleteMessageAndBan(id: GroupCallMessagesContext.Message.Id) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -371,7 +371,7 @@ final class StoryContentLiveChatComponent: Component {
                     mode: .liveStream(
                         messageCount: 1,
                         deleteAllMessageCount: totalCount,
-                        completion: { [weak self] result in
+                        completion: { [weak self = self] result in
                             guard let self, let component = self.component, let call = component.call as? PresentationGroupCallImpl else {
                                 return
                             }
@@ -413,7 +413,7 @@ final class StoryContentLiveChatComponent: Component {
         }
         
         private func openMessageContextMenu(id: GroupCallMessagesContext.Message.Id, isPinned: Bool, gesture: ContextGesture, sourceNode: ContextExtractedContentContainingNode) {
-            Task { @MainActor [weak self] in
+            Task { @MainActor [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -428,12 +428,12 @@ final class StoryContentLiveChatComponent: Component {
                 
                 var items: [ContextMenuItem] = []
                 if !isPinned, let messagesState = self.messagesState, let message = messagesState.messages.first(where: { $0.id == id }), !message.text.isEmpty {
-                    items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuCopy, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                    items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuCopy, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                         guard let self else {
                             return
                         }
                         
-                        c?.dismiss(completion: { [weak self] in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -475,12 +475,12 @@ final class StoryContentLiveChatComponent: Component {
                     } else {
                         openProfileString = presentationData.strings.Conversation_ContextMenuOpenProfile
                     }
-                    items.append(.action(ContextMenuActionItem(text: openProfileString, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                    items.append(.action(ContextMenuActionItem(text: openProfileString, textColor: .primary, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/User"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                         guard let self else {
                             return
                         }
                         
-                        c?.dismiss(completion: { [weak self] in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -498,12 +498,12 @@ final class StoryContentLiveChatComponent: Component {
                 }
                 
                 if canDelete {
-                    items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChatList_Context_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, _ in
+                    items.append(.action(ContextMenuActionItem(text: presentationData.strings.ChatList_Context_Delete, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, _ in
                         guard let self else {
                             return
                         }
                         
-                        c?.dismiss(completion: { [weak self] in
+                        c?.dismiss(completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -527,7 +527,7 @@ final class StoryContentLiveChatComponent: Component {
                     recognizer: nil,
                     gesture: gesture
                 )
-                contextController.dismissed = { [weak self] in
+                contextController.dismissed = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -562,7 +562,7 @@ final class StoryContentLiveChatComponent: Component {
                 self.stateDisposable?.dispose()
                 if let call = component.call as? PresentationGroupCallImpl {
                     self.stateDisposable = (call.messagesState
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -644,7 +644,7 @@ final class StoryContentLiveChatComponent: Component {
                         ),
                         message: message,
                         topPlace: topPlace,
-                        contextGesture: { [weak self] gesture, sourceNode in
+                        contextGesture: { [weak self = self] gesture, sourceNode in
                             guard let self else {
                                 return
                             }
@@ -702,7 +702,7 @@ final class StoryContentLiveChatComponent: Component {
                     isExpanded: self.isChatExpanded,
                     messages: topMessages,
                     topIndices: topIndices,
-                    action: { [weak self] message in
+                    action: { [weak self = self] message in
                         guard let self else {
                             return
                         }
@@ -713,7 +713,7 @@ final class StoryContentLiveChatComponent: Component {
                             }
                         }
                     },
-                    contextGesture: { [weak self] message, gesture, sourceNode in
+                    contextGesture: { [weak self = self] message, gesture, sourceNode in
                         guard let self else {
                             return
                         }

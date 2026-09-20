@@ -145,7 +145,7 @@ public class ItemListTextItemNode: ListViewItemNode, ItemListItemNode {
         recognizer.tapActionAtPoint = { _ in
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }
@@ -158,7 +158,7 @@ public class ItemListTextItemNode: ListViewItemNode, ItemListItemNode {
         let currentChevronImage = self.chevronImage
         let currentItem = self.item
         
-        return { [weak self] item, params, neighbors in
+        return { [weak self = self] item, params, neighbors in
             let leftInset: CGFloat = 15.0
             var topInset: CGFloat = 7.0
             var bottomInset: CGFloat = 7.0

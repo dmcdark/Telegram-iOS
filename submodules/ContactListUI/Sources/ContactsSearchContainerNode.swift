@@ -607,13 +607,13 @@ public final class ContactsSearchContainerNode: SearchDisplayControllerContentNo
         let previousSearchItems = Atomic<[ContactListSearchEntry]>(value: [])
         
         self.searchDisposable.set((searchItems
-        |> deliverOnMainQueue).start(next: { [weak self] items, query in
+        |> deliverOnMainQueue).start(next: { [weak self = self] items, query in
             if let strongSelf = self {
                 let previousItems = previousSearchItems.swap(items ?? [])
                 
                 var addContact: ((String) -> Void)?
                 if let originalAddContact = strongSelf.addContact {
-                    addContact = { [weak self] phoneNumber in
+                    addContact = { [weak self = self] phoneNumber in
                         self?.listNode.clearHighlightAnimated(true)
                         originalAddContact(phoneNumber)
                     }
@@ -634,7 +634,7 @@ public final class ContactsSearchContainerNode: SearchDisplayControllerContentNo
             }
         }))
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
     }
@@ -738,13 +738,13 @@ public final class ContactsSearchContainerNode: SearchDisplayControllerContentNo
                         strings: self.presentationData.strings,
                         metrics: layout.metrics,
                         safeInsets: layout.safeInsets,
-                        updated: { [weak self] query in
+                        updated: { [weak self = self] query in
                             guard let self else {
                                 return
                             }
                             self.searchTextUpdated(text: query)
                         },
-                        cancel: { [weak self] in
+                        cancel: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -798,7 +798,7 @@ public final class ContactsSearchContainerNode: SearchDisplayControllerContentNo
             let isSearching = transition.isSearching
             let emptyResults = transition.emptyResults
             let query = transition.query
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }

@@ -125,7 +125,7 @@ final class ChatPremiumRequiredInputPanelNode: ChatInputPanelNode {
                 content: AnyComponent(VStack(buttonContents, spacing: 1.0)),
                 effectAlignment: .center,
                 minSize: size,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }

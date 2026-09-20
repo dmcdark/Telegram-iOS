@@ -153,7 +153,7 @@ public class ChatReplyCountItemNode: ListViewItemNode {
             
             let backgroundSize = CGSize(width: labelLayout.size.width + 8.0 + 8.0, height: labelLayout.size.height + 4.0)
             
-            return (ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: backgroundSize.height), insets: UIEdgeInsets(top: 6.0 + (dateAtBottom ? layoutConstants.timestampHeaderHeight : 0.0), left: 0.0, bottom: 5.0, right: 0.0)), { [weak self] in
+            return (ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: backgroundSize.height), insets: UIEdgeInsets(top: 6.0 + (dateAtBottom ? layoutConstants.timestampHeaderHeight : 0.0), left: 0.0, bottom: 5.0, right: 0.0)), { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.theme = item.presentationData.theme

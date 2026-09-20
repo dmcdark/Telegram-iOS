@@ -45,7 +45,7 @@ public final class AssetDownloadManager {
         let queue = self.queue
         let identifier = asset.localIdentifier
         
-        let assetContext = DownloadingAssetContext(identifier: identifier, updated: { [weak self] in
+        let assetContext = DownloadingAssetContext(identifier: identifier, updated: { [weak self = self] in
             queue.async {
                 guard let self else {
                     return
@@ -59,7 +59,7 @@ public final class AssetDownloadManager {
         })
         self.currentAssetContext = assetContext
         assetContext.disposable = (downloadAssetMediaData(asset)
-        |> deliverOn(queue)).start(next: { [weak self] status in
+        |> deliverOn(queue)).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -130,7 +130,7 @@ public final class AssetDownloadManager {
     }
     
     public func downloadProgress(identifier: String) -> Signal<AssetDownloadStatus, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let self {
                 return self.downloadProgress(identifier: identifier, next: { status in
                     subscriber.putNext(status)

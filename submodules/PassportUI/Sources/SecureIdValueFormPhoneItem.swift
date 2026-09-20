@@ -103,11 +103,11 @@ final class SecureIdValueFormPhoneItemNode: FormBlockItemNode<SecureIdValueFormP
         self.addSubnode(self.countryButton)
         self.addSubnode(self.phoneInputNode)
         
-        self.phoneInputNode.countryCodeTextUpdated = { [weak self] value in
+        self.phoneInputNode.countryCodeTextUpdated = { [weak self = self] value in
             self?.countryCodeTextUpdated(value)
         }
         
-        self.phoneInputNode.numberTextUpdated = { [weak self] value in
+        self.phoneInputNode.numberTextUpdated = { [weak self = self] value in
             self?.numberTextUpdated(value)
         }
         

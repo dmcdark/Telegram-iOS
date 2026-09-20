@@ -55,10 +55,10 @@
 //
 //    private lazy var controllerInteraction: ShareControllerInteraction = {
 //        ShareControllerInteraction(
-//            togglePeer: { [weak self] peer, search in
+//            togglePeer: { [weak self = self] peer, search in
 //                self?.togglePeer(peer, search: search)
 //            },
-//            selectTopic: { [weak self] peer, threadId, threadData in
+//            selectTopic: { [weak self = self] peer, threadId, threadData in
 //                self?.selectTopic(peer, threadId: threadId, threadData: threadData)
 //            },
 //            shareStory: nil,
@@ -84,7 +84,7 @@
 //        self.addSubview(self.clippingView)
 //
 //        self.peersDisposable.set((shareControllerPeerListSignal(account: self.accountContext)
-//        |> deliverOnMainQueue).start(next: { [weak self] peerList in
+//        |> deliverOnMainQueue).start(next: { [weak self = self] peerList in
 //            guard let self else {
 //                return
 //            }

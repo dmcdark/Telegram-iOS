@@ -47,7 +47,7 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -57,7 +57,7 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -70,7 +70,7 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
             }
         }).strict()
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.searchContentNode?.setIsEnabled(false)
@@ -111,7 +111,7 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
         
         self.contactsNode.navigationBar = self.navigationBar
         
-        self.contactsNode.loadedContacts = { [weak self] in
+        self.contactsNode.loadedContacts = { [weak self = self] in
             if let strongSelf = self {
                 self?.searchContentNode?.setIsEnabled(true)
                 
@@ -119,15 +119,15 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
             }
         }
         
-        self.contactsNode.requestDeactivateSearch = { [weak self] in
+        self.contactsNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch()
         }
         
-        self.contactsNode.requestActivateSearch = { [weak self] in
+        self.contactsNode.requestActivateSearch = { [weak self = self] in
             self?.activateSearch()
         }
         
-        self.contactsNode.requestShareTelegram = { [weak self] in
+        self.contactsNode.requestShareTelegram = { [weak self = self] in
             if let strongSelf = self {
                 let url = strongSelf.presentationData.strings.InviteText_URL
                 let body = strongSelf.presentationData.strings.InviteText_SingleContact(url).string
@@ -137,7 +137,7 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
             }
         }
         
-        self.contactsNode.requestShare = { [weak self] numbers in
+        self.contactsNode.requestShare = { [weak self = self] numbers in
             let recipients: [String] = Array(numbers.map {
                 return $0.0.phoneNumbers.map { $0.value }
             }.joined())
@@ -168,17 +168,17 @@ public class InviteContactsController: ViewController, MFMessageComposeViewContr
             }
         }
         
-        self.contactsNode.selectionChanged = { [weak self] in
+        self.contactsNode.selectionChanged = { [weak self = self] in
             self?.updateRightBarButtonItem()
         }
         
-        self.contactsNode.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.contactsNode.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
         }
         
-        self.contactsNode.listNode.didEndScrolling = { [weak self] _ in
+        self.contactsNode.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 let _ = fixNavigationSearchableListNodeScrolling(strongSelf.contactsNode.listNode, searchNode: searchContentNode)
             }

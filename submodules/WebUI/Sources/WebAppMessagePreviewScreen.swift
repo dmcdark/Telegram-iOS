@@ -454,7 +454,7 @@ public final class WebAppMessagePreviewScreen: ViewControllerComponentContainer 
                 peers.map { TelegramEngine.EngineData.Item.Peer.RenderedPeer.init(id: $0.id) }
             )
         )
-        |> deliverOnMainQueue).start(next: { [weak self] sendPaidMessageStars, renderedPeers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sendPaidMessageStars, renderedPeers in
             guard let self else {
                 return
             }
@@ -469,7 +469,7 @@ public final class WebAppMessagePreviewScreen: ViewControllerComponentContainer 
             }
             
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-            let proceed = { [weak self] in
+            let proceed = { [weak self = self] in
                 guard let self else {
                     return
                 }

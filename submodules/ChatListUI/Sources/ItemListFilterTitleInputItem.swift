@@ -135,7 +135,7 @@ public class ItemListFilterTitleInputItemNode: ListViewItemNode, UITextFieldDele
     
     public func asyncLayout() -> (_ item: ItemListFilterTitleInputItem, _ params: ListViewItemLayoutParams, _ neighbors: ItemListNeighbors) -> (ListViewItemNodeLayout, () -> Void) {
         let currentItem = self.item
-        return { [weak self] item, params, neighbors in
+        return { [weak self = self] item, params, neighbors in
             var updatedTheme: PresentationTheme?
             
             if currentItem?.presentationData.theme !== item.presentationData.theme {
@@ -212,7 +212,7 @@ public class ItemListFilterTitleInputItemNode: ListViewItemNode, UITextFieldDele
                 self.bottomStripeNode.frame = CGRect(origin: CGPoint(x: bottomStripeInset, y: contentSize.height - UIScreenPixel), size: CGSize(width: layoutSize.width - bottomStripeInset - params.rightInset - separatorRightInset, height: separatorHeight))
                     
                 self.textField.parentState = self.componentState
-                self.componentState._updated = { [weak self] transition, _ in
+                self.componentState._updated = { [weak self = self] transition, _ in
                     guard let self, let item = self.item else {
                         return
                     }
@@ -233,7 +233,7 @@ public class ItemListFilterTitleInputItemNode: ListViewItemNode, UITextFieldDele
                         characterLimit: item.maxLength,
                         enableInlineAnimations: item.enableAnimations,
                         emptyLineHandling: .notAllowed,
-                        returnKeyAction: { [weak self] in
+                        returnKeyAction: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -243,7 +243,7 @@ public class ItemListFilterTitleInputItemNode: ListViewItemNode, UITextFieldDele
                         selection: nil,
                         inputMode: item.inputMode,
                         alwaysDisplayInputModeSelector: true,
-                        toggleInputMode: { [weak self] in
+                        toggleInputMode: { [weak self = self] in
                             guard let self else {
                                 return
                             }

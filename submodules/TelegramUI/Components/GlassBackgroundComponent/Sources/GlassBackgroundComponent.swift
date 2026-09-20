@@ -1723,7 +1723,7 @@ public final class GlassContextExtractableContainer: UIView, ContextExtractableC
                         isVisible: normalParams.isVisible,
                         transition: .easeInOut(duration: duration * firstPartDuration)
                     )
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + UIView.animationDurationFactor() * duration * firstPartDuration, execute: { [weak self] in
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + UIView.animationDurationFactor() * duration * firstPartDuration, execute: { [weak self = self] in
                         guard let self, let normalParams = self.normalParams else {
                             return
                         }

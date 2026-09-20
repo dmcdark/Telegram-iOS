@@ -108,7 +108,7 @@ public final class LocationInfoListItemNode: ListViewItemNode {
         self.addSubnode(self.buttonNode)
         self.addSubnode(self.venueIconNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.titleNode?.layer.removeAnimation(forKey: "opacity")
@@ -148,7 +148,7 @@ public final class LocationInfoListItemNode: ListViewItemNode {
         let makeSubtitleLayout = TextNode.asyncLayout(self.subtitleNode)
         let iconLayout = self.venueIconNode.asyncLayout()
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let leftInset: CGFloat = 78.0 + params.leftInset
             let rightInset: CGFloat = params.rightInset
             let verticalInset: CGFloat = 14.0
@@ -191,7 +191,7 @@ public final class LocationInfoListItemNode: ListViewItemNode {
             let contentSize = CGSize(width: params.width, height: item.hasEta ? max(etaContentSize, textContentSize) : textContentSize)
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: UIEdgeInsets())
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 var updatedTheme: PresentationTheme?
                 if currentItem?.presentationData.theme !== item.presentationData.theme {
                     updatedTheme = item.presentationData.theme
@@ -309,7 +309,7 @@ public final class LocationInfoListItemNode: ListViewItemNode {
                                         id: AnyHashable("driving-\(drivingButtonHasIcon)-\(drivingButtonTitle)"),
                                         component: drivingButtonContent
                                     ),
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         if let item = self?.item {
                                             item.drivingAction()
                                         }
@@ -336,7 +336,7 @@ public final class LocationInfoListItemNode: ListViewItemNode {
                                         )
                                     ),
                                     contentInsets: UIEdgeInsets(),
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         if let item = self?.item {
                                             item.walkingAction()
                                         }

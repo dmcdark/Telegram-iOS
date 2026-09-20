@@ -69,7 +69,7 @@ public final class EntityVideoRecorder {
         )
         self.camera.startCapture()
         
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             self?.previewView.removePlaceholder(delay: 0.15)
             Queue.mainQueue().after(0.1) {
                 self?.startRecording()
@@ -90,7 +90,7 @@ public final class EntityVideoRecorder {
         
         self.micLevelPromise.set(camera.audioLevel)
         self.positionDisposable = (camera.position
-        |> deliverOnMainQueue).start(next: { [weak self] position in
+        |> deliverOnMainQueue).start(next: { [weak self = self] position in
             self?.currentCameraPosition = position
         })
         
@@ -99,7 +99,7 @@ public final class EntityVideoRecorder {
         mediaEditor.seek(start, andPlay: false)
         
         self.changingPositionDisposable = (camera.modeChange
-        |> deliverOnMainQueue).start(next: { [weak self] modeChange in
+        |> deliverOnMainQueue).start(next: { [weak self = self] modeChange in
             guard let self else {
                 return
             }
@@ -156,7 +156,7 @@ public final class EntityVideoRecorder {
         self.recordingInitialPosition = self.currentCameraPosition
         self.start = CACurrentMediaTime()
         self.recordingDisposable.set((self.camera.startRecording()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] recordingData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] recordingData in
             guard let self else {
                 return
             }
@@ -177,7 +177,7 @@ public final class EntityVideoRecorder {
             save = false
         }
         self.recordingDisposable.set((self.camera.stopRecording()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let self, let mediaEditor = self.mediaEditor, let entitiesView = self.entitiesView, case let .finished(mainResult, _, _, positionChangeTimestamps, _) = result else {
                 return
             }

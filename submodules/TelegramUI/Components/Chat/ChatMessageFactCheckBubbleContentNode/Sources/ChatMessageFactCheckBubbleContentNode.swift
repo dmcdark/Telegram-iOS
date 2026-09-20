@@ -155,13 +155,13 @@ public class ChatMessageFactCheckBubbleContentNode: ChatMessageBubbleContentNode
                 let selectionColor: UIColor = item.presentationData.theme.theme.chat.message.incoming.textSelectionColor
                 let knobColor: UIColor = item.presentationData.theme.theme.chat.message.incoming.textSelectionKnobColor
                 
-                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self] value in
+                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self = self] value in
                     self?.updateIsTextSelectionActive?(value)
-                }, present: { [weak self] c, a in
+                }, present: { [weak self = self] c, a in
                     self?.item?.controllerInteraction.presentGlobalOverlayController(c, a)
                 }, rootView: { [weak rootNode] in
                     return rootNode?.view
-                }, performAction: { [weak self] text, action in
+                }, performAction: { [weak self = self] text, action in
                     guard let strongSelf = self, let item = strongSelf.item else {
                         return
                     }
@@ -211,7 +211,7 @@ public class ChatMessageFactCheckBubbleContentNode: ChatMessageBubbleContentNode
             }
         }
         if let backgroundView = self.backgroundView, backgroundView.frame.contains(point), case .tap = gesture {
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.expandPressed()
             }), hasLongTapAction: false)
         }
@@ -486,7 +486,7 @@ public class ChatMessageFactCheckBubbleContentNode: ChatMessageBubbleContentNode
                     boundingSize.width += layoutConstants.text.bubbleInsets.left + layoutConstants.text.bubbleInsets.right
                     boundingSize.height += layoutConstants.text.bubbleInsets.top + layoutConstants.text.bubbleInsets.bottom
                     
-                    return (boundingSize, { [weak self] animation, _, info in
+                    return (boundingSize, { [weak self = self] animation, _, info in
                         if let strongSelf = self {
                             info?.setInvertOffsetDirection()
                             

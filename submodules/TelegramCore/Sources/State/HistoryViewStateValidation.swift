@@ -386,7 +386,7 @@ final class HistoryViewStateValidationContexts {
                     let messages: [Message] = view.entries.map { $0.message }.filter { $0.id.namespace == Namespaces.Message.ScheduledCloud }
                 
                     disposable.set((validateScheduledMessagesBatch(postbox: self.postbox, network: self.network, accountPeerId: peerId, tag: nil, messages: messages, historyState: .scheduledMessages(peerId))
-                    |> deliverOn(self.queue)).start(completed: { [weak self] in
+                    |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                         if let strongSelf = self, let context = strongSelf.contexts[id] {
                             context.batch = nil
                         }
@@ -415,7 +415,7 @@ final class HistoryViewStateValidationContexts {
                     let messages: [Message] = view.entries.map { $0.message }.filter { $0.id.namespace == Namespaces.Message.QuickReplyCloud }
                 
                     disposable.set((validateQuickReplyMessagesBatch(postbox: self.postbox, network: self.network, accountPeerId: peerId, tag: nil, messages: messages, historyState: .quickReplyMessages(peerId, Int32(clamping: threadId)))
-                    |> deliverOn(self.queue)).start(completed: { [weak self] in
+                    |> deliverOn(self.queue)).start(completed: { [weak self = self] in
                         if let strongSelf = self, let context = strongSelf.contexts[id] {
                             context.batch = nil
                         }

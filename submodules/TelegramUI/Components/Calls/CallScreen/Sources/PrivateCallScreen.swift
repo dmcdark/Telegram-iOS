@@ -306,24 +306,24 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
         self.addSubview(self.titleView)
         
         self.addSubview(self.statusView)
-        self.statusView.requestLayout = { [weak self] in
+        self.statusView.requestLayout = { [weak self = self] in
             self?.update(transition: .immediate)
         }
         
         self.addSubview(self.backButtonView)
         
-        (self.layer as? SimpleLayer)?.didEnterHierarchy = { [weak self] in
+        (self.layer as? SimpleLayer)?.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
-            self.audioLevelUpdateSubscription = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.audioLevelUpdateSubscription = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 guard let self else {
                     return
                 }
                 self.attenuateAudioLevelStep()
             }
         }
-        (self.layer as? SimpleLayer)?.didExitHierarchy = { [weak self] in
+        (self.layer as? SimpleLayer)?.didExitHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -332,14 +332,14 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
         
         self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
         
-        self.backButtonView.pressAction = { [weak self] in
+        self.backButtonView.pressAction = { [weak self = self] in
             guard let self else {
                 return
             }
             self.backAction?()
         }
         
-        self.buttonGroupView.closePressed = { [weak self] in
+        self.buttonGroupView.closePressed = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -475,7 +475,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     self.hideControlsTimer = nil
                 } else {
                     self.hideControlsTimer?.invalidate()
-                    self.hideControlsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+                    self.hideControlsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -555,7 +555,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     self.activeRemoteVideoSource = remoteVideo
                 } else {
                     let firstVideoFrameSignal = Signal<Never, NoError> { subscriber in
-                        return remoteVideo.addOnUpdated { [weak remoteVideo] in
+                        return remoteVideo.addOnUpdated { [weak remoteVideo = remoteVideo] in
                             guard let remoteVideo else {
                                 subscriber.putCompletion()
                                 return
@@ -567,7 +567,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     }
                     var shouldUpdate = false
                     self.waitingForFirstRemoteVideoFrameDisposable = (firstVideoFrameSignal
-                    |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+                    |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -590,7 +590,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     self.activeLocalVideoSource = localVideo
                 } else {
                     let firstVideoFrameSignal = Signal<Never, NoError> { subscriber in
-                        return localVideo.addOnUpdated { [weak localVideo] in
+                        return localVideo.addOnUpdated { [weak localVideo = localVideo] in
                             guard let localVideo else {
                                 subscriber.putCompletion()
                                 return
@@ -602,7 +602,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     }
                     var shouldUpdate = false
                     self.waitingForFirstLocalVideoFrameDisposable = (firstVideoFrameSignal
-                    |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+                    |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -628,7 +628,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                 if self.hideEmojiTooltipTimer == nil && !self.areControlsHidden && self.activeRemoteVideoSource == nil && self.activeLocalVideoSource == nil {
                     self.displayEmojiTooltip = true
                     
-                    self.hideEmojiTooltipTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self] _ in
+                    self.hideEmojiTooltipTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -696,7 +696,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
         let havePrimaryVideo = !activeVideoSources.isEmpty
         
         if havePrimaryVideo && self.hideControlsTimer == nil {
-            self.hideControlsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self] _ in
+            self.hideControlsTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -771,7 +771,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
         
         let backgroundAlpha = self.isAnimatedOutToGroupCall ? 0.0 : 1.0
         if CGFloat(self.backgroundLayer.opacity) != backgroundAlpha {
-            genericAlphaTransition.setAlpha(layer: self.backgroundLayer, alpha: backgroundAlpha, completion: { [weak self] _ in
+            genericAlphaTransition.setAlpha(layer: self.backgroundLayer, alpha: backgroundAlpha, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -801,19 +801,19 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
         }
         
         var buttons: [ButtonGroupView.Button] = [
-            ButtonGroupView.Button(content: .video(isActive: params.state.localVideo != nil), isEnabled: isVideoButtonEnabled && !isTerminated, action: { [weak self] in
+            ButtonGroupView.Button(content: .video(isActive: params.state.localVideo != nil), isEnabled: isVideoButtonEnabled && !isTerminated, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.videoAction?()
             }),
-            ButtonGroupView.Button(content: .microphone(isMuted: params.state.isLocalAudioMuted), isEnabled: !isTerminated, action: { [weak self] in
+            ButtonGroupView.Button(content: .microphone(isMuted: params.state.isLocalAudioMuted), isEnabled: !isTerminated, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.microhoneMuteAction?()
             }),
-            ButtonGroupView.Button(content: .end, isEnabled: !isTerminated, action: { [weak self] in
+            ButtonGroupView.Button(content: .end, isEnabled: !isTerminated, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -821,14 +821,14 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
             })
         ]
         if self.activeLocalVideoSource != nil {
-            buttons.insert(ButtonGroupView.Button(content: .flipCamera, isEnabled: !isTerminated, action: { [weak self] in
+            buttons.insert(ButtonGroupView.Button(content: .flipCamera, isEnabled: !isTerminated, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.flipCameraAction?()
             }), at: 0)
         } else {
-            buttons.insert(ButtonGroupView.Button(content: .speaker(audioOutput: params.state.audioOutput), isEnabled: !isTerminated && params.state.canSwitchAudioOutput, action: { [weak self] in
+            buttons.insert(ButtonGroupView.Button(content: .speaker(audioOutput: params.state.audioOutput), isEnabled: !isTerminated && params.state.canSwitchAudioOutput, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -887,7 +887,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     self.addSubview(emojiExpandedInfoView)
                 }
                 
-                emojiExpandedInfoView.closeAction = { [weak self] in
+                emojiExpandedInfoView.closeAction = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -952,7 +952,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                 self.conferenceButtonView = conferenceButtonView
                 self.addSubview(conferenceButtonView)
                 
-                conferenceButtonView.pressAction = { [weak self] in
+                conferenceButtonView.pressAction = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1027,7 +1027,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                     }
                 }
                 
-                videoContainerView.pressAction = { [weak self] in
+                videoContainerView.pressAction = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1168,7 +1168,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                 transition.setScale(layer: self.avatarTransformLayer, scale: 1.0)
                 transition.setScale(layer: self.blobTransformLayer, scale: 1.0)
             }
-            transition.setBounds(layer: self.avatarLayer, bounds: CGRect(origin: CGPoint(), size: avatarFrame.size), completion: { [weak self] completed in
+            transition.setBounds(layer: self.avatarLayer, bounds: CGRect(origin: CGPoint(), size: avatarFrame.size), completion: { [weak self = self] completed in
                 guard let self, let params = self.params, completed else {
                     return
                 }
@@ -1282,7 +1282,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
             if !self.processedInitialAudioLevelBump {
                 self.processedInitialAudioLevelBump = true
                 self.audioLevelBump = 2.0
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2, execute: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1308,7 +1308,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                 
             self.statusView = StatusView()
             self.insertSubview(self.statusView, aboveSubview: previousStatusView)
-            self.statusView.requestLayout = { [weak self] in
+            self.statusView.requestLayout = { [weak self = self] in
                 self?.update(transition: .immediate)
             }
         }
@@ -1350,7 +1350,7 @@ public final class PrivateCallScreen: OverlayMaskContainerView, AVPictureInPictu
                 emojiAlphaTransition = genericAlphaTransition.withAnimation(.none)
                 emojiView = KeyEmojiView(emoji: activeState.emojiKey)
                 self.emojiView = emojiView
-                emojiView.pressAction = { [weak self] in
+                emojiView.pressAction = { [weak self = self] in
                     guard let self else {
                         return
                     }

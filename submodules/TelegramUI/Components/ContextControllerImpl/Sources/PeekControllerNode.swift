@@ -120,7 +120,7 @@ final class PeekControllerNode: ViewControllerTracingNode, PeekControllerNodePro
         
         super.init()
                 
-        requestLayoutImpl = { [weak self] transition in
+        requestLayoutImpl = { [weak self = self] transition in
             self?.updateLayout(transition: transition)
         }
         
@@ -141,13 +141,13 @@ final class PeekControllerNode: ViewControllerTracingNode, PeekControllerNodePro
         
         
         if let fullScreenAccessoryNode = self.fullScreenAccessoryNode {
-            self.fullScreenAccessoryNode?.dismiss = { [weak self] in
+            self.fullScreenAccessoryNode?.dismiss = { [weak self = self] in
                 self?.requestDismiss()
             }
             self.addSubnode(fullScreenAccessoryNode)
         }
         
-        activatedActionImpl = { [weak self] in
+        activatedActionImpl = { [weak self = self] in
             self?.requestDismiss()
         }
         
@@ -174,7 +174,7 @@ final class PeekControllerNode: ViewControllerTracingNode, PeekControllerNodePro
     
     func replaceItem(items: Signal<ContextController.Items, NoError>) {
         let _ = (items
-        |> deliverOnMainQueue).start(next: { [weak self] items in
+        |> deliverOnMainQueue).start(next: { [weak self = self] items in
             guard let self else {
                 return
             }
@@ -186,7 +186,7 @@ final class PeekControllerNode: ViewControllerTracingNode, PeekControllerNodePro
     
     func pushItems(items: Signal<ContextController.Items, NoError>) {
         let _ = (items
-        |> deliverOnMainQueue).start(next: { [weak self] items in
+        |> deliverOnMainQueue).start(next: { [weak self = self] items in
             guard let self else {
                 return
             }

@@ -159,7 +159,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         self.statusPromise.set(self.giftsListView.status)
         self.ready.set(self.giftsListView.isReady)
         
-        self.giftsListView.onContentUpdated = { [weak self] in
+        self.giftsListView.onContentUpdated = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -167,13 +167,13 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                 self.update(size: params.size, topInset: params.topInset, sideInset: params.sideInset, bottomInset: params.bottomInset, deviceMetrics: params.deviceMetrics, visibleHeight: params.visibleHeight, isScrollingLockedAtTop: params.isScrollingLockedAtTop, expandProgress: params.expandProgress, navigationHeight: params.navigationHeight, presentationData: params.presentationData, synchronous: true, transition: .immediate)
             }
         }
-        self.giftsListView.contextAction = { [weak self] gift, view, gesture in
+        self.giftsListView.contextAction = { [weak self = self] gift, view, gesture in
             guard let self else {
                 return
             }
             self.contextAction(gift: gift, view: view, gesture: gesture)
         }
-        self.giftsListView.displayUnpinScreen = { [weak self] gift, completion in
+        self.giftsListView.displayUnpinScreen = { [weak self = self] gift, completion in
             guard let self else {
                 return
             }
@@ -181,7 +181,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         }
         
         self.collectionsDisposable = (profileGiftsCollections.state
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let self else {
                 return
             }
@@ -194,7 +194,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         }
         
         let _ = (context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let self else {
                 return
             }
@@ -235,11 +235,11 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             return
         }
         
-        let promptController = promptController(context: self.context, updatedPresentationData: nil, text: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Title, titleFont: .bold, subtitle: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Text, value: "", placeholder: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Placeholder, characterLimit: 12, displayCharacterLimit: true, apply: { [weak self] value in
+        let promptController = promptController(context: self.context, updatedPresentationData: nil, text: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Title, titleFont: .bold, subtitle: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Text, value: "", placeholder: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Placeholder, characterLimit: 12, displayCharacterLimit: true, apply: { [weak self = self] value in
             guard let self, let value else {
                 return
             }
-            let _ = self.profileGiftsCollections.createCollection(title: value, starGifts: gifts).start(next: { [weak self] collection in
+            let _ = self.profileGiftsCollections.createCollection(title: value, starGifts: gifts).start(next: { [weak self = self] collection in
                 guard let self else {
                     return
                 }
@@ -292,7 +292,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         if let currentCount = self.giftsListView.profileGifts.currentState?.count {
             remainingCount = max(0, collectionGiftsMaxCount - currentCount)
         }
-        let screen = AddGiftsScreen(context: self.context, peerId: self.peerId, collectionId: id, remainingCount: remainingCount, completion: { [weak self] gifts in
+        let screen = AddGiftsScreen(context: self.context, peerId: self.peerId, collectionId: id, remainingCount: remainingCount, completion: { [weak self = self] gifts in
             guard let self else {
                 return
             }
@@ -306,7 +306,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             return
         }
         
-        let promptController = promptController(context: self.context, updatedPresentationData: nil, text: params.presentationData.strings.PeerInfo_Gifts_RenameCollection_Title, titleFont: .bold, value: collection.title, placeholder: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Placeholder, characterLimit: 12, displayCharacterLimit: true, apply: { [weak self] value in
+        let promptController = promptController(context: self.context, updatedPresentationData: nil, text: params.presentationData.strings.PeerInfo_Gifts_RenameCollection_Title, titleFont: .bold, value: collection.title, placeholder: params.presentationData.strings.PeerInfo_Gifts_CreateCollection_Placeholder, characterLimit: 12, displayCharacterLimit: true, apply: { [weak self = self] value in
             guard let self, let value else {
                 return
             }
@@ -371,7 +371,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             context: self.context,
             gift: gift,
             pinnedGifts: pinnedGifts,
-            completion: { [weak self] unpinnedReference in
+            completion: { [weak self = self] unpinnedReference in
                 guard let self else {
                     return
                 }
@@ -435,7 +435,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         }
 
         self.giftsListView = GiftsListView(context: self.context, peerId: self.peerId, profileGifts: profileGifts, giftsCollections: self.profileGiftsCollections, canSelect: false)
-        self.giftsListView.addToCollection = { [weak self] in
+        self.giftsListView.addToCollection = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -443,7 +443,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                 self.addGiftsToCollection(id: id)
             }
         }
-        self.giftsListView.onContentUpdated = { [weak self] in
+        self.giftsListView.onContentUpdated = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -456,13 +456,13 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                 self.update(size: params.size, topInset: params.topInset, sideInset: params.sideInset, bottomInset: params.bottomInset, deviceMetrics: params.deviceMetrics, visibleHeight: params.visibleHeight, isScrollingLockedAtTop: params.isScrollingLockedAtTop, expandProgress: params.expandProgress, navigationHeight: params.navigationHeight, presentationData: params.presentationData, synchronous: true, transition: .immediate)
             }
         }
-        self.giftsListView.displayUnpinScreen = { [weak self] gift, completion in
+        self.giftsListView.displayUnpinScreen = { [weak self = self] gift, completion in
             guard let self else {
                 return
             }
             self.displayUnpinScreen(gift: gift, completion: completion)
         }
-        self.giftsListView.contextAction = { [weak self] gift, view, gesture in
+        self.giftsListView.contextAction = { [weak self = self] gift, view, gesture in
             guard let self else {
                 return
             }
@@ -504,7 +504,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         if canEditCollections {
             items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Gifts_AddGifts, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/AddGift"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -516,7 +516,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             
             items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Gifts_RenameCollection, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Edit"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -531,7 +531,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         if let peer = self.peer, let addressName = peer.addressName, !addressName.isEmpty {
             items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Gifts_ShareCollection, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -544,8 +544,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         if canEditCollections {
             items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Gifts_Reorder, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReorderItems"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] c, f in
-                c?.dismiss(completion: { [weak self] in
+            }, action: { [weak self = self] c, f in
+                c?.dismiss(completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -555,7 +555,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             
             items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Gifts_DeleteCollection, textColor: .destructive, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -630,7 +630,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                             )
                         )),
                         isReorderable: collections.count > 1,
-                        contextAction: canEditCollections || canShare ? { [weak self] sourceNode, gesture in
+                        contextAction: canEditCollections || canShare ? { [weak self = self] sourceNode, gesture in
                             guard let self else {
                                 return
                             }
@@ -671,7 +671,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                         ),
                         items: tabSelectorItems,
                         selectedId: AnyHashable(self.currentCollection.rawValue),
-                        reorderItem: self.isReordering ? { [weak self] fromId, toId in
+                        reorderItem: self.isReordering ? { [weak self = self] fromId, toId in
                             guard let self, var reorderedCollectionIds = self.reorderedCollectionIds else {
                                 return
                             }
@@ -690,7 +690,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                                 
                             self.updateScrolling(transition: .easeInOut(duration: 0.2))
                         } : nil,
-                        setSelectedId: { [weak self] id in
+                        setSelectedId: { [weak self = self] id in
                             guard let self, let idValue = id.base as? Int32 else {
                                 return
                             }
@@ -812,7 +812,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                             component: buttonTitleContent
                         ),
                         isEnabled: true,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.buttonPressed()
                         }
                     )
@@ -872,7 +872,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                             spacing: 16.0
                             )),
                             effectAlignment: .center,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let currentState = self.profileGifts.currentState else {
                                     return
                                 }
@@ -943,7 +943,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             } else {
                 let _ = (self.context.account.stateManager.contactBirthdays
                          |> take(1)
-                         |> deliverOnMainQueue).start(next: { [weak self] birthdays in
+                         |> deliverOnMainQueue).start(next: { [weak self = self] birthdays in
                     guard let self else {
                         return
                     }
@@ -989,7 +989,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         
         var items: [ContextMenuItem] = []
         if canManage {
-            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_AddToCollection, textLayout: .twoLinesMax, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/AddToCollection"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_AddToCollection, textLayout: .twoLinesMax, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/AddToCollection"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                 var subItems: [ContextMenuItem] = []
                 
                 subItems.append(.action(ContextMenuActionItem(text: strings.Common_Back, textColor: .primary, icon: { theme in
@@ -1000,7 +1000,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                 
                 subItems.append(.separator)
                 
-                subItems.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_NewCollection, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/AddCollection"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self] c, f in
+                subItems.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_NewCollection, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/AddCollection"), color: theme.contextMenu.primaryColor) }, iconPosition: .left, action: { [weak self = self] c, f in
                     f(.default)
                     
                     self?.createCollection(gifts: [gift])
@@ -1034,7 +1034,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                         
                         subItems.append(.action(ContextMenuActionItem(text: title, entities: entities, entityFiles: entityFiles, enableEntityAnimations: false, icon: { theme in
                             return entities.isEmpty ? generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/Collection"), color: theme.contextMenu.primaryColor) : (isAdded ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage())
-                        }, iconPosition: collection.icon == nil ? .left : .right, action: { [weak self] _, f in
+                        }, iconPosition: collection.icon == nil ? .left : .right, action: { [weak self = self] _, f in
                             f(.default)
                             
                             guard let self else {
@@ -1096,8 +1096,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         
         if canManage {
             if case .unique = gift.gift, case .all = self.currentCollection {
-                items.append(.action(ContextMenuActionItem(text: gift.pinnedToTop ? strings.PeerInfo_Gifts_Context_Unpin : strings.PeerInfo_Gifts_Context_Pin, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: gift.pinnedToTop ? "Chat/Context Menu/Unpin" : "Chat/Context Menu/Pin"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                    c?.dismiss(completion: { [weak self] in
+                items.append(.action(ContextMenuActionItem(text: gift.pinnedToTop ? strings.PeerInfo_Gifts_Context_Unpin : strings.PeerInfo_Gifts_Context_Pin, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: gift.pinnedToTop ? "Chat/Context Menu/Unpin" : "Chat/Context Menu/Pin"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1139,8 +1139,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             }
             
             if isReorderableGift && canManage && canReorder {
-                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Reorder, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReorderItems"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                    c?.dismiss(completion: { [weak self] in
+                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Reorder, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReorderItems"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1150,8 +1150,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             }
             
             if case let .unique(uniqueGift) = gift.gift, self.peerId == self.context.account.peerId {
-                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Wear, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/WearIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                    c?.dismiss(completion: { [weak self] in
+                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Wear, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/WearIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1165,7 +1165,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                                 position: .bottom,
                                 animateInAsReplacement: false,
                                 appearance: UndoOverlayController.Appearance(sideInset: 16.0, bottomInset: 62.0),
-                                action: { [weak self] action in
+                                action: { [weak self = self] action in
                                     if let self, case .info = action {
                                         let premiumController = self.context.sharedContext.makePremiumIntroController(context: self.context, source: .messageEffects, forceDark: false, dismissed: nil)
                                         self.parentController?.push(premiumController)
@@ -1183,8 +1183,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         if case let .unique(gift) = gift.gift {
             let link = "https://t.me/nft/\(gift.slug)"
             
-            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_CopyLink, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                c?.dismiss(completion: { [weak self] in
+            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_CopyLink, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                c?.dismiss(completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1194,8 +1194,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                 })
             })))
             
-            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Share, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                c?.dismiss(completion: { [weak self] in
+            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Share, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                c?.dismiss(completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1205,16 +1205,16 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                         params: ShareControllerParams(
                             subject: .url(link),
                             externalShare: false,
-                            actionCompleted: { [weak self] in
+                            actionCompleted: { [weak self = self] in
                                 self?.parentController?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), in: .current)
                             },
-                            enqueued: { [weak self] peerIds, _ in
+                            enqueued: { [weak self = self] peerIds, _ in
                                 let _ = (context.engine.data.get(
                                     EngineDataList(
                                         peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init)
                                     )
                                 )
-                                |> deliverOnMainQueue).startStandalone(next: { [weak self] peerList in
+                                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerList in
                                     guard let self, let parentController = self.parentController else {
                                         return
                                     }
@@ -1246,10 +1246,10 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                                         }
                                     }
 
-                                    parentController.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: true, animateInAsReplacement: false, action: { [weak self] action in
+                                    parentController.present(UndoOverlayController(presentationData: presentationData, content: .forward(savedMessages: savedMessages, text: text), elevatedLayout: true, animateInAsReplacement: false, action: { [weak self = self] action in
                                         if savedMessages, action == .info {
                                             let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-                                            |> deliverOnMainQueue).start(next: { [weak self] peer in
+                                            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                                 guard let peer, let navigationController = self?.parentController?.navigationController as? NavigationController else {
                                                     return
                                                 }
@@ -1260,7 +1260,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                                     }, additionalView: nil), in: .current)
                                 })
                             },
-                            shareStory: { [weak self] in
+                            shareStory: { [weak self = self] in
                                 guard let self, let parentController = self.parentController else {
                                     return
                                 }
@@ -1277,8 +1277,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         }
         
         if canManage {
-            items.append(.action(ContextMenuActionItem(text: gift.savedToProfile ? strings.PeerInfo_Gifts_Context_Hide : strings.PeerInfo_Gifts_Context_Show, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: gift.savedToProfile ? "Peer Info/HideIcon" : "Peer Info/ShowIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                c?.dismiss(completion: { [weak self] in
+            items.append(.action(ContextMenuActionItem(text: gift.savedToProfile ? strings.PeerInfo_Gifts_Context_Hide : strings.PeerInfo_Gifts_Context_Show, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: gift.savedToProfile ? "Peer Info/HideIcon" : "Peer Info/ShowIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                c?.dismiss(completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1322,8 +1322,8 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
             })))
             
             if case let .unique(uniqueGift) = gift.gift {
-                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Transfer, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/TransferIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
-                    c?.dismiss(completion: { [weak self] in
+                items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_Transfer, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/TransferIcon"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
+                    c?.dismiss(completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1349,7 +1349,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
                         
                         let _ = (context.account.stateManager.contactBirthdays
                         |> take(1)
-                        |> deliverOnMainQueue).start(next: { [weak self] birthdays in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] birthdays in
                             guard let self, let reference = gift.reference else {
                                 return
                             }
@@ -1377,7 +1377,7 @@ public final class PeerInfoGiftsPaneNode: ASDisplayNode, PeerInfoPaneNode, UIScr
         }
         
         if canManage, case let .collection(id) = self.currentCollection {
-            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_RemoveFromCollection, textColor: .destructive, textLayout: .twoLinesMax, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/RemoveFromCollection"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, f in
+            items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_Gifts_Context_RemoveFromCollection, textColor: .destructive, textLayout: .twoLinesMax, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Peer Info/Gifts/RemoveFromCollection"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, f in
                 f(.default)
                 
                 guard let self else {

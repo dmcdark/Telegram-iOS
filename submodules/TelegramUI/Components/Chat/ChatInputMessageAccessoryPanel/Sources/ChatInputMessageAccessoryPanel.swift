@@ -394,7 +394,7 @@ public final class ChatInputMessageAccessoryPanel: Component {
                             return TelegramEngine.EngineData.Item.Messages.Message(id: id)
                         })
                     )
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] messages in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] messages in
                         guard let self else {
                             return
                         }

@@ -117,7 +117,7 @@ final class CallControllerButtonItemNode: HighlightTrackingButtonNode {
         self.contentContainer.addSubnode(self.contentNode)
         self.contentContainer.addSubnode(self.overlayHighlightNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }

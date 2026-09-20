@@ -19,7 +19,7 @@ private final class CaretIndicatorView: UIImageView {
         super.init(frame: frame)
         
         self.layer.addSublayer(self.hierarchyTrackingLayer)
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             self?.restartAnimations(delayStart: false)
         }
     }

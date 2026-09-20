@@ -299,7 +299,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
             
             self.addSubnode(self.listNode)
             
-            self.listNode.beganInteractiveDragging = { [weak self] _ in
+            self.listNode.beganInteractiveDragging = { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -326,7 +326,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
             if let blurFilter = makeBlurFilter() {
                 blurFilter.setValue(0.0 as NSNumber, forKey: "inputRadius")
                 self.listNode.layer.filters = [blurFilter]
-                self.listNode.layer.animate(from: 30.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.2, removeOnCompletion: false, completion: { [weak self] completed in
+                self.listNode.layer.animate(from: 30.0 as NSNumber, to: 0.0 as NSNumber, keyPath: "filters.gaussianBlur.inputRadius", timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] completed in
                     guard let self, completed else {
                         return
                     }
@@ -439,7 +439,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                 updateOpaqueState: nil
             )
             
-            self.listNode.displayedItemRangeChanged = { [weak self] displayedRange, opaqueTransactionState in
+            self.listNode.displayedItemRangeChanged = { [weak self = self] displayedRange, opaqueTransactionState in
                 guard let self else {
                     return
                 }
@@ -475,7 +475,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                             
                             if let historySignal = component.loadTagMessages(tag, self.tagContents?.index) {
                                 updatedDisposable.set((historySignal
-                                |> deliverOnMainQueue).startStrict(next: { [weak self] view in
+                                |> deliverOnMainQueue).startStrict(next: { [weak self = self] view in
                                     guard let self else {
                                         return
                                     }
@@ -571,7 +571,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                     
                     if let historySignal = component.loadTagMessages(tag, self.tagContents?.index) {
                         disposable.set((historySignal
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] view in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] view in
                             guard let self else {
                                 return
                             }
@@ -636,7 +636,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                                 }
                             }
                         }
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] savedPeers, result in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] savedPeers, result in
                             guard let self else {
                                 return
                             }
@@ -696,7 +696,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                     }
                     
                     disposable.set((savedPeers
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] chatList in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] chatList in
                         guard let self else {
                             return
                         }
@@ -781,7 +781,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                                 }
                             }
                         }
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] savedPeers, result in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] savedPeers, result in
                             guard let self else {
                                 return
                             }
@@ -846,7 +846,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                         },
                         additionalCategorySelected: { _ in
                         },
-                        messageSelected: { [weak self] peer, _, message, _ in
+                        messageSelected: { [weak self = self] peer, _, message, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -870,13 +870,13 @@ public final class ChatInlineSearchResultsListComponent: Component {
                         },
                         setPeerThreadMuted: { _, _, _ in
                         },
-                        deletePeer: { [weak self] peerId, _ in
+                        deletePeer: { [weak self = self] peerId, _ in
                             guard let self else {
                                 return
                             }
                             self.performDeleteAction(peerId: peerId, threadId: nil)
                         },
-                        deletePeerThread: { [weak self] peerId, threadId in
+                        deletePeerThread: { [weak self = self] peerId, threadId in
                             guard let self else {
                                 return
                             }
@@ -890,7 +890,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                         },
                         updatePeerGrouping: { _, _ in
                         },
-                        togglePeerMarkedUnread: { [weak self] peerId, _ in
+                        togglePeerMarkedUnread: { [weak self = self] peerId, _ in
                             guard let self else {
                                 return
                             }
@@ -1015,7 +1015,7 @@ public final class ChatInlineSearchResultsListComponent: Component {
                             editing: ContactsPeerItemEditing(editable: false, editing: false, revealed: false),
                             index: nil,
                             header: displayMessagesHeader ? ChatListSearchItemHeader(type: .chats, theme: listPresentationData.theme, strings: listPresentationData.strings) : nil,
-                            action: { [weak self] peer in
+                            action: { [weak self = self] peer in
                                 self?.listNode.clearHighlightAnimated(true)
                                 
                                 if case let .peer(peer?, _) = peer {

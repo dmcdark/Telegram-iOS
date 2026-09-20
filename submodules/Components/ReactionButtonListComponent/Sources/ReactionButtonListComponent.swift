@@ -156,7 +156,7 @@ public final class ReactionIconView: PortalSourceView {
                 self.disposable?.dispose()
                 
                 self.disposable = (context.engine.stickers.resolveInlineStickers(fileIds: [fileId])
-                |> deliverOnMainQueue).start(next: { [weak self] files in
+                |> deliverOnMainQueue).start(next: { [weak self = self] files in
                     guard let strongSelf = self else {
                         return
                     }
@@ -432,7 +432,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
             
             if self.animationState != nil {
                 if self.animator == nil {
-                    let animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                    let animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -517,7 +517,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
                 )
             }
             
-            DispatchQueue.global().async { [weak self] in
+            DispatchQueue.global().async { [weak self = self] in
                 let image = generateImage(imageSize, rotatedContext: { size, context in
                     context.clear(CGRect(origin: CGPoint(), size: size))
                     UIGraphicsPushContext(context)
@@ -999,7 +999,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
     public var activateAfterCompletion: Bool = false {
         didSet {
             if self.activateAfterCompletion {
-                self.contextGesture?.activatedAfterCompletion = { [weak self] point, _ in
+                self.contextGesture?.activatedAfterCompletion = { [weak self = self] point, _ in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1039,7 +1039,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
         self.isGestureEnabled = true
         self.beginDelay = 0.0
         
-        self.containerView.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, _ in
+        self.containerView.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, _ in
             guard let self else {
                 return
             }
@@ -1051,7 +1051,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
         }
         
         if self.activateAfterCompletion {
-            self.contextGesture?.activatedAfterCompletion = { [weak self] point, _ in
+            self.contextGesture?.activatedAfterCompletion = { [weak self = self] point, _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1061,13 +1061,13 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
             }
         }
         
-        self.contextGesture?.cancelGesturesOnActivation = { [weak self] in
+        self.contextGesture?.cancelGesturesOnActivation = { [weak self = self] in
             guard let self else {
                 return
             }
             self.buttonNode.isUserInteractionEnabled = false
             self.buttonNode.cancelTracking(with: nil)
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1141,7 +1141,7 @@ public final class ReactionButtonAsyncNode: ContextControllerSourceView {
             self.previousTapAnimationTimestamp = timestamp
             self.updateTapAnimation()
             
-            self.tapAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+            self.tapAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                 guard let self else {
                     return
                 }

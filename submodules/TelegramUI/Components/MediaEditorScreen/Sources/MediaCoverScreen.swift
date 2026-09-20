@@ -52,12 +52,12 @@ private final class MediaCoverScreenComponent: Component {
                         
             let _ = (mediaEditor
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] mediaEditor in
+            |> deliverOnMainQueue).start(next: { [weak self = self] mediaEditor in
                 if let self, let mediaEditor {
                     self.mediaEditor = mediaEditor
                     
                     self.playerStateDisposable = (mediaEditor.playerState(framesCount: 16)
-                    |> deliverOnMainQueue).start(next: { [weak self] playerState in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] playerState in
                         if let self {
                             if self.playerState != playerState {
                                 self.playerState = playerState
@@ -489,7 +489,7 @@ final class MediaCoverScreen: ViewController {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )

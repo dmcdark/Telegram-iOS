@@ -160,7 +160,7 @@ class ContactsAddItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -180,7 +180,7 @@ class ContactsAddItemNode: ListViewItemNode {
         
         let currentItem = self.layoutParams?.0
         
-        return { [weak self] item, params, first, last, firstWithHeader in
+        return { [weak self = self] item, params, first, last, firstWithHeader in
             var updatedTheme: PresentationTheme?
             var updatedIcon: UIImage?
             if currentItem?.theme !== item.theme {
@@ -198,7 +198,7 @@ class ContactsAddItemNode: ListViewItemNode {
             
             let titleFrame = CGRect(origin: CGPoint(x: leftInset, y: 14.0), size: titleLayout.size)
 
-            return (nodeLayout, { [weak self] animated in
+            return (nodeLayout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.layoutParams = (item, params, first, last, firstWithHeader)
                     

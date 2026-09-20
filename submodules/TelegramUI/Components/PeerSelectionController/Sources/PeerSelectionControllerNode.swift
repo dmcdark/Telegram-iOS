@@ -264,21 +264,21 @@ final class PeerSelectionControllerNode: ASDisplayNode {
 
         self.backgroundColor = self.presentationData.theme.chatList.backgroundColor
 
-        self.chatListNode?.selectionCountChanged = { [weak self] count in
+        self.chatListNode?.selectionCountChanged = { [weak self = self] count in
             self?.textInputPanelNode?.updateSendButtonEnabled(count > 0, animated: true)
         }
         self.chatListNode?.accessibilityPageScrolledString = { row, count in
             return presentationData.strings.VoiceOver_ScrollStatus(row, count).string
         }
 
-        self.chatListNode?.activateSearch = { [weak self] in
+        self.chatListNode?.activateSearch = { [weak self = self] in
             self?.requestActivateSearch?()
         }
-        self.mainContainerNode?.activateSearch = { [weak self] in
+        self.mainContainerNode?.activateSearch = { [weak self = self] in
             self?.requestActivateSearch?()
         }
 
-        self.chatListNode?.peerSelected = { [weak self] peer, threadId, _, _, _ in
+        self.chatListNode?.peerSelected = { [weak self = self] peer, threadId, _, _, _ in
             guard let self else {
                 return
             }
@@ -287,7 +287,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                 let _ = (self.context.engine.data.get(
                     TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
                 )
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] mainPeer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] mainPeer in
                     guard let self, let mainPeer else {
                         return
                     }
@@ -299,7 +299,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                 self.requestOpenPeer?(peer, threadId)
             }
         }
-        self.mainContainerNode?.peerSelected = { [weak self] peer, threadId, _, _, _ in
+        self.mainContainerNode?.peerSelected = { [weak self = self] peer, threadId, _, _, _ in
             guard let self else {
                 return
             }
@@ -308,7 +308,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                 let _ = (self.context.engine.data.get(
                     TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
                 )
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] mainPeer in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] mainPeer in
                     guard let self, let mainPeer else {
                         return
                     }
@@ -323,14 +323,14 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             }
         }
 
-        self.chatListNode?.disabledPeerSelected = { [weak self] peer, threadId, reason in
+        self.chatListNode?.disabledPeerSelected = { [weak self = self] peer, threadId, reason in
             self?.requestOpenDisabledPeer?(peer, threadId, reason)
         }
-        self.mainContainerNode?.disabledPeerSelected = { [weak self] peer, threadId, reason in
+        self.mainContainerNode?.disabledPeerSelected = { [weak self = self] peer, threadId, reason in
             self?.requestOpenDisabledPeer?(peer, threadId, reason)
         }
 
-        self.chatListNode?.contentOffsetChanged = { [weak self] offset in
+        self.chatListNode?.contentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self else {
                 return
             }
@@ -339,7 +339,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             }
         }
 
-        self.mainContainerNode?.contentOffsetChanged = { [weak self] offset, _ in
+        self.mainContainerNode?.contentOffsetChanged = { [weak self = self] offset, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -348,11 +348,11 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             }
         }
 
-        self.chatListNode?.contentScrollingEnded = { [weak self] listView in
+        self.chatListNode?.contentScrollingEnded = { [weak self = self] listView in
             return self?.contentScrollingEnded?(listView) ?? false
         }
 
-        self.chatListNode?.isEmptyUpdated = { [weak self] state, _, _ in
+        self.chatListNode?.isEmptyUpdated = { [weak self = self] state, _, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -364,7 +364,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
         }
 
         if let mainContainerNode = self.mainContainerNode {
-            mainContainerNode.displayFilterLimit = { [weak self] in
+            mainContainerNode.displayFilterLimit = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -420,11 +420,11 @@ final class PeerSelectionControllerNode: ASDisplayNode {
         }, forwardSelectedMessages: {
         }, forwardCurrentForwardMessages: {
         }, forwardMessages: { _ in
-        }, updateForwardOptionsState: { [weak self] f in
+        }, updateForwardOptionsState: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, { $0.updatedInterfaceState({ $0.withUpdatedForwardOptionsState(f($0.forwardOptionsState ?? ChatInterfaceForwardOptionsState(hideNames: false, hideCaptions: false, unhideNamesOnCaptionChange: false))) }) })
             }
-        }, presentForwardOptions: { [weak self] sourceNode in
+        }, presentForwardOptions: { [weak self = self] sourceNode in
             guard let strongSelf = self else  {
                 return
             }
@@ -527,7 +527,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                             } else {
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
                             }
-                        }, action: !hideNamesEnabled ? nil : { [weak self] _, f in
+                        }, action: !hideNamesEnabled ? nil : { [weak self = self] _, f in
                             self?.interfaceInteraction?.updateForwardOptionsState({ current in
                                 var updated = current
                                 updated.hideNames = false
@@ -562,7 +562,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                             } else {
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor)
                             }
-                        }, action: { [weak self] _, f in
+                        }, action: { [weak self = self] _, f in
                             self?.interfaceInteraction?.updateForwardOptionsState({ current in
                                 var updated = current
                                 updated.hideCaptions = false
@@ -627,7 +627,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
         }, presentLinkOptions: { _ in
         }, presentSuggestPostOptions: {
         }, shareSelectedMessages: {
-        }, updateTextInputStateAndMode: { [weak self] f in
+        }, updateTextInputStateAndMode: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, { state in
                     let (updatedState, updatedMode) = f(state.interfaceState.effectiveInputState, state.inputMode)
@@ -636,7 +636,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     }.updatedInputMode({ _ in updatedMode })
                 })
             }
-        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self] f in
+        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, {
                     let (updatedInputMode, updatedClosedButtonKeyboardMessageId) = f($0)
@@ -708,7 +708,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
         }, requestStopPollInMessage: { _ in
         }, updateInputLanguage: { _ in
         }, unarchiveChat: {
-        }, openLinkEditing: { [weak self] in
+        }, openLinkEditing: { [weak self = self] in
             if let strongSelf = self {
                 var selectionRange: Range<Int>?
                 var text: NSAttributedString?
@@ -732,7 +732,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     }
                 }
 
-                let controller = chatTextLinkEditController(context: context, updatedPresentationData: (presentationData, .never()), text: presentationData.strings.TextFormat_AddLinkText(text?.string ?? "").string, link: link, apply: { [weak self] link, _ in
+                let controller = chatTextLinkEditController(context: context, updatedPresentationData: (presentationData, .never()), text: presentationData.strings.TextFormat_AddLinkText(text?.string ?? "").string, link: link, apply: { [weak self = self] link, _ in
                     if let strongSelf = self, let inputMode = inputMode, let selectionRange = selectionRange {
                         if let link = link {
                             strongSelf.updateChatPresentationInterfaceState(animated: true, { state in
@@ -755,7 +755,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             }
         }, openDateEditing: {
         }, displaySlowmodeTooltip: { _, _ in
-        }, displaySendMessageOptions: { [weak self] node, gesture in
+        }, displaySendMessageOptions: { [weak self = self] node, gesture in
             guard let strongSelf = self else {
                 return
             }
@@ -964,7 +964,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             return
         }
         if controller.immediatelyActivateMultipleSelection {
-            let countPanelNode = PeersCountPanelNode(theme: self.presentationData.theme, strings: self.presentationData.strings, action: { [weak self] in
+            let countPanelNode = PeersCountPanelNode(theme: self.presentationData.theme, strings: self.presentationData.strings, action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -991,18 +991,18 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     context: self.context,
                     presentationInterfaceState: self.presentationInterfaceState,
                     customEmojiAvailable: self.presentationInterfaceState.customEmojiAvailable,
-                    presentController: { [weak self] c in
+                    presentController: { [weak self = self] c in
                         self?.present(c, nil)
                     },
-                    presentInGlobalOverlay: { [weak self] c in
+                    presentInGlobalOverlay: { [weak self = self] c in
                         self?.presentInGlobalOverlay(c, nil)
                     },
-                    getNavigationController: { [weak self] in
+                    getNavigationController: { [weak self = self] in
                         return self?.controller?.navigationController as? NavigationController
                     }
                 )
                 textInputPanelNode.interfaceInteraction = self.interfaceInteraction
-                textInputPanelNode.sendMessage = { [weak self] mode, messageEffect in
+                textInputPanelNode.sendMessage = { [weak self = self] mode, messageEffect in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1015,7 +1015,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                         strongSelf.requestSend?(selectedPeers, selectedPeerMap, effectiveInputText, mode, forwardOptionsState, messageEffect)
                     }
                 }
-                textInputPanelNode.updateHeight = { [weak self] _ in
+                textInputPanelNode.updateHeight = { [weak self = self] _ in
                     guard let self, let (layout, navigationBarHeight, actualNavigationBarHeight) = self.containerLayout else {
                         return
                     }
@@ -1037,7 +1037,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             })
         } else {
             if let mainContainerNode = self.mainContainerNode {
-                mainContainerNode.currentItemNode.selectionCountChanged = { [weak self] count in
+                mainContainerNode.currentItemNode.selectionCountChanged = { [weak self = self] count in
                     self?.textInputPanelNode?.updateSendButtonEnabled(count > 0, animated: true)
                 }
                 mainContainerNode.currentItemNode.updateState({ state in
@@ -1046,7 +1046,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     return state
                 })
             } else if let chatListNode = self.chatListNode {
-                chatListNode.selectionCountChanged = { [weak self] count in
+                chatListNode.selectionCountChanged = { [weak self = self] count in
                     if let self {
                         if let _ = self.controller?.multipleSelectionLimit {
                             self.countPanelNode?.buttonTitle = self.presentationData.strings.Premium_Gift_ContactSelection_Proceed
@@ -1166,7 +1166,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                         )
                     },
                     selectedId: AnyHashable(self.segmentedControlSelectedIndex),
-                    action: { [weak self] id in
+                    action: { [weak self = self] id in
                         guard let self, let index = id.base as? Int else {
                             return
                         }
@@ -1378,7 +1378,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     folder: nil,
                     displaySearchFilters: false,
                     hasDownloads: false,
-                    openPeer: { [weak self] peer, chatPeer, threadId, _ in
+                    openPeer: { [weak self = self] peer, chatPeer, threadId, _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1448,28 +1448,28 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                             requestOpenPeerFromSearch(peer, threadId)
                         }
                     },
-                    openDisabledPeer: { [weak self] peer, threadId, reason in
+                    openDisabledPeer: { [weak self = self] peer, threadId, reason in
                         self?.requestOpenDisabledPeer?(peer, threadId, reason)
                     },
                     openRecentPeerOptions: { _ in
                     },
-                    openMessage: { [weak self] peer, threadId, messageId, _ in
+                    openMessage: { [weak self = self] peer, threadId, messageId, _ in
                         if let requestOpenMessageFromSearch = self?.requestOpenMessageFromSearch {
                             requestOpenMessageFromSearch(peer, threadId, messageId)
                         }
                     },
                     addContact: nil,
                     peerContextAction: nil,
-                    present: { [weak self] c, a in
+                    present: { [weak self = self] c, a in
                         self?.present(c, a)
                     },
                     presentInGlobalOverlay: { _, _ in
                     },
                     navigationController: nil,
-                    parentController: { [weak self] in
+                    parentController: { [weak self = self] in
                         return self?.controller
                     }
-                ), cancel: { [weak self] in
+                ), cancel: { [weak self = self] in
                     if let requestDeactivateSearch = self?.requestDeactivateSearch {
                         requestDeactivateSearch()
                     }
@@ -1494,7 +1494,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
             if self.hasGlobalSearch {
                 categories.insert(.global)
             }
-            self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, updatedPresentationData: self.updatedPresentationData, onlyWriteable: true, categories: categories, addContact: nil, openPeer: { [weak self] peer, _ in
+            self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ContactsSearchContainerNode(context: self.context, updatedPresentationData: self.updatedPresentationData, onlyWriteable: true, categories: categories, addContact: nil, openPeer: { [weak self = self] peer, _ in
                 if let strongSelf = self {
                     var updated = false
                     var count = 0
@@ -1539,12 +1539,12 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                         }
                     }
                 }
-            }, openDisabledPeer: { [weak self] peer, reason in
+            }, openDisabledPeer: { [weak self = self] peer, reason in
                 guard let self else {
                     return
                 }
                 self.requestOpenDisabledPeer?(peer, nil, reason)
-            }, contextAction: nil), cancel: { [weak self] in
+            }, contextAction: nil), cancel: { [weak self = self] in
                 if let requestDeactivateSearch = self?.requestDeactivateSearch {
                     requestDeactivateSearch()
                 }
@@ -1620,34 +1620,34 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     let contactListNode = ContactListNode(context: self.context, updatedPresentationData: self.updatedPresentationData, presentation: .single(.natural(options: [], includeChatList: false, topPeers: .none)), onlyWriteable: self.filter.contains(.onlyWriteable), isGroupInvitation: false)
                     self.contactListNode = contactListNode
                     contactListNode.enableUpdates = true
-                    contactListNode.selectionStateUpdated = { [weak self] selectionState in
+                    contactListNode.selectionStateUpdated = { [weak self = self] selectionState in
                         if let strongSelf = self {
                             strongSelf.textInputPanelNode?.updateSendButtonEnabled((selectionState?.selectedPeerIndices.count ?? 0) > 0, animated: true)
                         }
                     }
-                    contactListNode.activateSearch = { [weak self] in
+                    contactListNode.activateSearch = { [weak self = self] in
                         self?.requestActivateSearch?()
                     }
-                    contactListNode.openPeer = { [weak self] peer, _, _, _ in
+                    contactListNode.openPeer = { [weak self = self] peer, _, _, _ in
                         if case let .peer(peer, _, _) = peer {
                             self?.contactListNode?.listNode.clearHighlightAnimated(true)
                             self?.requestOpenPeer?(peer, nil)
                         }
                     }
-                    contactListNode.openDisabledPeer = { [weak self] peer, reason in
+                    contactListNode.openDisabledPeer = { [weak self = self] peer, reason in
                         guard let self else {
                             return
                         }
                         self.requestOpenDisabledPeer?(peer, nil, reason)
                     }
-                    contactListNode.suppressPermissionWarning = { [weak self] in
+                    contactListNode.suppressPermissionWarning = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.context.sharedContext.presentContactsWarningSuppression(context: strongSelf.context, present: { c, a in
                                 strongSelf.present(c, a)
                             })
                         }
                     }
-                    contactListNode.contentOffsetChanged = { [weak self] offset in
+                    contactListNode.contentOffsetChanged = { [weak self = self] offset in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1656,14 +1656,14 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                         }
                     }
 
-                    contactListNode.contentScrollingEnded = { [weak self] listView in
+                    contactListNode.contentScrollingEnded = { [weak self = self] listView in
                         return self?.contentScrollingEnded?(listView) ?? false
                     }
 
                     if let (layout, navigationHeight, actualNavigationHeight) = self.containerLayout {
                         self.containerLayoutUpdated(layout, navigationBarHeight: navigationHeight, actualNavigationBarHeight: actualNavigationHeight, transition: .immediate)
 
-                        let _ = (contactListNode.ready |> deliverOnMainQueue).start(next: { [weak self] _ in
+                        let _ = (contactListNode.ready |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                             if let strongSelf = self {
                                 strongSelf.navigationBar?.setSecondaryContentNode(nil, animated: false)
                                 if let contactListNode = strongSelf.contactListNode {

@@ -227,7 +227,7 @@ open class MetalImageLayer: CALayer {
     override public init() {
         super.init()
         
-        self.renderer.imageUpdated = { [weak self] image in
+        self.renderer.imageUpdated = { [weak self = self] image in
             self?.contents = image
         }
     }

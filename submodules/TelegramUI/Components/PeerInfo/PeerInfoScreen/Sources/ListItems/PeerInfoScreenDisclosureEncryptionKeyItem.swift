@@ -62,7 +62,7 @@ private final class PeerInfoScreenDisclosureEncryptionKeyItemNode: PeerInfoScree
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         

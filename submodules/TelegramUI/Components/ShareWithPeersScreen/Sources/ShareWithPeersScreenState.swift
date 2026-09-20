@@ -116,7 +116,7 @@ public extension ShareWithPeersScreen {
                         return (peers, participantCountMap)
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] peers, participantCounts in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peers, participantCounts in
                     guard let self else {
                         return
                     }
@@ -227,7 +227,7 @@ public extension ShareWithPeersScreen {
                     closeFriends,
                     grayListPeers
                 )
-                .start(next: { [weak self] accountPeer, adminedChannelsWithParticipants, savedPeers, closeFriends, grayListPeers in
+                .start(next: { [weak self = self] accountPeer, adminedChannelsWithParticipants, savedPeers, closeFriends, grayListPeers in
                     guard let self else {
                         return
                     }
@@ -287,7 +287,7 @@ public extension ShareWithPeersScreen {
                         return (chatList, contacts, initialPeers, participantCountMap, grayListPeers)
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] chatList, contacts, initialPeers, participantCounts, grayListPeers in
+                |> deliverOnMainQueue).start(next: { [weak self = self] chatList, contacts, initialPeers, participantCounts, grayListPeers in
                     guard let self else {
                         return
                     }
@@ -391,7 +391,7 @@ public extension ShareWithPeersScreen {
                 self.stateDisposable = (context.engine.data.subscribe(
                     TelegramEngine.EngineData.Item.Contacts.List(includePresences: true)
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] contactList in
+                |> deliverOnMainQueue).start(next: { [weak self = self] contactList in
                     guard let self else {
                         return
                     }
@@ -466,7 +466,7 @@ public extension ShareWithPeersScreen {
                     }
                 }
                 self.stateDisposable = (signal
-                |> deliverOnMainQueue).start(next: { [weak self] peers, presenceMap, participantCounts in
+                |> deliverOnMainQueue).start(next: { [weak self = self] peers, presenceMap, participantCounts in
                     guard let self else {
                         return
                     }
@@ -535,7 +535,7 @@ public extension ShareWithPeersScreen {
                     queue: Queue.mainQueue(),
                     contactsState.get(),
                     membersState.get()
-                ).startStrict(next: { [weak self] contactsState, memberState in
+                ).startStrict(next: { [weak self = self] contactsState, memberState in
                     guard let self else {
                         return
                     }
@@ -611,7 +611,7 @@ public extension ShareWithPeersScreen {
                         return (chatList, searchResults, initialPeers, participantCountMap)
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] chatList, searchResults, initialPeers, participantCounts in
+                |> deliverOnMainQueue).start(next: { [weak self = self] chatList, searchResults, initialPeers, participantCounts in
                     guard let self else {
                         return
                     }

@@ -116,7 +116,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
                     let dimensions = file.dimensions ?? PixelDimensions(width: 512, height: 512)
                     let fittedDimensions = dimensions.cgSize.aspectFitted(CGSize(width: 384, height: 384))
                     self.disposables.add((source.cachedDataPath(width: Int(fittedDimensions.width), height: Int(fittedDimensions.height))
-                    |> deliverOn(self.queue)).start(next: { [weak self] path, complete in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] path, complete in
                         if let strongSelf = self, complete {
                             if let data = try? Data(contentsOf: URL(fileURLWithPath: path), options: [.mappedRead]) {
                                 let queue = strongSelf.queue
@@ -139,7 +139,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
                 }
             } else {
                 self.disposables.add((chatMessageSticker(postbox: self.postbox, userLocation: .other, file: file, small: false, fetched: true, onlyFullSize: true, thumbnail: false, synchronousLoad: false)
-                |> deliverOn(self.queue)).start(next: { [weak self] generator in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] generator in
                     if let strongSelf = self {
                         let context = generator(TransformImageArguments(corners: ImageCorners(), imageSize: entity.baseSize, boundingSize: entity.baseSize, intrinsicInsets: UIEdgeInsets()))
                         let image = context?.generateImage()
@@ -179,7 +179,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
             
             self.disposables.add((self.frameQueue.get()
             |> take(1)
-            |> deliverOn(self.queue)).start(next: { [weak self] frameQueue in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] frameQueue in
                 guard let strongSelf = self else {
                     completion(nil)
                     return
@@ -243,7 +243,7 @@ private class LegacyPaintStickerEntity: LegacyPaintEntity {
                 } else {
                     let _ = (self.imagePromise.get()
                     |> take(1)
-                    |> deliverOn(self.queue)).start(next: { [weak self] image in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] image in
                         if let strongSelf = self {
                             strongSelf.cachedCIImage = CIImage(image: image)
                             completion(strongSelf.cachedCIImage)
@@ -746,7 +746,7 @@ private class SendStarsButtonView: HighlightTrackingButton, TGPhotoSendStarsButt
         self.addSubview(self.backgroundView)
         self.addSubview(self.textNode.view)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }

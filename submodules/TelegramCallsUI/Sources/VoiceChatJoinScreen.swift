@@ -51,16 +51,16 @@ public final class VoiceChatJoinScreen: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = Node(context: self.context, requestLayout: { [weak self] transition in
+        self.displayNode = Node(context: self.context, requestLayout: { [weak self = self] transition in
             self?.requestLayout(transition: transition)
         }, asSpeaker: self.invite != nil)
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
-        self.controllerNode.join = { [weak self] call in
+        self.controllerNode.join = { [weak self = self] call in
             self?.dismiss()
             self?.join(call)
         }
@@ -118,7 +118,7 @@ public final class VoiceChatJoinScreen: ViewController {
             currentGroupCall = .single(nil)
         }
             
-        self.disposable.set(combineLatest(queue: Queue.mainQueue(), signal, context.engine.calls.cachedGroupCallDisplayAsAvailablePeers(peerId: peerId) |> castError(GetCurrentGroupCallError.self), callJoinAsPeerId, currentGroupCall).start(next: { [weak self] peerAndCall, availablePeers, callJoinAsPeerId, currentGroupCallIdAndCanUnmute in
+        self.disposable.set(combineLatest(queue: Queue.mainQueue(), signal, context.engine.calls.cachedGroupCallDisplayAsAvailablePeers(peerId: peerId) |> castError(GetCurrentGroupCallError.self), callJoinAsPeerId, currentGroupCall).start(next: { [weak self = self] peerAndCall, availablePeers, callJoinAsPeerId, currentGroupCallIdAndCanUnmute in
             if let strongSelf = self {
                 if let (peer, call) = peerAndCall {
                     if let (currentGroupCall, currentGroupCallId, canUnmute) = currentGroupCallIdAndCanUnmute, call.info.id == currentGroupCallId {
@@ -352,7 +352,7 @@ public final class VoiceChatJoinScreen: ViewController {
                         contentNode.frame = previous.frame
                         contentNode.updateLayout(size: previous.bounds.size, isLandscape: layout.size.width > layout.size.height, bottomInset: bottomGridInset, transition: .immediate)
                         
-                        contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                        contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                             self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                         })
                         self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -372,7 +372,7 @@ public final class VoiceChatJoinScreen: ViewController {
                         previous.deactivate()
                     } else {
                         if let contentNode = self.contentNode {
-                            contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                            contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                                 self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                             })
                             self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -381,7 +381,7 @@ public final class VoiceChatJoinScreen: ViewController {
                         self.containerLayoutUpdated(layout, navigationBarHeight: navigationBarHeight, transition: transition)
                     }
                 } else if let contentNode = contentNode {
-                    contentNode.setContentOffsetUpdated({ [weak self] contentOffset, transition in
+                    contentNode.setContentOffsetUpdated({ [weak self = self] contentOffset, transition in
                         self?.contentNodeOffsetUpdated(contentOffset, transition: transition)
                     })
                     self.contentContainerNode.insertSubnode(contentNode, at: 0)
@@ -528,7 +528,7 @@ public final class VoiceChatJoinScreen: ViewController {
                 var dimCompleted = false
                 var offsetCompleted = false
                 
-                let internalCompletion: () -> Void = { [weak self] in
+                let internalCompletion: () -> Void = { [weak self = self] in
                     if let strongSelf = self, dimCompleted && offsetCompleted {
                         strongSelf.animatingOut = false
                         strongSelf.dismiss?()
@@ -592,7 +592,7 @@ public final class VoiceChatJoinScreen: ViewController {
             let requestId = self.scheduledLayoutTransitionRequestId
             self.scheduledLayoutTransitionRequestId += 1
             self.scheduledLayoutTransitionRequest = (requestId, transition)
-            (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+            (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
                 if let strongSelf = self {
                     if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                         strongSelf.scheduledLayoutTransitionRequest = nil
@@ -611,7 +611,7 @@ public final class VoiceChatJoinScreen: ViewController {
             
             self.transitionToContentNode(ShareLoadingContainerNode(theme: self.presentationData.theme, forceNativeAppearance: false), fastOut: true)
             let timestamp = CACurrentMediaTime()
-            self.disposable.set(signal.start(completed: { [weak self] in
+            self.disposable.set(signal.start(completed: { [weak self = self] in
                 let minDelay = 0.6
                 let delay = max(0.0, (timestamp + minDelay) - CACurrentMediaTime())
                 Queue.mainQueue().after(delay, {

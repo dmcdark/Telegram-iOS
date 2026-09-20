@@ -58,7 +58,7 @@ final class SearchBarContentComponent: Component {
             }
             
             self.queryDisposable = (throttledSearchQuery
-            |> deliverOnMainQueue).start(next: { [weak self] query in
+            |> deliverOnMainQueue).start(next: { [weak self = self] query in
                 if let self {
                     self.component?.performAction.invoke(.updateSearchQuery(query))
                 }
@@ -82,13 +82,13 @@ final class SearchBarContentComponent: Component {
                         safeInsets: UIEdgeInsets(),
                         placeholder: component.strings.Common_Search,
                         hasEdgeEffect: false,
-                        updated: { [weak self] query in
+                        updated: { [weak self = self] query in
                             guard let self else {
                                 return
                             }
                             self.queryPromise.set(query)
                         },
-                        cancel: { [weak self] in
+                        cancel: { [weak self = self] in
                             guard let self else {
                                 return
                             }

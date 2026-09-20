@@ -100,7 +100,7 @@ extension ChatControllerImpl {
                         })
                         
                         searchDisposable.set((search
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] results, updatedState in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] results, updatedState in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -131,7 +131,7 @@ extension ChatControllerImpl {
                                 }
                             }
                             strongSelf.updateItemNodesSearchTextHighlightStates()
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.searching.set(false)
                             }
@@ -149,7 +149,7 @@ extension ChatControllerImpl {
                         }
                         searchDisposable.set((self.context.engine.messages.searchMessages(location: searchState.location, query: searchState.query, state: loadMoreState, limit: limit)
                         |> delay(0.2, queue: Queue.mainQueue())
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] results, updatedState in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] results, updatedState in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -162,7 +162,7 @@ extension ChatControllerImpl {
                                     return current
                                 }
                             })
-                        }, completed: { [weak self] in
+                        }, completed: { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.searching.set(false)
                             }

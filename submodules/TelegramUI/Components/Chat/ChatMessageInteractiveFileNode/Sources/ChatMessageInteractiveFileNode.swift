@@ -455,7 +455,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                     }
                     
                     self.transcribeDisposable = (signal
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                         guard let strongSelf = self, let arguments = strongSelf.arguments else {
                             return
                         }
@@ -466,7 +466,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                             strongSelf.audioTranscriptionState = .collapsed
                             strongSelf.requestUpdateLayout(true)
                         }
-                    }, completed: { [weak self] in
+                    }, completed: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -475,7 +475,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                     })
                 } else {
                     self.transcribeDisposable = (context.engine.messages.transcribeAudio(messageId: message.id)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
                         guard let strongSelf = self else {
                             return
                         }
@@ -609,7 +609,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                         updateImageSignal = chatMessageImageFile(account: arguments.context.account, userLocation: .peer(arguments.message.id.peerId), fileReference: .message(message: MessageReference(arguments.message), media: arguments.file), thumbnail: true)
                     }
                     
-                    updatedFetchControls = FetchControls(fetch: { [weak self] userInitiated in
+                    updatedFetchControls = FetchControls(fetch: { [weak self = self] userInitiated in
                         if let strongSelf = self {
                             strongSelf.fetchDisposable.set(messageMediaFileInteractiveFetched(context: arguments.context, message: arguments.message, file: arguments.file, userInitiated: userInitiated).startStrict())
                         }
@@ -1072,7 +1072,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                         streamingCacheStatusFrame = CGRect()
                     }
                     
-                    return (fittedLayoutSize, { [weak self] synchronousLoads, animation, info in
+                    return (fittedLayoutSize, { [weak self = self] synchronousLoads, animation, info in
                         if let strongSelf = self {
                             strongSelf.context = arguments.context
                             strongSelf.presentationData = arguments.presentationData
@@ -1502,7 +1502,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                                     } else {
                                         type = .media
                                     }
-                                    let selectionNode = FileMessageSelectionNode(theme: arguments.presentationData.theme.theme, incoming: arguments.incoming, type: type, toggle: { [weak self] value in
+                                    let selectionNode = FileMessageSelectionNode(theme: arguments.presentationData.theme.theme, incoming: arguments.incoming, type: type, toggle: { [weak self = self] value in
                                         self?.toggleSelection(value)
                                     })
                                     strongSelf.selectionNode = selectionNode
@@ -2046,13 +2046,13 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
                     knobColor = item.presentationData.theme.theme.chat.message.outgoing.textSelectionKnobColor
                 }
                 
-                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self] value in
+                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode), updateIsActive: { [weak self = self] value in
                     self?.updateIsTextSelectionActive?(value)
-                }, present: { [weak self] c, a in
+                }, present: { [weak self = self] c, a in
                     self?.arguments?.controllerInteraction.presentGlobalOverlayController(c, a)
                 }, rootView: { [weak rootNode] in
                     return rootNode?.view
-                }, performAction: { [weak self] text, action in
+                }, performAction: { [weak self = self] text, action in
                     guard let strongSelf = self, let item = strongSelf.arguments else {
                         return
                     }
@@ -2104,7 +2104,7 @@ public final class ChatMessageInteractiveFileNode: ASDisplayNode {
     
     private func ensureHasTimer() {
         if self.playerUpdateTimer == nil {
-            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.updateStatus(animated: true)
             }, queue: Queue.mainQueue())
             self.playerUpdateTimer = timer

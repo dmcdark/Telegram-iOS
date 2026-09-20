@@ -121,7 +121,7 @@ final class ChatAdPanelNode: ASDisplayNode {
         self.contentContainer.addSubnode(self.imageNodeContainer)
                 
         self.tapButton.addTarget(self, action: #selector(self.tapped), forControlEvents: [.touchUpInside])
-        self.tapButton.highligthedChanged = { [weak self] highlighted in
+        self.tapButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.adNode.layer.removeAnimation(forKey: "opacity")
@@ -159,7 +159,7 @@ final class ChatAdPanelNode: ASDisplayNode {
         self.contextContainer.addSubnode(self.removeButtonNode)
         
         self.removeButtonNode.addTarget(self, action: #selector(self.removePressed), forControlEvents: [.touchUpInside])
-        self.removeButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.removeButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.removeTextNode.layer.removeAnimation(forKey: "opacity")
@@ -175,7 +175,7 @@ final class ChatAdPanelNode: ASDisplayNode {
             }
         }
         
-        self.contextContainer.activated = { [weak self] gesture, _ in
+        self.contextContainer.activated = { [weak self = self] gesture, _ in
             guard let self, let message = self.message else {
                 return
             }

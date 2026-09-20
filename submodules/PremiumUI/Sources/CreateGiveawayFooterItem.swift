@@ -117,7 +117,7 @@ final class CreateGiveawayFooterItemNode: ItemListControllerFooterItemNode {
                     ),
                     isEnabled: true,
                     displaysProgress: self.item.isLoading,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

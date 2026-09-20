@@ -189,7 +189,7 @@ private final class ChannelMemberSingleCategoryListContext: ChannelMemberCategor
         self.listStateValue.loadingState = .loading(initial: initial)
         
         self.loadingDisposable.set((self.loadMoreSignal(count: loadCount)
-        |> deliverOnMainQueue).start(next: { [weak self] members in
+        |> deliverOnMainQueue).start(next: { [weak self = self] members in
             self?.appendMembersAndFinishLoading(members)
         }))
     }
@@ -324,7 +324,7 @@ private final class ChannelMemberSingleCategoryListContext: ChannelMemberCategor
         }
         
         if self.headUpdateTimer == nil {
-            let headUpdateTimer = SwiftSignalKit.Timer(timeout: headUpdateTimeout, repeat: false, completion: { [weak self] in
+            let headUpdateTimer = SwiftSignalKit.Timer(timeout: headUpdateTimeout, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -697,7 +697,7 @@ private final class PeerChannelMemberContextWithSubscribers {
         self.emptyTimeout = emptyTimeout
         self.becameEmpty = becameEmpty
         self.disposable.set((context.listState
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.currentValue = value
                 for f in strongSelf.subscribers.copyItems() {
@@ -715,7 +715,7 @@ private final class PeerChannelMemberContextWithSubscribers {
     private func resetAndBeginEmptyTimer() {
         self.context.reset(false)
         self.emptyTimer?.invalidate()
-        let emptyTimer = SwiftSignalKit.Timer(timeout: self.emptyTimeout, repeat: false, completion: { [weak self] in
+        let emptyTimer = SwiftSignalKit.Timer(timeout: self.emptyTimeout, repeat: false, completion: { [weak self = self] in
             if let strongSelf = self {
                 if strongSelf.subscribers.isEmpty {
                     strongSelf.becameEmpty()
@@ -738,7 +738,7 @@ private final class PeerChannelMemberContextWithSubscribers {
                 self.context.forceUpdateHead()
             }
         }
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             Queue.mainQueue().async {
                 if let strongSelf = self {
                     strongSelf.subscribers.remove(index)
@@ -821,7 +821,7 @@ final class PeerChannelMemberCategoriesContext {
             case let .banned(query):
                 context = ChannelMemberSingleCategoryListContext(engine: self.engine, postbox: self.postbox, network: self.network, accountPeerId: self.accountPeerId, peerId: self.peerId, batchCount: nil, category: .banned(query))
         }
-        let contextWithSubscribers = PeerChannelMemberContextWithSubscribers(context: context, emptyTimeout: emptyTimeout, becameEmpty: { [weak self] in
+        let contextWithSubscribers = PeerChannelMemberContextWithSubscribers(context: context, emptyTimeout: emptyTimeout, becameEmpty: { [weak self = self] in
             assert(Queue.mainQueue().isCurrent())
             if let strongSelf = self {
                 strongSelf.contexts.removeValue(forKey: key)

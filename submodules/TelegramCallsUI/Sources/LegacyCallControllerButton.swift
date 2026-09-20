@@ -146,7 +146,7 @@ final class LegacyCallControllerButtonNode: HighlightTrackingButtonNode {
         self.backgroundNode.image = regularImage
         self.currentImage = regularImage
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 strongSelf.internalHighlighted = highlighted
                 strongSelf.updateState(highlighted: highlighted, selected: strongSelf.isSelected)

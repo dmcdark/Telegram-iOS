@@ -46,7 +46,7 @@ final class SwirlStarsView: UIView, PhoneDemoDecorationView {
         self.setupAnimations()
         
         let transition = ContainedViewLayoutTransition.animated(duration: 0.3, curve: .linear)
-        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.6 : 0.0, completion: { [weak self] finished in
+        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.6 : 0.0, completion: { [weak self = self] finished in
             if let strongSelf = self, finished && !visible && strongSelf.particles?.parent != nil {
                 strongSelf.particles?.removeFromParentNode()
                 

@@ -96,7 +96,7 @@ private final class LargeEmojiActionSheetItemNode: ActionSheetItemNode {
         
         self.setupTimestamp = CACurrentMediaTime()
         
-        self.animationNode.started = { [weak self] in
+        self.animationNode.started = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.imageNode.alpha = 0.0
                 
@@ -113,7 +113,7 @@ private final class LargeEmojiActionSheetItemNode: ActionSheetItemNode {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -153,7 +153,7 @@ private final class LargeEmojiActionSheetItemNode: ActionSheetItemNode {
         if !animated {
             self.placeholderNode.removeFromSupernode()
         } else {
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }

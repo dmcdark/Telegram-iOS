@@ -271,7 +271,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
         self.emojiContainerNode.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.emojiImageNode.imageUpdated = { [weak self] image in
+        self.emojiImageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -304,7 +304,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
             self.placeholderNode.removeFromSupernode()
         } else {
             self.placeholderNode.alpha = 0.0
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -329,7 +329,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
                     animatedStickerNode.transform = CATransform3DMakeScale(scale, scale, 1.0)
                     animatedStickerNode.layer.animateSpring(from: 1.0 as NSNumber, to: scale as NSNumber, keyPath: "transform.scale", duration: 0.45)
                     
-                    animatedStickerNode.completed = { [weak animatedStickerNode, weak self] _ in
+                    animatedStickerNode.completed = { [weak animatedStickerNode = animatedStickerNode, weak self = self] _ in
                         guard let item = self?.item, item.selected else {
                             return
                         }
@@ -349,7 +349,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
         
         let currentItem = self.item
 
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             var updatedThemeReference = false
             var updatedTheme = false
             var updatedNightMode = false
@@ -456,7 +456,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
                             animatedStickerNode = current
                         } else {
                             animatedStickerNode = DefaultAnimatedStickerNodeImpl()
-                            animatedStickerNode.started = { [weak self] in
+                            animatedStickerNode.started = { [weak self = self] in
                                 self?.emojiImageNode.isHidden = true
                             }
                             strongSelf.animatedStickerNode = animatedStickerNode
@@ -513,7 +513,7 @@ private final class ThemeCarouselThemeItemIconNode: ListViewItemNode {
             return
         }
         
-        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+        self.snapshotView?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.snapshotView?.removeFromSuperview()
             self?.snapshotView = nil
         })
@@ -783,7 +783,7 @@ public class ThemeCarouselThemeItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
 
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -882,7 +882,7 @@ public class ThemeCarouselThemeItemNode: ListViewItemNode, ItemListItemNode {
                         entries.insert(ThemeCarouselThemeEntry(index: index, emojiFile: nil, themeReference: item.currentTheme, nightMode: false, channelMode: item.channelMode, themeSpecificAccentColors: item.themeSpecificAccentColors, themeSpecificChatWallpapers: item.themeSpecificChatWallpapers, selected: true, theme: item.theme, strings: item.strings, wallpaper: item.hasNoTheme ? item.selectedWallpaper : nil), at: item.hasNoTheme ? 1 : entries.count)
                     }
                     
-                    let action: (PresentationThemeReference?) -> Void = { [weak self] themeReference in
+                    let action: (PresentationThemeReference?) -> Void = { [weak self = self] themeReference in
                         if let strongSelf = self {
                             strongSelf.tapping = true
                             strongSelf.item?.updatedTheme(themeReference)

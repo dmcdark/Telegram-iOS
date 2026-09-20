@@ -54,7 +54,7 @@ final class ChatRestrictedInputPanelNode: ChatInputPanelNode {
         self.view.addSubview(self.backgroundView)
         self.addSubnode(self.buttonNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let self {
                 if highlighted {
                     self.iconView?.layer.removeAnimation(forKey: "opacity")

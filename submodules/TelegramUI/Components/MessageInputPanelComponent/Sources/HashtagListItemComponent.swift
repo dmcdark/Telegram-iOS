@@ -224,7 +224,7 @@ public final class HashtagListItemComponent: Component {
             
             self.containerButton.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self] value in
+            self.extractedContainerView.isExtractedToContextPreviewUpdated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -233,7 +233,7 @@ public final class HashtagListItemComponent: Component {
                 self.containerButton.backgroundColor = nil
                 self.containerButton.layer.cornerRadius = value ? 10.0 : 0.0
             }
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, transition in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, transition in
                 guard let self else {
                     return
                 }
@@ -248,7 +248,7 @@ public final class HashtagListItemComponent: Component {
                 self.state?.updated(transition: mappedTransition)
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     gesture.cancel()
                     return
@@ -256,7 +256,7 @@ public final class HashtagListItemComponent: Component {
                 component.contextAction?(component.hashtag, self.extractedContainerView, gesture)
             }
             
-            self.containerButton.highligthedChanged = { [weak self] highlighted in
+            self.containerButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -265,13 +265,13 @@ public final class HashtagListItemComponent: Component {
                 }
             }
             
-            self.swipeOptionContainer.updateRevealOffset = { [weak self] offset, transition in
+            self.swipeOptionContainer.updateRevealOffset = { [weak self = self] offset, transition in
                 guard let self else {
                     return
                 }
                 transition.setBounds(view: self.containerButton, bounds: CGRect(origin: CGPoint(x: -offset, y: 0.0), size: self.containerButton.bounds.size))
             }
-            self.swipeOptionContainer.revealOptionSelected = { [weak self] option, _ in
+            self.swipeOptionContainer.revealOptionSelected = { [weak self = self] option, _ in
                 guard let self, let component = self.component else {
                     return
                 }

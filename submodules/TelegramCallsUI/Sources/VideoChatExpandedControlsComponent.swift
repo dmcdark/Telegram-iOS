@@ -81,7 +81,7 @@ final class VideoChatExpandedControlsComponent: Component {
                 component: AnyComponent(BackButtonComponent(
                     title: component.strings.Common_Back,
                     color: .white,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -105,7 +105,7 @@ final class VideoChatExpandedControlsComponent: Component {
                     theme: component.theme,
                     strings: component.strings,
                     isPinned: component.isPinned,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

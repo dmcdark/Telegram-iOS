@@ -255,13 +255,13 @@ final class LiveChatReactionStreamView: UIView {
         self.layer.addSublayer(self.itemLayerContainer)
         
         self.layer.addSublayer(self.hierarchyTracker)
-        self.hierarchyTracker.isInHierarchyUpdated = { [weak self] inHierarchy in
+        self.hierarchyTracker.isInHierarchyUpdated = { [weak self = self] inHierarchy in
             guard let self else {
                 return
             }
             if inHierarchy {
                 if self.displayLink == nil {
-                    self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                    self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -288,7 +288,7 @@ final class LiveChatReactionStreamView: UIView {
         }
         self.previousTimestamp = timestamp
         Task {
-            await self.taskQueue.add(peer: peer, count: count, completion: { [weak self] image in
+            await self.taskQueue.add(peer: peer, count: count, completion: { [weak self = self] image in
                 Task { @MainActor in
                     guard let self else {
                         return
@@ -325,7 +325,7 @@ final class LiveChatReactionStreamView: UIView {
             transition.animateBlur(layer: itemLayer, fromRadius: 0.0, toRadius: 8.0, delay: delay)
             
             itemLayer.animateScale(from: 1.0, to: 0.001, duration: 0.2, delay: delay, removeOnCompletion: false)
-            itemLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: delay, removeOnCompletion: false, completion: { [weak self] _ in
+            itemLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: delay, removeOnCompletion: false, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }

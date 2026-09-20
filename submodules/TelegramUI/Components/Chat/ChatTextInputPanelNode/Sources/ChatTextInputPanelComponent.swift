@@ -436,7 +436,7 @@ public final class ChatTextInputPanelComponent: Component {
                     },
                     shareSelectedMessages: {
                     },
-                    updateTextInputStateAndMode: { [weak self] f in
+                    updateTextInputStateAndMode: { [weak self = self] f in
                         guard let self else {
                             return
                         }
@@ -464,7 +464,7 @@ public final class ChatTextInputPanelComponent: Component {
                             }
                         }
                     },
-                    updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self] f in
+                    updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self = self] f in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -522,7 +522,7 @@ public final class ChatTextInputPanelComponent: Component {
                             component.externalState.isEditing = false
                         }
                     },
-                    openStickers: { [weak self] in
+                    openStickers: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -655,7 +655,7 @@ public final class ChatTextInputPanelComponent: Component {
                     },
                     displaySlowmodeTooltip: { _, _ in
                     },
-                    displaySendMessageOptions: { [weak self] node, gesture in
+                    displaySendMessageOptions: { [weak self = self] node, gesture in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -690,7 +690,7 @@ public final class ChatTextInputPanelComponent: Component {
                     },
                     openInviteRequests: {
                     },
-                    openSendAsPeer: { [weak self] sourceNode, gesture in
+                    openSendAsPeer: { [weak self = self] sourceNode, gesture in
                         guard let self, let component = self.component, let sendAsConfiguration = component.sendAsConfiguration else {
                             return
                         }
@@ -720,7 +720,7 @@ public final class ChatTextInputPanelComponent: Component {
                     },
                     openPremiumGift: {
                     },
-                    openSuggestPost: { [weak self] _, _ in
+                    openSuggestPost: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -869,13 +869,13 @@ public final class ChatTextInputPanelComponent: Component {
                 panelNode.interfaceInteraction = self.interfaceInteraction
                 panelNode.loadTextInputNodeIfNeeded()
                 
-                panelNode.sendMessage = { [weak self] in
+                panelNode.sendMessage = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
                     component.sendAction?()
                 }
-                panelNode.updateHeight = { [weak self] _ in
+                panelNode.updateHeight = { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -883,7 +883,7 @@ public final class ChatTextInputPanelComponent: Component {
                         self.state?.updated(transition: .spring(duration: 0.4))
                     }
                 }
-                panelNode.displayAttachmentMenu = { [weak self] in
+                panelNode.displayAttachmentMenu = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -925,7 +925,7 @@ public final class ChatTextInputPanelComponent: Component {
                     if component.insets.bottom > 40.0 {
                         isVisible = false
                     }
-                    panelNode.customLeftAction = .settings(isVisible: isVisible, action: { [weak self] _ in
+                    panelNode.customLeftAction = .settings(isVisible: isVisible, action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -954,7 +954,7 @@ public final class ChatTextInputPanelComponent: Component {
                     if component.insets.bottom > 40.0 {
                         isVisible = false
                     }
-                    panelNode.customSecondaryLeftAction = .settings(isVisible: isVisible, action: { [weak self] _ in
+                    panelNode.customSecondaryLeftAction = .settings(isVisible: isVisible, action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1012,7 +1012,7 @@ public final class ChatTextInputPanelComponent: Component {
             panelNode.customSendColor = component.sendColor
             panelNode.customSendIsDisabled = component.isSendDisabled
             panelNode.customInputTextMaxLength = component.maxLength
-            panelNode.customSwitchToKeyboard = { [weak self] in
+            panelNode.customSwitchToKeyboard = { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }

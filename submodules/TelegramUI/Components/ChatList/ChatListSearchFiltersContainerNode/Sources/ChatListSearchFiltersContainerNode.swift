@@ -97,7 +97,7 @@ public final class ChatListSearchFiltersContainerNode: ASDisplayNode {
                     itemNode = current
                 } else {
                     itemNodeTransition = .immediate
-                    itemNode = ItemNode(pressed: { [weak self] in
+                    itemNode = ItemNode(pressed: { [weak self = self] in
                         self?.filterPressed?(type)
                     })
                     self.itemNodes[filter.id] = itemNode

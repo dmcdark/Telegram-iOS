@@ -144,7 +144,7 @@ final class ColorPickerComponent: Component {
             self.cancelButton.addTarget(self, action: #selector(self.cancelPressed), for: .touchUpInside)
             self.doneButton.addTarget(self, action: #selector(self.donePressed), for: .touchUpInside)
             
-            self.cancelButton.highligthedChanged = { [weak self] highlighted in
+            self.cancelButton.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.cancelHighlightView.layer.removeAnimation(forKey: "opacity")
@@ -156,7 +156,7 @@ final class ColorPickerComponent: Component {
                 }
             }
             
-            self.doneButton.highligthedChanged = { [weak self] highlighted in
+            self.doneButton.highligthedChanged = { [weak self = self] highlighted in
                 if let strongSelf = self {
                     if highlighted {
                         strongSelf.doneHighlightView.layer.removeAnimation(forKey: "opacity")
@@ -170,7 +170,7 @@ final class ColorPickerComponent: Component {
             
             self.addButton.addTarget(self, action: #selector(self.addPressed), forControlEvents: .touchUpInside)
 
-            self.multiColorFieldNode.colorChanged = { [weak self] color, ended in
+            self.multiColorFieldNode.colorChanged = { [weak self = self] color, ended in
                 if let strongSelf = self {
                     strongSelf.updateState({ current in
                         var updated = current
@@ -182,7 +182,7 @@ final class ColorPickerComponent: Component {
                     })
                 }
             }
-            self.multiColorFieldNode.colorRemoved = { [weak self] in
+            self.multiColorFieldNode.colorRemoved = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.updateState({ current in
                         var updated = current
@@ -199,7 +199,7 @@ final class ColorPickerComponent: Component {
                 }
             }
                         
-            self.colorPickerNode.colorChanged = { [weak self] color in
+            self.colorPickerNode.colorChanged = { [weak self = self] color in
                 if let strongSelf = self {
                     strongSelf.changingColor = true
                     strongSelf.updateState({ current in
@@ -212,7 +212,7 @@ final class ColorPickerComponent: Component {
                     }, updateLayout: false)
                 }
             }
-            self.colorPickerNode.colorChangeEnded = { [weak self] color in
+            self.colorPickerNode.colorChangeEnded = { [weak self = self] color in
                 if let strongSelf = self {
                     strongSelf.changingColor = false
                     strongSelf.updateState({ current in
@@ -343,7 +343,7 @@ final class ColorPickerComponent: Component {
                 if self.sampleItemNodes.count > i {
                     itemNode = self.sampleItemNodes[i]
                 } else {
-                    itemNode = ColorSampleItemNode(action: { [weak self] in
+                    itemNode = ColorSampleItemNode(action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -804,7 +804,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
         
         self.update()
                 
-        self.colorNode.tap = { [weak self] location in
+        self.colorNode.tap = { [weak self = self] location in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }
@@ -821,7 +821,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
             strongSelf.colorChangeEnded?(strongSelf.color)
         }
         
-        self.colorNode.panBegan = { [weak self] location in
+        self.colorNode.panBegan = { [weak self = self] location in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }
@@ -841,7 +841,7 @@ final class WallpaperColorPickerNode: ASDisplayNode {
             }
         }
         
-        self.colorNode.panChanged = { [weak self] translation, ended in
+        self.colorNode.panChanged = { [weak self = self] translation, ended in
             guard let strongSelf = self, let size = strongSelf.validLayout else {
                 return
             }

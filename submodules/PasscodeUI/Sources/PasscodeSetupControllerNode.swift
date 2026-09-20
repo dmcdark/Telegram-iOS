@@ -123,7 +123,7 @@ final class PasscodeSetupControllerNode: ASDisplayNode {
         }
         self.titleNode.attributedText = NSAttributedString(string: text, font: Font.regular(17.0), textColor: self.presentationData.theme.list.itemPrimaryTextColor)
         
-        self.inputFieldNode.complete = { [weak self] passcode in
+        self.inputFieldNode.complete = { [weak self = self] passcode in
             self?.activateNext()
         }
         

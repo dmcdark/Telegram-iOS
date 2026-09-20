@@ -84,32 +84,32 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
             return UITracingLayerView()
         })
         
-        self.pager.toggleControlsVisibility = { [weak self] in
+        self.pager.toggleControlsVisibility = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setControlsHidden(!strongSelf.areControlsHidden, animated: true)
             }
         }
         
-        self.pager.updateControlsVisibility = { [weak self] visible in
+        self.pager.updateControlsVisibility = { [weak self = self] visible in
             if let strongSelf = self {
                 strongSelf.setControlsHidden(!visible, animated: true)
             }
         }
         
-        self.pager.controlsVisibility = { [weak self] in
+        self.pager.controlsVisibility = { [weak self = self] in
             guard let self else {
                 return true
             }
             return !self.areControlsHidden && self.footerNode.alpha != 0.0
         }
         
-        self.pager.updateOrientation = { [weak self] orientation in
+        self.pager.updateOrientation = { [weak self = self] orientation in
             if let strongSelf = self {
                 strongSelf.updateOrientation?(orientation)
             }
         }
         
-        self.pager.dismiss = { [weak self] in
+        self.pager.dismiss = { [weak self = self] in
             if let strongSelf = self {
                 if let galleryController = strongSelf.galleryController(), galleryController.navigationController != nil {
                     galleryController.dismiss(animated: true)
@@ -119,7 +119,7 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
                 var contentAnimationCompleted = true
                 
                 strongSelf.scrollView.isScrollEnabled = false
-                let completion = { [weak self] in
+                let completion = { [weak self = self] in
                     if interfaceAnimationCompleted && contentAnimationCompleted {
                         if let dismiss = self?.dismiss {
                             dismiss()
@@ -141,22 +141,22 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
             }
         }
                 
-        self.pager.beginCustomDismiss = { [weak self] animationType in
+        self.pager.beginCustomDismiss = { [weak self = self] animationType in
             if let strongSelf = self {
                 strongSelf.beginCustomDismiss(animationType)
             }
         }
         
-        self.pager.completeCustomDismiss = { [weak self] isPictureInPicture in
+        self.pager.completeCustomDismiss = { [weak self = self] isPictureInPicture in
             if let strongSelf = self {
                 strongSelf.completeCustomDismiss(isPictureInPicture)
             }
         }
         
-        self.pager.baseNavigationController = { [weak self] in
+        self.pager.baseNavigationController = { [weak self = self] in
             return self?.baseNavigationController()
         }
-        self.pager.galleryController = { [weak self] in
+        self.pager.galleryController = { [weak self = self] in
             return self?.galleryController()
         }
         
@@ -174,7 +174,7 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
         self.scrollView.addSubview(self.pager.view)
         
         var previousIndex: Int?
-        self.pager.centralItemIndexOffsetUpdated = { [weak self] itemsIndexAndProgress in
+        self.pager.centralItemIndexOffsetUpdated = { [weak self = self] itemsIndexAndProgress in
             if let strongSelf = self {
                 if abs(strongSelf.scrollView.contentOffset.y - strongSelf.scrollView.contentSize.height / 3.0) > 0.1 {
                     strongSelf.scrollView.setContentOffset(CGPoint(x: 0.0, y: strongSelf.scrollView.contentSize.height / 3.0), animated: true)
@@ -233,7 +233,7 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
                             }
                             node?.alpha = thumbnailContainerVisible ? 1.0 : 0.0
                             node?.updateItems(items, indexes: indexes, centralIndex: convertedIndex, progress: progress)
-                            node?.itemChanged = { [weak self] index in
+                            node?.itemChanged = { [weak self = self] index in
                                 if let strongSelf = self {
                                     let pagerIndex = indexes[index]
                                     strongSelf.pager.transaction(GalleryPagerTransaction(deleteItems: [], insertItems: [], updateItems: [], focusOnItem: pagerIndex, synchronous: false))
@@ -276,7 +276,7 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
             }
         }
         
-        self.pager.isInteractingUpdated = { [weak self] isInteracting in
+        self.pager.isInteractingUpdated = { [weak self = self] isInteracting in
             guard let self else {
                 return
             }
@@ -588,7 +588,7 @@ open class GalleryControllerNode: ASDisplayNode, ASScrollViewDelegate, ASGesture
             var contentAnimationCompleted = true
             
             self.scrollView.isScrollEnabled = false
-            let completion = { [weak self] in
+            let completion = { [weak self = self] in
                 if interfaceAnimationCompleted && contentAnimationCompleted {
                     if let dismiss = self?.dismiss {
                         dismiss()

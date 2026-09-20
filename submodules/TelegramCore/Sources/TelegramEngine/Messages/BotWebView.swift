@@ -897,7 +897,7 @@ public final class EngineConnectedStarRefBotsContext {
             self.loadMore()
             
             self.eventsDisposable = (account.stateManager.starRefBotConnectionEvents()
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] event in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] event in
                 guard let self else {
                     return
                 }
@@ -937,7 +937,7 @@ public final class EngineConnectedStarRefBotsContext {
             }
             self.loadMoreDisposable?.dispose()
             self.loadMoreDisposable = (_internal_requestConnectedStarRefBots(account: self.account, id: self.peerId, offset: effectiveOffset, limit: 100)
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -1096,7 +1096,7 @@ public final class EngineSuggestedStarRefBotsContext {
             
             self.loadMoreDisposable?.dispose()
             self.loadMoreDisposable = (_internal_requestSuggestedStarRefBots(account: self.account, id: self.peerId, sortMode: self.sortMode, offset: offset, limit: 100)
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }

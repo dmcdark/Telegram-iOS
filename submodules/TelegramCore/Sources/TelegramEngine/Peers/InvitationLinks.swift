@@ -393,7 +393,7 @@ private final class PeerExportedInvitationsContextImpl {
             self.disposable.set((account.postbox.transaction { transaction -> CachedPeerExportedInvitations? in
                 return transaction.retrieveItemCacheEntry(id: ItemCacheEntryId(collectionId: Namespaces.CachedItemCollection.cachedPeerExportedInvitations, key: CachedPeerExportedInvitations.key(peerId: peerId, revoked: revoked)))?.get(CachedPeerExportedInvitations.self)
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] cachedResult in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] cachedResult in
                 guard let strongSelf = self else {
                     return
                 }
@@ -487,7 +487,7 @@ private final class PeerExportedInvitationsContextImpl {
                 return .single(([], 0))
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] invitations, updatedCount in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] invitations, updatedCount in
             guard let strongSelf = self else {
                 return
             }
@@ -865,7 +865,7 @@ private final class PeerInvitationImportersContextImpl {
                 return nil
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] cachedPeersCountAndCanLoadMore in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] cachedPeersCountAndCanLoadMore in
             guard let strongSelf = self else {
                 return
             }
@@ -990,7 +990,7 @@ private final class PeerInvitationImportersContextImpl {
                 return .single(([], 0))
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] importers, updatedCount in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] importers, updatedCount in
             guard let strongSelf = self else {
                 return
             }

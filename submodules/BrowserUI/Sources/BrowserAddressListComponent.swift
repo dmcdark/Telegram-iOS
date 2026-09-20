@@ -267,7 +267,7 @@ final class BrowserAddressListComponent: Component {
                                 title: sectionTitle,
                                 insets: component.insets,
                                 actionTitle: section.id == 0 ? component.strings.WebBrowser_AddressBar_RecentlyVisited_Clear : nil,
-                                action: { [weak self] in
+                                action: { [weak self = self] in
                                     if let self, let component = self.component {
                                         let _ = clearRecentlyVisitedLinks(engine: component.context.engine).start()
                                     }
@@ -352,7 +352,7 @@ final class BrowserAddressListComponent: Component {
                                         false
                                     ),
                                     accessory: nil,
-                                    action: { [weak self] _ in
+                                    action: { [weak self = self] _ in
                                         self?.isRecentExpanded.set(true)
                                     },
                                     highlighting: .default,
@@ -405,7 +405,7 @@ final class BrowserAddressListComponent: Component {
                                             performAction.invoke(.navigateTo(url, false))
                                         }
                                     },
-                                    contextAction: { [weak self] webPage, message, sourceView, gesture in
+                                    contextAction: { [weak self = self] webPage, message, sourceView, gesture in
                                         guard let self, let component = self.component, let url = webPage.content.url else {
                                             return
                                         }
@@ -415,7 +415,7 @@ final class BrowserAddressListComponent: Component {
                                         var itemList: [ContextMenuItem] = []
                                         itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.WebBrowser_CopyLink, icon: { theme in
                                             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor)
-                                        }, action: { [weak self] _, f in
+                                        }, action: { [weak self = self] _, f in
                                             f(.default)
                                             
                                             UIPasteboard.general.string = url
@@ -427,7 +427,7 @@ final class BrowserAddressListComponent: Component {
                                         if let message {
                                             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.WebBrowser_DeleteBookmark, textColor: .destructive, icon: { theme in
                                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                                            }, action: { [weak self] _, f in
+                                            }, action: { [weak self = self] _, f in
                                                 f(.dismissWithoutContent)
                                                 
                                                 if let self, let component = self.component {
@@ -437,7 +437,7 @@ final class BrowserAddressListComponent: Component {
                                         } else {
                                             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.WebBrowser_RemoveRecent, textColor: .destructive, icon: { theme in
                                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                                            }, action: { [weak self] _, f in
+                                            }, action: { [weak self = self] _, f in
                                                 f(.dismissWithoutContent)
                                                 
                                                 if let self, let component = self.component, let url = webPage.content.url {
@@ -522,7 +522,7 @@ final class BrowserAddressListComponent: Component {
                     recentlyVisitedLinks(engine: component.context.engine),
                     self.isRecentExpanded.get(),
                     component.context.account.viewTracker.aroundMessageHistoryViewForLocation(.peer(peerId: component.context.account.peerId, threadId: nil), index: .upperBound, anchorIndex: .upperBound, count: 100, fixedCombinedReadStates: nil, tag: .tag(.webPage))
-                ).start(next: { [weak self] recent, isRecentExpanded, view in
+                ).start(next: { [weak self = self] recent, isRecentExpanded, view in
                     guard let self else {
                         return
                     }

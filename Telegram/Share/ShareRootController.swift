@@ -65,11 +65,11 @@ class ShareRootController: UIViewController {
                     networkArguments: networkArguments,
                     buildConfig: buildConfig
                 )
-            }), getExtensionContext: { [weak self] in
+            }), getExtensionContext: { [weak self = self] in
                 return self?.extensionContext
             })
             
-            self.impl?.openUrl = { [weak self] url in
+            self.impl?.openUrl = { [weak self = self] url in
                 guard let self, let url = URL(string: url) else {
                     return
                 }

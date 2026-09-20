@@ -285,7 +285,7 @@ public final class MediaStreamVideoComponent: Component {
                     anim.fillMode = .forwards
                     anim.isRemovedOnCompletion = false
                     isAnimating = true
-                    anim.completion = { [weak self] _ in
+                    anim.completion = { [weak self = self] _ in
                         guard self?.videoStalled == false else { return }
                         self?.loadingBlurView.removeFromSuperview()
                         self?.placeholderView.removeFromSuperview()
@@ -305,7 +305,7 @@ public final class MediaStreamVideoComponent: Component {
             if let peer = component.callPeer, !didBeginLoadingAvatar {
                 didBeginLoadingAvatar = true
                 
-                avatarDisposable = peerAvatarCompleteImage(account: component.call.account, peer: peer, size: CGSize(width: 250.0, height: 250.0), round: false, font: Font.regular(16.0), drawLetters: false, fullSize: false, blurred: true).start(next: { [weak self] image in
+                avatarDisposable = peerAvatarCompleteImage(account: component.call.account, peer: peer, size: CGSize(width: 250.0, height: 250.0), round: false, font: Font.regular(16.0), drawLetters: false, fullSize: false, blurred: true).start(next: { [weak self = self] image in
                     DispatchQueue.main.async {
                         self?.placeholderView.contentMode = .scaleAspectFill
                         self?.placeholderView.image = image
@@ -321,7 +321,7 @@ public final class MediaStreamVideoComponent: Component {
             
             if let videoEndpointId = component.videoEndpointId, self.videoView == nil {
                 if let input = component.call.video(endpointId: videoEndpointId) {
-                    var _stallTimer: Foundation.Timer { Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] timer in
+                    var _stallTimer: Foundation.Timer { Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self = self] timer in
                         guard let strongSelf = self else { return timer.invalidate() }
                         
                         let currentTime = CFAbsoluteTimeGetCurrent()
@@ -335,7 +335,7 @@ public final class MediaStreamVideoComponent: Component {
                     } }
                     
                     // TODO: use mapToThrottled (?)
-                    frameInputDisposable = input.start(next: { [weak self] input in
+                    frameInputDisposable = input.start(next: { [weak self = self] input in
                         guard let strongSelf = self else { return }
                         
                         strongSelf.timeLastFrameReceived = CFAbsoluteTimeGetCurrent()
@@ -605,7 +605,7 @@ public final class MediaStreamVideoComponent: Component {
                 // Using ComponentTransition.setFrame on UIVisualEffectView causes instant update of sublayers
                 switch videoFrameUpdateTransition.animation {
                 case let .curve(duration, curve):
-                    UIView.animate(withDuration: duration, delay: 0, options: curve.containedViewLayoutTransitionCurve.viewAnimationOptions, animations: { [weak self] in
+                    UIView.animate(withDuration: duration, delay: 0, options: curve.containedViewLayoutTransitionCurve.viewAnimationOptions, animations: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -641,7 +641,7 @@ public final class MediaStreamVideoComponent: Component {
             
             if !self.hadVideo && !component.call.accountContext.sharedContext.immediateExperimentalUISettings.liveStreamV2 {
                 if self.noSignalTimer == nil {
-                    let noSignalTimer = Timer(timeInterval: 20.0, repeats: false, block: { [weak self] _ in
+                    let noSignalTimer = Timer(timeInterval: 20.0, repeats: false, block: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -685,7 +685,7 @@ public final class MediaStreamVideoComponent: Component {
             
             self.component = component
             
-            component.activatePictureInPicture.connect { [weak self] completion in
+            component.activatePictureInPicture.connect { [weak self = self] completion in
                 guard let strongSelf = self, let pictureInPictureController = strongSelf.pictureInPictureController else {
                     return
                 }
@@ -695,7 +695,7 @@ public final class MediaStreamVideoComponent: Component {
                 completion(Void())
             }
             
-            component.deactivatePictureInPicture.connect { [weak self] _ in
+            component.deactivatePictureInPicture.connect { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -805,7 +805,7 @@ private final class CustomIntensityVisualEffectView: UIVisualEffectView {
     
     init(effect: UIVisualEffect, intensity: CGFloat) {
         super.init(effect: nil)
-        animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [weak self] in self?.effect = effect }
+        animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [weak self = self] in self?.effect = effect }
         animator.startAnimation()
         animator.pauseAnimation()
         animator.fractionComplete = intensity

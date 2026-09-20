@@ -19,7 +19,7 @@ extension PeerInfoScreenNode {
         let actions = availableActionsForMemberOfPeer(accountPeerId: self.context.account.peerId, peer: enclosingPeer, member: member)
         
         if member.id != self.context.account.peerId {
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionSend, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionSend, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/MessageBubble"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self, let navigationController = self.controller?.navigationController as? NavigationController else {
                         return
@@ -40,7 +40,7 @@ extension PeerInfoScreenNode {
                     actionTitle = self.presentationData.strings.GroupInfo_ActionAddRank
                 }
             }
-            items.append(.action(ContextMenuActionItem(text: actionTitle, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Tag"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: actionTitle, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Tag"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self else {
                         return
@@ -55,7 +55,7 @@ extension PeerInfoScreenNode {
             if case .admin = member.role {
                 actionTitle = self.presentationData.strings.GroupInfo_ActionEditAdmin
             }
-            items.append(.action(ContextMenuActionItem(text: actionTitle, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Promote"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: actionTitle, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Promote"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self else {
                         return
@@ -67,7 +67,7 @@ extension PeerInfoScreenNode {
         
         if actions.contains(.restrict) {
             if case .channel = enclosingPeer {
-                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionRestrict, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionRestrict, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Restrict"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                     c?.dismiss {
                         guard let self else {
                             return
@@ -77,7 +77,7 @@ extension PeerInfoScreenNode {
                 })))
             }
             
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self] c, _ in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.GroupInfo_ActionRemove, textColor: .destructive, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self] c, _ in
                 c?.dismiss {
                     guard let self else {
                         return

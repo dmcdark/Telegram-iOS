@@ -49,24 +49,24 @@ public final class InstantVideoController: LegacyController, StandalonePresentab
             captureController.view.disablesInteractiveKeyboardGestureRecognizer = true
             captureController.view.disablesInteractiveTransitionGestureRecognizer = true
 
-            captureController.micLevel = { [weak self] (level: CGFloat) -> Void in
+            captureController.micLevel = { [weak self = self] (level: CGFloat) -> Void in
                 self?.micLevelValue.set(Float(level))
             }
-            captureController.onDuration = { [weak self] duration in
+            captureController.onDuration = { [weak self = self] duration in
                 self?.durationValue.set(duration)
             }
-            captureController.onDismiss = { [weak self] _, isCancelled in
+            captureController.onDismiss = { [weak self = self] _, isCancelled in
                 guard let self = self else { return }
                 if !self.dismissed {
                     self.dismissed = true
                     self.onDismiss?(isCancelled)
                 }
             }
-            captureController.didStop = { [weak self] in
+            captureController.didStop = { [weak self = self] in
                 guard let self else { return }
                 self.didStop?()
             }
-            captureController.onStop = { [weak self] in
+            captureController.onStop = { [weak self = self] in
                 self?.onStop?()
             }
         }

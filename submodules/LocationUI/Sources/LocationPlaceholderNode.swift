@@ -66,7 +66,7 @@ final class LocationPlaceholderNode: ASDisplayNode {
             self.addSubnode(self.titleNode)
             self.addSubnode(self.buttonNode)
                         
-            self.buttonNode.pressed = { [weak self] in
+            self.buttonNode.pressed = { [weak self = self] in
                 self?.settingsPressed()
             }
         }

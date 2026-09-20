@@ -80,7 +80,7 @@ public final class InstantPageDetailsNode: ASDisplayNode, InstantPageNode {
         
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.highlightedBackgroundNode.layer.removeAnimation(forKey: "opacity")
@@ -102,7 +102,7 @@ public final class InstantPageDetailsNode: ASDisplayNode, InstantPageNode {
             }
         }
         
-        self.contentNode.requestLayoutUpdate = { [weak self] animated in
+        self.contentNode.requestLayoutUpdate = { [weak self = self] animated in
             self?.requestLayoutUpdate?(animated)
         }
         

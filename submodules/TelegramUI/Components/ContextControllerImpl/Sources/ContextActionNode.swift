@@ -191,7 +191,7 @@ public final class ContextActionNode: ASDisplayNode, ContextActionNodeProtocol {
             self.addSubnode(self.titleIconNode)
         }
         
-        self.buttonNode.highligthedChanged = { [weak self] highligted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highligted in
             guard let strongSelf = self else {
                 return
             }
@@ -207,7 +207,7 @@ public final class ContextActionNode: ASDisplayNode, ContextActionNodeProtocol {
         
         if let iconSource = action.iconSource {
             self.iconDisposable = (iconSource.signal
-            |> deliverOnMainQueue).start(next: { [weak self] image in
+            |> deliverOnMainQueue).start(next: { [weak self = self] image in
                 guard let strongSelf = self else {
                     return
                 }
@@ -223,11 +223,11 @@ public final class ContextActionNode: ASDisplayNode, ContextActionNodeProtocol {
     public override func didLoad() {
         super.didLoad()
         
-        self.pointerInteraction = PointerInteraction(node: self.buttonNode, style: .hover, willEnter: { [weak self] in
+        self.pointerInteraction = PointerInteraction(node: self.buttonNode, style: .hover, willEnter: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.highlightedBackgroundNode.alpha = 0.75
             }
-        }, willExit: { [weak self] in
+        }, willExit: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.highlightedBackgroundNode.alpha = 0.0
             }
@@ -418,11 +418,11 @@ public final class ContextActionNode: ASDisplayNode, ContextActionNodeProtocol {
         }
         self.action.action?(ContextMenuActionItem.Action(
             controller: controller,
-            dismissWithResult: { [weak self] result in
+            dismissWithResult: { [weak self = self] result in
                 self?.performedAction = true
                 self?.actionSelected(result)
             },
-            updateAction: { [weak self] id, updatedAction in
+            updateAction: { [weak self = self] id, updatedAction in
                 guard let strongSelf = self else {
                     return
                 }

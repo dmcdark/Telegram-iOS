@@ -442,7 +442,7 @@ private final class TimeBasedCleanupImpl {
     
     private func scheduleTouches() {
         if self.scheduledTouchesTimer == nil {
-            let timer = SignalKitTimer(timeout: 10.0, repeat: false, completion: { [weak self] in
+            let timer = SignalKitTimer(timeout: 10.0, repeat: false, completion: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

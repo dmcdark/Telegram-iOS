@@ -165,7 +165,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
         self.addSubnode(self.listView)
         self.listView.view.mask = self.listMaskView
         
-        self.listView.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listView.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self, !strongSelf.isLoadingMore, case let .known(value) = offset, value < 40.0 else {
                 return
             }
@@ -173,7 +173,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
         }
         
         self.backgroundView.isHidden = true
-        self.listView.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.listView.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             guard let self else {
                 return
             }
@@ -239,7 +239,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
     
     private func prepareTransition(from: [VerticalListContextResultsChatInputContextPanelEntry]?, to: [VerticalListContextResultsChatInputContextPanelEntry], results: ChatContextResultCollection) {
         let firstTime = self.currentEntries == nil
-        let transition = preparedTransition(from: from ?? [], to: to, engine: self.context.engine, actionSelected: { [weak self] in
+        let transition = preparedTransition(from: from ?? [], to: to, engine: self.context.engine, actionSelected: { [weak self = self] in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 if let switchPeer = results.switchPeer {
                     interfaceInteraction.botSwitchChatWithPayload(results.botId, switchPeer.startParam)
@@ -252,7 +252,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
                     })
                 }
             }
-        }, resultSelected: { [weak self] result, node, rect in
+        }, resultSelected: { [weak self = self] result, node, rect in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 strongSelf.listView.clearHighlightAnimated(true)
                 return interfaceInteraction.sendContextResult(results, result, node, rect)
@@ -293,7 +293,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
             
             let updateSizeAndInsets = ListViewUpdateSizeAndInsets(size: self.listView.bounds.size, insets: insets, duration: 0.0, curve: .Default(duration: nil))
             
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: updateSizeAndInsets, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self, firstTime {
                     var topItemOffset: CGFloat?
                     strongSelf.listView.forEachItemNode { itemNode in
@@ -432,7 +432,7 @@ final class VerticalListContextResultsChatInputContextPanelNode: ChatInputContex
         |> map { results -> ChatContextResultCollection? in
             return results?.results
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] nextResults in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] nextResults in
             guard let strongSelf = self, let nextResults = nextResults else {
                 return
             }

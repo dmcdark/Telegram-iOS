@@ -113,7 +113,7 @@ public final class ReplyAccessoryPanelNode: AccessoryPanelNode {
         self.addSubnode(self.actionArea)
         
         self.messageDisposable.set((context.account.postbox.messageView(messageId)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] messageView in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageView in
             if let strongSelf = self {
                 if messageView.message == nil {
                     Queue.mainQueue().justDispatch {
@@ -351,7 +351,7 @@ public final class ReplyAccessoryPanelNode: AccessoryPanelNode {
                 }
                 
                 let _ = (ApplicationSpecificNotice.getChatReplyOptionsTip(accountManager: strongSelf.context.sharedContext.accountManager)
-                |> deliverOnMainQueue).start(next: { [weak self] count in
+                |> deliverOnMainQueue).start(next: { [weak self = self] count in
                     if let strongSelf = self, count < 3 {
                         Queue.mainQueue().after(3.0) {
                             if let snapshotView = strongSelf.textNode.view.snapshotContentTree() {

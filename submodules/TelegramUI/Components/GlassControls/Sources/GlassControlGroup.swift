@@ -237,7 +237,7 @@ public final class GlassControlGroupComponent: Component {
                         content: content,
                         minSize: CGSize(width: minItemWidth, height: availableSize.height),
                         contentInsets: itemInsets,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             item.action?()
                             
                             if case .animation = item.content {

@@ -93,7 +93,7 @@ private final class SheetContent: CombinedComponent {
             
             self.idleTimerExtensionDisposable.set(sharedContext.applicationBindings.pushIdleTimerExtension())
             
-            self.animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+            self.animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                 self?.updateBrightness()
             })
             self.animator?.isPaused = true
@@ -640,7 +640,7 @@ private final class QrCodeComponent: Component {
             }
 
             if previousComponent?.subject != component.subject {
-                self.imageNode.setSignal(qrCode(string: component.subject.link, color: .black, backgroundColor: .white, icon: isProxy ? .proxy : .cutout, ecl: component.subject.ecl) |> beforeNext { [weak self] size, _ in
+                self.imageNode.setSignal(qrCode(string: component.subject.link, color: .black, backgroundColor: .white, icon: isProxy ? .proxy : .cutout, ecl: component.subject.ecl) |> beforeNext { [weak self = self] size, _ in
                     guard let self else {
                         return
                     }

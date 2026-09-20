@@ -70,7 +70,7 @@ public final class NavigationButtonComponent: Component {
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -215,14 +215,14 @@ public final class NavigationButtonComponent: Component {
                     moreButton = MoreHeaderButton(color: theme.chat.inputPanel.panelControlColor)
                     moreButton.isUserInteractionEnabled = true
                     moreButton.setContent(.more(MoreHeaderButton.optionsCircleImage(color: theme.chat.inputPanel.panelControlColor)))
-                    moreButton.onPressed = { [weak self] in
+                    moreButton.onPressed = { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         self.moreButton?.play()
                         component.pressed(self)
                     }
-                    moreButton.contextAction = { [weak self] sourceNode, gesture in
+                    moreButton.contextAction = { [weak self = self] sourceNode, gesture in
                         guard let self, let component = self.component else {
                             return
                         }

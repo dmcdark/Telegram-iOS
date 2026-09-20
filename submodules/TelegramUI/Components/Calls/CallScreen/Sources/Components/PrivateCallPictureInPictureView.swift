@@ -91,7 +91,7 @@ final class PrivateCallPictureInPictureView: UIView {
             if self.video !== oldValue {
                 self.videoDisposable?.dispose()
                 if let video = self.video {
-                    self.videoDisposable = video.addOnUpdated({ [weak self] in
+                    self.videoDisposable = video.addOnUpdated({ [weak self = self] in
                         guard let self else {
                             return
                         }

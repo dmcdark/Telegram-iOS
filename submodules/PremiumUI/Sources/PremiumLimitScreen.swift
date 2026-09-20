@@ -658,7 +658,7 @@ public class PremiumLimitDisplayComponent: Component {
         private var badgeShapeAnimator: ConstantDisplayLinkAnimator?
         private func animateBadgeTailPositionChange() {
             if self.badgeShapeAnimator == nil {
-                self.badgeShapeAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.badgeShapeAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.animateBadgeTailPositionChange()
                 })
                 self.badgeShapeAnimator?.isPaused = true
@@ -718,7 +718,7 @@ public class PremiumLimitDisplayComponent: Component {
                 badgeAnimation.toValue = badgeNewValue
                 badgeAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 
-                CATransaction.setCompletionBlock { [weak self] in
+                CATransaction.setCompletionBlock { [weak self = self] in
                     self?.setupGradientAnimations()
                 }
                 self.badgeForeground.add(badgeAnimation, forKey: "movement")
@@ -806,7 +806,7 @@ private final class LimitSheetContent: CombinedComponent {
                 TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: false),
                 TelegramEngine.EngineData.Item.Configuration.UserLimits(isPremium: true),
                 TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId)
-            ) |> deliverOnMainQueue).start(next: { [weak self] result in
+            ) |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 if let strongSelf = self {
                     let (limits, premiumLimits, accountPeer) = result
                     strongSelf.initialized = true
@@ -1891,7 +1891,7 @@ public class PremiumLimitScreen: ViewControllerComponentContainer {
         
         self.wasDismissed = cancel
         
-        actionImpl = { [weak self] in
+        actionImpl = { [weak self = self] in
             if action() {
                 self?.wasDismissed = nil
                 return true
@@ -1928,7 +1928,7 @@ public class PremiumLimitScreen: ViewControllerComponentContainer {
             subject: subject,
             count: count,
             cancel: {},
-            action: { [weak self] in
+            action: { [weak self = self] in
                 return self?.action?() ?? true
             },
             openPeer: self.openPeer,

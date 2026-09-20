@@ -253,7 +253,7 @@ public class MediaDustNode: ASDisplayNode {
                 
                 self.emitterSpotNode.layer.anchorPoint = CGPoint(x: location.x / self.emitterMaskNode.frame.width, y: location.y / self.emitterMaskNode.frame.height)
                 self.emitterSpotNode.position = location
-                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.45 + durationAddition, removeOnCompletion: false, completion: { [weak self] _ in
+                self.emitterSpotNode.layer.animateScale(from: 0.3333, to: 10.5 + scaleAddition, duration: 0.45 + durationAddition, removeOnCompletion: false, completion: { [weak self = self] _ in
                     self?.revealed()
                     self?.alpha = 0.0
                     self?.supernode?.view.mask = nil
@@ -271,7 +271,7 @@ public class MediaDustNode: ASDisplayNode {
             }
         } else {
             self.supernode?.alpha = 0.0
-            self.supernode?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.25, completion: { [weak self] _ in
+            self.supernode?.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.25, completion: { [weak self = self] _ in
                 self?.revealed()
             })
         }

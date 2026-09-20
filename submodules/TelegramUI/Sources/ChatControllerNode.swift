@@ -427,7 +427,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 if useLoadingPlaceholder {
                     if let loadingPlaceholderNode = self.loadingPlaceholderNode {
                         if animated {
-                            loadingPlaceholderNode.animateOut(self.historyNode, completion: { [weak self] in
+                            loadingPlaceholderNode.animateOut(self.historyNode, completion: { [weak self = self] in
                                 if let strongSelf = self {
                                     strongSelf.loadingPlaceholderNode?.removeFromSupernode()
                                     strongSelf.loadingPlaceholderNode = nil
@@ -443,7 +443,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     self.loadingNode.alpha = 0.0
                     if animated {
                         self.loadingNode.layer.animateScale(from: 1.0, to: 0.1, duration: 0.3, removeOnCompletion: false)
-                        self.loadingNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self] completed in
+                        self.loadingNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self = self] completed in
                             if let strongSelf = self {
                                 strongSelf.loadingNode.layer.removeAllAnimations()
                                 if completed {
@@ -816,7 +816,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         
         super.init()
 
-        getContentAreaInScreenSpaceImpl = { [weak self] in
+        getContentAreaInScreenSpaceImpl = { [weak self = self] in
             guard let strongSelf = self else {
                 return CGRect()
             }
@@ -824,7 +824,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             return strongSelf.view.convert(strongSelf.frameForVisibleArea(), to: nil)
         }
 
-        onTransitionEventImpl = { [weak self] transition in
+        onTransitionEventImpl = { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
@@ -836,11 +836,11 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
 
-        getMessageTransitionNode = { [weak self] in
+        getMessageTransitionNode = { [weak self = self] in
             return self?.messageTransitionNode
         }
         
-        self.controller?.presentationContext.topLevelSubview = { [weak self] in
+        self.controller?.presentationContext.topLevelSubview = { [weak self = self] in
             guard let strongSelf = self else {
                 return nil
             }
@@ -853,7 +853,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         
         (self.view as? ChatControllerNodeView)?.node = self
         
-        (self.view as? ChatControllerNodeView)?.inputAccessoryHeight = { [weak self] in
+        (self.view as? ChatControllerNodeView)?.inputAccessoryHeight = { [weak self = self] in
             if let strongSelf = self {
                 return strongSelf.getWindowInputAccessoryHeight()
             } else {
@@ -861,7 +861,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
         
-        (self.view as? ChatControllerNodeView)?.hitTestImpl = { [weak self] point, event in
+        (self.view as? ChatControllerNodeView)?.hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
         
@@ -874,7 +874,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             let appConfiguration: AppConfiguration = preferencesView?.get(AppConfiguration.self) ?? .defaultValue
             return InteractiveEmojiConfiguration.with(appConfiguration: appConfiguration)
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] emojis in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] emojis in
             if let strongSelf = self {
                 strongSelf.interactiveEmojis = emojis
             }
@@ -893,7 +893,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             self.contentContainerNode.contentNode.addSubnode(navigationBar)
         }
         
-        self.inputPanelContainerNode.expansionUpdated = { [weak self] transition in
+        self.inputPanelContainerNode.expansionUpdated = { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
@@ -921,7 +921,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         
         self.navigationBar?.additionalContentNode.addSubnode(self.titleAccessoryPanelContainer)
         
-        self.textInputPanelNode = ChatTextInputPanelNode(context: context, presentationInterfaceState: chatPresentationInterfaceState, presentationContext: ChatPresentationContext(context: context, backgroundNode: backgroundNode), presentController: { [weak self] controller in
+        self.textInputPanelNode = ChatTextInputPanelNode(context: context, presentationInterfaceState: chatPresentationInterfaceState, presentationContext: ChatPresentationContext(context: context, backgroundNode: backgroundNode), presentController: { [weak self = self] controller in
             self?.interfaceInteraction?.presentController(controller, nil)
         })
         self.textInputPanelNode?.mediaItemViewFactory = { items, existing in
@@ -950,7 +950,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         self.textInputPanelNode?.textInputAccessoryPanel = textInputAccessoryPanel
         self.textInputPanelNode?.textInputContextPanel = textInputContextPanel
         self.textInputPanelNode?.storedInputLanguage = chatPresentationInterfaceState.interfaceState.inputLanguage
-        self.textInputPanelNode?.updateHeight = { [weak self] animated in
+        self.textInputPanelNode?.updateHeight = { [weak self = self] animated in
             if let strongSelf = self, let _ = strongSelf.inputPanelNode as? ChatTextInputPanelNode, !strongSelf.ignoreUpdateHeight {
                 if strongSelf.scheduledLayoutTransitionRequest == nil {
                     let transition: ContainedViewLayoutTransition
@@ -966,12 +966,12 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
         
-        self.textInputPanelNode?.sendMessage = { [weak self] in
+        self.textInputPanelNode?.sendMessage = { [weak self = self] in
             if let self, let controller = self.controller {
                 if case .scheduledMessages = self.chatPresentationInterfaceState.subject, self.chatPresentationInterfaceState.editMessageState == nil {
                     self.controllerInteraction.scheduleCurrentMessage(nil)
                 } else {
-                    self.maybeSendEphemeralMessage { [weak self] in
+                    self.maybeSendEphemeralMessage { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -985,7 +985,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             } else {
                                 count = Int32(ceil(CGFloat(self.chatPresentationInterfaceState.interfaceState.effectiveInputState.inputText.length) / 4096.0))
                             }
-                            controller.presentPaidMessageAlertIfNeeded(count: count, completion: { [weak self] postpone in
+                            controller.presentPaidMessageAlertIfNeeded(count: count, completion: { [weak self = self] postpone in
                                 self?.sendCurrentMessage(postpone: postpone)
                             })
                         } else {
@@ -996,23 +996,23 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             }
         }
         
-        self.textInputPanelNode?.paste = { [weak self] data in
+        self.textInputPanelNode?.paste = { [weak self = self] data in
             self?.paste(data)
         }
-        self.textInputPanelNode?.displayAttachmentMenu = { [weak self] in
+        self.textInputPanelNode?.displayAttachmentMenu = { [weak self = self] in
             self?.displayAttachmentMenu()
         }
-        self.textInputPanelNode?.updateActivity = { [weak self] in
+        self.textInputPanelNode?.updateActivity = { [weak self = self] in
             self?.updateTypingActivity(true)
         }
-        self.textInputPanelNode?.toggleExpandMediaInput = { [weak self] in
+        self.textInputPanelNode?.toggleExpandMediaInput = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.inputPanelContainerNode.toggleIfEnabled()
         }
         
-        self.textInputPanelNode?.switchToTextInputIfNeeded = { [weak self] in
+        self.textInputPanelNode?.switchToTextInputIfNeeded = { [weak self = self] in
             guard let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction else {
                 return
             }
@@ -1032,7 +1032,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         }
         
         self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -1057,19 +1057,19 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         recognizer.delaysTouchesBegan = false
         recognizer.delaysTouchesEnded = false
         recognizer.delegate = self.keyboardGestureRecognizerDelegate
-        recognizer.began = { [weak self] point in
+        recognizer.began = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.panGestureBegan(location: point)
         }
-        recognizer.moved = { [weak self] point in
+        recognizer.moved = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.panGestureMoved(location: point)
         }
-        recognizer.ended = { [weak self] point, velocity in
+        recognizer.ended = { [weak self = self] point, velocity in
             guard let strongSelf = self else {
                 return
             }
@@ -1078,7 +1078,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         self.panRecognizer = recognizer
         self.view.addGestureRecognizer(recognizer)
         
-        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -1265,7 +1265,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 })
             }
             self.inputPanelClippingNode.clipsToBounds = false
-            transition.updateCornerRadius(node: self.inputPanelClippingNode, cornerRadius: 0.0, completion: { [weak self] completed in
+            transition.updateCornerRadius(node: self.inputPanelClippingNode, cornerRadius: 0.0, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }
@@ -1338,14 +1338,14 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 self.navigationBar?.isHidden = true
             }
             if self.overlayNavigationBar == nil {
-                let overlayNavigationBar = ChatOverlayNavigationBar(theme: self.chatPresentationInterfaceState.theme, strings: self.chatPresentationInterfaceState.strings, nameDisplayOrder: self.chatPresentationInterfaceState.nameDisplayOrder, tapped: { [weak self] in
+                let overlayNavigationBar = ChatOverlayNavigationBar(theme: self.chatPresentationInterfaceState.theme, strings: self.chatPresentationInterfaceState.strings, nameDisplayOrder: self.chatPresentationInterfaceState.nameDisplayOrder, tapped: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.dismissAsOverlay()
                         if case let .peer(id) = strongSelf.chatPresentationInterfaceState.chatLocation {
                             strongSelf.interfaceInteraction?.navigateToChat(id)
                         }
                     }
-                }, close: { [weak self] in
+                }, close: { [weak self = self] in
                     self?.dismissAsOverlay()
                 })
                 overlayNavigationBar.title = self.overlayTitle
@@ -1454,10 +1454,10 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         theme: self.chatPresentationInterfaceState.theme,
                         strings: self.chatPresentationInterfaceState.strings,
                         data: mediaPlayback,
-                        controller: { [weak self] in
+                        controller: { [weak self = self] in
                             return self?.controller
                         },
-                        shouldPerformAction: { [weak self] action in
+                        shouldPerformAction: { [weak self = self] action in
                             guard let controller = self?.controller else {
                                 action()
                                 return
@@ -1477,7 +1477,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     theme: self.chatPresentationInterfaceState.theme,
                     strings: self.chatPresentationInterfaceState.strings,
                     data: liveLocation,
-                    controller: { [weak self] in
+                    controller: { [weak self = self] in
                         return self?.controller
                     }
                 )))
@@ -1492,7 +1492,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     theme: self.chatPresentationInterfaceState.theme,
                     strings: self.chatPresentationInterfaceState.strings,
                     data: groupCall,
-                    onTapAction: { [weak self] in
+                    onTapAction: { [weak self = self] in
                         guard let self, let groupCall = self.controller?.globalControlPanelsContextState?.groupCall else {
                             return
                         }
@@ -1509,7 +1509,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             )
                         )
                     },
-                    onNotifyScheduledTapAction: { [weak self] in
+                    onNotifyScheduledTapAction: { [weak self = self] in
                         guard let self, let controller = self.controller, let groupCall = self.controller?.globalControlPanelsContextState?.groupCall else {
                             return
                         }
@@ -1568,19 +1568,19 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     info: AdPanelHeaderPanelComponent.Info(
                         message: EngineMessage(adMessage)
                     ),
-                    action: { [weak self] message in
+                    action: { [weak self = self] message in
                         guard let self else {
                             return
                         }
                         self.controllerInteraction.activateAdAction(message.id, nil, false, false)
                     },
-                    contextAction: { [weak self] message, sourceNode, gesture in
+                    contextAction: { [weak self = self] message, sourceNode, gesture in
                         guard let self else {
                             return
                         }
                         self.controllerInteraction.adContextAction(message._asMessage(), sourceNode, gesture)
                     },
-                    close: { [weak self] in
+                    close: { [weak self = self] in
                         guard let self, let adMessage = self.chatPresentationInterfaceState.adMessage else {
                             return
                         }
@@ -1631,7 +1631,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         value: displayFeePanel.value,
                         peer: displayFeePanel.peer
                     ),
-                    removeFee: { [weak self] in
+                    removeFee: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1656,31 +1656,31 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         toLang: translationState.toLang,
                         peer: (self.chatPresentationInterfaceState.renderedPeer?.chatMainPeer).flatMap(EnginePeer.init)
                     ),
-                    close: { [weak self] in
+                    close: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.interfaceInteraction?.hideTranslationPanel()
                     },
-                    toggle: { [weak self] in
+                    toggle: { [weak self = self] in
                         guard let self, let translationState = self.chatPresentationInterfaceState.translationState else {
                             return
                         }
                         self.interfaceInteraction?.toggleTranslation(translationState.isEnabled ? .original : .translated)
                     },
-                    changeLanguage: { [weak self] code in
+                    changeLanguage: { [weak self = self] code in
                         guard let self else {
                             return
                         }
                         self.interfaceInteraction?.changeTranslationLanguage(code)
                     },
-                    addDoNotTranslateLanguage: { [weak self] code in
+                    addDoNotTranslateLanguage: { [weak self = self] code in
                         guard let self else {
                             return
                         }
                         self.interfaceInteraction?.addDoNotTranslateLanguage(code)
                     },
-                    controller: { [weak self] in
+                    controller: { [weak self = self] in
                         return self?.controller
                     }
                 )))
@@ -1950,7 +1950,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         var inputNodeHeightAndOverflow: (CGFloat, CGFloat)?
         if let inputNode = inputNodeForState {
             if self.inputNode != inputNode {
-                inputNode.hideInputUpdated = { [weak self] transition in
+                inputNode.hideInputUpdated = { [weak self = self] transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -2083,7 +2083,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             self.historyNode.bounds = previousHistoryNode.bounds
             self.historyNode.transform = previousHistoryNode.transform
             
-            self.historyNode.messageTransitionNode = { [weak self] in
+            self.historyNode.messageTransitionNode = { [weak self = self] in
                 guard let self else {
                     return nil
                 }
@@ -2095,12 +2095,12 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             
             previousHistoryNode.supernode?.insertSubnode(self.historyNode, aboveSubnode: previousHistoryNode)
             
-            let messageTransitionNode = ChatMessageTransitionNodeImpl(listNode: self.historyNode, getContentAreaInScreenSpace: { [weak self] in
+            let messageTransitionNode = ChatMessageTransitionNodeImpl(listNode: self.historyNode, getContentAreaInScreenSpace: { [weak self = self] in
                 guard let self else {
                     return CGRect()
                 }
                 return self.view.convert(self.frameForVisibleArea(), to: nil)
-            }, onTransitionEvent: { [weak self] transition in
+            }, onTransitionEvent: { [weak self = self] transition in
                 guard let self else {
                     return
                 }
@@ -2159,7 +2159,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 previousHistoryNode.clipsToBounds = true
                 self.historyNode.clipsToBounds = true
                 
-                transition.animatePosition(layer: self.historyNode.layer, from: CGPoint(x: offsetMultiplier.x * layout.size.width, y: offsetMultiplier.y * layout.size.height), to: CGPoint(), removeOnCompletion: true, additive: true, completion: { [weak self] _ in
+                transition.animatePosition(layer: self.historyNode.layer, from: CGPoint(x: offsetMultiplier.x * layout.size.width, y: offsetMultiplier.y * layout.size.height), to: CGPoint(), removeOnCompletion: true, additive: true, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2613,7 +2613,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         }
         
         self.currentListViewLayout = (contentBounds.size, insets: listInsets, scrollIndicatorInsets: listScrollIndicatorInsets)
-        listViewTransaction(ListViewUpdateSizeAndInsets(size: contentBounds.size, insets: listInsets, scrollIndicatorInsets: listScrollIndicatorInsets, duration: duration, curve: curve, ensureTopInsetForOverlayHighlightedItems: ensureTopInsetForOverlayHighlightedItems, customAnimationTransition: customListAnimationTransition), additionalScrollDistance, scrollToTop, { [weak self] in
+        listViewTransaction(ListViewUpdateSizeAndInsets(size: contentBounds.size, insets: listInsets, scrollIndicatorInsets: listScrollIndicatorInsets, duration: duration, curve: curve, ensureTopInsetForOverlayHighlightedItems: ensureTopInsetForOverlayHighlightedItems, customAnimationTransition: customListAnimationTransition), additionalScrollDistance, scrollToTop, { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.notifyTransitionCompletionListeners(transition: transition)
             }
@@ -3194,7 +3194,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     inputHeight: layout.inputHeight ?? 0.0,
                     showEmptyResults: self.showListEmptyResults,
                     initialScrollingState: self.inlineSearchResultsScrollingState?.state,
-                    messageSelected: { [weak self] message in
+                    messageSelected: { [weak self = self] message in
                         guard let self else {
                             return
                         }
@@ -3217,7 +3217,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                                 centerId: message.id
                             )
                             |> take(1)
-                            |> deliverOnMainQueue).startStandalone(next: { [weak self] results, searchState in
+                            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] results, searchState in
                                 guard let self else {
                                     return
                                 }
@@ -3253,7 +3253,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                                 let _ = (self.historyNode.isReady
                                 |> filter { $0 }
                                 |> take(1)
-                                |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+                                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -3294,7 +3294,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             })
                         }
                     },
-                    peerSelected: { [weak self] peer in
+                    peerSelected: { [weak self = self] peer in
                         guard let self else {
                             return
                         }
@@ -3373,7 +3373,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             }
                         }
                     },
-                    getSearchResult: { [weak self] in
+                    getSearchResult: { [weak self = self] in
                         guard let self, let controller = self.controller else {
                             return nil
                         }
@@ -3382,7 +3382,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             return result?.0
                         }
                     },
-                    getSavedPeers: { [weak self] query in
+                    getSavedPeers: { [weak self = self] query in
                         guard let self else {
                             return nil
                         }
@@ -3403,7 +3403,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         }
                         return foundLocalPeers
                     },
-                    getChats: { [weak self] query in
+                    getChats: { [weak self = self] query in
                         guard let self else {
                             return nil
                         }
@@ -3418,7 +3418,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         
                         return threadListSignal |> map(Optional.init)
                     },
-                    loadMoreSearchResults: { [weak self] in
+                    loadMoreSearchResults: { [weak self = self] in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -3432,7 +3432,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             
                             self.loadMoreSearchResultsDisposable?.dispose()
                             self.loadMoreSearchResultsDisposable = (self.context.engine.messages.searchMessages(location: currentSearchState.location, query: currentSearchState.query, state: currentResultsState.state)
-                            |> deliverOnMainQueue).startStrict(next: { [weak self] results, updatedState in
+                            |> deliverOnMainQueue).startStrict(next: { [weak self = self] results, updatedState in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
@@ -3496,7 +3496,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     self.inlineSearchResultsReadyDisposable = (inlineSearchResultsView.isReady
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -3991,7 +3991,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -4043,7 +4043,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     hasEdit: true,
                     hideBackground: true,
                     maskEdge: .clip,
-                    sendGif: { [weak self] fileReference, sourceView, sourceRect, silentPosting, schedule in
+                    sendGif: { [weak self = self] fileReference, sourceView, sourceRect, silentPosting, schedule in
                         if let self {
                             return self.controllerInteraction.sendGif(fileReference, sourceView, sourceRect, silentPosting, schedule)
                         } else {
@@ -4573,7 +4573,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         if self.openStickersDisposable == nil {
             self.openStickersDisposable = (self.inputMediaNodeDataPromise.get()
             |> take(1)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -4597,7 +4597,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
     }
     
     func openExpandedInput() {
-        Task { @MainActor [weak self] in
+        Task { @MainActor [weak self = self] in
             guard let self else {
                 return
             }
@@ -4618,7 +4618,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             let editorScreen = RichTextAttachmentScreen(
                 context: self.context,
                 mode: .edit(initialDocument: seedDocument, media: seedMedia, emojiFiles: seedEmojiFiles),
-                sendMessage: { [weak self] document, media, emojiFiles, sendWithoutFormatting in
+                sendMessage: { [weak self = self] document, media, emojiFiles, sendWithoutFormatting in
                     guard let self else {
                         return
                     }
@@ -4627,14 +4627,14 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         return state.updatedInterfaceState { interfaceState in
                             return interfaceState.withUpdatedEffectiveInputState(ChatTextInputState(content: content, selectionRange: content.length ..< content.length))
                         }
-                    }, completion: { [weak self] _ in
+                    }, completion: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
                         self.sendCurrentMessage(sendWithoutFormatting: sendWithoutFormatting)
                     })
                 },
-                syncContent: { [weak self] document, media, emojiFiles in
+                syncContent: { [weak self = self] document, media, emojiFiles in
                     guard let self else {
                         return
                     }
@@ -4645,13 +4645,13 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         }
                     })
                 },
-                presentAttachmentMenu: { [weak self] photoVideoOnly, completion in
+                presentAttachmentMenu: { [weak self = self] photoVideoOnly, completion in
                     guard let self else {
                         return
                     }
                     self.controller?.presentRichTextAttachmentMenu(photoVideoOnly: photoVideoOnly, completion: completion)
                 },
-                presentFormulaEditor: { [weak self] initialValue, completion in
+                presentFormulaEditor: { [weak self = self] initialValue, completion in
                     guard let self else {
                         return
                     }
@@ -4664,7 +4664,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
     }
 
     func openAICompose() {
-        Task { @MainActor [weak self] in
+        Task { @MainActor [weak self = self] in
             guard let self else {
                 return
             }
@@ -4714,7 +4714,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 context: self.context,
                 mode: .edit(
                     saveRestoreStateId: self.chatLocation.peerId,
-                    completion: { [weak self] text in
+                    completion: { [weak self = self] text in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -4724,7 +4724,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             }.updatedInputMode({ _ in return .text })
                         })
                     },
-                    send: { [weak self] text in
+                    send: { [weak self = self] text in
                         guard let self, let controller = self.controller else {
                             return
                         }
@@ -4737,7 +4737,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     },
                     sendContextActions: isEdit ? nil : self.chatLocation.peerId.flatMap { peerId in return TextProcessingScreen.SendContextActions(
                             peerId: peerId,
-                            send: { [weak self] text, mode, parameters in
+                            send: { [weak self = self] text, mode, parameters in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
@@ -4752,7 +4752,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                                 case .silently:
                                     controller.controllerInteraction?.sendCurrentMessage(true, parameters?.effect.flatMap(ChatSendMessageEffect.init))
                                 case .whenOnline:
-                                    controller.chatDisplayNode.sendCurrentMessage(scheduleTime: scheduleWhenOnlineTimestamp, messageEffect: parameters?.effect.flatMap(ChatSendMessageEffect.init)) { [weak self] in
+                                    controller.chatDisplayNode.sendCurrentMessage(scheduleTime: scheduleWhenOnlineTimestamp, messageEffect: parameters?.effect.flatMap(ChatSendMessageEffect.init)) { [weak self = self] in
                                         guard let self, let controller = self.controller else {
                                             return
                                         }
@@ -4763,7 +4763,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                                     }
                                 }
                             },
-                            schedule: { [weak self] text, params in
+                            schedule: { [weak self = self] text, params in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
@@ -4778,7 +4778,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     }
                 ),
                 inputText: composedInputText,
-                copyResult: { [weak self] text in
+                copyResult: { [weak self = self] text in
                     guard let self, let controller = self.controller else {
                         return
                     }
@@ -4805,14 +4805,14 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         if !isScheduledMessages, interfaceState.editMessage == nil, interfaceState.postSuggestionState == nil, interfaceState.forwardMessageIds == nil, let peerId = self.chatLocation.peerId, mayContainTypedEphemeralBotCommand(inputText) {
             let _ = (self.context.engine.peers.peerCommands(id: peerId)
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peerCommands in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerCommands in
                 guard let self else {
                     return
                 }
 
                 if let resolved = resolveEphemeralBotCommand(text: inputText, peerCommands: peerCommands) {
                     let replyMessageSubject = self.chatPresentationInterfaceState.interfaceState.replyMessageSubject
-                    self.setupSendActionOnViewUpdate({ [weak self] in
+                    self.setupSendActionOnViewUpdate({ [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -4885,14 +4885,14 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 if let controller = self.controller {
                     let strings = controller.presentationData.strings
                     controller.present(textAlertController(context: self.context, title: strings.RichText_RemoveFormattingTitle, text: strings.RichText_RemoveFormattingText, actions: [
-                        TextAlertAction(type: .defaultAction, title: strings.RichText_SubscribeToPremium, action: { [weak self] in
+                        TextAlertAction(type: .defaultAction, title: strings.RichText_SubscribeToPremium, action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             let premiumController = self.context.sharedContext.makePremiumIntroController(context: self.context, source: .richText, forceDark: false, dismissed: nil)
                             self.controller?.push(premiumController)
                         }),
-                        TextAlertAction(type: .genericAction, title: strings.RichText_SendWithoutFormatting, action: { [weak self] in
+                        TextAlertAction(type: .genericAction, title: strings.RichText_SendWithoutFormatting, action: { [weak self = self] in
                             self?.sendCurrentMessage(silentPosting: silentPosting, scheduleTime: scheduleTime, repeatPeriod: repeatPeriod, postpone: postpone, messageEffect: messageEffect, sendWithoutFormatting: true, completion: completion)
                         }),
                         TextAlertAction(type: .genericAction, title: strings.Common_Cancel, action: {
@@ -4903,7 +4903,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             }
             
             if sendWithoutFormatting {
-                effectiveInputText = entityPreservingFallbackAttributedString(from: composeContent, preserveCustomEmoji: { [weak self] _, file in
+                effectiveInputText = entityPreservingFallbackAttributedString(from: composeContent, preserveCustomEmoji: { [weak self = self] _, file in
                     guard let self else {
                         return false
                     }
@@ -4966,7 +4966,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             
             if let firstLockedPremiumEmoji = firstLockedPremiumEmoji {
                 let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-                self.controllerInteraction.displayUndo(.sticker(context: context, file: firstLockedPremiumEmoji, loop: true, title: nil, text: presentationData.strings.EmojiInput_PremiumEmojiToast_Text, undoText: presentationData.strings.EmojiInput_PremiumEmojiToast_Action, customAction: { [weak self] in
+                self.controllerInteraction.displayUndo(.sticker(context: context, file: firstLockedPremiumEmoji, loop: true, title: nil, text: presentationData.strings.EmojiInput_PremiumEmojiToast_Text, undoText: presentationData.strings.EmojiInput_PremiumEmojiToast_Action, customAction: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -5012,7 +5012,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         let errorText = errorTextData.string
                         controller.present(textAlertController(context: self.context, title: self.chatPresentationInterfaceState.strings.Chat_ErrorQuoteOutdatedTitle, text: errorText, actions: [
                             TextAlertAction(type: .genericAction, title: self.chatPresentationInterfaceState.strings.Common_Cancel, action: {}),
-                            TextAlertAction(type: .defaultAction, title: self.chatPresentationInterfaceState.strings.Chat_ErrorQuoteOutdatedActionEdit, action: { [weak self] in
+                            TextAlertAction(type: .defaultAction, title: self.chatPresentationInterfaceState.strings.Chat_ErrorQuoteOutdatedActionEdit, action: { [weak self = self] in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
@@ -5196,7 +5196,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     }
                 }
                 
-                let doSend: (Int64?) -> Void = { [weak self] overrideThreadId in
+                let doSend: (Int64?) -> Void = { [weak self = self] overrideThreadId in
                     guard let self else {
                         return
                     }
@@ -5229,7 +5229,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                         }
                     }
                     
-                    self.setupSendActionOnViewUpdate({ [weak self] in
+                    self.setupSendActionOnViewUpdate({ [weak self = self] in
                         guard let self, let textInputPanelNode = self.inputPanelNode as? ChatTextInputPanelNode else {
                             return
                         }
@@ -5285,7 +5285,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 
                 if let targetThreadId {
                     self.historyNode.stopHistoryUpdates()
-                    self.controller?.updateChatLocationThread(threadId: targetThreadId, animationDirection: .right, transferInputState: true, completion: { [weak self] in
+                    self.controller?.updateChatLocationThread(threadId: targetThreadId, animationDirection: .right, transferInputState: true, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -5592,7 +5592,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
         self.historyNode.enableExtractedBackgrounds = true
         
         let chatLocation = self.chatLocation
-        self.historyNode.setLoadStateUpdated { [weak self] loadState, animated in
+        self.historyNode.setLoadStateUpdated { [weak self = self] loadState, animated in
             guard let strongSelf = self else {
                 return
             }
@@ -5640,7 +5640,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             } else {
                 return .single(display)
             }
-        }).startStrict(next: { [weak self] display in
+        }).startStrict(next: { [weak self = self] display in
             if let strongSelf = self, let interfaceInteraction = strongSelf.interfaceInteraction {
                 if display {
                     var nodes: [(CGFloat, ChatMessageItemView, ASDisplayNode)] = []

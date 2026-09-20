@@ -211,7 +211,7 @@ public final class GiftCompositionComponent: Component {
 
         private func ensureDisplayLink() {
             if self.spinLink != nil { return }
-            self.spinLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+            self.spinLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                 self?.tick()
             })
         }
@@ -404,7 +404,7 @@ public final class GiftCompositionComponent: Component {
                 duration: self.maxAnimDuration,
                 delay: 0.05,
                 timingFunction: kCAMediaTimingFunctionSpring,
-                completion: { [weak self] _ in
+                completion: { [weak self = self] _ in
                     guard let self, let container = self.decelContainer else {
                         return
                     }
@@ -741,7 +741,7 @@ public final class GiftCompositionComponent: Component {
                 }
                 
                 if self.previewTimer == nil && sampleAttributes.count > 3 {
-                    self.previewTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self] in
+                    self.previewTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self = self] in
                         guard let self, !self.previewModels.isEmpty else { return }
                         self.previewModelIndex = (self.previewModelIndex + 1) % Int32(self.previewModels.count)
                         

@@ -62,7 +62,7 @@ private final class PeerCopyProtectionInfoSheetContent: CombinedComponent {
             
             super.init()
             
-            self.buttonAnimationTimer = SwiftSignalKit.Timer(timeout: 1.25, repeat: true, completion: { [weak self] in
+            self.buttonAnimationTimer = SwiftSignalKit.Timer(timeout: 1.25, repeat: true, completion: { [weak self = self] in
                 self?.playButtonAnimation.invoke(Void())
             }, queue: Queue.mainQueue())
             self.buttonAnimationTimer?.start()
@@ -454,7 +454,7 @@ public final class PeerCopyProtectionInfoScreen: ViewControllerComponentContaine
                 let controller = UndoOverlayController(
                     presentationData: presentationData,
                     content: .premiumPaywall(title: nil, text: "Subscribe to [Telegram Premium]() to unlock this feature.", customUndoText: nil, timeout: nil, linkAction: nil),
-                    action: { [weak self] action in
+                    action: { [weak self = self] action in
                         guard let self else {
                             return true
                         }

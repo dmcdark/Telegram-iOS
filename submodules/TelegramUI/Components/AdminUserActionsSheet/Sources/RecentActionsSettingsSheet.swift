@@ -590,7 +590,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
             self.component = component
             self.state = state
 
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 guard let self, !self.isDismissing else {
                     return
                 }
@@ -629,7 +629,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
                         adminPeers: component.adminPeers,
                         theme: theme,
                         sheetState: currentState,
-                        toggleActionTypeSectionSelection: { [weak self] actionTypeSection in
+                        toggleActionTypeSectionSelection: { [weak self = self] actionTypeSection in
                             guard let self else {
                                 return
                             }
@@ -657,7 +657,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
 
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleActionTypeSectionExpansion: { [weak self] actionTypeSection in
+                        toggleActionTypeSectionExpansion: { [weak self = self] actionTypeSection in
                             guard let self else {
                                 return
                             }
@@ -669,7 +669,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
 
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleActionType: { [weak self] actionType in
+                        toggleActionType: { [weak self = self] actionType in
                             guard let self else {
                                 return
                             }
@@ -697,7 +697,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
 
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        toggleAdmin: { [weak self] peer in
+                        toggleAdmin: { [weak self = self] peer in
                             guard let self else {
                                 return
                             }
@@ -710,7 +710,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
 
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.35, curve: .easeInOut)))
                         },
-                        toggleAllAdmins: { [weak self] in
+                        toggleAllAdmins: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -768,7 +768,7 @@ private final class RecentActionsSettingsResizableSheetComponent: Component {
                         ),
                         isEnabled: true,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

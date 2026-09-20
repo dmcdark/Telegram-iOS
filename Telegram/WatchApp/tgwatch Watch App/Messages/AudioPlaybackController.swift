@@ -50,9 +50,9 @@ final class AudioPlaybackController {
 
     init(backend: AudioPlayerBackend) {
         self.backend = backend
-        self.backend.onProgress = { [weak self] t in self?.handleProgress(t) }
-        self.backend.onEnded = { [weak self] in self?.handleEnded() }
-        self.backend.onFailed = { [weak self] msg in self?.handleFailed(msg) }
+        self.backend.onProgress = { [weak self = self] t in self?.handleProgress(t) }
+        self.backend.onEnded = { [weak self = self] in self?.handleEnded() }
+        self.backend.onFailed = { [weak self = self] msg in self?.handleFailed(msg) }
     }
 
     func isActive(_ audioFileId: Int) -> Bool {
@@ -187,18 +187,18 @@ final class AVPlayerBackend: AudioPlayerBackend {
         teardownObservers()
         let p = AVPlayer(url: url)
         let interval = CMTime(seconds: 0.5, preferredTimescale: 600)
-        timeObserver = p.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] t in
+        timeObserver = p.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self = self] t in
             let secs = CMTimeGetSeconds(t)
             self?.onProgress?(secs.isFinite ? secs : 0)
         }
         endObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime, object: p.currentItem, queue: .main
-        ) { [weak self] _ in
+        ) { [weak self = self] _ in
             self?.onEnded?()
         }
         statusObserver = p.currentItem?.publisher(for: \.status)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
+            .sink { [weak self = self] status in
                 if status == .failed { self?.onFailed?("Could not play audio") }
             }
         try activatePlaybackSession()

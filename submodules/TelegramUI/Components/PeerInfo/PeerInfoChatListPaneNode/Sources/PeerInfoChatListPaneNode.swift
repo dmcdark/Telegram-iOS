@@ -183,7 +183,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
         self.view.addSubview(self.coveringView)
         
         self.presentationDataDisposable = (self.context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let self else {
                 return
             }
@@ -201,7 +201,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
             }
         })
         
-        self.chatListNode.peerSelected = { [weak self] peer, _, _, _, _ in
+        self.chatListNode.peerSelected = { [weak self = self] peer, _, _, _, _ in
             guard let self, let navigationController = self.navigationController() else {
                 return
             }
@@ -229,7 +229,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
             self.chatListNode.clearHighlightAnimated(true)
         }
         
-        self.chatListNode.isEmptyUpdated = { [weak self] isEmptyState, _, transition in
+        self.chatListNode.isEmptyUpdated = { [weak self = self] isEmptyState, _, transition in
             guard let self else {
                 return
             }
@@ -266,7 +266,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
             }
         }
         
-        self.chatListNode.updateFloatingHeaderOffset = { [weak self] offset, transition in
+        self.chatListNode.updateFloatingHeaderOffset = { [weak self = self] offset, transition in
             guard let self else {
                 return
             }
@@ -276,26 +276,26 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
             }
         }
         
-        self.chatListNode.push = { [weak self] c in
+        self.chatListNode.push = { [weak self = self] c in
             guard let self else {
                 return
             }
             self.parentController?.push(c)
         }
         
-        self.chatListNode.present = { [weak self] c in
+        self.chatListNode.present = { [weak self = self] c in
             guard let self else {
                 return
             }
             self.parentController?.present(c, in: .window(.root))
         }
         
-        self.chatListNode.deletePeerChat = { [weak self] peerId, _ in
+        self.chatListNode.deletePeerChat = { [weak self = self] peerId, _ in
             guard let self else {
                 return
             }
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
@@ -335,7 +335,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
                     }
                     
                     let context = self.context
-                    let undoController = UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: self.presentationData.strings.SavedMessages_SubChatDeleted), text: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self] value in
+                    let undoController = UndoOverlayController(presentationData: self.context.sharedContext.currentPresentationData.with { $0 }, content: .removedChat(context: self.context, title: NSAttributedString(string: self.presentationData.strings.SavedMessages_SubChatDeleted), text: nil), elevatedLayout: false, animateInAsReplacement: true, action: { [weak self = self] value in
                         if value == .commit {
                             let _ = context.engine.messages.clearHistoryInteractively(peerId: context.account.peerId, threadId: peer.id.toInt64(), type: .forLocalPeer).startStandalone(completed: {
                                 guard let self else {
@@ -374,7 +374,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
             })
         }
         
-        self.chatListNode.activateChatPreview = { [weak self] item, _, node, gesture, location in
+        self.chatListNode.activateChatPreview = { [weak self = self] item, _, node, gesture, location in
             guard let self, let parentController = self.parentController else {
                 gesture?.cancel()
                 return
@@ -388,7 +388,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
                 chatController.canReadHistory.set(false)
                 let source: ContextContentSource = .controller(ContextControllerContentSourceImpl(controller: chatController, sourceNode: node, navigationController: parentController.navigationController as? NavigationController))
                 
-                let contextController = makeContextController(presentationData: self.presentationData, source: source, items: savedMessagesPeerMenuItems(context: self.context, threadId: threadId, parentController: parentController, deletePeerChat: { [weak self] peerId in
+                let contextController = makeContextController(presentationData: self.presentationData, source: source, items: savedMessagesPeerMenuItems(context: self.context, threadId: threadId, parentController: parentController, deletePeerChat: { [weak self = self] peerId in
                     guard let self else {
                         return
                     }
@@ -425,7 +425,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
                     return
                 }
                 
-                chatController.customDismissSearch = { [weak self] in
+                chatController.customDismissSearch = { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -436,7 +436,7 @@ public final class PeerInfoChatListPaneNode: ASDisplayNode, PeerInfoPaneNode, AS
                     
                     self.removeChatController()
                 }
-                chatController.stateUpdated = { [weak self] transition in
+                chatController.stateUpdated = { [weak self = self] transition in
                     guard let self, let chatController = self.chatController else {
                         return
                     }

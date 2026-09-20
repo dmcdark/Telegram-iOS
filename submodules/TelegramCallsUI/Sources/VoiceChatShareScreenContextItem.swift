@@ -102,7 +102,7 @@ private final class VoiceChatShareScreenContextItemNode: ASDisplayNode, ContextM
         self.applicationStateDisposable = (self.item.context.sharedContext.applicationBindings.applicationIsActive
         |> filter { !$0 }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -171,7 +171,7 @@ private final class VoiceChatShareScreenContextItemNode: ASDisplayNode, ContextM
         guard let controller = self.getController() else {
             return
         }
-        self.item.action(controller, { [weak self] result in
+        self.item.action(controller, { [weak self = self] result in
             self?.actionSelected(result)
         })
     }

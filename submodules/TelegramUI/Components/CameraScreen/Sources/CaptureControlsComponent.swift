@@ -211,7 +211,7 @@ private final class ShutterButtonContentComponent: Component {
                 }
             }
             
-            component.highlightedAction.connect { [weak self] highlighted in
+            component.highlightedAction.connect { [weak self = self] highlighted in
                 self?.updateIsHighlighted(highlighted)
             }
             
@@ -222,7 +222,7 @@ private final class ShutterButtonContentComponent: Component {
                 return bandingStart + (1.0 - (1.0 / ((bandedOffset * coefficient / range) + 1.0))) * range
             }
             
-            component.updateOffsetX.connect { [weak self] offset, transition in
+            component.updateOffsetX.connect { [weak self = self] offset, transition in
                 if let self, let blobView = self.blobView {
                     blobView.updateSecondaryOffsetX(offset, transition: transition)
                     if abs(offset) < 60.0 {
@@ -237,7 +237,7 @@ private final class ShutterButtonContentComponent: Component {
                 }
             }
             
-            component.updateOffsetY.connect { [weak self] offset, transition in
+            component.updateOffsetY.connect { [weak self = self] offset, transition in
                 if let self, let blobView = self.blobView {
                     blobView.updateSecondaryOffsetY(offset, transition: transition)
                     if abs(offset) < 60.0 {
@@ -545,7 +545,7 @@ final class FlipButtonContentComponent: Component {
         func update(component: FlipButtonContentComponent, availableSize: CGSize, transition: ComponentTransition) -> CGSize {
             self.component = component
             
-            component.action.connect { [weak self] _ in
+            component.action.connect { [weak self = self] _ in
                 self?.playAnimation()
             }
             
@@ -822,7 +822,7 @@ final class CaptureControlsComponent: Component {
                     }
                     if let lastGalleryAsset = self.lastGalleryAsset {
                         self.assetDisposable.set((fetchPhotoLibraryImage(localIdentifier: lastGalleryAsset.localIdentifier, thumbnail: true)
-                        |> deliverOnMainQueue).start(next: { [weak self] imageAndDegraded in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] imageAndDegraded in
                             if let self, let (image, _) = imageAndDegraded {
                                 let updated = self.cachedAssetImage?.0 != lastGalleryAsset.localIdentifier
                                 self.cachedAssetImage = (lastGalleryAsset.localIdentifier, image)
@@ -1460,7 +1460,7 @@ final class CaptureControlsComponent: Component {
                             )
                         ),
                         automaticHighlight: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.hapticFeedback.impact(.light)
                             self?.shutterUpdateOffsetX.invoke((0.0, .immediate))
                             component.shutterTapped()

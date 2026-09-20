@@ -245,7 +245,7 @@ final class CountriesMultiselectionScreenComponent: Component {
             
             self.containerView.addSubnode(self.indexNode)
             
-            self.indexNode.indexSelected = { [weak self] section in
+            self.indexNode.indexSelected = { [weak self = self] section in
                 guard let self, let sections = self.effectiveStateValue?.sections, let itemLayout = self.itemLayout else {
                     return
                 }
@@ -439,7 +439,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                             title: "\(country.flag)     \(country.name)",
                             selectionState: .editing(isSelected: isSelected, isTinted: false),
                             hasNext: true,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let environment = self.environment, let controller = environment.controller() as? CountriesMultiselectionScreen else {
                                     return
                                 }
@@ -656,7 +656,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                 self.selectedCountries = Array(component.stateContext.initialSelectedCountries)
             
                 self.stateDisposable = (component.stateContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] stateValue in
+                |> deliverOnMainQueue).start(next: { [weak self = self] stateValue in
                     guard let self else {
                         return
                     }
@@ -733,7 +733,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                     placeholder: placeholder,
                     tokens: tokens,
                     sideInset: sideInset,
-                    deleteToken: { [weak self] tokenId in
+                    deleteToken: { [weak self = self] tokenId in
                         guard let self else {
                             return
                         }
@@ -753,7 +753,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                     self.searchStateDisposable?.dispose()
                     let searchStateContext = CountriesMultiselectionScreen.StateContext(context: component.context, subject: .countriesSearch(query: self.navigationTextFieldState.text), showFragment: component.stateContext.showFragment)
                     var applyState = false
-                    self.searchStateDisposable = (searchStateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+                    self.searchStateDisposable = (searchStateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -819,7 +819,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let environment = self.environment, let controller = environment.controller() as? CountriesMultiselectionScreen else {
                             return
                         }
@@ -919,7 +919,7 @@ final class CountriesMultiselectionScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component, let controller = self.environment?.controller() as? CountriesMultiselectionScreen else {
                             return
                         }

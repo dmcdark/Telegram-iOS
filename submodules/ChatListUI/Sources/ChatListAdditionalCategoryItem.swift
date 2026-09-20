@@ -215,7 +215,7 @@ public class ChatListAdditionalCategoryItemNode: ItemListRevealOptionsItemNode {
             transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: highlightProgress)
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
-                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self] completed in
+                transition.updateAlpha(layer: self.highlightedBackgroundNode.layer, alpha: 1.0 - highlightProgress, completion: { [weak self = self] completed in
                     if let strongSelf = self {
                         if completed {
                             strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -232,7 +232,7 @@ public class ChatListAdditionalCategoryItemNode: ItemListRevealOptionsItemNode {
         
         let currentItem = self.item
         
-        return { [weak self] item, params, first, last, firstWithHeader, neighbors in
+        return { [weak self = self] item, params, first, last, firstWithHeader, neighbors in
             var updatedTheme: PresentationTheme?
             
             let titleFont = Font.regular(item.presentationData.fontSize.itemListBaseFontSize)
@@ -285,7 +285,7 @@ public class ChatListAdditionalCategoryItemNode: ItemListRevealOptionsItemNode {
             let titleFrame: CGRect
             titleFrame = CGRect(origin: CGPoint(x: leftInset, y: floor((nodeLayout.contentSize.height - titleLayout.size.height) / 2.0)), size: titleLayout.size)
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 if let strongSelf = self {
                     return (.complete(), { [weak strongSelf] animated, synchronousLoads in
                         if let strongSelf = strongSelf {

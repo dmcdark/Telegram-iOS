@@ -164,7 +164,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
 
         self.contentNode.addSubnode(self.backgroundNode)
         
-        self.tapButton.highligthedChanged = { [weak self] highlighted in
+        self.tapButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.titleNode.layer.removeAnimation(forKey: "opacity")
@@ -367,7 +367,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
             
             if let groupCall = data.groupCall {
                 self.membersDisposable.set((groupCall.summaryState
-                |> deliverOnMainQueue).start(next: { [weak self] summaryState in
+                |> deliverOnMainQueue).start(next: { [weak self = self] summaryState in
                     guard let strongSelf = self, let summaryState = summaryState else {
                         return
                     }
@@ -394,7 +394,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
                 }))
                 
                 self.isMutedDisposable.set((groupCall.state
-                |> deliverOnMainQueue).start(next: { [weak self] callState in
+                |> deliverOnMainQueue).start(next: { [weak self = self] callState in
                     guard let strongSelf = self else {
                         return
                     }
@@ -412,7 +412,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
                 }))
                 
                 self.audioLevelDisposable.set((groupCall.myAudioLevel
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
@@ -514,7 +514,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
                         }
                     }
                 }
-                |> deliverOnMainQueue).start(next: { [weak self] data in
+                |> deliverOnMainQueue).start(next: { [weak self = self] data in
                     guard let self, let data else {
                         return
                     }
@@ -560,7 +560,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
                 self.audioLevelGeneratorTimer = nil
                 self.avatarsNode.updateAudioLevels(color: self.theme.chat.inputPanel.actionControlFillColor, backgroundColor: self.theme.chat.inputPanel.actionControlFillColor, levels: [:])
             } else if self.audioLevelGeneratorTimer == nil {
-                let audioLevelGeneratorTimer = SwiftSignalKit.Timer(timeout: 1.0 / 30.0, repeat: true, completion: { [weak self] in
+                let audioLevelGeneratorTimer = SwiftSignalKit.Timer(timeout: 1.0 / 30.0, repeat: true, completion: { [weak self = self] in
                     self?.sampleAudioGenerators()
                 }, queue: .mainQueue())
                 self.audioLevelGeneratorTimer = audioLevelGeneratorTimer
@@ -641,7 +641,7 @@ final class GroupCallNavigationAccessoryPanel: ASDisplayNode {
             }
             
             if self.updateTimer == nil {
-                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self, let (size, leftInset, rightInset, isHidden) = strongSelf.validLayout {
                         strongSelf.updateLayout(size: size, leftInset: leftInset, rightInset: rightInset, isHidden: isHidden, transition: .immediate)
                     }

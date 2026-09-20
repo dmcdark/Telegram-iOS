@@ -241,7 +241,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         self.clipsToBounds = true
         self.backgroundColor = .black
         
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             if image != nil {
                 self?._ready.set(.single(Void()))
             }
@@ -249,7 +249,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         self.isReadyDisposable = (self.nativeNode.isReady
         |> filter { $0 }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         })
         
@@ -279,7 +279,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         self.colorsButtonNode.addTarget(self, action: #selector(self.toggleColors), forControlEvents: .touchUpInside)
         self.playButtonNode.addTarget(self, action: #selector(self.togglePlay), forControlEvents: .touchUpInside)
         
-        sliderValueChangedImpl = { [weak self] value in
+        sliderValueChangedImpl = { [weak self = self] value in
             if let self {
                 self.updateIntensity(transition: .immediate)
             }
@@ -362,7 +362,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         
         let _ = (themeSettings
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] themeSettings in
+        |> deliverOnMainQueue).start(next: { [weak self = self] themeSettings in
             guard let strongSelf = self else {
                 return
             }
@@ -483,7 +483,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         guard let cropRect = self.cropRect else {
             return
         }
-        self.interaction?.editMedia(asset, originalImage, cropRect, self.currentAdjustments, self.cropNode.view, { [weak self] result, adjustments in
+        self.interaction?.editMedia(asset, originalImage, cropRect, self.currentAdjustments, self.cropNode.view, { [weak self = self] result, adjustments in
             guard let self else {
                 return
             }
@@ -504,12 +504,12 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
 
             Queue.mainQueue().after(0.1) {
                 self.brightnessNode.isHidden = false
-                self.temporaryImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, delay: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+                self.temporaryImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, delay: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                     self?.temporaryImageNode.image = nil
                     self?.temporaryImageNode.layer.removeAllAnimations()
                 })
             }
-        }, { [weak self] image in
+        }, { [weak self = self] image in
             guard let self else {
                 return
             }
@@ -595,12 +595,12 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         self.toolbarNode.doneButtonType = arguments.toolbarDoneButtonType
         self.toolbarNode.requiredLevel = arguments.toolbarRequiredLevel
         self.updateToolbarThemeAndStrings(theme: self.presentationData.theme, strings: self.presentationData.strings)
-        self.toolbarNode.cancel = { [weak self] in
+        self.toolbarNode.cancel = { [weak self = self] in
             if let interaction = self?.interaction {
                 interaction.toolbarCancel()
             }
         }
-        self.toolbarNode.done = { [weak self] forBoth in
+        self.toolbarNode.done = { [weak self = self] forBoth in
             if let interaction = self?.interaction {
                 interaction.toolbarDone(forBoth)
             }
@@ -983,7 +983,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             
             self.imageNode.setSignal(signal, dispatchOnDisplayLink: false)
             self.imageNode.asyncLayout()(TransformImageArguments(corners: ImageCorners(), imageSize: displaySize, boundingSize: displaySize, intrinsicInsets: UIEdgeInsets(), custom: patternArguments))()
-            self.imageNode.imageUpdated = { [weak self] image in
+            self.imageNode.imageUpdated = { [weak self = self] image in
                 if let strongSelf = self {
                     if image != nil {
                         strongSelf._ready.set(.single(Void()))
@@ -1011,7 +1011,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             
             let statusForegroundColor = UIColor.white
             self.statusDisposable.set((statusSignal
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let strongSelf = self {
                     let state: RadialStatusNodeState
                     var local = false
@@ -1039,7 +1039,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             self.actionButton.set(actionSignal |> deliverOnMainQueue)
             
             self.colorDisposable.set((colorSignal
-            |> deliverOnMainQueue).start(next: { [weak self] color in
+            |> deliverOnMainQueue).start(next: { [weak self = self] color in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1530,7 +1530,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             GlassControlGroupComponent.Item(
                 id: AnyHashable("close"),
                 content: .icon("Navigation/Close"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.cancelPressed()
                 }
             )
@@ -1540,7 +1540,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             rightControlItems.append(GlassControlGroupComponent.Item(
                 id: AnyHashable("edit"),
                 content: .icon("Settings/WallpaperAdjustments"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.editPressed()
                 }
             ))
@@ -1549,7 +1549,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             rightControlItems.append(GlassControlGroupComponent.Item(
                 id: AnyHashable("dayNight"),
                 content: .animation(self.isDarkAppearance ? "anim_sun_reverse" : "anim_sun"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dayNightPressed()
                 }
             ))
@@ -1557,7 +1557,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
             rightControlItems.append(GlassControlGroupComponent.Item(
                 id: AnyHashable("share"),
                 content: .icon("Navigation/Share"),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.actionPressed()
                 }
             ))
@@ -1886,7 +1886,7 @@ final class WallpaperGalleryItemNode: GalleryItemNode {
         }
         
         let _ = (signal
-        |> deliverOnMainQueue).start(next: { [weak self] count, timestamp in
+        |> deliverOnMainQueue).start(next: { [weak self = self] count, timestamp in
             if let strongSelf = self, (count < 2 && currentTimestamp > timestamp + 24 * 60 * 60) {
                 strongSelf.displayedPreviewTooltip = true
                 

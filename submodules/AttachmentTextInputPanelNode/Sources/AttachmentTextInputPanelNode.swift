@@ -469,7 +469,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
         super.init()
 
         if !isScheduledMessages {
-            self.actionButtons.sendButtonLongPressed = { [weak self] node, gesture in
+            self.actionButtons.sendButtonLongPressed = { [weak self = self] node, gesture in
                 self?.interfaceInteraction?.displaySendMessageOptions(node, gesture)
             }
             self.actionButtons.sendButtonLongPressEnabled = true
@@ -499,12 +499,12 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
 
         self.textInputBackgroundImageNode.clipsToBounds = true
         let recognizer = TouchDownGestureRecognizer(target: self, action: #selector(self.textInputBackgroundViewTap(_:)))
-        recognizer.touchDown = { [weak self] in
+        recognizer.touchDown = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.ensureFocused()
             }
         }
-        recognizer.waitForTouchUp = { [weak self] in
+        recognizer.waitForTouchUp = { [weak self = self] in
             guard let strongSelf = self, let textInputNode = strongSelf.textInputNode else {
                 return true
             }
@@ -517,7 +517,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
         }
         self.textInputBackgroundNode.view.addGestureRecognizer(recognizer)
 
-        self.emojiViewProvider = { [weak self] emoji in
+        self.emojiViewProvider = { [weak self = self] emoji in
             guard let strongSelf = self, let presentationInterfaceState = strongSelf.presentationInterfaceState else {
                 return UIView()
             }
@@ -539,7 +539,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
                     return .complete()
                 }
             }
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] maxCaptionLength in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] maxCaptionLength in
                 self?.maxCaptionLength = maxCaptionLength
             })
         }
@@ -556,7 +556,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
             )
         )
         self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -581,29 +581,29 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
             },
             updateChoosingSticker: { _ in
             },
-            switchToTextInput: { [weak self] in
+            switchToTextInput: { [weak self = self] in
                 self?.activateInput()
             },
             dismissTextInput: {
             },
-            insertText: { [weak self] text in
+            insertText: { [weak self = self] text in
                 self?.insertTextFromInputMedia(text)
             },
-            backwardsDeleteText: { [weak self] in
+            backwardsDeleteText: { [weak self = self] in
                 self?.deleteBackwardsFromInputMedia()
             },
             openStickerEditor: {
             },
-            presentController: { [weak self] controller, _ in
+            presentController: { [weak self = self] controller, _ in
                 self?.presentController(controller)
             },
-            presentGlobalOverlayController: { [weak self] controller, _ in
+            presentGlobalOverlayController: { [weak self = self] controller, _ in
                 self?.presentInGlobalOverlay(controller)
             },
-            getNavigationController: { [weak self] in
+            getNavigationController: { [weak self = self] in
                 return self?.getNavigationController()
             },
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 self?.requestRelayout(animated: transition.isAnimated)
             }
         )
@@ -760,12 +760,12 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
         self.textInputBackgroundNode.view.removeGestureRecognizer(self.textInputBackgroundNode.view.gestureRecognizers![0])
 
         let recognizer = TouchDownGestureRecognizer(target: self, action: #selector(self.textInputBackgroundViewTap(_:)))
-        recognizer.touchDown = { [weak self] in
+        recognizer.touchDown = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.ensureFocused()
             }
         }
-        recognizer.waitForTouchUp = { [weak self] in
+        recognizer.waitForTouchUp = { [weak self = self] in
             guard let strongSelf = self, let textInputNode = strongSelf.textInputNode else {
                 return true
             }
@@ -1360,7 +1360,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
             } else {
                 aiButton = (HighlightTrackingButton(), UIImageView())
                 self.aiButton = aiButton
-                aiButton.button.highligthedChanged = { [weak self] highlighted in
+                aiButton.button.highligthedChanged = { [weak self = self] highlighted in
                     guard let self, let aiButton = self.aiButton else {
                         return
                     }
@@ -1432,7 +1432,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
                 transition: .immediate,
                 component: AnyComponent(Button(
                     content: AnyComponent(animationComponent),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.toggleInputMode()
                     })),
                 environment: {},
@@ -1582,7 +1582,7 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
             if let current = self.customEmojiContainerView {
                 customEmojiContainerView = current
             } else {
-                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self] emoji in
+                customEmojiContainerView = CustomEmojiContainerView(emojiViewProvider: { [weak self = self] emoji in
                     guard let strongSelf = self, let emojiViewProvider = strongSelf.emojiViewProvider else {
                         return nil
                     }
@@ -2066,32 +2066,32 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
 
         } else {
             var children: [UIAction] = [
-                UIAction(title: self.strings?.TextFormat_Bold ?? "Bold", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Bold ?? "Bold", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesBold(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Italic ?? "Italic", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Italic ?? "Italic", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesItalic(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Monospace ?? "Monospace", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Monospace ?? "Monospace", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesMonospace(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Link ?? "Link", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesLink(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Strikethrough ?? "Strikethrough", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Strikethrough ?? "Strikethrough", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesStrikethrough(strongSelf)
                     }
                 },
-                UIAction(title: self.strings?.TextFormat_Underline ?? "Underline", image: nil) { [weak self] (action) in
+                UIAction(title: self.strings?.TextFormat_Underline ?? "Underline", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesUnderline(strongSelf)
                     }
@@ -2104,17 +2104,17 @@ public class AttachmentTextInputPanelNode: ASDisplayNode, TGCaptionPanelView, AS
             }
 
             if hasSpoilers {
-                children.insert(UIAction(title: self.strings?.TextFormat_Quote ?? "Quote", image: nil) { [weak self] (action) in
+                children.insert(UIAction(title: self.strings?.TextFormat_Quote ?? "Quote", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesQuote(strongSelf)
                     }
                 }, at: 0)
-                children.append(UIAction(title: self.strings?.TextFormat_Spoiler ?? "Spoiler", image: nil) { [weak self] (action) in
+                children.append(UIAction(title: self.strings?.TextFormat_Spoiler ?? "Spoiler", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesSpoiler(strongSelf)
                     }
                 })
-                children.append(UIAction(title: self.strings?.TextFormat_Code ?? "Code", image: nil) { [weak self] (action) in
+                children.append(UIAction(title: self.strings?.TextFormat_Code ?? "Code", image: nil) { [weak self = self] (action) in
                     if let strongSelf = self {
                         strongSelf.formatAttributesCodeBlock(strongSelf)
                     }

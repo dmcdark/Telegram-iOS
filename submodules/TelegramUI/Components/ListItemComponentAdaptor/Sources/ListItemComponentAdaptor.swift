@@ -173,7 +173,7 @@ public final class ListItemComponentAdaptor: Component {
                     self.button = button
                     self.addSubview(button)
                     button.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
-                    button.highligthedChanged = { [weak self] isHighlighted in
+                    button.highligthedChanged = { [weak self = self] isHighlighted in
                         guard let self, let itemNode = self.itemNode else {
                             return
                         }
@@ -191,7 +191,7 @@ public final class ListItemComponentAdaptor: Component {
                 if self.tapGestureRecognizer == nil {
                     let tapGestureRecognizer = HighlightTrackingTapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
                     tapGestureRecognizer.cancelsTouchesInView = false
-                    tapGestureRecognizer.highlightChanged = { [weak self] point, isHighlighted in
+                    tapGestureRecognizer.highlightChanged = { [weak self = self] point, isHighlighted in
                         guard let self, let itemNode = self.itemNode else {
                             return
                         }

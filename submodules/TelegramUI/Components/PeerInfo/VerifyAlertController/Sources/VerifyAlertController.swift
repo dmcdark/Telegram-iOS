@@ -109,7 +109,7 @@ private final class VerifyAlertContentNode: AlertContentNode {
                 
         self.updateTheme(theme)
         
-        self.state._updated = { [weak self] transition, _ in
+        self.state._updated = { [weak self = self] transition, _ in
             guard let self, let _ = self.validLayout else {
                 return
             }
@@ -280,7 +280,7 @@ private final class VerifyAlertContentNode: AlertContentNode {
                     returnKeyType: .default,
                     lockedFormatAction: {
                     },
-                    present: { [weak self] c in
+                    present: { [weak self = self] c in
                         self?.present(c)
                     },
                     paste: { _ in

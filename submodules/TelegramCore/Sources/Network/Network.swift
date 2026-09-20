@@ -659,7 +659,7 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
                 network.updateNetworkSpeedLimitedEventNotifyInterval(value: notifyInterval)
             }
             
-            appDataUpdatedImpl = { [weak network] data in
+            appDataUpdatedImpl = { [weak network = network] data in
                 guard let data = data else {
                     return
                 }
@@ -883,12 +883,12 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
         
         super.init()
         
-        self.requestService.didReceiveSoftAuthResetError = { [weak self] in
+        self.requestService.didReceiveSoftAuthResetError = { [weak self = self] in
             self?.didReceiveSoftAuthResetError?()
         }
         
         let _contextProxyId = self._contextProxyId
-        let networkHelper = NetworkHelper(requestPublicKeys: { [weak self] id in
+        let networkHelper = NetworkHelper(requestPublicKeys: { [weak self = self] id in
             if let strongSelf = self {
                 return strongSelf.request(Api.functions.help.getCdnConfig())
                 |> map(Optional.init)
@@ -920,7 +920,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
             } else {
                 return .never()
             }
-        }, isContextNetworkAccessAllowed: { [weak self] in
+        }, isContextNetworkAccessAllowed: { [weak self = self] in
             if let strongSelf = self {
                 return strongSelf.shouldKeepConnection.get() |> distinctUntilChanged
             } else {
@@ -928,7 +928,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
             }
         }, contextProxyIdUpdated: { value in
             _contextProxyId.set(value)
-        }, contextLoggedOutUpdated: { [weak self] in
+        }, contextLoggedOutUpdated: { [weak self = self] in
             Logger.shared.log("Network", "contextLoggedOut")
             self?.loggedOut?()
         })
@@ -936,7 +936,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
         context.add(networkHelper)
         requestService.delegate = self
         
-        self._multiplexedRequestManager = MultiplexedRequestManager(takeWorker: { [weak self] target, tag, continueInBackground in
+        self._multiplexedRequestManager = MultiplexedRequestManager(takeWorker: { [weak self = self] target, tag, continueInBackground in
             if let strongSelf = self {
                 let datacenterId: Int
                 let isCdn: Bool
@@ -960,7 +960,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
         
         let shouldKeepConnectionSignal = self.shouldKeepConnection.get()
         |> distinctUntilChanged |> deliverOn(queue)
-        self.shouldKeepConnectionDisposable.set(shouldKeepConnectionSignal.start(next: { [weak self] value in
+        self.shouldKeepConnectionDisposable.set(shouldKeepConnectionSignal.start(next: { [weak self = self] value in
             if let strongSelf = self {
                 if value {
                     Logger.shared.log("Network", "Resume network connection")
@@ -1024,7 +1024,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
     }
     
     private func worker(datacenterId: Int, isCdn: Bool, isMedia: Bool, tag: MediaResourceFetchTag?) -> Signal<Download, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 subscriber.putNext(strongSelf.makeWorker(datacenterId: datacenterId, isCdn: isCdn, isMedia: isMedia, tag: tag))
             }
@@ -1149,7 +1149,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
             
             requestService.add(request)
             
-            return ActionDisposable { [weak requestService] in
+            return ActionDisposable { [weak requestService = requestService] in
                 requestService?.removeRequest(byInternalId: internalId)
             }
         }
@@ -1209,7 +1209,7 @@ public final class Network: NSObject, MTRequestMessageServiceDelegate {
             
             requestService.add(request)
             
-            return ActionDisposable { [weak requestService] in
+            return ActionDisposable { [weak requestService = requestService] in
                 requestService?.removeRequest(byInternalId: internalId)
             }
         }

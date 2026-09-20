@@ -126,12 +126,12 @@ private final class ChatMessageActionUrlAuthAlertContentNode: AlertContentNode {
             self.addSubnode(separatorNode)
         }
         
-        self.authorizeCheckNode.valueChanged = { [weak self] value in
+        self.authorizeCheckNode.valueChanged = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.authorize = !strongSelf.authorize
             }
         }
-        self.allowWriteCheckNode.valueChanged = { [weak self] value in
+        self.allowWriteCheckNode.valueChanged = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.allowWriteAccess = !strongSelf.allowWriteAccess
             }

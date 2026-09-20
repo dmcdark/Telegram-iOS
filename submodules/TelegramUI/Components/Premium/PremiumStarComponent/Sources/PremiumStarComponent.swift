@@ -485,7 +485,7 @@ public final class PremiumStarComponent: Component {
             self.playAppearanceAnimation(explode: true)
             
             self.previousInteractionTimestamp = CACurrentMediaTime()
-            self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 if let strongSelf = self, strongSelf.hasIdleAnimations {
                     let currentTimestamp = CACurrentMediaTime()
                     if currentTimestamp > strongSelf.previousInteractionTimestamp + 5.0 {

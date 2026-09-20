@@ -70,7 +70,7 @@ public class WebAppCancelButtonNode: ASDisplayNode {
         self.buttonNode.addSubnode(self.arrowNode)
         self.buttonNode.addSubnode(self.labelNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }

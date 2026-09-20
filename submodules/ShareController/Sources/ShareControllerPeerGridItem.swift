@@ -180,7 +180,7 @@ final class ShareControllerPeerGridItemNode: GridItemNode {
         
         super.init()
         
-        self.peerNode.toggleSelection = { [weak self] isDisabled in
+        self.peerNode.toggleSelection = { [weak self = self] isDisabled in
             if let strongSelf = self {
                 if let (_, _, _, _, maybeItem, search) = strongSelf.currentState, let item = maybeItem {
                     if case let .peer(peer, _, _, _, _, _) = item, let _ = peer.peers[peer.peerId] {
@@ -196,7 +196,7 @@ final class ShareControllerPeerGridItemNode: GridItemNode {
             }
         }
         self.addSubnode(self.peerNode)
-        self.presenceManager = PeerPresenceStatusManager(update: { [weak self] in
+        self.presenceManager = PeerPresenceStatusManager(update: { [weak self = self] in
             guard let strongSelf = self, let currentState = strongSelf.currentState else {
                 return
             }

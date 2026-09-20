@@ -20,7 +20,7 @@ private final class LiveLocationSummaryContext {
                     self.disposable.set((self.engine.data.subscribe(
                         TelegramEngine.EngineData.Item.Messages.Messages(ids: self.messageIds)
                     )
-                    |> deliverOn(self.queue)).start(next: { [weak self] messages in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] messages in
                         if let strongSelf = self {
                             strongSelf.messages = messages
                         }
@@ -53,7 +53,7 @@ private final class LiveLocationSummaryContext {
     
     func subscribe() -> Signal<[EngineMessage.Id: EngineMessage], NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             queue.async {
                 if let strongSelf = self {
@@ -63,7 +63,7 @@ private final class LiveLocationSummaryContext {
                     
                     subscriber.putNext(strongSelf.messages)
                     
-                    disposable.set(ActionDisposable { [weak self] in
+                    disposable.set(ActionDisposable { [weak self = self] in
                         queue.async {
                             if let strongSelf = self {
                                 strongSelf.subscribers.remove(index)
@@ -141,7 +141,7 @@ private final class LiveLocationPeerSummaryContext {
         }
         
         let queue = self.queue
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     let wasEmpty = strongSelf.subscribers.isEmpty
@@ -161,7 +161,7 @@ private final class LiveLocationPeerSummaryContext {
     private func updateSubscription() {
         if self.isActive || !self.subscribers.isEmpty {
             self.peerDisposable.set((self.engine.messages.topPeerActiveLiveLocationMessages(peerId: self.peerId)
-                |> deliverOn(self.queue)).start(next: { [weak self] accountPeer, messages in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] accountPeer, messages in
                     if let strongSelf = self {
                         var peersAndMessages: [(EnginePeer, EngineMessage)] = []
                         for message in messages {
@@ -210,7 +210,7 @@ public final class LiveLocationSummaryManagerImpl: LiveLocationSummaryManager {
         
         for peerId in peerIds {
             if self.peerContexts[peerId] == nil {
-                let context = LiveLocationPeerSummaryContext(queue: self.queue, engine: self.engine, accountPeerId: self.accountPeerId, peerId: peerId, becameEmpty: { [weak self] in
+                let context = LiveLocationPeerSummaryContext(queue: self.queue, engine: self.engine, accountPeerId: self.accountPeerId, peerId: peerId, becameEmpty: { [weak self = self] in
                     if let strongSelf = self, let context = strongSelf.peerContexts[peerId], context.isEmpty {
                         strongSelf.peerContexts.removeValue(forKey: peerId)
                     }
@@ -232,7 +232,7 @@ public final class LiveLocationSummaryManagerImpl: LiveLocationSummaryManager {
     
     public func peersBroadcastingTo(peerId: EnginePeer.Id) -> Signal<[(EnginePeer, EngineMessage)]?, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             queue.async {
                 if let strongSelf = self {

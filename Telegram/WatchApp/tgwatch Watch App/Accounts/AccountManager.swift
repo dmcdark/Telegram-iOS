@@ -168,7 +168,7 @@ final class AccountManager: TDClientLifecycleDelegate {
             // Task body: `Task { await ... }` suspends, and activeAccountId
             // can flip between scheduling and execution.
             let target = client.account.id
-            Task { [weak self] in
+            Task { [weak self = self] in
                 guard let self else { return }
                 guard self.activeAccountId == target else { return }
                 await self.removeActive()

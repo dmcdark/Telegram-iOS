@@ -179,7 +179,7 @@ public final class BirthdayPickerContentComponent: Component {
                     theme: BirthdayPickerComponent.Theme(presentationTheme: component.theme),
                     strings: component.strings,
                     value: component.value,
-                    valueUpdated: { [weak self] value in
+                    valueUpdated: { [weak self = self] value in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -253,7 +253,7 @@ public final class BirthdayPickerContentComponent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] _, _ in
+                        tapAction: { [weak self = self] _, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -276,7 +276,7 @@ public final class BirthdayPickerContentComponent: Component {
                     contentHeight += 21.0
                     let hideYearSize = self.hideYear.update(
                         transition: .immediate,
-                        component: AnyComponent(PlainButtonComponent(content: AnyComponent(Text(text: component.strings.SuggestBirthdate_Accept_HideYear, font: Font.regular(17.0), color: component.theme.list.itemAccentColor)), action: { [weak self] in
+                        component: AnyComponent(PlainButtonComponent(content: AnyComponent(Text(text: component.strings.SuggestBirthdate_Accept_HideYear, font: Font.regular(17.0), color: component.theme.list.itemAccentColor)), action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

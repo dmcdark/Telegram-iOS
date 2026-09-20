@@ -121,7 +121,7 @@ public final class PlainButtonComponent: Component {
             
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self, self.bounds.width > 0.0 {
                     let animateAlpha = self.component?.animateAlpha ?? true
                     let animateScale = self.component?.animateScale ?? true
@@ -157,7 +157,7 @@ public final class PlainButtonComponent: Component {
                             let transition = ComponentTransition(animation: .none)
                             transition.setScale(layer: self.contentContainer.layer, scale: 1.0)
                                 
-                            self.contentContainer.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                            self.contentContainer.layer.animateScale(from: topScale, to: maxScale, duration: 0.13, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }

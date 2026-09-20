@@ -83,7 +83,7 @@ final class GlobalOverlayPresentationContext {
                 
                 if updateTrackingNode {
                     /*self.currentTrackingNode?.removeFromSupernode()
-                    let trackingNode = HierarchyTrackingNode({ [weak self] value in
+                    let trackingNode = HierarchyTrackingNode({ [weak self = self] value in
                         guard let strongSelf = self else {
                             return
                         }
@@ -126,7 +126,7 @@ final class GlobalOverlayPresentationContext {
             }
             controller.containerLayoutUpdated(initialLayout, transition: .immediate)
             
-            self.presentationDisposables.add(controllerReady.start(next: { [weak self] _ in
+            self.presentationDisposables.add(controllerReady.start(next: { [weak self = self] _ in
                 if let strongSelf = self {
                     if strongSelf.controllers.contains(where: { $0 === controller }) {
                         return
@@ -135,9 +135,9 @@ final class GlobalOverlayPresentationContext {
                     strongSelf.controllers.append(controller)
                     if let view = strongSelf.currentPresentationView(underStatusBar: underStatusBar), let layout = strongSelf.layout {
                         let weakStrongSelf = Weak(strongSelf)
-                        let weakController = Weak(controller)
+                        let weakController = Weak(controller as AnyObject)
                         (controller as? UIViewController)?.navigation_setDismiss({
-                            if let strongSelf = weakStrongSelf.value, let controller = weakController.value {
+                            if let strongSelf = weakStrongSelf.value, let controller = weakController.value as? ContainableController {
                                 strongSelf.dismiss(controller)
                             }
                         }, rootController: nil)
@@ -196,7 +196,7 @@ final class GlobalOverlayPresentationContext {
     }
     
     public func addGlobalPortalHostView(sourceView: PortalSourceView) {
-        guard let globalPortalView = GlobalPortalView(wasRemoved: { [weak self] globalPortalView in
+        guard let globalPortalView = GlobalPortalView(wasRemoved: { [weak self = self] globalPortalView in
             guard let strongSelf = self else {
                 return
             }

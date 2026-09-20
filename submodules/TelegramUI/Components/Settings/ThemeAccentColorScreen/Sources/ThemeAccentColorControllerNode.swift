@@ -367,7 +367,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
         self.colorsButtonNode.addTarget(self, action: #selector(self.toggleColors), forControlEvents: .touchUpInside)
         self.playButtonNode.addTarget(self, action: #selector(self.playPressed), forControlEvents: .touchUpInside)
         
-        self.colorPanelNode.colorsChanged = { [weak self] colors, selectedColor, ended in
+        self.colorPanelNode.colorsChanged = { [weak self = self] colors, selectedColor, ended in
             if let strongSelf = self, let section = strongSelf.state.section {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -393,7 +393,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
             }
         }
         
-        self.colorPanelNode.colorSelected = { [weak self] in
+        self.colorPanelNode.colorSelected = { [weak self = self] in
             if let strongSelf = self, strongSelf.state.colorPanelCollapsed {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -403,7 +403,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
             }
         }
         
-        self.colorPanelNode.rotate = { [weak self] in
+        self.colorPanelNode.rotate = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -417,7 +417,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
             }
         }
         
-        self.patternPanelNode.patternChanged = { [weak self] wallpaper, intensity, preview in
+        self.patternPanelNode.patternChanged = { [weak self = self] wallpaper, intensity, preview in
             if let strongSelf = self {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -429,7 +429,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
             }
         }
         
-        self.toolbarNode.cancel = { [weak self] in
+        self.toolbarNode.cancel = { [weak self = self] in
             if let strongSelf =  self {
                 if strongSelf.state.displayPatternPanel {
                     strongSelf.updateState({ current in
@@ -444,7 +444,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
             }
         }
         
-        self.toolbarNode.done = { [weak self] forBoth in
+        self.toolbarNode.done = { [weak self = self] forBoth in
             if let strongSelf = self {
                 if strongSelf.state.displayPatternPanel {
                     strongSelf.updateState({ current in
@@ -538,7 +538,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
 
             return (updatedTheme, wallpaper, serviceBackgroundColor, backgroundColors, state.rotation, patternArguments, state.preview)
         }
-        |> deliverOnMainQueue).start(next: { [weak self] theme, wallpaper, serviceBackgroundColor, backgroundColors, rotation, patternArguments, preview in
+        |> deliverOnMainQueue).start(next: { [weak self = self] theme, wallpaper, serviceBackgroundColor, backgroundColors, rotation, patternArguments, preview in
             guard let strongSelf = self else {
                 return
             }
@@ -600,7 +600,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
         })
         |> take(1)
         |> then(self.serviceBackgroundColorPromise.get()))
-        |> deliverOnMainQueue).start(next: { [weak self] color in
+        |> deliverOnMainQueue).start(next: { [weak self = self] color in
             if let strongSelf = self {
                 strongSelf.patternPanelNode.serviceBackgroundColor = color
                 strongSelf.pageControlBackgroundNode.backgroundColor = color
@@ -1092,7 +1092,7 @@ final class ThemeAccentColorControllerNode: ASDisplayNode, ASScrollViewDelegate 
         sampleMessages.append(message8)
         
         items = sampleMessages.reversed().map { message in
-            let item = self.context.sharedContext.makeChatMessagePreviewItem(context: self.context, messages: [message], theme: self.theme, strings: self.presentationData.strings, wallpaper: self.wallpaper, fontSize: self.presentationData.chatFontSize, chatBubbleCorners: self.presentationData.chatBubbleCorners, dateTimeFormat: self.presentationData.dateTimeFormat, nameOrder: self.presentationData.nameDisplayOrder, forcedResourceStatus: !message.media.isEmpty ? FileMediaResourceStatus(mediaStatus: .playbackStatus(.paused), fetchStatus: .Local) : nil, tapMessage: { [weak self] message in
+            let item = self.context.sharedContext.makeChatMessagePreviewItem(context: self.context, messages: [message], theme: self.theme, strings: self.presentationData.strings, wallpaper: self.wallpaper, fontSize: self.presentationData.chatFontSize, chatBubbleCorners: self.presentationData.chatBubbleCorners, dateTimeFormat: self.presentationData.dateTimeFormat, nameOrder: self.presentationData.nameDisplayOrder, forcedResourceStatus: !message.media.isEmpty ? FileMediaResourceStatus(mediaStatus: .playbackStatus(.paused), fetchStatus: .Local) : nil, tapMessage: { [weak self = self] message in
                 guard let strongSelf = self else {
                     return
                 }

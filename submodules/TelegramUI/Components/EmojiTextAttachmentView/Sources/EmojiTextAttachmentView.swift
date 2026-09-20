@@ -509,7 +509,7 @@ public final class InlineStickerItemLayer: MultiAnimationRenderTarget {
             self.updateFile(file: file, attemptSynchronousLoad: attemptSynchronousLoad)
         } else {
             self.infoDisposable = (context.resolveInlineStickers(fileIds: [emoji.fileId])
-            |> deliverOnMainQueue).start(next: { [weak self] files in
+            |> deliverOnMainQueue).start(next: { [weak self = self] files in
                 guard let strongSelf = self else {
                     return
                 }
@@ -718,7 +718,7 @@ public final class InlineStickerItemLayer: MultiAnimationRenderTarget {
             
             self.loadAnimation()
         } else {
-            self.loadDisposable = arguments.renderer.loadFirstFrame(target: self, cache: arguments.cache, itemId: name, size: arguments.pixelSize, fetch: animationCacheLoadLocalFile(name: name, type: .lottie, keyframeOnly: true, customColor: nil), completion: { [weak self] result, isFinal in
+            self.loadDisposable = arguments.renderer.loadFirstFrame(target: self, cache: arguments.cache, itemId: name, size: arguments.pixelSize, fetch: animationCacheLoadLocalFile(name: name, type: .lottie, keyframeOnly: true, customColor: nil), completion: { [weak self = self] result, isFinal in
                 guard let strongSelf = self else {
                     return
                 }
@@ -816,7 +816,7 @@ public final class InlineStickerItemLayer: MultiAnimationRenderTarget {
             let pointSize = arguments.pointSize
             let placeholderColor = arguments.placeholderColor
             let isThumbnailCancelled = Atomic<Bool>(value: false)
-            self.loadDisposable = arguments.renderer.loadFirstFrame(target: self, cache: arguments.cache, itemId: file.resource.id.stringRepresentation, size: arguments.pixelSize, fetch: animationCacheFetchFile(postbox: arguments.context.postbox, userLocation: arguments.userLocation, userContentType: .sticker, resource: .media(media: .standalone(media: file), resource: file.resource), type: AnimationCacheAnimationType(file: file), keyframeOnly: true, customColor: isTemplate ? .white : nil), completion: { [weak self] result, isFinal in
+            self.loadDisposable = arguments.renderer.loadFirstFrame(target: self, cache: arguments.cache, itemId: file.resource.id.stringRepresentation, size: arguments.pixelSize, fetch: animationCacheFetchFile(postbox: arguments.context.postbox, userLocation: arguments.userLocation, userContentType: .sticker, resource: .media(media: .standalone(media: file), resource: file.resource), type: AnimationCacheAnimationType(file: file), keyframeOnly: true, customColor: isTemplate ? .white : nil), completion: { [weak self = self] result, isFinal in
                 if !result {
                     DCTMultiAnimationRendererImpl.firstFrameQueue.async {
                         let image = generateStickerPlaceholderImage(data: file.immediateThumbnailData, size: pointSize, scale: min(2.0, UIScreenScale), imageSize: file.dimensions?.cgSize ?? CGSize(width: 512.0, height: 512.0), backgroundColor: nil, foregroundColor: placeholderColor)

@@ -70,16 +70,16 @@ public final class SearchDisplayController {
             self.setSearchBar(searchBar)
         }
         
-        self.contentNode.cancel = { [weak self] in
+        self.contentNode.cancel = { [weak self = self] in
             self?.isDeactivating = true
             cancel()
         }
-        self.contentNode.dismissInput = { [weak self] in
+        self.contentNode.dismissInput = { [weak self = self] in
             self?.searchBar?.deactivate(clear: false)
         }
         
         var isFirstTime = true
-        self.contentNode.setQuery = { [weak self] prefix, tokens, query in
+        self.contentNode.setQuery = { [weak self = self] prefix, tokens, query in
             if let strongSelf = self, let searchBar = strongSelf.searchBar {
                 searchBar.prefixString = prefix
                 let previousTokens = searchBar.tokens
@@ -96,7 +96,7 @@ public final class SearchDisplayController {
         if let placeholder = placeholder {
             self.searchBar?.placeholderString = NSAttributedString(string: placeholder, font: Font.regular(17.0), textColor: presentationData.theme.rootController.navigationSearchBar.inputPlaceholderTextColor)
         }
-        self.contentNode.setPlaceholder = { [weak self] string in
+        self.contentNode.setPlaceholder = { [weak self = self] string in
             guard string != self?.searchBar?.placeholderString?.string else {
                 return
             }
@@ -107,7 +107,7 @@ public final class SearchDisplayController {
         }
         
         self.isSearchingDisposable = (contentNode.isSearching
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             self?.searchBar?.activity = value
         })
         
@@ -129,7 +129,7 @@ public final class SearchDisplayController {
         searchBar.tokensUpdated = { [weak contentNode] tokens in
             contentNode?.searchTokensUpdated(tokens: tokens)
         }
-        searchBar.cancel = { [weak self] in
+        searchBar.cancel = { [weak self = self] in
             self?.isDeactivating = true
             self?.cancel()
         }

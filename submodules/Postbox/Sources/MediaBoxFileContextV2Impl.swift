@@ -200,7 +200,7 @@ public final class MediaBoxFileContextV2Impl: MediaBoxFileContext {
                 self.updateRequests()
                 
                 let queue = self.queue
-                return ActionDisposable { [weak self] in
+                return ActionDisposable { [weak self = self] in
                     queue.async {
                         guard let `self` = self else {
                             return
@@ -235,7 +235,7 @@ public final class MediaBoxFileContextV2Impl: MediaBoxFileContext {
                 let index = self.statusRequests.add(request)
                 
                 let queue = self.queue
-                return ActionDisposable { [weak self] in
+                return ActionDisposable { [weak self = self] in
                     queue.async {
                         guard let `self` = self else {
                             return
@@ -258,7 +258,7 @@ public final class MediaBoxFileContextV2Impl: MediaBoxFileContext {
                 let index = self.partialDataRequests.add(request)
                 
                 let queue = self.queue
-                return ActionDisposable { [weak self] in
+                return ActionDisposable { [weak self = self] in
                     queue.async {
                         guard let `self` = self else {
                             return
@@ -285,7 +285,7 @@ public final class MediaBoxFileContextV2Impl: MediaBoxFileContext {
                 let index = self.rangeStatusRequests.add(request)
                 
                 let queue = self.queue
-                return ActionDisposable { [weak self] in
+                return ActionDisposable { [weak self = self] in
                     queue.async {
                         guard let `self` = self else {
                             return
@@ -350,14 +350,14 @@ public final class MediaBoxFileContextV2Impl: MediaBoxFileContext {
                             self.hasPerformedAnyFetch = true
                             
                             let queue = self.queue
-                            disposable.set(fetchImpl(pendingFetch.ranges.get()).startStrict(next: { [weak self] result in
+                            disposable.set(fetchImpl(pendingFetch.ranges.get()).startStrict(next: { [weak self = self] result in
                                 queue.async {
                                     guard let `self` = self else {
                                         return
                                     }
                                     self.processFetchResult(result: result)
                                 }
-                            }, error: { [weak self] error in
+                            }, error: { [weak self = self] error in
                                 queue.async {
                                     guard let `self` = self else {
                                         return

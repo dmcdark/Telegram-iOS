@@ -221,7 +221,7 @@ public final class SheetComponent<ChildEnvironmentType: Sendable & Equatable>: C
             
             self.dimView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dimViewTapGesture(_:))))
                         
-            self.keyboardWillShowObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil, using: { [weak self] _ in
+            self.keyboardWillShowObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil, using: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.scrollView.ignoreScroll = true
                     Queue.mainQueue().after(0.1, {
@@ -377,7 +377,7 @@ public final class SheetComponent<ChildEnvironmentType: Sendable & Equatable>: C
         func update(component: SheetComponent<ChildEnvironmentType>, availableSize: CGSize, state: EmptyComponentState, environment: Environment<EnvironmentType>, transition: ComponentTransition) -> CGSize {
             let previousHasInputHeight = self.currentHasInputHeight
             let sheetEnvironment = environment[SheetComponentEnvironment.self].value
-            component.animateOut.connect { [weak self] completion in
+            component.animateOut.connect { [weak self = self] completion in
                 guard let strongSelf = self else {
                     return
                 }

@@ -173,7 +173,7 @@ class CreateGiveawayHeaderItemNode: ItemListControllerHeaderItemNode {
                     isDark: self.item.theme.overallDarkAppearance,
                     state: .glass,
                     component: AnyComponentWithIdentity(id: "icon", component: AnyComponent(BundleIconComponent(name: "Navigation/Close", tintColor: self.item.theme.chat.inputPanel.panelControlColor))),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.item.cancel()
                     }
                 )

@@ -153,7 +153,7 @@ final class StickersResultPanelComponent: Component {
             
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
             
-            let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self] point in
+            let peekRecognizer = PeekControllerGestureRecognizer(contentAtPoint: { [weak self = self] point in
                 if let self, let component = self.component {
                     let presentationData = component.strings
                     
@@ -173,7 +173,7 @@ final class StickersResultPanelComponent: Component {
                     if let selectedLayer, let file = selectedLayer.file {
                         return component.context.engine.stickers.isStickerSaved(id: file.fileId)
                         |> deliverOnMainQueue
-                        |> map { [weak self] isStarred -> (UIView, CGRect, PeekControllerContent)? in
+                        |> map { [weak self = self] isStarred -> (UIView, CGRect, PeekControllerContent)? in
                             if let self, let component = self.component {
                                 let menuItems: [ContextMenuItem] = []
                                 let _ = menuItems
@@ -207,12 +207,12 @@ final class StickersResultPanelComponent: Component {
                                 //                                })))
 
 //                                menuItems.append(
-//                                    .action(ContextMenuActionItem(text: isStarred ? presentationData.strings.Stickers_RemoveFromFavorites : presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+//                                    .action(ContextMenuActionItem(text: isStarred ? presentationData.strings.Stickers_RemoveFromFavorites : presentationData.strings.Stickers_AddToFavorites, icon: { theme in generateTintedImage(image: isStarred ? UIImage(bundleImageName: "Chat/Context Menu/Unfave") : UIImage(bundleImageName: "Chat/Context Menu/Fave"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
 //                                        f(.default)
 //
 //                                        if let self, let component = self.component {
 //                                            let _ = (component.context.engine.stickers.toggleStickerSaved(file: file, saved: !isStarred)
-//                                            |> deliverOnMainQueue).start(next: { [weak self] result in
+//                                            |> deliverOnMainQueue).start(next: { [weak self = self] result in
 //                                                guard let self, let component = self.component else {
 //                                                    return
 //                                                }
@@ -229,7 +229,7 @@ final class StickersResultPanelComponent: Component {
 //                                                        text = presentationData.strings.Premium_MaxFavedStickersText("\(premiumLimit)").string
 //                                                    }
 //
-//                                                    let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: component.context, file: file, loop: true, title: presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self] action in
+//                                                    let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: component.context, file: file, loop: true, title: presentationData.strings.Premium_MaxFavedStickersTitle("\(limit)").string, text: text, undoText: nil, customAction: nil), elevatedLayout: false, action: { [weak self = self] action in
 //                                                        if let self, let component = self.component {
 //                                                            if case .info = action {
 //                                                                let controller = component.context.sharedContext.makePremiumIntroController(context: component.context, source: .savedStickers)
@@ -247,7 +247,7 @@ final class StickersResultPanelComponent: Component {
 //                                )
 //
 //                                menuItems.append(
-//                                    .action(ContextMenuActionItem(text: presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+//                                    .action(ContextMenuActionItem(text: presentationData.strings.StickerPack_ViewPack, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Sticker"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
 //                                        f(.default)
 //
 //                                        if let self, let component = self.component {
@@ -255,7 +255,7 @@ final class StickersResultPanelComponent: Component {
 //                                            switch attribute {
 //                                            case let .Sticker(_, packReference, _):
 //                                                if let packReference = packReference {
-//                                                    let controller = component.context.sharedContext.makeStickerPackScreen(context: component.context, mainStickerPack: packReference, stickerPacks: [packReference], parentNavigationController: nil, sendSticker: { [weak self] file, sourceNode, sourceRect in
+//                                                    let controller = component.context.sharedContext.makeStickerPackScreen(context: component.context, mainStickerPack: packReference, stickerPacks: [packReference], parentNavigationController: nil, sendSticker: { [weak self = self] file, sourceNode, sourceRect in
 //                                                        if let self, let component = self.component {
 //                                                            component.action(file)
 //                                                            return true
@@ -273,7 +273,7 @@ final class StickersResultPanelComponent: Component {
 //                                        }
 //                                    }))
 //                                )
-                                return (self, self.scrollView.convert(selectedLayer.frame, to: self), StickerPreviewPeekContent(context: component.context, theme: component.theme, strings: component.strings, item: .pack(file), menu: menuItems, openPremiumIntro: { [weak self] in
+                                return (self, self.scrollView.convert(selectedLayer.frame, to: self), StickerPreviewPeekContent(context: component.context, theme: component.theme, strings: component.strings, item: .pack(file), menu: menuItems, openPremiumIntro: { [weak self = self] in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -287,7 +287,7 @@ final class StickersResultPanelComponent: Component {
                     }
                 }
                 return nil
-            }, present: { [weak self] content, sourceView, sourceRect in
+            }, present: { [weak self = self] content, sourceView, sourceRect in
                 if let self, let component = self.component {
                     let presentationData = component.context.sharedContext.currentPresentationData.with { $0 }.withUpdated(theme: component.theme)
                     let controller = makePeekController(presentationData: presentationData, content: content, sourceView: {
@@ -297,7 +297,7 @@ final class StickersResultPanelComponent: Component {
                     return controller
                 }
                 return nil
-            }, updateContent: { [weak self] content in
+            }, updateContent: { [weak self = self] content in
                 if let self {
                     var item: TelegramMediaFile?
                     if let content = content as? StickerPreviewPeekContent, case let .pack(contentItem) = content.item {

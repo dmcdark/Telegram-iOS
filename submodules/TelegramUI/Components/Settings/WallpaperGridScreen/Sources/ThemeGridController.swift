@@ -77,14 +77,14 @@ public final class ThemeGridController: ViewController {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controllerNode.scrollToTop()
             }
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -140,9 +140,9 @@ public final class ThemeGridController: ViewController {
             requiredCustomLevel = requiredCustomLevelValue
         }
         
-        self.displayNode = ThemeGridControllerNode(context: self.context, mode: self.mode, presentationData: self.presentationData, presentPreviewController: { [weak self] source in
+        self.displayNode = ThemeGridControllerNode(context: self.context, mode: self.mode, presentationData: self.presentationData, presentPreviewController: { [weak self = self] source in
             if let strongSelf = self {
-                let dismissControllers = { [weak self] in
+                let dismissControllers = { [weak self = self] in
                     if let self, let navigationController = self.navigationController as? NavigationController {
                         var controllers = navigationController.viewControllers.filter({ controller in
                             if controller is ThemeGridController {
@@ -192,9 +192,9 @@ public final class ThemeGridController: ViewController {
                 }
                 self?.push(controller)
             }
-        }, presentGallery: { [weak self] in
+        }, presentGallery: { [weak self = self] in
             if let strongSelf = self {
-                let dismissControllers = { [weak self] in
+                let dismissControllers = { [weak self = self] in
                     if let self, let navigationController = self.navigationController as? NavigationController {
                         if case .peer = mode {
                             var controllers = navigationController.viewControllers.filter({ controller in
@@ -226,13 +226,13 @@ public final class ThemeGridController: ViewController {
                 }
                 
                 let controller = MediaPickerScreenImpl(context: strongSelf.context, peer: nil, threadTitle: nil, chatLocation: nil, bannedSendPhotos: nil, bannedSendVideos: nil, subject: .assets(nil, .wallpaper))
-                controller.customSelection = { [weak self] _, asset in
+                controller.customSelection = { [weak self = self] _, asset in
                     guard let strongSelf = self, let asset = asset as? PHAsset else {
                         return
                     }
                     let controller = WallpaperGalleryController(context: strongSelf.context, source: .asset(asset), mode: mode)
                     controller.requiredLevel = requiredCustomLevel
-                    controller.apply = { [weak self] wallpaper, options, editedImage, cropRect, brightness, _ in
+                    controller.apply = { [weak self = self] wallpaper, options, editedImage, cropRect, brightness, _ in
                         if let strongSelf = self {
                             if case .peer = mode {
                                 strongSelf.completion(.custom(wallpaperEntry: wallpaper, options: options, editedImage: editedImage, cropRect: cropRect, brightness: brightness))
@@ -250,12 +250,12 @@ public final class ThemeGridController: ViewController {
                 }
                 self?.push(controller)
             }
-        }, presentColors: { [weak self] in
+        }, presentColors: { [weak self = self] in
             if let strongSelf = self {
                 let controller = ThemeColorsGridController(context: strongSelf.context)
                 (strongSelf.navigationController as? NavigationController)?.pushViewController(controller)
             }
-        }, emptyStateUpdated: { [weak self] empty in
+        }, emptyStateUpdated: { [weak self = self] empty in
             if let strongSelf = self {
                 if empty != strongSelf.isEmpty {
                     strongSelf.isEmpty = empty
@@ -273,7 +273,7 @@ public final class ThemeGridController: ViewController {
                     }
                 }
             }
-        }, deleteWallpapers: { [weak self] wallpapers, completed in
+        }, deleteWallpapers: { [weak self = self] wallpapers, completed in
             if let strongSelf = self {
                 let actionSheet = ActionSheetController(presentationData: strongSelf.presentationData)
                 var items: [ActionSheetItem] = []
@@ -310,7 +310,7 @@ public final class ThemeGridController: ViewController {
                     }
                     
                     let _ = (combineLatest(deleteWallpapers)
-                    |> deliverOnMainQueue).start(completed: { [weak self] in
+                    |> deliverOnMainQueue).start(completed: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.controllerNode.updateWallpapers()
                         }
@@ -329,11 +329,11 @@ public final class ThemeGridController: ViewController {
                 ])
                 strongSelf.present(actionSheet, in: .window(.root))
             }
-        }, shareWallpapers: { [weak self] wallpapers in
+        }, shareWallpapers: { [weak self = self] wallpapers in
             if let strongSelf = self {
                 strongSelf.shareWallpapers(wallpapers)
             }
-        }, resetWallpapers: { [weak self] in
+        }, resetWallpapers: { [weak self = self] in
             if let strongSelf = self {
                 let actionSheet = ActionSheetController(presentationData: strongSelf.presentationData)
                 let items: [ActionSheetItem] = [
@@ -379,19 +379,19 @@ public final class ThemeGridController: ViewController {
                 ])
                 strongSelf.present(actionSheet, in: .window(.root))
             }
-        }, popViewController: { [weak self] in
+        }, popViewController: { [weak self = self] in
             if let strongSelf = self {
                 let _ = (strongSelf.navigationController as? NavigationController)?.popViewController(animated: true)
             }
         })
         self.controllerNode.navigationBar = self.navigationBar
-        self.controllerNode.requestWallpaperRemoval = { [weak self] in
+        self.controllerNode.requestWallpaperRemoval = { [weak self = self] in
             if let self {
                 self.completion(.remove)
                 self.dismiss()
             }
         }
-        self.controllerNode.gridNode.visibleContentOffsetChanged = { [weak self] offset in
+        self.controllerNode.gridNode.visibleContentOffsetChanged = { [weak self = self] offset in
             if let strongSelf = self {
                 var previousContentOffsetValue: CGFloat?
                 if let previousContentOffset = strongSelf.previousContentOffset, case let .known(value) = previousContentOffset {

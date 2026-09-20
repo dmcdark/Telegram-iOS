@@ -353,7 +353,7 @@ final class PeerSelectionScreenComponent: Component {
                 peerIds: [],
                 initialTitle: nil,
                 mode: .supergroup,
-                completion: { [weak self] peerId, _ in
+                completion: { [weak self = self] peerId, _ in
                     self?.completeCreatedPeer(peerId: peerId, kind: .group)
                 }
             )
@@ -365,7 +365,7 @@ final class PeerSelectionScreenComponent: Component {
                 return
             }
 
-            let createController = component.context.sharedContext.makeCreateChannelController(context: component.context, completion: { [weak self] peerId, _ in
+            let createController = component.context.sharedContext.makeCreateChannelController(context: component.context, completion: { [weak self = self] peerId, _ in
                 self?.completeCreatedPeer(peerId: peerId, kind: .channel)
             })
             controller.push(createController)
@@ -379,7 +379,7 @@ final class PeerSelectionScreenComponent: Component {
             self.createActionDisposable.set((component.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer in
                 guard let self, let peer, case let .channel(channel) = peer else {
                     return
                 }
@@ -457,7 +457,7 @@ final class PeerSelectionScreenComponent: Component {
                 chatListTitle: nil,
                 leftButton: isModal ? AnyComponentWithIdentity(id: "close", component: AnyComponent(NavigationButtonComponent(
                     content: .icon(imageName: "Navigation/Close"),
-                    pressed: { [weak self] _ in
+                    pressed: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -467,7 +467,7 @@ final class PeerSelectionScreenComponent: Component {
                     }
                 ))) : nil,
                 rightButtons: rightButtons,
-                backPressed: isModal ? nil : { [weak self] in
+                backPressed: isModal ? nil : { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -499,7 +499,7 @@ final class PeerSelectionScreenComponent: Component {
                     tabsNodeIsSearch: false,
                     accessoryPanelContainer: nil,
                     accessoryPanelContainerHeight: 0.0,
-                    activateSearch: { [weak self] _ in
+                    activateSearch: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -583,7 +583,7 @@ final class PeerSelectionScreenComponent: Component {
                     }
                 } else {
                     self.channelsDisposable = (component.context.engine.peers.adminedPublicChannels(scope: .forPersonalProfile)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] peers in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers in
                         guard let self else {
                             return
                         }
@@ -654,14 +654,14 @@ final class PeerSelectionScreenComponent: Component {
                     )
                     searchBarNode.placeholderString = NSAttributedString(string: environment.strings.Common_Search, font: Font.regular(17.0), textColor: searchBarTheme.placeholder)
                     self.searchBarNode = searchBarNode
-                    searchBarNode.cancel = { [weak self] in
+                    searchBarNode.cancel = { [weak self = self] in
                         guard let self else {
                             return
                         }
                         self.isSearchDisplayControllerActive = nil
                         self.state?.updated(transition: .spring(duration: 0.4))
                     }
-                    searchBarNode.textUpdated = { [weak self] query, _ in
+                    searchBarNode.textUpdated = { [weak self = self] query, _ in
                         guard let self else {
                             return
                         }
@@ -722,7 +722,7 @@ final class PeerSelectionScreenComponent: Component {
                 contentListNode = ContentListNode(parentView: self, context: component.context)
                 self.contentListNode = contentListNode
                 
-                contentListNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+                contentListNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
                     guard let self else {
                         return
                     }
@@ -905,14 +905,14 @@ public final class PeerSelectionScreen: ViewControllerComponentContainer {
             completion: completion
         ), navigationBarAppearance: .none, theme: .default, updatedPresentationData: updatedPresentationData)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? PeerSelectionScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? PeerSelectionScreenComponent.View else {
                 return true
             }

@@ -20,7 +20,7 @@ final class ChatListInputActivitiesNode: ASDisplayNode {
     }
     
     func asyncLayout() -> (CGSize, ChatListPresentationData, UIColor, EnginePeer.Id?, [(EnginePeer, PeerInputActivity)]) -> (CGSize, () -> Void) {
-        return { [weak self] boundingSize, presentationData, color, peerId, activities in
+        return { [weak self = self] boundingSize, presentationData, color, peerId, activities in
             let strings = presentationData.strings
             
             let textFont = Font.regular(floor(presentationData.fontSize.itemListBaseFontSize * 15.0 / 17.0))

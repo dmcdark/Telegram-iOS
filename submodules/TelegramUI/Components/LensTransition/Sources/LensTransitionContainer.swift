@@ -1425,7 +1425,7 @@ final class LensTransitionContainerImpl: UIView, LensTransitionContainerProtocol
         self.contentsView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.15)
 
         let cleanupDelay = max(duration, duration * UIView.animationDurationFactor())
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + cleanupDelay, execute: { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + cleanupDelay, execute: { [weak self = self] in
             guard let self else { return }
             self.setIsFilterActive(isFilterActive: false)
         })

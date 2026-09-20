@@ -163,7 +163,7 @@ public final class ChatNewThreadInfoItemNode: ListViewItemNode, ASGestureRecogni
 
         let currentItem = self.item
         
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let themeUpdated = item.presentationData.theme !== currentItem?.presentationData.theme
                             
             var backgroundSize = CGSize(width: 240.0, height: 0.0)

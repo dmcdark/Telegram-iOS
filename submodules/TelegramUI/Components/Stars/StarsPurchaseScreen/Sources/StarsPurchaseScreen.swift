@@ -654,7 +654,7 @@ private final class StarsPurchaseScreenComponent: CombinedComponent {
                 products,
                 starsContext.state,
                 context.engine.data.get(EngineDataMap(peerIds.map(TelegramEngine.EngineData.Item.Peer.Peer.init(id:))))
-            ).start(next: { [weak self] products, starsState, result in
+            ).start(next: { [weak self = self] products, starsState, result in
                 guard let self else {
                     return
                 }
@@ -697,19 +697,19 @@ private final class StarsPurchaseScreenComponent: CombinedComponent {
             }
             
             let _ = (self.context.engine.payments.canPurchasePremium(purpose: purpose)
-            |> deliverOnMainQueue).start(next: { [weak self] available in
+            |> deliverOnMainQueue).start(next: { [weak self = self] available in
                 if let strongSelf = self {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
                     if available {
                         strongSelf.paymentDisposable.set((inAppPurchaseManager.buyProduct(product.storeProduct, purpose: purpose)
-                        |> deliverOnMainQueue).start(next: { [weak self] status in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] status in
                             if let self, case .purchased = status {
                                 self.updateInProgress(false)
                                 
                                 self.updated(transition: .easeInOut(duration: 0.2))
                                 self.completion(product.count)
                             }
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             if let strongSelf = self {
                                 strongSelf.progressProduct = nil
                                 strongSelf.updateInProgress(false)
@@ -1042,12 +1042,12 @@ public final class StarsPurchaseScreen: ViewControllerComponentContainer {
         self.navigationItem.setLeftBarButton(cancelItem, animated: false)
         self.navigationPresentation = .modal
         
-        openAppExamplesImpl = { [weak self] in
+        openAppExamplesImpl = { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (context.sharedContext.makeMiniAppListScreenInitialData(context: context)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] initialData in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] initialData in
                 guard let self, let navigationController = self.navigationController as? NavigationController else {
                     return
                 }
@@ -1055,19 +1055,19 @@ public final class StarsPurchaseScreen: ViewControllerComponentContainer {
             })
         }
         
-        updateInProgressImpl = { [weak self] inProgress in
+        updateInProgressImpl = { [weak self = self] inProgress in
             if let strongSelf = self {
                 strongSelf.navigationItem.leftBarButtonItem?.isEnabled = !inProgress
                 strongSelf.view.disablesInteractiveTransitionGestureRecognizer = inProgress
                 strongSelf.view.disablesInteractiveModalDismiss = inProgress
             }
         }
-        presentImpl = { [weak self] c in
+        presentImpl = { [weak self = self] c in
             if let self {
                 self.present(c, in: .window(.root))
             }
         }
-        completionImpl = { [weak self] stars in
+        completionImpl = { [weak self = self] stars in
             if let self {
                 self.animateSuccess()
                 

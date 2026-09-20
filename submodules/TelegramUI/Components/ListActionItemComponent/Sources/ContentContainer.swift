@@ -135,7 +135,7 @@ final class ContentContainer: UIScrollView, UIScrollViewDelegate {
         self.scrollsToTop = false
         self.delegate = self
         
-        self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let self else {
                 return false
             }
@@ -179,7 +179,7 @@ final class ContentContainer: UIScrollView, UIScrollViewDelegate {
         if self.contentOffset.x >= self.optionsWidth + 30.0 {
             self.contextOptions.last?.action()
         } else {
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async { [weak self = self] in
                 guard let self else {
                     return
                 }

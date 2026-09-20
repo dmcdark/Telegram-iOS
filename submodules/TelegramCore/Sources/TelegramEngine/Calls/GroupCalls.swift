@@ -1748,7 +1748,7 @@ public final class GroupCallParticipantsContext {
             }
             return publicState
         }
-        |> beforeNext { [weak self] next in
+        |> beforeNext { [weak self = self] next in
             Queue.mainQueue().async {
                 self?.immediateState = next
             }
@@ -1821,7 +1821,7 @@ public final class GroupCallParticipantsContext {
         self.serviceState = previousServiceState ?? ServiceState()
         
         self.updatesDisposable.set((self.account.stateManager.groupCallParticipantUpdates
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -1839,7 +1839,7 @@ public final class GroupCallParticipantsContext {
         if let peerId {
             let activityCategory: PeerActivitySpace.Category = .voiceChat
             self.activitiesDisposable = (self.account.peerInputActivities(peerId: PeerActivitySpace(peerId: peerId, category: activityCategory))
-            |> deliverOnMainQueue).start(next: { [weak self] activities in
+            |> deliverOnMainQueue).start(next: { [weak self = self] activities in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1909,7 +1909,7 @@ public final class GroupCallParticipantsContext {
             })
         }
         
-        self.activityRankResetTimer = SwiftSignalKit.Timer(timeout: 10.0, repeat: true, completion: { [weak self] in
+        self.activityRankResetTimer = SwiftSignalKit.Timer(timeout: 10.0, repeat: true, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1956,7 +1956,7 @@ public final class GroupCallParticipantsContext {
                     return result
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] blockchainParticipants in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] blockchainParticipants in
                 guard let self else {
                     return
                 }
@@ -1974,7 +1974,7 @@ public final class GroupCallParticipantsContext {
                     }
                 }
                 if hasUnknownParticipants {
-                    self.pendingApplyBlockchainStateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { [weak self] _ in
+                    self.pendingApplyBlockchainStateTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1988,7 +1988,7 @@ public final class GroupCallParticipantsContext {
             self.e2eIsFailedDisposable = (e2eContext.isFailed
             |> filter { $0 }
             |> take(1)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] isFailed in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] isFailed in
                 guard let self else {
                     return
                 }
@@ -2181,7 +2181,7 @@ public final class GroupCallParticipantsContext {
         Logger.shared.log("GroupCallParticipantsContext", "will request ssrcs=\(ssrcs)")
         
         self.disposable.set((_internal_getGroupCallParticipants(account: self.account, reference: self.reference, offset: "", ssrcs: Array(ssrcs), limit: 100, sortAscending: true, isStream: false)
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let strongSelf = self else {
                 return
             }
@@ -2256,7 +2256,7 @@ public final class GroupCallParticipantsContext {
             
             return peers
         }
-        |> deliverOnMainQueue).start(next: { [weak self] peers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peers in
             guard let strongSelf = self else {
                 return
             }
@@ -2403,7 +2403,7 @@ public final class GroupCallParticipantsContext {
         self.updateQueue.removeAll()
         
         self.disposable.set((_internal_getGroupCallParticipants(account: self.account, reference: self.reference, offset: "", ssrcs: [], limit: 100, sortAscending: self.stateValue.state.sortAscending, isStream: false)
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let strongSelf = self else {
                 return
             }
@@ -2494,7 +2494,7 @@ public final class GroupCallParticipantsContext {
         }
         
         disposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2584,7 +2584,7 @@ public final class GroupCallParticipantsContext {
         }
 
         disposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2641,7 +2641,7 @@ public final class GroupCallParticipantsContext {
         }
 
         self.updateShouldBeRecordingDisposable.set((self.account.network.request(Api.functions.phone.toggleGroupCallRecord(flags: flags, call: self.reference.apiInputGroupCall, title: title, videoPortrait: videoPortrait))
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2656,7 +2656,7 @@ public final class GroupCallParticipantsContext {
         self.stateValue.state.defaultParticipantsAreMuted.isMuted = isMuted
         
         self.updateDefaultMuteDisposable.set((self.account.network.request(Api.functions.phone.toggleGroupCallSettings(flags: 1 << 0, call: self.reference.apiInputGroupCall, joinMuted: isMuted ? .boolTrue : .boolFalse, messagesEnabled: nil, sendPaidMessagesStars: nil))
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2676,7 +2676,7 @@ public final class GroupCallParticipantsContext {
             flags |= 1 << 3
         }
         self.updateMessagesEnabledDisposable.set((self.account.network.request(Api.functions.phone.toggleGroupCallSettings(flags: flags, call: self.reference.apiInputGroupCall, joinMuted: nil, messagesEnabled: isEnabled ? .boolTrue : .boolFalse, sendPaidMessagesStars: sendPaidMessageStars))
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2686,7 +2686,7 @@ public final class GroupCallParticipantsContext {
     
     public func resetInviteLinks() {
         self.resetInviteLinksDisposable.set((self.account.network.request(Api.functions.phone.toggleGroupCallSettings(flags: 1 << 1, call: self.reference.apiInputGroupCall, joinMuted: nil, messagesEnabled: nil, sendPaidMessagesStars: nil))
-        |> deliverOnMainQueue).start(next: { [weak self] updates in
+        |> deliverOnMainQueue).start(next: { [weak self = self] updates in
             guard let strongSelf = self else {
                 return
             }
@@ -2717,7 +2717,7 @@ public final class GroupCallParticipantsContext {
         self.isLoadingMore = true
         
         self.disposable.set((_internal_getGroupCallParticipants(account: self.account, reference: self.reference, offset: token, ssrcs: [], limit: 100, sortAscending: self.stateValue.state.sortAscending, isStream: false)
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let strongSelf = self else {
                 return
             }
@@ -3951,7 +3951,7 @@ public final class GroupCallMessagesContext {
             
             let accountPeerId = account.peerId
             self.updatesDisposable = (account.stateManager.groupCallMessageUpdates
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] updates in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] updates in
                 guard let self else {
                     return
                 }
@@ -4057,7 +4057,7 @@ public final class GroupCallMessagesContext {
                         }
                         return messages
                     }
-                    |> deliverOn(self.queue)).startStandalone(next: { [weak self] messages in
+                    |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] messages in
                         guard let self else {
                             return
                         }
@@ -4099,7 +4099,7 @@ public final class GroupCallMessagesContext {
                 }
             })
             
-            let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+            let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                 self?.messageLifetimeTick()
             }, queue: self.queue)
             self.messageLifeTimer = timer
@@ -4151,7 +4151,7 @@ public final class GroupCallMessagesContext {
                     return (result, peers)
                 }
             }
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -4304,7 +4304,7 @@ public final class GroupCallMessagesContext {
             let _ = (self.account.postbox.transaction { transaction -> Peer? in
                 return transaction.getPeer(fromId)
             }
-            |> deliverOn(self.queue)).startStandalone(next: { [weak self] fromPeer in
+            |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] fromPeer in
                 guard let self else {
                     return
                 }
@@ -4397,7 +4397,7 @@ public final class GroupCallMessagesContext {
                         )),
                         allowPaidStars: paidStars,
                         sendAs: sendAs
-                    )) |> deliverOn(self.queue)).startStrict(next: { [weak self] updates in
+                    )) |> deliverOn(self.queue)).startStrict(next: { [weak self = self] updates in
                         guard let self else {
                             return
                         }
@@ -4459,7 +4459,7 @@ public final class GroupCallMessagesContext {
                 )),
                 allowPaidStars: pendingSendStars.amount,
                 sendAs: sendAs
-            )) |> deliverOn(self.queue)).startStrict(next: { [weak self] updates in
+            )) |> deliverOn(self.queue)).startStrict(next: { [weak self = self] updates in
                 guard let self else {
                     return
                 }
@@ -4512,7 +4512,7 @@ public final class GroupCallMessagesContext {
             let _ = (self.account.postbox.transaction { transaction -> Peer? in
                 return transaction.getPeer(fromId)
             }
-            |> deliverOn(self.queue)).startStandalone(next: { [weak self] fromPeer in
+            |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] fromPeer in
                 guard let self, let fromPeer else {
                     return
                 }
@@ -4622,7 +4622,7 @@ public final class GroupCallMessagesContext {
                     self.state = state
                     
                     self.pendingSendStarsTimer?.invalidate()
-                    self.pendingSendStarsTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: false, completion: { [weak self] in
+                    self.pendingSendStarsTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: false, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -4665,7 +4665,7 @@ public final class GroupCallMessagesContext {
             let _ = (self.account.postbox.transaction { transaction -> Api.InputPeer? in
                 return transaction.getPeer(authorId).flatMap(apiInputPeer)
             }
-            |> deliverOn(self.queue)).startStandalone(next: { [weak self] inputPeer in
+            |> deliverOn(self.queue)).startStandalone(next: { [weak self = self] inputPeer in
                 guard let self else {
                     return
                 }

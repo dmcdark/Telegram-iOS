@@ -176,13 +176,13 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
         recognizer.delaysTouchesBegan = false
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 return strongSelf.tapActionAtPoint(point)
             }
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }
@@ -190,7 +190,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         self.scrollNode.view.addGestureRecognizer(recognizer)
         
         if case let .Loaded(content) = webPage.content, let scheme = URL(string: content.url)?.scheme?.lowercased(), scheme == "http" || scheme == "https" {
-            self.webpageDisposable = (actualizedWebpage(account: context.account, webpage: webPage) |> deliverOnMainQueue).start(next: { [weak self] result in
+            self.webpageDisposable = (actualizedWebpage(account: context.account, webpage: webPage) |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -593,7 +593,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         self.codeHighlightState = (specs, disposable)
         self.updateCodeHighlightDisposable.set(disposable)
         disposable.set((asyncStanaloneSyntaxHighlight(current: self.codeHighlight, specs: specs)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -731,23 +731,23 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                     let itemIndex = itemIndex
                     let embedIndex = embedIndex
                     let detailsIndex = detailsIndex
-                    if let newNode = item.node(context: self.context, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, theme: self.theme, sourceLocation: self.sourceLocation, openMedia: { [weak self] media in
+                    if let newNode = item.node(context: self.context, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, theme: self.theme, sourceLocation: self.sourceLocation, openMedia: { [weak self = self] media in
                         self?.openMedia(media)
-                    }, longPressMedia: { [weak self] media in
+                    }, longPressMedia: { [weak self = self] media in
                         self?.longPressMedia(media)
-                    }, activatePinchPreview: { [weak self] sourceNode in
+                    }, activatePinchPreview: { [weak self = self] sourceNode in
                         self?.activatePinchPreview(sourceNode: sourceNode)
-                    }, pinchPreviewFinished: { [weak self] itemNode in
+                    }, pinchPreviewFinished: { [weak self = self] itemNode in
                         self?.pinchPreviewFinished(itemNode: itemNode)
-                    }, openPeer: { [weak self] peerId in
+                    }, openPeer: { [weak self = self] peerId in
                         self?.openPeer(peerId)
-                    }, openUrl: { [weak self] url in
+                    }, openUrl: { [weak self = self] url in
                         self?.openUrl(url)
-                    }, updateWebEmbedHeight: { [weak self] height in
+                    }, updateWebEmbedHeight: { [weak self = self] height in
                         self?.updateWebEmbedHeight(embedIndex, height)
-                    }, updateDetailsExpanded: { [weak self] expanded in
+                    }, updateDetailsExpanded: { [weak self = self] expanded in
                         self?.updateDetailsExpanded(detailsIndex, expanded)
-                    }, currentExpandedDetails: self.currentExpandedDetails, getPreloadedResource: { [weak self] url in
+                    }, currentExpandedDetails: self.currentExpandedDetails, getPreloadedResource: { [weak self = self] url in
                         return self?.getPreloadedResource(url)
                     }) {
                         newNode.frame = itemFrame
@@ -763,7 +763,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                         self.configureExternalMediaDimensionsUpdates(for: newNode)
                         
                         if let itemNode = itemNode as? InstantPageDetailsNode {
-                            itemNode.requestLayoutUpdate = { [weak self] animated in
+                            itemNode.requestLayoutUpdate = { [weak self = self] animated in
                                 if let strongSelf = self {
                                     strongSelf.updateVisibleItems(visibleBounds: strongSelf.scrollNode.view.bounds, animated: animated)
                                 }
@@ -1043,7 +1043,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
     }
     
     private func configureExternalMediaDimensionsUpdates(for itemNode: InstantPageNode) {
-        let update: (MediaId, PixelDimensions) -> Void = { [weak self] mediaId, dimensions in
+        let update: (MediaId, PixelDimensions) -> Void = { [weak self = self] mediaId, dimensions in
             self?.updateExternalMediaDimensions(mediaId, dimensions)
         }
         if let itemNode = itemNode as? InstantPageExternalMediaDimensionsNode {
@@ -1062,7 +1062,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         self.pendingResolvedExternalMediaDimensions.insert(mediaId)
         
         let signal: Signal<Void, NoError> = (.complete() |> delay(0.08, queue: Queue.mainQueue()))
-        self.updateExternalMediaDimensionsDisposable.set(signal.start(completed: { [weak self] in
+        self.updateExternalMediaDimensionsDisposable.set(signal.start(completed: { [weak self = self] in
             self?.relayoutForResolvedExternalMediaDimensions()
         }))
     }
@@ -1445,7 +1445,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
     
         self.loadWebpageDisposable.set(nil)
         self.resolveUrlDisposable.set((self.context.sharedContext.resolveUrl(context: self.context, peerId: nil, url: baseUrl, skipUrlAuth: true)
-        |> deliverOnMainQueue).start(next: { [weak self] result in
+        |> deliverOnMainQueue).start(next: { [weak self = self] result in
             if let strongSelf = self {
                 strongSelf.loadProgress.set(0.07)
                 switch result {
@@ -1518,7 +1518,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                         joinVoiceChat: nil,
                         present: { c, a in
                             self?.present(c, a)
-                        }, dismissInput: { [weak self] in
+                        }, dismissInput: { [weak self = self] in
                             self?.endEditing(true)
                         }, contentContext: nil, progress: nil, completion: nil)
                 }
@@ -1535,7 +1535,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         }
         
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let actionSheet = OpenInOptionsScreen(context: self.context, item: .url(url: baseUrl), openUrl: { [weak self] url in
+        let actionSheet = OpenInOptionsScreen(context: self.context, item: .url(url: baseUrl), openUrl: { [weak self = self] url in
             if let self {
                 self.context.sharedContext.openExternalUrl(context: self.context, urlContext: .generic, url: url, forceExternal: true, presentationData: presentationData, navigationController: nil, dismissInput: {})
             }
@@ -1630,20 +1630,20 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
         
         if let centralIndex = centralIndex {
             let controller = InstantPageGalleryController(context: self.context, userLocation: self.sourceLocation.userLocation, webPage: webPage, entries: entries, centralIndex: centralIndex, fromPlayingVideo: fromPlayingVideo, replaceRootController: { _, _ in
-            }, baseNavigationController: self.getNavigationController(), getPreloadedResource: { [weak self] url in
+            }, baseNavigationController: self.getNavigationController(), getPreloadedResource: { [weak self = self] url in
                 return self?.getPreloadedResource(url)
             })
-            self.hiddenMediaDisposable.set((controller.hiddenMedia |> deliverOnMainQueue).start(next: { [weak self] entry in
+            self.hiddenMediaDisposable.set((controller.hiddenMedia |> deliverOnMainQueue).start(next: { [weak self = self] entry in
                 if let strongSelf = self {
                     for (_, itemNode) in strongSelf.visibleItemsWithNodes {
                         itemNode.updateHiddenMedia(media: entry?.media)
                     }
                 }
             }))
-            controller.openUrl = { [weak self] url in
+            controller.openUrl = { [weak self = self] url in
                 self?.openUrl(url)
             }
-            self.present(controller, InstantPageGalleryControllerPresentationArguments(transitionArguments: { [weak self] entry -> GalleryTransitionArguments? in
+            self.present(controller, InstantPageGalleryControllerPresentationArguments(transitionArguments: { [weak self = self] entry -> GalleryTransitionArguments? in
                 if let strongSelf = self {
                     for (_, itemNode) in strongSelf.visibleItemsWithNodes {
                         if let transitionNode = itemNode.transitionNode(media: entry.media) {
@@ -1661,22 +1661,22 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
     }
     
     private func longPressMedia(_ media: InstantPageMedia) {
-        let controller = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self] in
+        let controller = makeContextMenuController(actions: [ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuCopy, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
             if let self, let image = media.media._asMedia() as? TelegramMediaImage {
                 let media = TelegramMediaImage(imageId: MediaId(namespace: 0, id: 0), representations: image.representations, immediateThumbnailData: image.immediateThumbnailData, reference: nil, partialReference: nil, flags: [])
                 let _ = copyToPasteboard(context: self.context, userLocation: self.sourceLocation.userLocation, mediaReference: .standalone(media: media)).start()
             }
-        }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_LinkDialogSave, accessibilityLabel: self.presentationData.strings.Conversation_LinkDialogSave), action: { [weak self] in
+        }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_LinkDialogSave, accessibilityLabel: self.presentationData.strings.Conversation_LinkDialogSave), action: { [weak self = self] in
             if let self, let image = media.media._asMedia() as? TelegramMediaImage {
                 let media = TelegramMediaImage(imageId: MediaId(namespace: 0, id: 0), representations: image.representations, immediateThumbnailData: image.immediateThumbnailData, reference: nil, partialReference: nil, flags: [])
                 let _ = saveToCameraRoll(context: self.context, userLocation: self.sourceLocation.userLocation, mediaReference: .standalone(media: media)).start()
             }
-        }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuShare, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuShare), action: { [weak self] in
+        }), ContextMenuAction(content: .text(title: self.presentationData.strings.Conversation_ContextMenuShare, accessibilityLabel: self.presentationData.strings.Conversation_ContextMenuShare), action: { [weak self = self] in
             if let self, let (webPage, _) = self.webPage, let image = media.media._asMedia() as? TelegramMediaImage {
                 self.present(self.context.sharedContext.makeShareController(context: self.context, params: ShareControllerParams(subject: .image(image.representations.map({ ImageRepresentationWithReference(representation: $0, reference: MediaResourceReference.media(media: .webPage(webPage: WebpageReference(webPage), media: image), resource: $0.resource)) })))), nil)
             }
         })], catchTapsOutside: true)
-        self.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+        self.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
             if let self {
                 for (_, itemNode) in self.visibleItemsWithNodes {
                     if let (node, _, _) = itemNode.transitionNode(media: media) {
@@ -1689,7 +1689,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
     }
     
     private func activatePinchPreview(sourceNode: PinchSourceContainerNode) {
-        let pinchController = makePinchController(sourceNode: sourceNode, getContentAreaInScreenSpace: { [weak self] in
+        let pinchController = makePinchController(sourceNode: sourceNode, getContentAreaInScreenSpace: { [weak self = self] in
             guard let self else {
                 return CGRect()
             }
@@ -1800,7 +1800,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
             let strings = self.presentationData.strings
             let _ = (context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.translationSettings])
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+            |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
                 let translationSettings: TranslationSettings
                 if let current = sharedData.entries[ApplicationSpecificSharedDataKeys.translationSettings]?.get(TranslationSettings.self) {
                     translationSettings = current
@@ -1808,13 +1808,13 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                     translationSettings = TranslationSettings.defaultSettings
                 }
                 
-                var actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuCopy, accessibilityLabel: strings.Conversation_ContextMenuCopy), action: { [weak self] in
+                var actions: [ContextMenuAction] = [ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuCopy, accessibilityLabel: strings.Conversation_ContextMenuCopy), action: { [weak self = self] in
                     UIPasteboard.general.string = text
                     
                     if let strongSelf = self {
                         strongSelf.present(UndoOverlayController(presentationData: presentationData, content: .copy(text: strings.Conversation_TextCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), nil)
                     }
-                }), ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuShare, accessibilityLabel: strings.Conversation_ContextMenuShare), action: { [weak self] in
+                }), ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuShare, accessibilityLabel: strings.Conversation_ContextMenuShare), action: { [weak self = self] in
                     if let strongSelf = self, let (webPage, _) = strongSelf.webPage, case let .Loaded(content) = webPage.content {
                         strongSelf.present(strongSelf.context.sharedContext.makeShareController(context: strongSelf.context, params: ShareControllerParams(subject: .quote(text: text, url: content.url))), nil)
                     }
@@ -1822,8 +1822,8 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                 
                 let (canTranslate, language) = canTranslateText(context: context, text: text, showTranslate: translationSettings.showTranslate, showTranslateIfTopical: false, ignoredLanguages: translationSettings.ignoredLanguages)
                 if canTranslate {
-                    actions.append(ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuTranslate, accessibilityLabel: strings.Conversation_ContextMenuTranslate), action: { [weak self] in
-                        Task { @MainActor [weak self] in
+                    actions.append(ContextMenuAction(content: .text(title: strings.Conversation_ContextMenuTranslate, accessibilityLabel: strings.Conversation_ContextMenuTranslate), action: { [weak self = self] in
+                        Task { @MainActor [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1831,7 +1831,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                                 context: context,
                                 mode: .translate(fromLanguage: language, applyResult: nil),
                                 inputText: .plain(text: text, entities: []),
-                                copyResult: { [weak self] text in
+                                copyResult: { [weak self = self] text in
                                     storeComposedRichMessageInPasteboard(text)
                                     self?.present(UndoOverlayController(presentationData: presentationData, content: .copy(text: strings.Conversation_TextCopied), elevatedLayout: true, animateInAsReplacement: false, action: { _ in return false }), nil)
                                 },
@@ -1843,10 +1843,10 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
                 }
                 
                 let controller = makeContextMenuController(actions: actions)
-                controller.dismissed = { [weak self] in
+                controller.dismissed = { [weak self = self] in
                     self?.updateTextSelectionRects([], text: nil)
                 }
-                self?.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+                self?.present(controller, ContextMenuControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
                     if let strongSelf = self {
                         return (strongSelf.scrollNode, coveringRect.insetBy(dx: -3.0, dy: -3.0), strongSelf.wrapperNode, strongSelf.wrapperNode.bounds)
                     } else {
@@ -1911,11 +1911,11 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
             return
         }
         
-        let controller = InstantPageReferenceController(context: self.context, sourceLocation: self.sourceLocation, theme: theme, webPage: webPage, instantPage: instantPage, anchorText: anchorText, openUrl: { [weak self] url in
+        let controller = InstantPageReferenceController(context: self.context, sourceLocation: self.sourceLocation, theme: theme, webPage: webPage, instantPage: instantPage, anchorText: anchorText, openUrl: { [weak self = self] url in
             self?.openUrl(url)
-        }, openUrlIn: { [weak self] url in
+        }, openUrlIn: { [weak self = self] url in
             self?.openUrlIn(url)
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, a)
         })
         self.present(controller, nil)
@@ -1984,7 +1984,7 @@ final class BrowserInstantPageContent: UIView, BrowserContent, UIScrollViewDeleg
             self.currentWebEmbedHeights[index] = height
             
             let signal: Signal<Void, NoError> = (.complete() |> delay(0.08, queue: Queue.mainQueue()))
-            self.updateLayoutDisposable.set(signal.start(completed: { [weak self] in
+            self.updateLayoutDisposable.set(signal.start(completed: { [weak self = self] in
                 if let self {
                     self.updatePageLayout()
                     self.updateVisibleItems(visibleBounds: self.scrollNode.view.bounds)

@@ -58,7 +58,7 @@ public final class ChatTextInputSlowmodePlaceholderNode: ASDisplayNode {
             self.update()
             
             if self.timer == nil {
-                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                     self?.update()
                 }, queue: .mainQueue())
                 self.timer = timer

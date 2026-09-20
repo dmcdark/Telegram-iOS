@@ -228,7 +228,7 @@ final class HashtagSearchRecentQueryItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -248,7 +248,7 @@ final class HashtagSearchRecentQueryItemNode: ItemListRevealOptionsItemNode {
         
         let textLayout = TextNode.asyncLayout(self.textNode)
         
-        return { [weak self] item, params, last, firstWithHeader in
+        return { [weak self = self] item, params, last, firstWithHeader in
             
             let leftInset: CGFloat = 62.0 + params.leftInset
             let rightInset: CGFloat = params.rightInset
@@ -258,7 +258,7 @@ final class HashtagSearchRecentQueryItemNode: ItemListRevealOptionsItemNode {
             
             let nodeLayout = ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: 44.0), insets: UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0))
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 var updatedTheme: PresentationTheme?
                 if currentItem?.theme !== item.theme {
                     updatedTheme = item.theme
@@ -405,7 +405,7 @@ final class HashtagSearchRecentListNode: ASDisplayNode {
         self.addSubnode(self.emptyTextNode)
         
         self.interaction = HashtagSearchInteraction(
-            setSearchQuery: { [weak self] query in
+            setSearchQuery: { [weak self = self] query in
                 self?.setSearchQuery(query)
             },
             deleteRecentQuery: { query in
@@ -416,13 +416,13 @@ final class HashtagSearchRecentListNode: ASDisplayNode {
             }
         )
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.view.window?.endEditing(true)
         }
         
         let previousRecentItems = Atomic<[HashtagSearchRecentQueryEntry]?>(value: nil)
         self.recentDisposable = (hashtagSearchRecentQueries(engine: self.context.engine)
-        |> deliverOnMainQueue).start(next: { [weak self] queries in
+        |> deliverOnMainQueue).start(next: { [weak self = self] queries in
             guard let self else {
                 return
             }
@@ -479,7 +479,7 @@ final class HashtagSearchRecentListNode: ASDisplayNode {
                 options.insert(.AnimateInsertion)
             }
             
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }

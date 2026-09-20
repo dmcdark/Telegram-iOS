@@ -292,7 +292,7 @@ public class LocationPinAnnotationView: MKAnnotationView {
                         headingKvoToken.invalidate()
                     }
                     
-                    self.headingKvoToken = annotation.observe(\.heading, options: .new) { [weak self] (_, _) in
+                    self.headingKvoToken = annotation.observe(\.heading, options: .new) { [weak self = self] (_, _) in
                         self?.updateHeading()
                     }
                     self.updateHeading()

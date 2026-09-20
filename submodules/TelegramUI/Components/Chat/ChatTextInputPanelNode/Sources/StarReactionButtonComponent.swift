@@ -187,7 +187,7 @@ final class StarReactionButtonComponent: Component {
             longTapRecognizer.tapActionAtPoint = { _ in
                 return .waitForSingleTap
             }
-            longTapRecognizer.highlight = { [weak self] point in
+            longTapRecognizer.highlight = { [weak self = self] point in
                 guard let self else {
                     return
                 }

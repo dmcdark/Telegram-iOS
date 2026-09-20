@@ -99,7 +99,7 @@ public final class ContextControllerActionsListActionItemNode: HighlightTracking
         
         self.isEnabled = self.canBeHighlighted()
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -121,7 +121,7 @@ public final class ContextControllerActionsListActionItemNode: HighlightTracking
     private func startTimer() {
         self.invalidateTimer()
         
-        self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+        self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -147,13 +147,13 @@ public final class ContextControllerActionsListActionItemNode: HighlightTracking
         
         self.item.action?(ContextMenuActionItem.Action(
             controller: self.getController(),
-            dismissWithResult: { [weak self] result in
+            dismissWithResult: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.requestDismiss(result)
             },
-            updateAction: { [weak self] id, updatedAction in
+            updateAction: { [weak self = self] id, updatedAction in
                 guard let strongSelf = self else {
                     return
                 }
@@ -167,13 +167,13 @@ public final class ContextControllerActionsListActionItemNode: HighlightTracking
         
         self.item.longPressAction?(ContextMenuActionItem.Action(
             controller: self.getController(),
-            dismissWithResult: { [weak self] result in
+            dismissWithResult: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.requestDismiss(result)
             },
-            updateAction: { [weak self] id, updatedAction in
+            updateAction: { [weak self = self] id, updatedAction in
                 guard let strongSelf = self else {
                     return
                 }
@@ -371,7 +371,7 @@ public final class ContextControllerActionsListActionItemNode: HighlightTracking
             self.iconNode.contentMode = iconSource.contentMode
             self.iconNode.clipsToBounds = true
             if self.iconDisposable == nil {
-                self.iconDisposable = (iconSource.signal |> deliverOnMainQueue).start(next: { [weak self] image in
+                self.iconDisposable = (iconSource.signal |> deliverOnMainQueue).start(next: { [weak self = self] image in
                     guard let strongSelf = self else {
                         return
                     }
@@ -869,7 +869,7 @@ public final class ContextControllerActionsListStackItem: ContextControllerActio
             
             if let tipSignal = tipSignal {
                 self.tipDisposable = (tipSignal
-                |> deliverOnMainQueue).start(next: { [weak self] tip in
+                |> deliverOnMainQueue).start(next: { [weak self = self] tip in
                     guard let strongSelf = self else {
                         return
                     }
@@ -878,7 +878,7 @@ public final class ContextControllerActionsListStackItem: ContextControllerActio
                 }).strict()
             }
             
-            requestUpdateAction = { [weak self] id, action in
+            requestUpdateAction = { [weak self = self] id, action in
                 guard let self else {
                     return
                 }
@@ -917,7 +917,7 @@ public final class ContextControllerActionsListStackItem: ContextControllerActio
                                 context: self.context,
                                 getController: self.getController,
                                 requestDismiss: self.requestDismiss,
-                                requestUpdateAction: { [weak self] id, action in
+                                requestUpdateAction: { [weak self = self] id, action in
                                     guard let self else {
                                         return
                                     }
@@ -1665,7 +1665,7 @@ public final class ContextControllerActionsStackNodeImpl: ASDisplayNode, Context
             self.view.addSubview(self.backgroundContainer)
             self.backgroundContainer.contentView.addSubview(self.contentContainer)
             
-            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
                 guard let strongSelf = self else {
                     return []
                 }
@@ -1852,7 +1852,7 @@ public final class ContextControllerActionsStackNodeImpl: ASDisplayNode, Context
             
             if let tipSignal = tipSignal {
                 self.tipDisposable = (tipSignal
-                |> deliverOnMainQueue).start(next: { [weak self] tip in
+                |> deliverOnMainQueue).start(next: { [weak self = self] tip in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1908,7 +1908,7 @@ public final class ContextControllerActionsStackNodeImpl: ASDisplayNode, Context
                     let previousTipNode = self.tipNode
                     updatedTransition = .immediate
                     let tipNode = InnerTextSelectionTipContainerNode(presentationData: presentationData, tip: tip, isInline: false)
-                    tipNode.requestDismiss = { [weak self] completion in
+                    tipNode.requestDismiss = { [weak self = self] completion in
                         self?.getController()?.dismiss(completion: completion)
                     }
                     self.tipNode = tipNode
@@ -2011,26 +2011,26 @@ public final class ContextControllerActionsStackNodeImpl: ASDisplayNode, Context
         
         self.addSubnode(self.navigationContainer)
         
-        self.navigationContainer.requestUpdate = { [weak self] transition in
+        self.navigationContainer.requestUpdate = { [weak self = self] transition in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.requestUpdate(transition)
         }
         
-        self.navigationContainer.requestPop = { [weak self] in
+        self.navigationContainer.requestPop = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.pop()
         }
         
-        self.navigationContainer.cancelItemSelectionGesture = { [weak self] in
+        self.navigationContainer.cancelItemSelectionGesture = { [weak self = self] in
             self?.selectionPanGesture?.cancel()
         }
         
         let selectionPanGesture = ItemSelectionRecognizer(target: self, action: #selector(self.panGesture(_:)))
-        selectionPanGesture.shouldBegin = { [weak self] point in
+        selectionPanGesture.shouldBegin = { [weak self = self] point in
             guard let self, let topItemContainer = self.itemContainers.last else {
                 return false
             }
@@ -2136,7 +2136,7 @@ public final class ContextControllerActionsStackNodeImpl: ASDisplayNode, Context
             getController: self.getController,
             requestDismiss: self.requestDismiss,
             requestUpdate: self.requestUpdate,
-            requestUpdateApparentHeight: { [weak self] transition in
+            requestUpdateApparentHeight: { [weak self = self] transition in
                 guard let strongSelf = self else {
                     return
                 }

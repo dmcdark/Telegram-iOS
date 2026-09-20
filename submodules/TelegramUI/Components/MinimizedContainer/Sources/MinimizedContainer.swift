@@ -141,13 +141,13 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
             self.addSubnode(self.dimCoverNode)
             self.addSubnode(self.shadowNode)
             
-            self.headerNode.requestClose = { [weak self] in
+            self.headerNode.requestClose = { [weak self = self] in
                 if let self {
                     self.closeTapped?()
                 }
             }
             
-            self.headerNode.requestMaximize = { [weak self] in
+            self.headerNode.requestMaximize = { [weak self = self] in
                 if let self {
                     self.tapped?()
                 }
@@ -181,7 +181,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
             recognizer.tapActionAtPoint = { point in
                 return .waitForSingleTap
             }
-            recognizer.highlight = { [weak self] point in
+            recognizer.highlight = { [weak self = self] point in
                 if let point = point, point.x > 280.0 {
                     self?.highlighted?(true)
                 } else {
@@ -376,7 +376,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
         self.view.addSubview(self.scrollView)
         
         self.presentationDataDisposable = (self.sharedContext.presentationData
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             guard let self else {
                 return
             }
@@ -395,7 +395,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
         self.scrollView.alwaysBounceVertical = true
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.showsHorizontalScrollIndicator = false
-        self.scrollView.shouldPassthrough = { [weak self] in
+        self.scrollView.shouldPassthrough = { [weak self = self] in
             guard let self else {
                 return true
             }
@@ -612,7 +612,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
         guard let navigationController = self.navigationController else {
             return
         }
-        item.beforeMaximize(navigationController, { [weak self] in
+        item.beforeMaximize(navigationController, { [weak self = self] in
             self?.navigationController?.maximizeViewController(item.controller, animated: true)
         })
     }
@@ -671,7 +671,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
         }
         self.isExpanded = false
         self.currentTransition = .maximize(itemId: item.id)
-        self.requestUpdate(transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self] _ in
+        self.requestUpdate(transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -860,7 +860,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
                     guard self.canStartMutatingTransition() else {
                         return
                     }
-                    let proceed = { [weak self] in
+                    let proceed = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -910,7 +910,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
                         self.navigationController?.presentOverlay(controller: actionSheet, inGlobal: false, blockInteraction: false)
                     } else if let item = self.items.first {
                         if !item.controller.shouldDismissImmediately() {
-                            self.displayDismissConfirmation(completion: { [weak self] commit in
+                            self.displayDismissConfirmation(completion: { [weak self = self] commit in
                                 if commit {
                                     self?.navigationController?.dismissMinimizedControllers(animated: true)
                                 }
@@ -1155,7 +1155,7 @@ public class MinimizedContainerImpl: ASDisplayNode, MinimizedContainer, ASScroll
                 }
                 if self.items.count == 1, maximizeLastStandingController {
                     if let itemNode = self.itemNodes.first(where: { $0.0 != itemId })?.value, let navigationController = self.navigationController {
-                        itemNode.item.beforeMaximize(navigationController, { [weak self] in
+                        itemNode.item.beforeMaximize(navigationController, { [weak self = self] in
                             guard let self else {
                                 return
                             }

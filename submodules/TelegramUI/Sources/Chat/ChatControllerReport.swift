@@ -132,7 +132,7 @@ extension ChatControllerImpl {
             restartBot = true
         }
         self.editMessageDisposable.set((self.context.engine.privacy.requestUpdatePeerIsBlocked(peerId: peerId, isBlocked: false)
-        |> afterDisposed({ [weak self] in
+        |> afterDisposed({ [weak self = self] in
             Queue.mainQueue().async {
                 unblockingPeer.set(false)
                 if let strongSelf = self, restartBot {
@@ -196,7 +196,7 @@ extension ChatControllerImpl {
                         return item
                     })
                 }),
-                ActionSheetButtonItem(title: presentationData.strings.UserInfo_BlockActionTitle(EnginePeer(peer).compactDisplayTitle).string, color: .destructive, action: { [weak self] in
+                ActionSheetButtonItem(title: presentationData.strings.UserInfo_BlockActionTitle(EnginePeer(peer).compactDisplayTitle).string, color: .destructive, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return

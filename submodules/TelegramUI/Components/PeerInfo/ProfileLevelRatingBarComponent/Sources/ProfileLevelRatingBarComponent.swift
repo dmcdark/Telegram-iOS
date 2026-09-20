@@ -222,7 +222,7 @@ public final class ProfileLevelRatingBarComponent: Component {
             self.hierarchyTracker = hierarchyTracker
             self.layer.addSublayer(hierarchyTracker)
             
-            self.hierarchyTracker?.isInHierarchyUpdated = { [weak self] value in
+            self.hierarchyTracker?.isInHierarchyUpdated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -230,7 +230,7 @@ public final class ProfileLevelRatingBarComponent: Component {
                 
                 if value {
                     if self.badgePhysicsLink == nil {
-                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -295,7 +295,7 @@ public final class ProfileLevelRatingBarComponent: Component {
             if let hierarchyTracker = self.hierarchyTracker, hierarchyTracker.isInHierarchy {
                 if self.animationState != nil {
                     if self.animationLink == nil {
-                        self.animationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                        self.animationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                             guard let self else {
                                 return
                             }

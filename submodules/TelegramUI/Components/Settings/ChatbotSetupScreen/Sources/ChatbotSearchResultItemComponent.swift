@@ -119,7 +119,7 @@ final class ChatbotSearchResultItemComponent: Component {
                         effectAlignment: .center,
                         minSize: nil,
                         contentInsets: UIEdgeInsets(top: 4.0, left: 8.0, bottom: 4.0, right: 8.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -169,7 +169,7 @@ final class ChatbotSearchResultItemComponent: Component {
                         effectAlignment: .center,
                         minSize: nil,
                         contentInsets: UIEdgeInsets(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }

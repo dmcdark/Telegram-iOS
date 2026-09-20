@@ -75,7 +75,7 @@ final class AlertControllerNode: ASDisplayNode {
         self.containerNode.addSubnode(self.contentNode)
         self.addSubnode(self.containerNode)
         
-        self.contentNode.requestLayout = { [weak self] transition in
+        self.contentNode.requestLayout = { [weak self = self] transition in
             if let strongSelf = self, let containerLayout = self?.containerLayout {
                 strongSelf.containerLayoutUpdated(containerLayout, transition: transition)
             }
@@ -134,7 +134,7 @@ final class AlertControllerNode: ASDisplayNode {
             self.bottomDimView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3)
             self.leftDimView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3)
             self.rightDimView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3)
-            self.containerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.25)/*, completion: { [weak self] finished in
+            self.containerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.25)/*, completion: { [weak self = self] finished in
                 if finished {
                     self?.centerDimView.backgroundColor = nil
                     self?.centerDimView.image = generateStretchableFilledCircleImage(radius: 16.0, color: nil, backgroundColor: UIColor(white: 0.0, alpha: 0.5))

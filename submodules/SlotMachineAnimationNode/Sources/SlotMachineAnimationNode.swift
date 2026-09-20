@@ -272,7 +272,7 @@ class DiceAnimatedStickerNode: ASDisplayNode {
         
         self.addSubnode(self.animationNode)
         
-        self.animationNode.completed = { [weak self] willStop in
+        self.animationNode.completed = { [weak self = self] willStop in
             guard let strongSelf = self, !strongSelf.didTryAdvancingState, let state = strongSelf.state else {
                 return
             }

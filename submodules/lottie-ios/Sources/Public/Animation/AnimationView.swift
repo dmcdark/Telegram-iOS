@@ -402,7 +402,7 @@ final public class AnimationView: AnimationViewBase {
             if self.needsWorkaroundDisplayLink != oldValue {
                 if self.needsWorkaroundDisplayLink {
                     if self.workaroundDisplayLink == nil {
-                        self.workaroundDisplayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                        self.workaroundDisplayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                             let _ = self?.realtimeAnimationProgress
                         }
                     }
@@ -1052,7 +1052,7 @@ final public class AnimationView: AnimationViewBase {
         fontProvider: fontProvider,
         compatibilityTrackerMode: .abort)
 
-      coreAnimationLayer.didSetUpAnimation = { [weak self] issues in
+      coreAnimationLayer.didSetUpAnimation = { [weak self = self] issues in
         self?.automaticEngineLayerDidSetUpAnimation(issues)
       }
 

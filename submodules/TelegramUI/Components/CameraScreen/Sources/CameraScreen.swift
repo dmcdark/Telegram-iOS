@@ -371,13 +371,13 @@ private final class CameraScreenComponent: CombinedComponent {
                                    
             self.setupVolumeButtonsHandler()
             
-            toggleCameraPositionAction.connect({ [weak self] in
+            toggleCameraPositionAction.connect({ [weak self = self] in
                 if let self {
                     self.togglePosition(self.animateFlipAction)
                 }
             })
             
-            dismissCollageSelection.connect({ [weak self] in
+            dismissCollageSelection.connect({ [weak self = self] in
                 if let self {
                     self.dismissCollageSelection()
                 }
@@ -402,7 +402,7 @@ private final class CameraScreenComponent: CombinedComponent {
                     self.isCustomTarget = true
                     
                     let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: customTarget))
-                    |> deliverOnMainQueue).start(next: { [weak self] peer in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                         guard let self else {
                             return
                         }
@@ -414,7 +414,7 @@ private final class CameraScreenComponent: CombinedComponent {
                 }
                 
                 let _ = (mediaEditorStoredState(engine: self.context.engine)
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     if let self, let privacy = state?.privacy {
                         self.privacy = privacy.privacy
                     }
@@ -444,7 +444,7 @@ private final class CameraScreenComponent: CombinedComponent {
             |> map { fetchResult in
                 return fetchResult?.lastObject
             }
-            |> deliverOnMainQueue).start(next: { [weak self] asset in
+            |> deliverOnMainQueue).start(next: { [weak self = self] asset in
                 guard let self else {
                     return
                 }
@@ -469,22 +469,22 @@ private final class CameraScreenComponent: CombinedComponent {
                 sharedContext: self.context.sharedContext,
                 isCameraSpecific: true,
                 shouldBeActive: self.volumeButtonsListenerShouldBeActive.get(),
-                upPressed: { [weak self] in
+                upPressed: { [weak self = self] in
                     if let self {
                         self.handleVolumePressed()
                     }
                 },
-                upReleased: { [weak self] in
+                upReleased: { [weak self = self] in
                     if let self {
                         self.handleVolumeReleased()
                     }
                 },
-                downPressed: { [weak self] in
+                downPressed: { [weak self = self] in
                     if let self {
                         self.handleVolumePressed()
                     }
                 },
-                downReleased: { [weak self] in
+                downReleased: { [weak self = self] in
                     if let self {
                         self.handleVolumeReleased()
                     }
@@ -514,7 +514,7 @@ private final class CameraScreenComponent: CombinedComponent {
             self.isPressingButton = false
             self.buttonPressTimestamp = CACurrentMediaTime()
             
-            self.buttonPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self] in
+            self.buttonPressTimer = SwiftSignalKit.Timer(timeout: 0.3, repeat: false, completion: { [weak self = self] in
                 if let self, let _ = self.buttonPressTimestamp {
                     if case .none = controller.cameraState.recording {
                         self.startVideoRecording(pressing: true)
@@ -784,7 +784,7 @@ private final class CameraScreenComponent: CombinedComponent {
                 controller.present(tooltipController, in: .current)
             }
             
-            let takePhoto = { [weak self] in
+            let takePhoto = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -860,7 +860,7 @@ private final class CameraScreenComponent: CombinedComponent {
         
         private func animateBrightnessChange() {
             if self.brightnessAnimator == nil {
-                self.brightnessAnimator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.brightnessAnimator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.animateBrightnessChange()
                 })
                 self.brightnessAnimator?.isPaused = true
@@ -904,7 +904,7 @@ private final class CameraScreenComponent: CombinedComponent {
             
             let startRecording = {
                 self.resultDisposable.set((camera.startRecording()
-                |> deliverOnMainQueue).start(next: { [weak self] recordingData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] recordingData in
                     if let self, let controller = self.getController() {
                         controller.updateCameraState({ $0.updatedDuration(recordingData.duration) }, transition: .easeInOut(duration: 0.1))
                         if recordingData.duration > 59.0 {
@@ -927,7 +927,7 @@ private final class CameraScreenComponent: CombinedComponent {
             }
             
             self.resultDisposable.set((camera.stopRecording()
-            |> deliverOnMainQueue).start(next: { [weak self] result in
+            |> deliverOnMainQueue).start(next: { [weak self = self] result in
                 if let self, case let .finished(mainResult, additionalResult, duration, positionChangeTimestamps, _) = result {
                     self.completion.invoke(.single(
                         .video(CameraScreenImpl.Result.Video(
@@ -973,7 +973,7 @@ private final class CameraScreenComponent: CombinedComponent {
                 queue: Queue.mainQueue(),
                 self.adminedChannels.get(),
                 self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-            ).start(next: { [weak self] sendAsPeers, accountPeer in
+            ).start(next: { [weak self = self] sendAsPeers, accountPeer in
                 guard let self, let accountPeer else {
                     return
                 }
@@ -986,7 +986,7 @@ private final class CameraScreenComponent: CombinedComponent {
                     liveStream: true,
                     editing: false
                 )
-                let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+                let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let self, let controller = self.getController() else {
                         return
                     }
@@ -997,7 +997,7 @@ private final class CameraScreenComponent: CombinedComponent {
                         completion: { _, _, _, _, _, _, _ in },
                         editCategory: { _, _, _, _ in },
                         editBlockedPeers: { _, _, _, _ in },
-                        peerCompletion: { [weak self] peerId in
+                        peerCompletion: { [weak self = self] peerId in
                             guard let self else {
                                 return
                             }
@@ -1026,18 +1026,18 @@ private final class CameraScreenComponent: CombinedComponent {
                 adminedChannels: self.adminedChannels.get(),
                 blockedPeersContext: self.storiesBlockedPeers
             )
-            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                 guard let self, let controller = self.getController() else {
                     return
                 }
                 let settingsController = LiveStreamSettingsScreen(
                     context: self.context,
                     stateContext: stateContext,
-                    editCategory: { [weak self] privacy, allowComments, isForwardingDisabled, pin, paidMessageStars in
+                    editCategory: { [weak self = self] privacy, allowComments, isForwardingDisabled, pin, paidMessageStars in
                         guard let self else {
                             return
                         }
-                        self.openEditCategory(privacy: privacy, blockedPeers: false, completion: { [weak self] privacy in
+                        self.openEditCategory(privacy: privacy, blockedPeers: false, completion: { [weak self = self] privacy in
                             guard let self else {
                                 return
                             }
@@ -1049,11 +1049,11 @@ private final class CameraScreenComponent: CombinedComponent {
                             self.presentLiveSettings()
                         })
                     },
-                    editBlockedPeers: { [weak self] privacy, allowComments, isForwardingDisabled, pin, paidMessageStars in
+                    editBlockedPeers: { [weak self = self] privacy, allowComments, isForwardingDisabled, pin, paidMessageStars in
                         guard let self else {
                             return
                         }
-                        self.openEditCategory(privacy: privacy, blockedPeers: true, completion: { [weak self] privacy in
+                        self.openEditCategory(privacy: privacy, blockedPeers: true, completion: { [weak self = self] privacy in
                             guard let self else {
                                 return
                             }
@@ -1064,7 +1064,7 @@ private final class CameraScreenComponent: CombinedComponent {
                             self.presentLiveSettings()
                         })
                     },
-                    completion: { [weak self] result in
+                    completion: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -1099,7 +1099,7 @@ private final class CameraScreenComponent: CombinedComponent {
                 initialPeerIds: Set(privacy.additionallyIncludePeers),
                 blockedPeersContext: self.storiesBlockedPeers
             )
-            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 guard let self, let controller = self.getController() else {
                     return
                 }
@@ -1107,7 +1107,7 @@ private final class CameraScreenComponent: CombinedComponent {
                     context: self.context,
                     initialPrivacy: privacy,
                     stateContext: stateContext,
-                    completion: { [weak self] _, result, _, _, peers, _, completed in
+                    completion: { [weak self = self] _, result, _, _, peers, _, completed in
                         guard let self, completed else {
                             return
                         }
@@ -2610,7 +2610,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             self.mainPreviewContainerView.addSubview(self.mainPreviewAnimationWrapperView)
             self.additionalPreviewContainerView.addSubview(self.additionalPreviewView)
                         
-            self.completion.connect { [weak self] result in
+            self.completion.connect { [weak self = self] result in
                 if let self {
                     let pipPosition = self.pipPosition
                     if self.cameraState.isCollageEnabled {
@@ -2619,7 +2619,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                                 self.animateOutToEditor()
                                 self.controller?.completion(
                                     collageView.result
-                                    |> beforeNext { [weak self] value in
+                                    |> beforeNext { [weak self = self] value in
                                         guard let self else {
                                             return
                                         }
@@ -2644,7 +2644,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                             |> map { result in
                                 return result.withPIPPosition(pipPosition)
                             }
-                            |> beforeNext { [weak self] value in
+                            |> beforeNext { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -2682,7 +2682,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                         self.additionalPreviewView.isPreviewing
                     )
                     |> filter { $0 && $1 }
-                    |> take(1)).startStandalone(next: { [weak self] _, _ in
+                    |> take(1)).startStandalone(next: { [weak self = self] _, _ in
                         self?.mainPreviewView.removePlaceholder(delay: 0.35)
                         self?.additionalPreviewView.removePlaceholder(delay: 0.35)
                     })
@@ -2690,7 +2690,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     let _ = (self.mainPreviewView.isPreviewing
                     |> filter { $0 }
                     |> take(1)
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                         self?.mainPreviewView.removePlaceholder(delay: 0.35)
                     })
                 }
@@ -2706,7 +2706,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             self.idleTimerExtensionDisposable.set(self.context.sharedContext.applicationBindings.pushIdleTimerExtension())
             
             self.authorizationStatusDisposables.add((DeviceAccess.authorizationStatus(subject: .camera(.video))
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let self {
                     self.cameraAuthorizationStatus = status
                     self.requestUpdateLayout(transition: .easeInOut(duration: 0.2))
@@ -2716,7 +2716,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             }))
             
             self.authorizationStatusDisposables.add((DeviceAccess.authorizationStatus(subject: .microphone(.video))
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let self {
                     self.microphoneAuthorizationStatus = status
                     self.requestUpdateLayout(transition: .easeInOut(duration: 0.2))
@@ -2810,7 +2810,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 queue: Queue.mainQueue(),
                 camera.flashMode,
                 camera.position
-            ).start(next: { [weak self] flashMode, position in
+            ).start(next: { [weak self = self] flashMode, position in
                 guard let self else {
                     return
                 }
@@ -2834,7 +2834,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 queue: Queue.mainQueue(),
                 camera.modeChange,
                 self.previewBlurPromise.get()
-            ).start(next: { [weak self] modeChange, forceBlur in
+            ).start(next: { [weak self = self] modeChange, forceBlur in
                 if let self {
                     if modeChange != .none {
                         if case .dualCamera = modeChange, case .front = self.cameraState.position {
@@ -2920,7 +2920,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     return .single(next) |> then(.complete() |> delay(0.1, queue: Queue.concurrentDefaultQueue()))
                 }
                 self.controller?.codeDisposable = (throttledSignal
-                |> deliverOnMainQueue).start(next: { [weak self] codes in
+                |> deliverOnMainQueue).start(next: { [weak self = self] codes in
                     guard let self else {
                         return
                     }
@@ -3438,7 +3438,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     |> filter {
                         $0
                     }
-                    |> take(1)).start(next: { [weak self] _ in
+                    |> take(1)).start(next: { [weak self = self] _ in
                         if let self {
                             self.previewBlurPromise.set(false)
                         }
@@ -3554,7 +3554,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             let location = CGRect(origin: CGPoint(x: absoluteFrame.midX, y: absoluteFrame.minY + 3.0), size: CGSize())
             
             let accountManager = self.context.sharedContext.accountManager
-            let tooltipController = TooltipScreen(account: self.context.account, sharedContext: self.context.sharedContext, text: .plain(text: self.presentationData.strings.Story_Camera_TooltipTakePhotos), textAlignment: .center, location: .point(location, .bottom), displayDuration: .custom(4.5), inset: 16.0, shouldDismissOnTouch: { [weak self] point, containerFrame in
+            let tooltipController = TooltipScreen(account: self.context.account, sharedContext: self.context.sharedContext, text: .plain(text: self.presentationData.strings.Story_Camera_TooltipTakePhotos), textAlignment: .center, location: .point(location, .bottom), displayDuration: .custom(4.5), inset: 16.0, shouldDismissOnTouch: { [weak self = self] point, containerFrame in
                 if containerFrame.contains(point) {
                     let _ = ApplicationSpecificNotice.incrementStoriesCameraTip(accountManager: accountManager).start()
                     Queue.mainQueue().justDispatch {
@@ -3572,13 +3572,13 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 return
             }
             let _ = (ApplicationSpecificNotice.incrementStoriesCameraTip(accountManager: self.context.sharedContext.accountManager)
-            |> deliverOnMainQueue).start(next: { [weak self] count in
+            |> deliverOnMainQueue).start(next: { [weak self = self] count in
                 guard let self else {
                     return
                 }
                 if count > 1 {
                     let _ = (ApplicationSpecificNotice.getStoriesDualCameraTip(accountManager: self.context.sharedContext.accountManager)
-                    |> deliverOnMainQueue).start(next: { [weak self] count in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] count in
                         guard let self else {
                             return
                         }
@@ -3692,7 +3692,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 theme: self.presentationData.theme,
                 strings: self.presentationData.strings,
                 dateTimeFormat: self.presentationData.dateTimeFormat,
-                controller: { [weak self] in
+                controller: { [weak self = self] in
                     return self?.controller
                 }
             )
@@ -3729,7 +3729,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                         panelWidth: panelWidth,
                         resolvedCodePeer: controller.resolvedCodePeer,
                         animateFlipAction: self.animateFlipAction,
-                        animateShutter: { [weak self] in
+                        animateShutter: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -3744,17 +3744,17 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                         },
                         toggleCameraPositionAction: self.toggleCameraPositionAction,
                         dismissCollageSelection: self.dismissCollageSelection,
-                        getController: { [weak self] in
+                        getController: { [weak self = self] in
                             return self?.controller
                         },
-                        present: { [weak self] c in
+                        present: { [weak self = self] c in
                             self?.controller?.present(c, in: .window(.root))
                         },
-                        push: { [weak self] c in
+                        push: { [weak self = self] c in
                             self?.controller?.push(c)
                         },
                         completion: self.completion,
-                        openResolvedPeer: { [weak self] peer in
+                        openResolvedPeer: { [weak self = self] peer in
                             guard let self, let controller = self.controller else {
                                 return
                             }
@@ -3819,7 +3819,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     self.collage = collage
                     
                     self.collageStateDisposable = (collage.state
-                    |> deliverOnMainQueue).start(next: { [weak self] collageState in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] collageState in
                         guard let self else {
                             return
                         }
@@ -3838,13 +3838,13 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     collageView = current
                 } else {
                     collageView = CameraCollageView(context: self.context, collage: collage, cameraVideoSource: self.cameraVideoSource, cameraContainerView: self.mainPreviewContainerView)
-                    collageView.getOverlayViews = { [weak self] in
+                    collageView.getOverlayViews = { [weak self = self] in
                         guard let self, let view = self.componentHost.view else {
                             return []
                         }
                         return [view]
                     }
-                    collageView.requestGridReduce = { [weak self] in
+                    collageView.requestGridReduce = { [weak self = self] in
                         guard let self, self.cameraState.isCollageEnabled else {
                             return
                         }
@@ -4155,12 +4155,12 @@ public class CameraScreenImpl: ViewController, CameraScreen {
 
         super.displayNodeDidLoad()
         
-        self.node.didAppear = { [weak self] in
+        self.node.didAppear = { [weak self = self] in
             guard let self, !self.resumeLiveStream else {
                 return
             }
             self.postingAvailabilityDisposable = (self.postingAvailabilityPromise.get()
-            |> deliverOnMainQueue).start(next: { [weak self] availability in
+            |> deliverOnMainQueue).start(next: { [weak self = self] availability in
                 guard let self else {
                     return
                 }
@@ -4184,15 +4184,15 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 
                 let context = self.context
                 var replaceImpl: ((ViewController) -> Void)?
-                let controller = self.context.sharedContext.makePremiumLimitController(context: self.context, subject: subject, count: 10, forceDark: true, cancel: { [weak self] in
+                let controller = self.context.sharedContext.makePremiumLimitController(context: self.context, subject: subject, count: 10, forceDark: true, cancel: { [weak self = self] in
                     self?.requestDismiss(animated: true)
-                }, action: { [weak self] in
-                    let controller = context.sharedContext.makePremiumIntroController(context: context, source: .stories, forceDark: true, dismissed: { [weak self] in
+                }, action: { [weak self = self] in
+                    let controller = context.sharedContext.makePremiumIntroController(context: context, source: .stories, forceDark: true, dismissed: { [weak self = self] in
                         guard let self else {
                             return
                         }
                         let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.context.account.peerId))
-                        |> deliverOnMainQueue).start(next: { [weak self] peer in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                             guard let self else {
                                 return
                             }
@@ -4228,14 +4228,14 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 return .single(code)
                 |> delay(1.0, queue: Queue.mainQueue())
             }
-        }).start(next: { [weak self] code in
+        }).start(next: { [weak self = self] code in
             guard let self else {
                 return
             }
             if let code {
                 self.resolvePeerDisposable.set(
                     (self.context.sharedContext.resolveUrl(context: self.context, peerId: nil, url: code, skipUrlAuth: false)
-                     |> deliverOnMainQueue).start(next: { [weak self] resolvedUrl in
+                     |> deliverOnMainQueue).start(next: { [weak self = self] resolvedUrl in
                          guard let self else {
                              return
                          }
@@ -4292,7 +4292,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
         self.node.hasGallery = true
         
         self.didStopCameraCapture = false
-        let stopCameraCapture = { [weak self] in
+        let stopCameraCapture = { [weak self = self] in
             guard let self, !self.didStopCameraCapture, !self.cameraState.isCollageEnabled else {
                 return
             }
@@ -4311,7 +4311,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             }
         }
         
-        let resumeCameraCapture = { [weak self] in
+        let resumeCameraCapture = { [weak self = self] in
             guard let self, self.didStopCameraCapture else {
                 return
             }
@@ -4349,7 +4349,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 isDark: true,
                 forCollage: self.cameraState.isCollageEnabled,
                 selectionLimit: selectionLimit,
-                getSourceRect: { [weak self] in
+                getSourceRect: { [weak self = self] in
                     if let self {
                         if let galleryButton = self.node.componentHost.findTaggedView(tag: galleryButtonTag) {
                             return galleryButton.convert(galleryButton.bounds, to: self.view).offsetBy(dx: 0.0, dy: -15.0)
@@ -4359,7 +4359,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     } else {
                         return .zero
                     }
-                }, completion: { [weak self] result, transitionView, transitionRect, transitionImage, transitionOut, dismissed in
+                }, completion: { [weak self = self] result, transitionView, transitionRect, transitionImage, transitionOut, dismissed in
                     if let self {
                         if self.cameraState.isCollageEnabled {
                             if let asset = result as? PHAsset {
@@ -4413,7 +4413,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                             }
                         }
                     }
-                }, multipleCompletion: { [weak self] results, collage in
+                }, multipleCompletion: { [weak self = self] results, collage in
                     guard let self else {
                         return
                     }
@@ -4463,7 +4463,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                     self.galleryController = nil
                     
                     dismissControllerImpl?(false)
-                }, dismissed: { [weak self] in
+                }, dismissed: { [weak self = self] in
                     if dismissArgs.resumeOnDismiss {
                         resumeCameraCapture()
                     }
@@ -4532,7 +4532,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                         }
                     }
                 }
-                self.updateTransitionProgress(0.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self] in
+                self.updateTransitionProgress(0.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self = self] in
                     self?.dismiss(animated: false)
                     self?.transitionedOut()
                 })
@@ -4629,7 +4629,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
                 self.requestDismiss(animated: true, interactive: true)
             } else {
                 self.ignoreStatusBar = false
-                self.updateTransitionProgress(1.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self] in
+                self.updateTransitionProgress(1.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self = self] in
                     if let self, let navigationController = self.navigationController as? NavigationController {
                         if case .story = self.mode {
                             navigationController.updateRootContainerTransitionOffset(0.0, transition: .immediate)
@@ -4641,7 +4641,7 @@ public class CameraScreenImpl: ViewController, CameraScreen {
             if transitionFraction > 0.33 || velocity > 1000.0 {
                 self.ignoreStatusBar = false
                 self.updateStatusBarAppearance()
-                self.updateTransitionProgress(1.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self] in
+                self.updateTransitionProgress(1.0, transition: .animated(duration: 0.4, curve: .spring), completion: { [weak self = self] in
                     if let self, let navigationController = self.navigationController as? NavigationController {
                         if case .story = self.mode {
                             navigationController.updateRootContainerTransitionOffset(0.0, transition: .immediate)

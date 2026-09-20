@@ -111,7 +111,7 @@ final class LegacyCallControllerNode: ASDisplayNode, CallControllerNodeProtocol 
         
         self.backButtonNode.setTitle(presentationData.strings.Common_Back, with: Font.regular(17.0), with: .white, for: [])
         self.backButtonNode.hitTestSlop = UIEdgeInsets(top: -8.0, left: -20.0, bottom: -8.0, right: -8.0)
-        self.backButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.backButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.backButtonNode.layer.removeAnimation(forKey: "opacity")
@@ -135,19 +135,19 @@ final class LegacyCallControllerNode: ASDisplayNode, CallControllerNodeProtocol 
         self.containerNode.addSubnode(self.backButtonArrowNode)
         self.containerNode.addSubnode(self.backButtonNode)
         
-        self.buttonsNode.mute = { [weak self] in
+        self.buttonsNode.mute = { [weak self = self] in
             self?.toggleMute?()
         }
         
-        self.buttonsNode.speaker = { [weak self] in
+        self.buttonsNode.speaker = { [weak self = self] in
             self?.beginAudioOuputSelection?(false)
         }
         
-        self.buttonsNode.end = { [weak self] in
+        self.buttonsNode.end = { [weak self = self] in
             self?.endCall?()
         }
         
-        self.buttonsNode.accept = { [weak self] in
+        self.buttonsNode.accept = { [weak self = self] in
             self?.acceptCall?()
         }
         
@@ -443,7 +443,7 @@ final class LegacyCallControllerNode: ASDisplayNode, CallControllerNodeProtocol 
     
     @objc func keyPressed() {
         if self.keyPreviewNode == nil, let keyText = self.keyTextData?.1, let peer = self.peer {
-            let keyPreviewNode = CallControllerKeyPreviewNode(keyText: keyText, infoText: self.presentationData.strings.Call_EmojiDescription(peer.compactDisplayTitle).string.replacingOccurrences(of: "%%", with: "%"), dismiss: { [weak self] in
+            let keyPreviewNode = CallControllerKeyPreviewNode(keyText: keyText, infoText: self.presentationData.strings.Call_EmojiDescription(peer.compactDisplayTitle).string.replacingOccurrences(of: "%%", with: "%"), dismiss: { [weak self = self] in
                 if let _ = self?.keyPreviewNode {
                     self?.backPressed()
                 }
@@ -515,7 +515,7 @@ final class LegacyCallControllerNode: ASDisplayNode, CallControllerNodeProtocol 
         self.forceReportRating = true
         
         let debugNode = CallDebugNode(signal: self.debugInfo)
-        debugNode.dismiss = { [weak self] in
+        debugNode.dismiss = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.debugNode?.removeFromSupernode()
                 strongSelf.debugNode = nil
@@ -549,7 +549,7 @@ final class LegacyCallControllerNode: ASDisplayNode, CallControllerNodeProtocol 
                     let previous = bounds
                     bounds.origin = CGPoint(x: 0.0, y: velocity > 0.0 ? -bounds.height: bounds.height)
                     self.bounds = bounds
-                    self.layer.animateBounds(from: previous, to: bounds, duration: 0.15, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, completion: { [weak self] _ in
+                    self.layer.animateBounds(from: previous, to: bounds, duration: 0.15, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue, completion: { [weak self = self] _ in
                         self?.dismissedInteractively?()
                     })
                 }

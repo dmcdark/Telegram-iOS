@@ -249,7 +249,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                 content: content,
                 actions: [
                     .init(title: environment.strings.Common_Cancel),
-                    .init(title: environment.strings.AffiliateSetup_AlertApply_Action, type: .default, action: { [weak self] in
+                    .init(title: environment.strings.AffiliateSetup_AlertApply_Action, type: .default, action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -271,7 +271,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                 text: environment.strings.AffiliateSetup_AlertTerminate_Text,
                 actions: [
                     TextAlertAction(type: .genericAction, title: presentationData.strings.Common_Cancel, action: {}),
-                    TextAlertAction(type: .defaultDestructiveAction, title: environment.strings.AffiliateSetup_AlertTerminate_Action, action: { [weak self] in
+                    TextAlertAction(type: .defaultDestructiveAction, title: environment.strings.AffiliateSetup_AlertTerminate_Action, action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -304,7 +304,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                 id: component.initialContent.peerId,
                 program: (commissionPermille: programPermille, durationMonths: programDuration)
             )
-            |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+            |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -332,7 +332,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                 id: component.initialContent.peerId,
                 program: nil
             )
-            |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+            |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                 guard let self, let component = self.component, let environment = self.environment, let controller = self.environment?.controller() else {
                     return
                 }
@@ -415,7 +415,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
             let _ = (component.context.engine.data.get(
                 TelegramEngine.EngineData.Item.Peer.Peer(id: component.initialContent.peerId)
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] targetPeer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] targetPeer in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -432,7 +432,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                     mode: .active(JoinAffiliateProgramScreenMode.Active(
                         targetPeer: targetPeer,
                         bot: bot,
-                        copyLink: { [weak self] bot in
+                        copyLink: { [weak self = self] bot in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -473,7 +473,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                     } else {
                         return UIImage()
                     }
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.default)
                     
                     guard let self else {
@@ -487,7 +487,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                         self.suggestedStarBots = suggestedStarBots
                         self.suggestedStarBotsStateDisposable?.dispose()
                         self.suggestedStarBotsStateDisposable = (suggestedStarBots.state
-                        |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                             guard let self else {
                                 return
                             }
@@ -509,7 +509,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                 return
             }
             let _ = (component.context.sharedContext.makeAffiliateProgramSetupScreenInitialData(context: component.context, peerId: component.initialContent.peerId, mode: .connectedPrograms)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] initialData in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] initialData in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -575,7 +575,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                             self.currentProgram = currentRefProgram
                             
                             if let endDate = currentRefProgram.endDate {
-                                self.programEndTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                                self.programEndTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -616,7 +616,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                     let connectedStarBots = component.context.engine.peers.connectedStarRefBots(id: component.initialContent.peerId)
                     self.connectedStarBots = connectedStarBots
                     self.connectedStarBotsStateDisposable = (connectedStarBots.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -637,7 +637,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                     let suggestedStarBots = component.context.engine.peers.suggestedStarRefBots(id: component.initialContent.peerId, sortMode: .profitability)
                     self.suggestedStarBots = suggestedStarBots
                     self.suggestedStarBotsStateDisposable = (suggestedStarBots.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -937,7 +937,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     lowerBoundTitle: "1%",
                                     upperBoundTitle: "90%",
                                     title: "\(formatPermille(self.commissionPermille))%",
-                                    valueUpdated: { [weak self] value in
+                                    valueUpdated: { [weak self = self] value in
                                         guard let self else {
                                             return
                                         }
@@ -1020,7 +1020,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     selectedIndex: max(durationMinValueIndex, selectedDurationIndex),
                                     minSelectedIndex: durationMinValueIndex,
                                     title: nil,
-                                    selectedIndexUpdated: { [weak self] value in
+                                    selectedIndexUpdated: { [weak self = self] value in
                                         guard let self else {
                                             return
                                         }
@@ -1076,7 +1076,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     ))),
                                 ], alignment: .left, spacing: 2.0)),
                                 accessory: .arrow,
-                                action: { [weak self] _ in
+                                action: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -1121,7 +1121,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     ))),
                                 ], alignment: .center, spacing: 2.0)),
                                 accessory: nil,
-                                action: { [weak self] _ in
+                                action: { [weak self = self] _ in
                                     guard let self else {
                                         return
                                     }
@@ -1196,7 +1196,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                         isEnabled: self.currentProgram?.endDate == nil,
                         allowActionWhenDisabled: false,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1257,7 +1257,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                             }
                             let commissionTitle = "\(formatPermille(item.commissionPermille))%"
                             
-                            let itemContextAction: (EnginePeer, ContextExtractedContentContainingView, ContextGesture?) -> Void = { [weak self] peer, sourceView, gesture in
+                            let itemContextAction: (EnginePeer, ContextExtractedContentContainingView, ContextGesture?) -> Void = { [weak self = self] peer, sourceView, gesture in
                                 guard let self, let component = self.component, let environment = self.environment else {
                                     return
                                 }
@@ -1273,7 +1273,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                 }
                                 itemList.append(.action(ContextMenuActionItem(text: openTitle, textColor: .primary, icon: { theme in
                                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Bots"), color: theme.contextMenu.primaryColor)
-                                }, action: { [weak self] c, _ in
+                                }, action: { [weak self = self] c, _ in
                                     c?.dismiss(completion: {
                                         guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() else {
                                             return
@@ -1308,7 +1308,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                 
                                 itemList.append(.action(ContextMenuActionItem(text: environment.strings.AffiliateSetup_ProgramMenu_CopyLink, textColor: .primary, icon: { theme in
                                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-                                }, action: { [weak self] _, f in
+                                }, action: { [weak self = self] _, f in
                                     f(.default)
                                     
                                     guard let self, let component = self.component, let environment = self.environment else {
@@ -1323,7 +1323,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                 
                                 itemList.append(.action(ContextMenuActionItem(text: environment.strings.AffiliateSetup_ProgramMenu_Leave, textColor: .destructive, icon: { theme in
                                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                                }, action: { [weak self] c, _ in
+                                }, action: { [weak self = self] c, _ in
                                     c?.dismiss(completion: {
                                         guard let self else {
                                             return
@@ -1374,14 +1374,14 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     background: environment.theme.list.itemBlocksBackgroundColor
                                 ),
                                 insets: UIEdgeInsets(top: -1.0, left: 0.0, bottom: -1.0, right: 0.0),
-                                action: { [weak self] peer, _, itemView in
+                                action: { [weak self = self] peer, _, itemView in
                                     guard let self else {
                                         return
                                     }
                                     self.openConnectedBot(bot: item)
                                 },
                                 inlineActions: PeerListItemComponent.InlineActionsState(actions: [
-                                    PeerListItemComponent.InlineAction(id: 0, title: environment.strings.AffiliateSetup_ProgramLeave, color: .destructive, action: { [weak self] in
+                                    PeerListItemComponent.InlineAction(id: 0, title: environment.strings.AffiliateSetup_ProgramLeave, color: .destructive, action: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -1479,7 +1479,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                     background: environment.theme.list.itemBlocksBackgroundColor
                                 ),
                                 insets: UIEdgeInsets(top: -1.0, left: 0.0, bottom: -1.0, right: 0.0),
-                                action: { [weak self] peer, _, itemView in
+                                action: { [weak self = self] peer, _, itemView in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1488,7 +1488,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                         TelegramEngine.EngineData.Item.Peer.Peer(id: item.peer.id),
                                         TelegramEngine.EngineData.Item.Peer.Peer(id: component.initialContent.peerId)
                                     )
-                                    |> deliverOnMainQueue).startStandalone(next: { [weak self] botPeer, targetPeer in
+                                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] botPeer, targetPeer in
                                         guard let self, let component = self.component else {
                                             return
                                         }
@@ -1504,13 +1504,13 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                             mode: .join(JoinAffiliateProgramScreenMode.Join(
                                                 initialTargetPeer: targetPeer,
                                                 canSelectTargetPeer: false,
-                                                completion: { [weak self] _ in
+                                                completion: { [weak self = self] _ in
                                                     guard let self, let component = self.component else {
                                                         return
                                                     }
                                                     
                                                     let _ = (component.context.engine.peers.connectStarRefBot(id: component.initialContent.peerId, botId: peer.id)
-                                                    |> deliverOnMainQueue).startStandalone(next: { [weak self] result in
+                                                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] result in
                                                         guard let self else {
                                                             return
                                                         }
@@ -1540,7 +1540,7 @@ final class AffiliateProgramSetupScreenComponent: Component {
                                 theme: environment.theme,
                                 strings: environment.strings,
                                 sortMode: suggestedStarBots.sortMode,
-                                action: { [weak self] sourceView in
+                                action: { [weak self = self] sourceView in
                                     guard let self else {
                                         return
                                     }
@@ -1665,14 +1665,14 @@ public class AffiliateProgramSetupScreen: ViewControllerComponentContainer {
             initialContent: initialContent
         ), navigationBarAppearance: .default, theme: .default)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? AffiliateProgramSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? AffiliateProgramSetupScreenComponent.View else {
                 return true
             }

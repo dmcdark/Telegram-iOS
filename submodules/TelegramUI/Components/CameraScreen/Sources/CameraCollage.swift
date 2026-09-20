@@ -26,7 +26,7 @@ final class CameraCollage {
         init(result: Signal<CameraScreenImpl.Result, NoError>, snapshotView: UIView?, contentUpdated: @escaping () -> Void) {
             self.internalContent = .pending(snapshotView.flatMap { .view($0) })
             self.disposable = (result
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -56,7 +56,7 @@ final class CameraCollage {
                         targetSize: targetSize,
                         contentMode: .aspectFit,
                         options: options,
-                        resultHandler: { [weak self] image, info in
+                        resultHandler: { [weak self = self] image, info in
                             if let image, let self {
                                 if let info {
                                     if let cancelled = info[PHImageCancelledKey] as? Bool, cancelled {
@@ -66,7 +66,7 @@ final class CameraCollage {
                                 self.internalContent = .pending(.image(image))
                                 contentUpdated()
                                 
-                                PHImageManager.default().requestAVAsset(forVideo: asset, options: nil, resultHandler: { [weak self] avAsset, _, _ in
+                                PHImageManager.default().requestAVAsset(forVideo: asset, options: nil, resultHandler: { [weak self = self] avAsset, _, _ in
                                     if let avAsset, let self {
                                         Queue.mainQueue().async {
                                             self.internalContent = .video(asset: avAsset, thumbnail: nil, duration: 0.0, source: .asset(asset))
@@ -192,7 +192,7 @@ final class CameraCollage {
         guard self.results.count < self.grid.count else {
             return
         }
-        let result = CaptureResult(result: signal, snapshotView: snapshotView, contentUpdated: { [weak self] in
+        let result = CaptureResult(result: signal, snapshotView: snapshotView, contentUpdated: { [weak self = self] in
             self?.checkResults()
             self?.updateState()
         })
@@ -210,7 +210,7 @@ final class CameraCollage {
             return
         }
         self.results.append(contentsOf: signals.map {
-            CaptureResult(result: $0, snapshotView: nil, contentUpdated: { [weak self] in
+            CaptureResult(result: $0, snapshotView: nil, contentUpdated: { [weak self = self] in
                 self?.checkResults()
                 self?.updateState()
             })
@@ -521,7 +521,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
             
             self.scrollView.addSubview(self.contentView)
             
-            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self] value, _ in
+            self.extractedContainerView.willUpdateIsExtractedToContextPreview = { [weak self = self] value, _ in
                 guard let self else {
                     return
                 }
@@ -539,7 +539,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
                 }
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let item = self.item else {
                     gesture.cancel()
                     return
@@ -775,7 +775,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
                     let player = AVPlayer(playerItem: playerItem)
                     player.isMuted = true
                     if self.didPlayToEndTimeObserver == nil {
-                        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil, using: { [weak self] notification in
+                        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: nil, using: { [weak self = self] notification in
                             if let self {
                                 self.didPlayToEnd()
                             }
@@ -947,7 +947,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
         self.backgroundColor = .black
         
         self.disposable = (collage.state
-        |> deliverOnMainQueue).start(next: { [weak self] state in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state in
             guard let self else {
                 return
             }
@@ -971,7 +971,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
         })
         
         let reorderRecognizer = ReorderGestureRecognizer(
-            shouldBegin: { [weak self] point in
+            shouldBegin: { [weak self = self] point in
                 guard let self, let item = self.item(at: point) else {
                     return (allowed: false, requiresLongPress: false, item: nil)
                 }
@@ -980,19 +980,19 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
             },
             willBegin: { point in
             },
-            began: { [weak self] item in
+            began: { [weak self = self] item in
                 guard let self else {
                     return
                 }
                 self.setReorderingItem(item: item)
             },
-            ended: { [weak self] in
+            ended: { [weak self = self] in
                 guard let self else {
                     return
                 }
                 self.setReorderingItem(item: nil)
             },
-            moved: { [weak self] distance in
+            moved: { [weak self = self] distance in
                 guard let self else {
                     return
                 }
@@ -1010,7 +1010,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
         self.addGestureRecognizer(tapRecognizer)
         
         self.cameraVideoLayer.video = cameraVideoSource.currentOutput
-        self.cameraVideoDisposable = cameraVideoSource.addOnUpdated { [weak self] in
+        self.cameraVideoDisposable = cameraVideoSource.addOnUpdated { [weak self = self] in
             guard let self, let videoSource = self.cameraVideoSource, self.isEnabled else {
                 return
             }
@@ -1200,7 +1200,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
         if self.collage.cameraIndex == nil {
             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.Camera_CollageRetake, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Camera"), color: theme.contextMenu.primaryColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 
                 self?.collage.retakeItem(id: id)
@@ -1214,7 +1214,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
             
             itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.Camera_CollageDelete, textColor: .destructive, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.dismissWithoutContent)
                 
                 self?.collage.deleteItem(id: id)
@@ -1279,10 +1279,10 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
                 } else {
                     itemView = ItemView(frame: effectiveItemFrame)
                     itemView.clipsToBounds = true
-                    itemView.getPreviewLayer = { [weak self] in
+                    itemView.getPreviewLayer = { [weak self = self] in
                         return self?.getPreviewLayer()
                     }
-                    itemView.didPlayToEnd = { [weak self] in
+                    itemView.didPlayToEnd = { [weak self = self] in
                         self?.maybeResetPlayback()
                     }
                     self.insertSubview(itemView, at: 0)
@@ -1295,7 +1295,7 @@ final class CameraCollageView: UIView, UIGestureRecognizerDelegate {
                     }
                 }
                 itemView.update(item: item, size: effectiveItemFrame.size, cameraContainerView: self.cameraContainerView, transition: itemTransition)
-                itemView.contextAction = { [weak self] id, sourceView, gesture in
+                itemView.contextAction = { [weak self = self] id, sourceView, gesture in
                     guard let self else {
                         return
                     }
@@ -1371,7 +1371,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -1386,7 +1386,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer

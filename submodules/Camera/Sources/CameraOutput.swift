@@ -269,7 +269,7 @@ final class CameraOutput: NSObject {
     }
     
     var isFlashActive: Signal<Bool, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }
@@ -330,7 +330,7 @@ final class CameraOutput: NSObject {
         self.photoOutput.capturePhoto(with: settings, delegate: photoCapture)
         
         return photoCapture.signal
-        |> afterDisposed { [weak self] in
+        |> afterDisposed { [weak self = self] in
             let _ = self?.photoCaptureRequests.modify { dict in
                 var dict = dict
                 dict.removeValue(forKey: uniqueId)
@@ -409,7 +409,7 @@ final class CameraOutput: NSObject {
             ciContext: self.ciContext,
             orientation: orientation,
             fileUrl: outputFileURL,
-            completion: { [weak self] result in
+            completion: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -447,7 +447,7 @@ final class CameraOutput: NSObject {
         }
         
         return Signal { subscriber in
-            let timer = SwiftSignalKit.Timer(timeout: 0.09, repeat: true, completion: { [weak videoRecorder] in
+            let timer = SwiftSignalKit.Timer(timeout: 0.09, repeat: true, completion: { [weak videoRecorder = videoRecorder] in
                 let recordingData = CameraRecordingData(duration: videoRecorder?.duration ?? 0.0, filePath: outputFilePath)
                 subscriber.putNext(recordingData)
             }, queue: Queue.mainQueue())

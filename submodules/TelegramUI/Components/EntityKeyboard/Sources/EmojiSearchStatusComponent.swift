@@ -770,7 +770,7 @@ final class EmojiSearchStatusComponent: Component {
             if needsAnimation {
                 if self.displayLink == nil {
                     var counter = 0
-                    self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                    self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                         counter += 1
                         if counter % 1 == 0 {
                             self?.updateAnimation()

@@ -83,7 +83,7 @@ class GlobalAutoremoveHeaderItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     if strongSelf.item == nil {
                         strongSelf.animationNode.setup(source: AnimatedStickerNodeLocalFileSource(name: "GlobalAutoRemove"), width: 220, height: 220, playbackMode: .loop, mode: .direct(cachePathPrefix: nil))

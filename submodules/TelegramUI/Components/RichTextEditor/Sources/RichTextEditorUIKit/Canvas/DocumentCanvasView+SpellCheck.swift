@@ -194,7 +194,7 @@ extension DocumentCanvasView {
         guard let pending = pendingSpellingMenu else { return [] }
         var elements: [UIMenuElement] = []
         if let revertTo = pending.revertTo {
-            elements.append(UIAction(title: "Revert to \u{201C}\(revertTo)\u{201D}") { [weak self] _ in
+            elements.append(UIAction(title: "Revert to \u{201C}\(revertTo)\u{201D}") { [weak self = self] _ in
                 self?.applySpellingReplacement(revertTo)
             })
         }
@@ -207,7 +207,7 @@ extension DocumentCanvasView {
             return elements
         }
         elements.append(contentsOf: pending.guesses.prefix(4).map { guess in
-            UIAction(title: guess) { [weak self] _ in self?.applySpellingReplacement(guess) }
+            UIAction(title: guess) { [weak self = self] _ in self?.applySpellingReplacement(guess) }
         })
         return elements
     }

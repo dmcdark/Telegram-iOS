@@ -48,7 +48,7 @@ private final class MessageMediaPreuploadManagerContext {
         if context.subscribers.isEmpty {
             let queue = self.queue
             context.graceTimer.set((Signal<Void, NoError>.single(())
-            |> delay(1.0, queue: queue)).start(next: { [weak self] in
+            |> delay(1.0, queue: queue)).start(next: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -78,7 +78,7 @@ private final class MessageMediaPreuploadManagerContext {
                     size: data.availableSize,
                     complete: data.isComplete
                 )
-            }), encrypt: encrypt, tag: tag, hintFileSize: nil, hintFileIsLarge: false, forceNoBigParts: false).start(next: { [weak self] next in
+            }), encrypt: encrypt, tag: tag, hintFileSize: nil, hintFileIsLarge: false, forceNoBigParts: false).start(next: { [weak self = self] next in
                 queue.async {
                     if let strongSelf = self, let context = strongSelf.uploadContexts[id] {
                         switch next {
@@ -97,7 +97,7 @@ private final class MessageMediaPreuploadManagerContext {
         }
         // The "need" holder occupies a Bag slot (the refcount) but ignores results.
         let index = context.subscribers.add({ _ in })
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 guard let strongSelf = self, let context = strongSelf.uploadContexts[id] else {
                     return
@@ -110,7 +110,7 @@ private final class MessageMediaPreuploadManagerContext {
 
     func upload(network: Network, postbox: Postbox, source: MultipartUploadSource, encrypt: Bool, tag: MediaResourceFetchTag?, hintFileSize: Int64?, hintFileIsLarge: Bool, forceNoBigParts: Bool) -> Signal<MultipartUploadResult, MultipartUploadError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 if case let .resource(resource) = source, let id = localIdForResource(resource.resource), let context = strongSelf.uploadContexts[id] {
                     strongSelf.cancelGrace(context)

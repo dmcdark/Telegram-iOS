@@ -142,13 +142,13 @@ private final class AvatarGalleryEditButtonNode: HighlightableButtonNode {
         self.containerNode.addSubnode(self.referenceNode)
         self.referenceNode.addSubnode(self.textNode)
 
-        self.containerNode.shouldBegin = { [weak self] _ in
+        self.containerNode.shouldBegin = { [weak self = self] _ in
             guard let self else {
                 return false
             }
             return self.contextAction != nil
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let self else {
                 return
             }
@@ -235,7 +235,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
         self.statusNodeContainer.addTarget(self, action: #selector(self.statusPressed), forControlEvents: .touchUpInside)
         self.statusNodeContainer.isUserInteractionEnabled = false
         
-        self.footerContentNode.share = { [weak self] interaction in
+        self.footerContentNode.share = { [weak self = self] interaction in
             if let strongSelf = self, let entry = strongSelf.entry, !entry.representations.isEmpty {
                 let subject: ShareControllerSubject
                 var actionCompletionText: String?
@@ -322,7 +322,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
             if self.peer.id == self.context.account.peerId {
                 let editTitle = entry.videoRepresentations.isEmpty ? self.presentationData.strings.Settings_EditPhoto : self.presentationData.strings.Settings_EditVideo
                 let editButtonNode = AvatarGalleryEditButtonNode(title: editTitle)
-                editButtonNode.contextAction = { [weak self] sourceView, gesture in
+                editButtonNode.contextAction = { [weak self = self] sourceView, gesture in
                     self?.edit?(sourceView, gesture)
                 }
                 let rightBarButtonItem = UIBarButtonItem(customDisplayNode: editButtonNode)!
@@ -341,7 +341,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 if representations.last != previousRepresentations?.last {
                     self.imageNode.setSignal(chatAvatarGalleryPhoto(account: self.context.account, representations: representations, immediateThumbnailData: entry.immediateThumbnailData, attemptSynchronously: synchronous), attemptSynchronously: synchronous, dispatchOnDisplayLink: false)
                     if entry.videoRepresentations.isEmpty {
-                        self.imageNode.imageUpdated = { [weak self] _ in
+                        self.imageNode.imageUpdated = { [weak self = self] _ in
                             self?._ready.set(.single(Void()))
                         }
                     }
@@ -423,7 +423,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
                 return playing
             }
             |> take(1)
-            |> deliverOnMainQueue).start(error: { [weak self] _ in
+            |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                 if let strongSelf = self {
                     if let _ = strongSelf.videoNode {
                         videoNode.seek(0.0)
@@ -437,7 +437,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
                         }
                     }
                 }
-            }, completed: { [weak self] in
+            }, completed: { [weak self = self] in
                 if let strongSelf = self {
                     Queue.mainQueue().after(0.1) {
                         strongSelf.videoNode?.isHidden = false
@@ -551,7 +551,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
         
         self.contentNode.clipsToBounds = true
         if case .round = self.sourceCorners {
-            self.contentNode.layer.animate(from: (self.contentNode.frame.width / 2.0) as NSNumber, to: 0.0 as NSNumber, keyPath: "cornerRadius", timingFunction: CAMediaTimingFunctionName.default.rawValue, duration: 0.18, removeOnCompletion: false, completion: { [weak self] value in
+            self.contentNode.layer.animate(from: (self.contentNode.frame.width / 2.0) as NSNumber, to: 0.0 as NSNumber, keyPath: "cornerRadius", timingFunction: CAMediaTimingFunctionName.default.rawValue, duration: 0.18, removeOnCompletion: false, completion: { [weak self = self] value in
                 if value {
                     self?.contentNode.clipsToBounds = false
                 }
@@ -559,7 +559,7 @@ final class PeerAvatarImageGalleryItemNode: ZoomableContentGalleryItemNode {
         } else if case let .roundRect(cornerRadius) = self.sourceCorners {
             let scale = scaledLocalImageViewBounds.width / transformedCopyViewFinalFrame.width
             let selfScale = transformedCopyViewFinalFrame.width / transformedSelfFrame.width
-            self.contentNode.layer.animate(from: (cornerRadius * scale * selfScale) as NSNumber, to: 0.0 as NSNumber, keyPath: "cornerRadius", timingFunction: CAMediaTimingFunctionName.default.rawValue, duration: 0.18, removeOnCompletion: false, completion: { [weak self] value in
+            self.contentNode.layer.animate(from: (cornerRadius * scale * selfScale) as NSNumber, to: 0.0 as NSNumber, keyPath: "cornerRadius", timingFunction: CAMediaTimingFunctionName.default.rawValue, duration: 0.18, removeOnCompletion: false, completion: { [weak self = self] value in
                 if value {
                     self?.contentNode.clipsToBounds = false
                 }

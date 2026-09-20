@@ -202,7 +202,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                 
                 self.geocodeDisposable?.dispose()
                 self.geocodeDisposable = (geocodeLocation(address: initialGeocodedLocation)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] venues in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] venues in
                     guard let self else {
                         return
                     }
@@ -225,7 +225,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                 updatedPresentationData: nil,
                 mode: .pick,
                 initialLocation: initialLocation,
-                completion: { [weak self] location, _, _, address, _ in
+                completion: { [weak self = self] location, _, _, address, _ in
                 guard let self else {
                     return
                 }
@@ -374,7 +374,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -464,7 +464,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                     ))),
                 ], alignment: .left, spacing: 2.0)),
                 accessory: mapSelectionAccessory,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -484,7 +484,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                         latitude: mapCoordinates.latitude,
                         longitude: mapCoordinates.longitude
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -539,7 +539,7 @@ final class BusinessLocationSetupScreenComponent: Component {
                                 ))),
                             ], alignment: .left, spacing: 2.0)),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -657,14 +657,14 @@ public final class BusinessLocationSetupScreen: ViewControllerComponentContainer
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessLocationSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? BusinessLocationSetupScreenComponent.View else {
                 return true
             }

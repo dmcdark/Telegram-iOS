@@ -51,7 +51,7 @@ extension ChatControllerImpl {
             queue: Queue.mainQueue(),
             contextMenuForChatPresentationInterfaceState(chatPresentationInterfaceState: self.presentationInterfaceState, context: self.context, messages: [message], controllerInteraction: self.controllerInteraction, selectAll: false, interfaceInteraction: self.interfaceInteraction, messageNode: messageItemView),
             addedByPeer
-        ).start(next: { [weak self] actions, addedByPeer in
+        ).start(next: { [weak self = self] actions, addedByPeer in
             guard let self else {
                 return
             }
@@ -66,7 +66,7 @@ extension ChatControllerImpl {
             let canVote = poll.pollId.namespace == Namespaces.Media.CloudPoll && !Namespaces.Message.allNonRegular.contains(message.id.namespace) && !Namespaces.Message.allEphemeral.contains(message.id.namespace) && !isPollEffectivelyClosed(message: EngineMessage(message), poll: poll) && !isRestricted && (selectedOptions.isEmpty || !poll.revotingDisabled)
             if canVote {
                 if selectedOptions.contains(pollOption.opaqueIdentifier) {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_RetractOptionVote, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unvote"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_RetractOptionVote, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Unvote"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                         guard let self else {
                             return
                         }
@@ -77,7 +77,7 @@ extension ChatControllerImpl {
                         })
                     })))
                 } else {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_VoteOption, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/StopPoll"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, _ in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_VoteOption, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/StopPoll"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, _ in
                         guard let self else {
                             return
                         }
@@ -101,7 +101,7 @@ extension ChatControllerImpl {
             if canReply {
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_ReplyToOption, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Reply"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] c, _ in
+                }, action: { [weak self = self] c, _ in
                     guard let self else {
                         return
                     }
@@ -113,7 +113,7 @@ extension ChatControllerImpl {
                 })))
             }
             
-            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self]  _, f in
+            items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopy, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self]  _, f in
                 f(.default)
 
                 guard let self else {
@@ -132,7 +132,7 @@ extension ChatControllerImpl {
             if message.id.namespace == Namespaces.Message.Cloud, let channel = message.peers[message.id.peerId] as? TelegramChannel, !channel.isMonoForum, !isReplyThreadHead {
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuCopyLink, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Link"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     guard let self else {
                         return
                     }
@@ -144,7 +144,7 @@ extension ChatControllerImpl {
                     |> map { result -> String? in
                         return result
                     }
-                    |> deliverOnMainQueue).startStandalone(next: { [weak self] link in
+                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] link in
                         guard let self, let link else {
                             return
                         }
@@ -193,7 +193,7 @@ extension ChatControllerImpl {
                     }
                 }
                 if canRemove {
-                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_RemoveOption, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self]  _, f in
+                    items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Chat_Poll_RemoveOption, textColor: .destructive, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor) }, action: { [weak self = self]  _, f in
                         f(.default)
                         
                         guard let self else {
@@ -242,7 +242,7 @@ extension ChatControllerImpl {
                 )).string
                 
                 let avatarSize = CGSize(width: 24.0, height: 24.0)
-                items.append(.action(ContextMenuActionItem(text: dateText, textFont: .small, parseMarkdown: true, icon: { _ in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: peerAvatarCompleteImage(account: self.context.account, peer: addedByPeer, size: avatarSize)), action: { [weak self] _, f in
+                items.append(.action(ContextMenuActionItem(text: dateText, textFont: .small, parseMarkdown: true, icon: { _ in return nil }, iconSource: ContextMenuActionItemIconSource(size: avatarSize, signal: peerAvatarCompleteImage(account: self.context.account, peer: addedByPeer, size: avatarSize)), action: { [weak self = self] _, f in
                     f(.default)
                     guard let self else {
                         return
@@ -286,7 +286,7 @@ extension ChatControllerImpl {
                     initialId: AnyHashable(OptionsId.item)
                 )
             )
-            contextController.dismissed = { [weak self] in
+            contextController.dismissed = { [weak self = self] in
                 self?.canReadHistory.set(true)
             }
             

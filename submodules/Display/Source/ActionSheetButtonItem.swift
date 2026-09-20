@@ -85,14 +85,14 @@ public class ActionSheetButtonNode: ActionSheetItemNode {
         
         self.addSubnode(self.accessibilityArea)
         
-        self.button.highligthedChanged = { [weak self] highlighted in
+        self.button.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 strongSelf.setHighlighted(highlighted, animated: true)
             }
         }
         
         self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
-        self.accessibilityArea.activate = { [weak self] in
+        self.accessibilityArea.activate = { [weak self = self] in
             self?.buttonPressed()
             return true
         }
@@ -120,11 +120,11 @@ public class ActionSheetButtonNode: ActionSheetItemNode {
     public override func didLoad() {
         super.didLoad()
         
-        self.pointerInteraction = PointerInteraction(node: self, style: .hover, willEnter: { [weak self] in
+        self.pointerInteraction = PointerInteraction(node: self, style: .hover, willEnter: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setHighlighted(true, animated: false)
             }
-        }, willExit: { [weak self] in
+        }, willExit: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setHighlighted(false, animated: false)
             }

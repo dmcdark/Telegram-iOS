@@ -46,7 +46,7 @@ public final class ShimmeringMaskView: UIView {
         self.contentView.layer.mask = self.maskLayer
 
         self.layer.addSublayer(self.hierarchyTrackingLayer)
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }

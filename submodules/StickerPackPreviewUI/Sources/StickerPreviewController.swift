@@ -39,10 +39,10 @@ public final class StickerPreviewController: ViewController {
     
     override public func loadDisplayNode() {
         self.displayNode = StickerPreviewControllerNode(context: self.context)
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
-        self.controllerNode.cancel = { [weak self] in
+        self.controllerNode.cancel = { [weak self = self] in
             self?.dismiss()
         }
         self.displayNodeDidLoad()

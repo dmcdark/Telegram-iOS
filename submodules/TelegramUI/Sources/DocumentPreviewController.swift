@@ -107,7 +107,7 @@ final class CompactDocumentPreviewController: QLPreviewController, QLPreviewCont
         if !self.canShare && !self.initialized {
             self.initialized = true
             
-            self.timer = SwiftSignalKit.Timer(timeout: 0.01, repeat: true, completion: { [weak self] in
+            self.timer = SwiftSignalKit.Timer(timeout: 0.01, repeat: true, completion: { [weak self = self] in
                 self?.tick()
             }, queue: Queue.mainQueue())
             self.timer?.start()

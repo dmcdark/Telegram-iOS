@@ -40,7 +40,7 @@ public class TDLibClient: TDLibApi, Equatable {
     
     /// Sends request to the TDLib client.
     override public func send(query: TdQuery, completion: ((Data) -> Void)? = nil) throws {
-        self.queryQueue.async { [weak self] in
+        self.queryQueue.async { [weak self = self] in
             guard let `self` = self else { return }
             var extra: String? = nil
             if let completion = completion {
@@ -107,7 +107,7 @@ open class TDLibClientManager {
     public init(logger: TDLibLogger? = nil) {
         #warning("Breaking changes may be introduced to TDLibClientManager without major version bump.")
         self.logger = logger
-        self.receiveQueue.async { [weak self] in
+        self.receiveQueue.async { [weak self = self] in
             while (true) {
                 guard let self else { break }
                 guard
@@ -152,7 +152,7 @@ open class TDLibClientManager {
     }
     
     private func queryResultAsync(_ result: Data) {
-        self.queryQueue.async { [weak self] in
+        self.queryQueue.async { [weak self = self] in
             guard
                 let `self` = self,
                 let json = try? JSONSerialization.jsonObject(with: result, options:[]),

@@ -48,7 +48,7 @@ extension ChatControllerImpl {
                 return true
             })
             
-            self.present(tooltipController, in: .current, with: TooltipControllerPresentationArguments(sourceNodeAndRect: { [weak self] in
+            self.present(tooltipController, in: .current, with: TooltipControllerPresentationArguments(sourceNodeAndRect: { [weak self = self] in
                 guard let self else {
                     return nil
                 }

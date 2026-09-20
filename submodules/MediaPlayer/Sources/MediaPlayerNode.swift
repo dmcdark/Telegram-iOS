@@ -138,7 +138,7 @@ public final class MediaPlayerNode: ASDisplayNode {
     private func startPolling() {
         if !self.polling {
             self.polling = true
-            MediaPlayerNode.poll(node: self, completion: { [weak self] status in
+            MediaPlayerNode.poll(node: self, completion: { [weak self = self] status in
                 self?.polling = false
                 
                 if let strongSelf = self, let (_, requestFrames, _, _) = strongSelf.state, requestFrames {
@@ -335,7 +335,7 @@ public final class MediaPlayerNode: ASDisplayNode {
         
         super.init()
         
-        self.videoNode.updateInHierarchy = { [weak self] value in
+        self.videoNode.updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self {
                 if strongSelf.videoInHierarchy != value {
                     strongSelf.videoInHierarchy = value
@@ -348,7 +348,7 @@ public final class MediaPlayerNode: ASDisplayNode {
         }
         self.addSubnode(self.videoNode)
         
-        self.videoQueue.async { [weak self] in
+        self.videoQueue.async { [weak self = self] in
             let videoLayer = MediaPlayerNodeLayer()
             videoLayer.videoGravity = .resize
             Queue.mainQueue().async {

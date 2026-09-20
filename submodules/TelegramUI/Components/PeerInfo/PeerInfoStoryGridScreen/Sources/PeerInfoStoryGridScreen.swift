@@ -100,7 +100,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
             if self.selectedCount != 0 {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.StoryList_ContextSaveToGallery, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     a(.default)
                     
                     guard let self else {
@@ -111,7 +111,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                 })))
                 items.append(.action(ContextMenuActionItem(text: strings.Common_Delete, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     a(.default)
                     
                     guard let self, let component = self.component, let environment = self.environment else {
@@ -167,7 +167,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                     var ignoreNextActions = false
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.StoryList_ContextShowArchive, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/StoryArchive"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, a in
+                    }, action: { [weak self = self] _, a in
                         if ignoreNextActions {
                             return
                         }
@@ -187,7 +187,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                 if !paneNode.isEmpty {
                     items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuSelect, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, a in
+                    }, action: { [weak self = self] _, a in
                         a(.default)
                         
                         guard let self, let paneNode = self.paneNode else {
@@ -202,7 +202,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
             }
 
             let contextController = makeContextController(presentationData: presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: source)), items: .single(ContextController.Items(content: .list(items))), gesture: nil)
-            contextController.passthroughTouchEvent = { [weak self] sourceView, point in
+            contextController.passthroughTouchEvent = { [weak self = self] sourceView, point in
                 guard let self else {
                     return .ignore
                 }
@@ -238,7 +238,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
             }
             
             let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: component.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 guard let self, let component = self.component, let peer else {
                     return
                 }
@@ -376,7 +376,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                         label: nil,
                         isEnabled: buttonIsEnabled,
                         insets: UIEdgeInsets(top: 0.0, left: sideInset, bottom: environment.safeInsets.bottom, right: sideInset),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let environment = self.environment else {
                                 return
                             }
@@ -391,7 +391,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                             }
                             
                             let _ = (component.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: component.peerId))
-                            |> deliverOnMainQueue).start(next: { [weak self] peer in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                                 guard let self, let peer else {
                                     return
                                 }
@@ -486,7 +486,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                     isProfileEmbedded: false,
                     canManageStories: true,
                     excludeIds: component.excludeIds,
-                    navigationController: { [weak self] in
+                    navigationController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }
@@ -495,7 +495,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                     listContext: nil,
                     initialStoryFolderId: nil
                 )
-                paneNode.isEmptyUpdated = { [weak self] _ in
+                paneNode.isEmptyUpdated = { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -510,13 +510,13 @@ final class PeerInfoStoryGridScreenComponent: Component {
                     self.addSubview(paneNode.view)
                 }
                 
-                paneNode.emptyAction = { [weak self] in
+                paneNode.emptyAction = { [weak self = self] in
                     guard let self else {
                         return
                     }
                     self.openCreateStory()
                 }
-                paneNode.additionalEmptyAction = { [weak self] in
+                paneNode.additionalEmptyAction = { [weak self = self] in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -524,7 +524,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                 }
                 
                 self.paneStatusDisposable = (paneNode.status
-                |> deliverOnMainQueue).start(next: { [weak self] status in
+                |> deliverOnMainQueue).start(next: { [weak self = self] status in
                     guard let self else {
                         return
                     }
@@ -537,7 +537,7 @@ final class PeerInfoStoryGridScreenComponent: Component {
                 var applyState = false
                 self.selectionStateDisposable = (paneNode.updatedSelectedIds
                 |> distinctUntilChanged
-                |> deliverOnMainQueue).start(next: { [weak self] selectedIds in
+                |> deliverOnMainQueue).start(next: { [weak self = self] selectedIds in
                     guard let self else {
                         return
                     }
@@ -631,7 +631,7 @@ public class PeerInfoStoryGridScreen: ViewControllerComponentContainer {
         moreBarButton.setContent(.more(MoreHeaderButton.optionsCircleImage(color: presentationData.theme.rootController.navigationBar.buttonColor)))
         let moreBarButtonItem = UIBarButtonItem(customDisplayNode: self.moreBarButton)!
         self.moreBarButtonItem = moreBarButtonItem
-        moreBarButton.contextAction = { [weak self] sourceNode, gesture in
+        moreBarButton.contextAction = { [weak self = self] sourceNode, gesture in
             guard let self else {
                 return
             }
@@ -657,7 +657,7 @@ public class PeerInfoStoryGridScreen: ViewControllerComponentContainer {
         
         self.updateTitle()
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? PeerInfoStoryGridScreenComponent.View else {
                 return
             }

@@ -20,7 +20,7 @@ extension DocumentCanvasView {
             // within `loupeNearCursorRadius` of the cursor (grab-the-cursor), longer otherwise. `minimumPressDuration`
             // is chosen per-touch in the recognizer's `touchesBegan` from `loupeDelayNearCursor` / `loupeDelayFarFromCursor`.
             let longPress = LocationAdaptiveLongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
-            longPress.durationForLocation = { [weak self] point in
+            longPress.durationForLocation = { [weak self = self] point in
                 guard let self else { return DocumentCanvasView.loupeDelayFarFromCursor }
                 return self.isPointNearCursor(point)
                     ? DocumentCanvasView.loupeDelayNearCursor

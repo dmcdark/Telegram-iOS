@@ -466,7 +466,7 @@ public final class WallpaperColorPanelNode: ASDisplayNode {
         self.swapButton.addTarget(self, action: #selector(self.swapPressed), forControlEvents: .touchUpInside)
         self.addButton.addTarget(self, action: #selector(self.addPressed), forControlEvents: .touchUpInside)
 
-        self.multiColorFieldNode.colorChanged = { [weak self] color, ended in
+        self.multiColorFieldNode.colorChanged = { [weak self = self] color, ended in
             if let strongSelf = self {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -478,7 +478,7 @@ public final class WallpaperColorPanelNode: ASDisplayNode {
                 })
             }
         }
-        self.multiColorFieldNode.colorRemoved = { [weak self] in
+        self.multiColorFieldNode.colorRemoved = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.colorRemoved?()
                 strongSelf.updateState({ current in
@@ -496,7 +496,7 @@ public final class WallpaperColorPanelNode: ASDisplayNode {
             }
         }
 
-        self.colorPickerNode.colorChanged = { [weak self] color in
+        self.colorPickerNode.colorChanged = { [weak self = self] color in
             if let strongSelf = self {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -508,7 +508,7 @@ public final class WallpaperColorPanelNode: ASDisplayNode {
                 }, updateLayout: false)
             }
         }
-        self.colorPickerNode.colorChangeEnded = { [weak self] color in
+        self.colorPickerNode.colorChangeEnded = { [weak self = self] color in
             if let strongSelf = self {
                 strongSelf.updateState({ current in
                     var updated = current
@@ -620,7 +620,7 @@ public final class WallpaperColorPanelNode: ASDisplayNode {
             if self.sampleItemNodes.count > i {
                 itemNode = self.sampleItemNodes[i]
             } else {
-                itemNode = ColorSampleItemNode(action: { [weak self] in
+                itemNode = ColorSampleItemNode(action: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

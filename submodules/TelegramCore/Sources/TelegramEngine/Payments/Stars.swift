@@ -581,7 +581,7 @@ private final class StarsContextImpl {
         self.load(force: true)
         
         self.updateDisposable = ((ton ? account.stateManager.updatedTonBalance() : account.stateManager.updatedStarsBalance())
-        |> deliverOnMainQueue).startStrict(next: { [weak self] balances in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] balances in
             guard let self, let state = self._state, let balance = balances[self.peerId] else {
                 return
             }
@@ -607,12 +607,12 @@ private final class StarsContextImpl {
         self.previousLoadTimestamp = currentTimestamp
         
         self.disposable.set((_internal_requestStarsState(account: self.account, peerId: self.peerId, ton: self.ton, mode: .all, subscriptionId: nil, offset: nil, limit: 5)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
             self.updateState(StarsContext.State(flags: [], balance: status.balance, subscriptions: status.subscriptions, canLoadMoreSubscriptions: status.nextSubscriptionsOffset != nil, transactions: status.transactions, canLoadMoreTransactions: status.nextTransactionsOffset != nil, isLoading: false))
-        }, error: { [weak self] _ in
+        }, error: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1226,7 +1226,7 @@ private final class StarsTransactionsContextImpl {
         
         if case let .starsTransactionsContext(transactionsContext) = subject {
             self.stateDisposable = (transactionsContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -1252,7 +1252,7 @@ private final class StarsTransactionsContextImpl {
             })
         } else if case let .starsContext(starsContext) = subject {
             self.stateDisposable = (starsContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] state in
+            |> deliverOnMainQueue).start(next: { [weak self = self] state in
                 guard let self, let state else {
                     return
                 }
@@ -1311,7 +1311,7 @@ private final class StarsTransactionsContextImpl {
         self.updateState(updatedState)
                 
         self.disposable.set((_internal_requestStarsState(account: self.account, peerId: self.peerId, ton: self.ton, mode: self.mode, subscriptionId: nil, offset: nextOffset, limit: self.nextOffset == "" ? 25 : 50)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -1468,7 +1468,7 @@ private final class StarsSubscriptionsContextImpl {
         self.updateState(updatedState)
                 
         self.disposable.set((_internal_requestStarsSubscriptions(account: self.account, peerId: self.account.peerId, offset: nextOffset, missingBalance: self.missingBalance)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -1522,7 +1522,7 @@ private final class StarsSubscriptionsContextImpl {
         self._state.isLoading = true
         
         self.disposable.set((_internal_requestStarsSubscriptions(account: self.account, peerId: self.account.peerId, offset: "", missingBalance: self.missingBalance)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let self else {
                 return
             }

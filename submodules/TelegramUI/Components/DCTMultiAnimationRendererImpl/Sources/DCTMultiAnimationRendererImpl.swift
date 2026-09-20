@@ -443,7 +443,7 @@ private final class ItemAnimationContext {
         self.useYuvA = useYuvA
         self.stateUpdated = stateUpdated
 
-        self.disposable = cache.get(sourceId: itemId, size: size, fetch: fetch).start(next: { [weak self] result in
+        self.disposable = cache.get(sourceId: itemId, size: size, fetch: fetch).start(next: { [weak self = self] result in
             Queue.mainQueue().async {
                 guard let strongSelf = self else {
                     return
@@ -585,7 +585,7 @@ private final class ItemAnimationContext {
             self.loadingFrameTaskId = taskId
             let useYuvA = self.useYuvA
 
-            return LoadFrameGroupTask(task: { [weak self] in
+            return LoadFrameGroupTask(task: { [weak self = self] in
                 let currentFrame: (frame: Frame, didLoop: Bool)?
                 do {
                     if let (frame, didLoop) = try item.tryWith({ item -> (AnimationCacheItemFrame, Bool)? in
@@ -697,7 +697,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
             } else {
                 let queueAffinity = self.nextQueueAffinity
                 self.nextQueueAffinity += 1
-                itemContext = ItemAnimationContext(cache: cache, queueAffinity: queueAffinity, itemId: itemId, size: size, useYuvA: useYuvA, fetch: fetch, stateUpdated: { [weak self] in
+                itemContext = ItemAnimationContext(cache: cache, queueAffinity: queueAffinity, itemId: itemId, size: size, useYuvA: useYuvA, fetch: fetch, stateUpdated: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -907,7 +907,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
                             }
                         }
                         let frameInterval = Double(self.frameSkip) / 60.0
-                        let displayTimer = Foundation.Timer(timeInterval: frameInterval, target: TimerTarget { [weak self] in
+                        let displayTimer = Foundation.Timer(timeInterval: frameInterval, target: TimerTarget { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -939,7 +939,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
         if let current = self.groupContext {
             groupContext = current
         } else {
-            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self] in
+            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -960,7 +960,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
         if let current = self.groupContext {
             groupContext = current
         } else {
-            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self] in
+            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -977,7 +977,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
         if let current = self.groupContext {
             groupContext = current
         } else {
-            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self] in
+            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -994,7 +994,7 @@ public final class DCTMultiAnimationRendererImpl: MultiAnimationRenderer {
         if let current = self.groupContext {
             groupContext = current
         } else {
-            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self] in
+            groupContext = GroupContext(firstFrameQueue: DCTMultiAnimationRendererImpl.firstFrameQueue, stateUpdated: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

@@ -359,7 +359,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
             queue: Queue.mainQueue(),
             delayedStatus,
             self.forceCopyProtected.get()
-        ).startStrict(next: { [weak self] value, forceCopyProtected in
+        ).startStrict(next: { [weak self = self] value, forceCopyProtected in
             guard let strongSelf = self else {
                 return
             }
@@ -479,7 +479,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
         })
                 
         self.chapterDisposable = combineLatest(queue: Queue.mainQueue(), mappedStatus, self.chaptersPromise.get())
-        .startStrict(next: { [weak self] status, chapters in
+        .startStrict(next: { [weak self = self] status, chapters in
             if let strongSelf = self, status.duration > 1.0, chapters.count > 0 {
                 let previousChapter = strongSelf.currentChapter
                 var currentChapter: MediaPlayerScrubbingChapter?
@@ -527,7 +527,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
             }
         })
         
-        self.scrubberNode.seek = { [weak self] value in
+        self.scrubberNode.seek = { [weak self = self] value in
             self?.control?(.seek(value))
         }
         
@@ -540,7 +540,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
         self.rateButton.addTarget(self, action: #selector(self.rateButtonPressed), forControlEvents: .touchUpInside)
         self.artistButton.addTarget(self, action: #selector(self.artistPressed), forControlEvents: .touchUpInside)
         
-        self.artistButton.highligthedChanged = { [weak self] highlighted in
+        self.artistButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.descriptionNode.layer.removeAnimation(forKey: "opacity")
@@ -552,7 +552,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
             }
         }
         
-        self.rateButton.contextAction = { [weak self] sourceNode, gesture in
+        self.rateButton.contextAction = { [weak self = self] sourceNode, gesture in
             self?.openRateMenu(sourceNode: sourceNode, gesture: gesture)
         }
         
@@ -590,7 +590,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
                 self.control?(.playback(.pause))
                 
                 var time: Double = 0.0
-                let seekTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: true, completion: { [weak self] in
+                let seekTimer = SwiftSignalKit.Timer(timeout: 0.1, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self {
                         var delta: Double = 0.8
                         if time >= 4.0 {
@@ -629,7 +629,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
                 self.seekRate = .x4
                 self.control?(.playback(.play))
                 self.control?(.setBaseRate(self.seekRate))
-                let seekTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self] in
+                let seekTimer = SwiftSignalKit.Timer(timeout: 2.0, repeat: true, completion: { [weak self = self] in
                     if let strongSelf = self {
                         if strongSelf.seekRate == .x4 {
                             strongSelf.seekRate = .x8
@@ -936,7 +936,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
                         pressedColor: buttonBackgroundColor
                     ),
                     content: profileAudioButtonContent,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let file = self.currentFileReference else {
                             return
                         }
@@ -983,7 +983,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
         if let itemId = self.currentItemId as? PeerMessagesMediaPlaylistItemId {
             if itemId.messageId.namespace == Namespaces.Message.Cloud {
                 let _ = (self.engine.data.get(TelegramEngine.EngineData.Item.Messages.Message(id: itemId.messageId))
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] message in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] message in
                     guard let message else {
                         return
                     }
@@ -1088,7 +1088,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
         let previousRate = self.currentRate
         let previousValue = self.currentRate?.doubleValue ?? 1.0
         let sliderValuePromise = ValuePromise<Double?>(nil)
-        let sliderItem: ContextMenuItem = .custom(SliderContextItem(minValue: 0.2, maxValue: 2.5, value: previousValue, valueChanged: { [weak self] newValue, finished in
+        let sliderItem: ContextMenuItem = .custom(SliderContextItem(minValue: 0.2, maxValue: 2.5, value: previousValue, valueChanged: { [weak self = self] newValue, finished in
             let newValue = normalizeValue(newValue)
             self?.control?(.setBaseRate(AudioPlaybackRate(newValue)))
             sliderValuePromise.set(newValue)
@@ -1107,7 +1107,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
                 } else {
                     return UIImage()
                 }
-            }), action: { [weak self] _, f in
+            }), action: { [weak self = self] _, f in
                 scheduleTooltip(nil)
                 f(.default)
                 
@@ -1133,7 +1133,7 @@ final class OverlayAudioPlayerControlsNode: ASDisplayNode {
         })
         
         let contextController = makeContextController(presentationData: self.presentationData, source: .reference(HeaderContextReferenceContentSource(controller: controller, sourceNode: self.rateButton.referenceNode, shouldBeDismissed: .single(false))), items: items, gesture: gesture)
-        contextController.dismissed = { [weak self] in
+        contextController.dismissed = { [weak self = self] in
             if let scheduledTooltip, let self, let rate = self.currentRate {
                 self.presentAudioRateTooltip(baseRate: rate, changeType: scheduledTooltip)
             }

@@ -126,11 +126,11 @@ final class WebEmbedPlayerNode: ASDisplayNode, WKNavigationDelegate {
         }
         self.view.addSubview(self.webView)
         
-        self.impl.setup(self.webView, userContentController: userContentController, evaluateJavaScript: { [weak self] js, completion in
+        self.impl.setup(self.webView, userContentController: userContentController, evaluateJavaScript: { [weak self = self] js, completion in
             self?.evaluateJavaScript(js: js, completion: completion)
-        }, updateStatus: { [weak self] status in
+        }, updateStatus: { [weak self = self] status in
             self?.statusValue.set(status)
-        }, onPlaybackStarted: { [weak self] in
+        }, onPlaybackStarted: { [weak self = self] in
             self?.readyValue.set(true)
         })
     }
@@ -202,7 +202,7 @@ final class WebEmbedPlayerNode: ASDisplayNode, WKNavigationDelegate {
     }
     
     private func evaluateJavaScript(js: String, completion: ((Any?) -> Void)?) {
-        self.queue.async { [weak self] in
+        self.queue.async { [weak self = self] in
             if let strongSelf = self {
                 let impl = {
                     strongSelf.webView.evaluateJavaScript(js, completionHandler: { (result, _) in

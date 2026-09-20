@@ -142,7 +142,7 @@ private final class WallpaperPatternItemNode : ListViewItemNode {
     }
     
     func asyncLayout() -> (WallpaperPatternItem, ListViewItemLayoutParams) -> (ListViewItemNodeLayout, (Bool) -> Void) {
-        return { [weak self] item, params in
+        return { [weak self = self] item, params in
             let itemLayout = ListViewItemNodeLayout(contentSize: CGSize(width: 112.0, height: 112.0), insets: UIEdgeInsets())
             return (itemLayout, { animated in
                 if let strongSelf = self {
@@ -275,7 +275,7 @@ public final class WallpaperPatternPanelNode: ASDisplayNode {
                 }
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] wallpapers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] wallpapers in
             if let strongSelf = self {
                 strongSelf.wallpapers = wallpapers
                 strongSelf.updateWallpapers()

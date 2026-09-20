@@ -89,7 +89,7 @@ public class TermsOfServiceController: ViewController, StandalonePresentableCont
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             self?.controllerNode.scrollToTop()
         }
     }
@@ -102,7 +102,7 @@ public class TermsOfServiceController: ViewController, StandalonePresentableCont
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = TermsOfServiceControllerNode(presentationData: self.presentationData, text: self.text, entities: self.entities, ageConfirmation: self.ageConfirmation, leftAction: { [weak self] in
+        self.displayNode = TermsOfServiceControllerNode(presentationData: self.presentationData, text: self.text, entities: self.entities, ageConfirmation: self.ageConfirmation, leftAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -120,7 +120,7 @@ public class TermsOfServiceController: ViewController, StandalonePresentableCont
                 self?.decline()
             }), TextAlertAction(type: .genericAction, title: strongSelf.presentationData.strings.Common_Cancel, action: {
             })], actionLayout: .vertical), in: .window(.root))
-        }, rightAction: { [weak self] in
+        }, rightAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -132,9 +132,9 @@ public class TermsOfServiceController: ViewController, StandalonePresentableCont
             } else {
                 strongSelf.accept(self?.proccessBotNameAfterAccept)
             }
-        }, openUrl: self.openUrl, present: { [weak self] c, a in
+        }, openUrl: self.openUrl, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, setToProcceedBot: { [weak self] botName in
+        }, setToProcceedBot: { [weak self = self] botName in
             self?.proccessBotNameAfterAccept = botName
         })
         
@@ -158,7 +158,7 @@ public class TermsOfServiceController: ViewController, StandalonePresentableCont
     }
     
     override public func dismiss(completion: (() -> Void)? = nil) {
-        self.controllerNode.animateOut(completion: { [weak self] in
+        self.controllerNode.animateOut(completion: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
             completion?()
         })

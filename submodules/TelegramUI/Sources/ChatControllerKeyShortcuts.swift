@@ -26,54 +26,54 @@ extension ChatControllerImpl {
         var inputShortcuts: [KeyShortcut] = []
         if self.chatDisplayNode.isInputViewFocused {
             inputShortcuts = [
-                KeyShortcut(input: "B", modifiers: [.command], action: { [weak self] in
+                KeyShortcut(input: "B", modifiers: [.command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.bold, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "I", modifiers: [.command], action: { [weak self] in
+                KeyShortcut(input: "I", modifiers: [.command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.italic, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "M", modifiers: [.shift, .command], action: { [weak self] in
+                KeyShortcut(input: "M", modifiers: [.shift, .command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.monospace, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "U", modifiers: [.command], action: { [weak self] in
+                KeyShortcut(input: "U", modifiers: [.command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.underline, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "X", modifiers: [.command, .shift], action: { [weak self] in
+                KeyShortcut(input: "X", modifiers: [.command, .shift], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.strikethrough, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "P", modifiers: [.command, .shift], action: { [weak self] in
+                KeyShortcut(input: "P", modifiers: [.command, .shift], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputAddFormattingAttribute(current, attribute: ChatTextInputAttributes.spoiler, value: nil), inputMode)
                         }
                     }
                 }),
-                KeyShortcut(input: "K", modifiers: [.command], action: { [weak self] in
+                KeyShortcut(input: "K", modifiers: [.command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.openLinkEditing()
                     }
                 }),
-                KeyShortcut(input: "N", modifiers: [.shift, .command], action: { [weak self] in
+                KeyShortcut(input: "N", modifiers: [.shift, .command], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.interfaceInteraction?.updateTextInputStateAndMode { current, inputMode in
                             return (chatTextInputClearFormattingAttributes(current), inputMode)
@@ -93,7 +93,7 @@ extension ChatControllerImpl {
             }
         } else if UIResponder.currentFirst() == nil {
             inputShortcuts = [
-                KeyShortcut(title: strings.KeyCommand_FocusOnInputField, input: "\r", action: { [weak self] in
+                KeyShortcut(title: strings.KeyCommand_FocusOnInputField, input: "\r", action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                             return state.updatedInterfaceState { interfaceState in
@@ -102,7 +102,7 @@ extension ChatControllerImpl {
                             })
                     }
                 }),
-                KeyShortcut(input: "/", modifiers: [], action: { [weak self] in
+                KeyShortcut(input: "/", modifiers: [], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                             if state.interfaceState.effectiveInputState.isEmpty {
@@ -116,7 +116,7 @@ extension ChatControllerImpl {
                         })
                     }
                 }),
-                KeyShortcut(input: "2", modifiers: [.shift], action: { [weak self] in
+                KeyShortcut(input: "2", modifiers: [.shift], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                             if state.interfaceState.effectiveInputState.isEmpty {
@@ -130,7 +130,7 @@ extension ChatControllerImpl {
                         })
                     }
                 }),
-                KeyShortcut(input: "3", modifiers: [.shift], action: { [weak self] in
+                KeyShortcut(input: "3", modifiers: [.shift], action: { [weak self = self] in
                     if let strongSelf = self {
                         strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                             if state.interfaceState.effectiveInputState.isEmpty {
@@ -153,7 +153,7 @@ extension ChatControllerImpl {
             KeyShortcut(
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismiss(animated: true, completion: nil)
                 }
             )
@@ -164,7 +164,7 @@ extension ChatControllerImpl {
                 KeyShortcut(
                     input: UIKeyCommand.inputUpArrow,
                     modifiers: [.alternate, .command],
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -220,7 +220,7 @@ extension ChatControllerImpl {
                 KeyShortcut(
                     input: UIKeyCommand.inputDownArrow,
                     modifiers: [.alternate, .command],
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -261,7 +261,7 @@ extension ChatControllerImpl {
         }
                 
         if canEdit, let message = self.chatDisplayNode.historyNode.firstMessageForEditInCurrentHistoryView() {
-            inputShortcuts.append(KeyShortcut(input: UIKeyCommand.inputUpArrow, action: { [weak self] in
+            inputShortcuts.append(KeyShortcut(input: UIKeyCommand.inputUpArrow, action: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.interfaceInteraction?.setupEditMessage(message.id, { _ in })
                 }
@@ -269,12 +269,12 @@ extension ChatControllerImpl {
         }
         
         let otherShortcuts: [KeyShortcut] = [
-            KeyShortcut(title: strings.KeyCommand_ChatInfo, input: "I", modifiers: [.command, .control], action: { [weak self] in
+            KeyShortcut(title: strings.KeyCommand_ChatInfo, input: "I", modifiers: [.command, .control], action: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.interfaceInteraction?.openPeerInfo()
                 }
             }),
-            KeyShortcut(input: "/", modifiers: [.command], action: { [weak self] in
+            KeyShortcut(input: "/", modifiers: [.command], action: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { state in
                         return state.updatedInterfaceState { interfaceState in
@@ -283,7 +283,7 @@ extension ChatControllerImpl {
                     })
                 }
             }),
-            KeyShortcut(title: strings.KeyCommand_SearchInChat, input: "F", modifiers: [.command], action: { [weak self] in
+            KeyShortcut(title: strings.KeyCommand_SearchInChat, input: "F", modifiers: [.command], action: { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.beginMessageSearch("")
                 }

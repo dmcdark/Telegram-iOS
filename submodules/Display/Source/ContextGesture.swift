@@ -134,7 +134,7 @@ public final class ContextGesture: UIGestureRecognizer, UIGestureRecognizerDeleg
         }
         
         if self.delayTimer == nil {
-            let delayTimer = Timer(timeInterval: self.beginDelay, target: TimerTargetWrapper { [weak self] in
+            let delayTimer = Timer(timeInterval: self.beginDelay, target: TimerTargetWrapper { [weak self = self] in
                 guard let strongSelf = self, let _ = strongSelf.delayTimer else {
                     return
                 }

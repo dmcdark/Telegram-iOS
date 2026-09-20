@@ -323,13 +323,13 @@ final class AuthorizationSequenceCountrySelectionControllerNode: ASDisplayNode, 
                         strings: self.strings,
                         metrics: layout.metrics,
                         safeInsets: layout.safeInsets,
-                        updated: { [weak self] query in
+                        updated: { [weak self = self] query in
                             guard let self else {
                                 return
                             }
                             self.updateSearchQuery(query)
                         },
-                        cancel: { [weak self] in
+                        cancel: { [weak self = self] in
                             guard let self else {
                                 return
                             }

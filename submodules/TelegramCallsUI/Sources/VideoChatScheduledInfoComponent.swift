@@ -86,7 +86,7 @@ final class VideoChatScheduledInfoComponent: Component {
             
             self.countdownContainerView.mask = self.countdownMaskView
             
-            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self] value in
+            self.hierarchyTrackingLayer.isInHierarchyUpdated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -114,7 +114,7 @@ final class VideoChatScheduledInfoComponent: Component {
                 animation.fromValue = previousValue
                 animation.toValue = newValue
                 
-                CATransaction.setCompletionBlock { [weak self] in
+                CATransaction.setCompletionBlock { [weak self = self] in
                     guard let self else {
                         return
                     }

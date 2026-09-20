@@ -26,7 +26,7 @@ extension ChatControllerImpl {
             snapshots: [],
             transitionCompletion: {
             },
-            getCaptionPanelView: { [weak self] in
+            getCaptionPanelView: { [weak self = self] in
                 return self?.getCaptionPanelView(isFile: false, hasTimer: false)
             },
             photoToolbarView: { [context = self.context] backButton, doneButton, solidBackground, hasSendStarsButton in
@@ -35,11 +35,11 @@ extension ChatControllerImpl {
             hasSilentPosting: hasSilentPosting,
             hasSchedule: hasSchedule,
             reminder: peer.id == self.context.account.peerId,
-            presentSchedulePicker: { [weak self] _, done in
+            presentSchedulePicker: { [weak self = self] _, done in
                 guard let self else {
                     return
                 }
-                self.presentScheduleTimePicker(style: .media, completion: { [weak self] result in
+                self.presentScheduleTimePicker(style: .media, completion: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -49,7 +49,7 @@ extension ChatControllerImpl {
                     }
                 })
             },
-            sendMessagesWithSignals: { [weak self] signals, silentPosting, scheduleTime, isCaptionAbove in
+            sendMessagesWithSignals: { [weak self = self] signals, silentPosting, scheduleTime, isCaptionAbove in
                 guard let self else {
                     return
                 }
@@ -69,7 +69,7 @@ extension ChatControllerImpl {
                     completion: {}
                 )
             },
-            present: { [weak self] c, a in
+            present: { [weak self = self] c, a in
                 c.navigationPresentation = .flatModal
                 self?.push(c)
             }

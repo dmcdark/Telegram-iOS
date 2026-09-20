@@ -377,7 +377,7 @@ private final class SheetContent: CombinedComponent {
             super.init()
             
             self.peerDisposable = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: subject.peerId))
-            |> deliverOnMainQueue).start(next: { [weak self] peer in
+            |> deliverOnMainQueue).start(next: { [weak self = self] peer in
                 self?.peer = peer
                 self?.updated()
             })
@@ -732,7 +732,7 @@ public final class ContentReportScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .flatModal
         
-        completeImpl = { [weak self] result in
+        completeImpl = { [weak self = self] result in
             guard let self else {
                 return
             }

@@ -10,7 +10,7 @@ private class ShutterBlobLayer: MetalImageLayer {
     override public init() {
         super.init()
         
-        self.renderer.imageUpdated = { [weak self] image in
+        self.renderer.imageUpdated = { [weak self = self] image in
             self?.contents = image
         }
     }
@@ -179,7 +179,7 @@ final class ShutterBlobView: UIView {
         self.isOpaque = false
         self.backgroundColor = .clear
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+        self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
             self?.tick()
         }
         self.displayLink?.isPaused = true

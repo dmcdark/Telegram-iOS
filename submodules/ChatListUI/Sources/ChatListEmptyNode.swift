@@ -137,7 +137,7 @@ final class ChatListEmptyNode: ASDisplayNode {
             self.archiveSettingsDisposable = (context.engine.data.subscribe(
                 TelegramEngine.EngineData.Item.Configuration.GlobalPrivacy()
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] settings in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] settings in
                 guard let self else {
                     return
                 }
@@ -264,7 +264,7 @@ final class ChatListEmptyNode: ASDisplayNode {
                             color: self.theme.list.itemCheckColors.foregroundColor
                         ))
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.buttonPressed()
                     }
                 )),
@@ -348,7 +348,7 @@ final class ChatListEmptyNode: ASDisplayNode {
                     theme: self.theme,
                     strings: self.strings,
                     settings: self.globalPrivacySettings,
-                    openSettings: { [weak self] in
+                    openSettings: { [weak self = self] in
                         guard let self else {
                             return
                         }

@@ -59,7 +59,7 @@ public final class MediaTrackFrameBuffer {
         self.lowWaterDuration = lowWaterDuration
         self.highWaterDuration = highWaterDuration
         
-        self.frameSourceSinkIndex = self.frameSource.addEventSink { [weak self] event in
+        self.frameSourceSinkIndex = self.frameSource.addEventSink { [weak self = self] event in
             if let strongSelf = self {
                 switch event {
                     case let .frames(frames):

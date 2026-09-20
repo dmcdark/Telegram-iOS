@@ -1675,7 +1675,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                 queue: Queue.mainQueue(),
                 premiumIntroConfiguration,
                 accountPeer
-            ).start(next: { [weak self] premiumIntroConfiguration, accountPeer in
+            ).start(next: { [weak self = self] premiumIntroConfiguration, accountPeer in
                 guard let self else {
                     return
                 }
@@ -1711,7 +1711,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                 
                 let stickersKey: PostboxViewKey = .orderedItemList(id: Namespaces.OrderedItemList.CloudPremiumStickers)
                 self.stickersDisposable = (context.account.postbox.combinedView(keys: [stickersKey])
-                |> deliverOnMainQueue).start(next: { [weak self] views in
+                |> deliverOnMainQueue).start(next: { [weak self = self] views in
                     guard let self else {
                         return
                     }
@@ -1729,7 +1729,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                 })
                                 
                 self.adsEnabledDisposable = (context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.AdsEnabled(id: context.account.peerId))
-                |> deliverOnMainQueue).start(next: { [weak self] adsEnabled in
+                |> deliverOnMainQueue).start(next: { [weak self = self] adsEnabled in
                     guard let self else {
                         return
                     }
@@ -2189,7 +2189,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                             iconName: perk.iconName
                         ))), false),
                         accessory: accountContext != nil ? .arrow : nil,
-                        action: { [weak state] _ in
+                        action: { [weak state = state] _ in
                             guard let accountContext else {
                                 return
                             }
@@ -2380,7 +2380,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                             backgroundColor: gradientColors[min(i, gradientColors.count - 1)],
                             iconName: perk.iconName
                         ))), false),
-                        action: { [weak state] _ in
+                        action: { [weak state = state] _ in
                             guard let accountContext else {
                                 return
                             }
@@ -2584,7 +2584,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                             file: nil
                         )))),
                         accessory: nil,
-                        action: { [weak state] view in
+                        action: { [weak state = state] view in
                             guard let view = view as? ListActionItemComponent.View, let iconView = view.iconView else {
                                 return
                             }
@@ -2721,7 +2721,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                             maximumNumberOfLines: 1
                         ))),
                     ], alignment: .left, spacing: 2.0)),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: state.adsEnabled, action: { [weak state] value in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: state.adsEnabled, action: { [weak state = state] value in
                         guard let accountContext else {
                             return
                         }
@@ -2922,7 +2922,7 @@ private final class PremiumIntroScreenContentComponent: CombinedComponent {
                                     let _ = (signal
                                     |> deliverOnMainQueue).start(next: { resolvedUrl in
                                         context.sharedContext.openResolvedUrl(resolvedUrl, context: context, urlContext: .generic, navigationController: navigationController, forceExternal: false, forceUpdate: false, openPeer: { peer, navigation in
-                                        }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak controller] c, arguments in
+                                        }, sendFile: nil, sendSticker: nil, sendEmoji: nil, requestMessageActionUrlAuth: nil, joinVoiceChat: nil, present: { [weak controller = controller] c, arguments in
                                             controller?.push(c)
                                         }, dismissInput: {}, contentContext: nil, progress: nil, completion: nil)
                                     })
@@ -3154,7 +3154,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                 promoConfiguration,
                 isPremium,
                 otherPeerName
-            ).start(next: { [weak self] availableProducts, promoConfiguration, isPremium, otherPeerName in
+            ).start(next: { [weak self = self] availableProducts, promoConfiguration, isPremium, otherPeerName in
                 if let strongSelf = self {
                     strongSelf.promoConfiguration = promoConfiguration
                     
@@ -3194,7 +3194,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                 } else {
                     if let context = screenContext.context {
                         self.emojiFileDisposable = (context.engine.stickers.resolveInlineStickers(fileIds: [emojiFileId])
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -3230,7 +3230,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                 self.updated(transition: .immediate)
                 
                 self.paymentDisposable.set((context.engine.payments.applyPremiumGiftCode(slug: giftCode.slug)
-                |> deliverOnMainQueue).start(error: { [weak self] error in
+                |> deliverOnMainQueue).start(error: { [weak self = self] error in
                     guard let self else {
                         return
                     }
@@ -3243,7 +3243,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                         let dateText = stringForMediumDate(timestamp: date, strings: presentationData.strings, dateTimeFormat: presentationData.dateTimeFormat)
                         self.present(UndoOverlayController(presentationData: presentationData, content: .info(title: presentationData.strings.Premium_Gift_ApplyLink_AlreadyHasPremium_Title, text: presentationData.strings.Premium_Gift_ApplyLink_AlreadyHasPremium_Text(dateText).string, timeout: nil, customUndoText: nil), elevatedLayout: true, position: .bottom, action: { _ in return true }))
                     }
-                }, completed: { [weak self] in
+                }, completed: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -3302,13 +3302,13 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                     canPurchasePremium = engine.payments.canPurchasePremium(purpose: purpose)
                 }
                 let _ = (canPurchasePremium
-                |> deliverOnMainQueue).start(next: { [weak self] available in
+                |> deliverOnMainQueue).start(next: { [weak self = self] available in
                     guard let self else {
                         return
                     }
                     if available {
                         self.paymentDisposable.set((inAppPurchaseManager.buyProduct(storeProduct, purpose: purpose)
-                        |> deliverOnMainQueue).start(next: { [weak self] status in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] status in
                             if let self, case .purchased = status {
                                 let activation: Signal<Never, AssignAppStoreTransactionError>
                                 if let context = self.screenContext.context {
@@ -3330,7 +3330,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                                 }
                                 
                                 self.activationDisposable.set((activation
-                                |> deliverOnMainQueue).start(error: { [weak self] _ in
+                                |> deliverOnMainQueue).start(error: { [weak self = self] _ in
                                     if let self {
                                         self.inProgress = false
                                         self.updateInProgress(false)
@@ -3345,7 +3345,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                                         let alertController = textAlertController(sharedContext: self.screenContext.sharedContext, title: nil, text: errorText, actions: [TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: {})])
                                         self.present(alertController)
                                     }
-                                }, completed: { [weak self] in
+                                }, completed: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -3362,7 +3362,7 @@ private final class PremiumIntroScreenComponent: CombinedComponent {
                                     self.completion()
                                 }))
                             }
-                        }, error: { [weak self] error in
+                        }, error: { [weak self = self] error in
                             guard let self else {
                                 return
                             }
@@ -4089,7 +4089,7 @@ public final class PremiumIntroScreen: ViewControllerComponentContainer {
             self.navigationPresentation = .modalInLargeLayout
         }
         
-        updateInProgressImpl = { [weak self] inProgress in
+        updateInProgressImpl = { [weak self = self] inProgress in
             guard let self else {
                 return
             }
@@ -4098,7 +4098,7 @@ public final class PremiumIntroScreen: ViewControllerComponentContainer {
             self.view.disablesInteractiveModalDismiss = inProgress
         }
         
-        presentImpl = { [weak self] c in
+        presentImpl = { [weak self = self] c in
             if c is UndoOverlayController {
                 self?.present(c, in: .current)
             } else {
@@ -4106,17 +4106,17 @@ public final class PremiumIntroScreen: ViewControllerComponentContainer {
             }
         }
         
-        pushImpl = { [weak self] c in
+        pushImpl = { [weak self = self] c in
             self?.push(c)
         }
         
-        completionImpl = { [weak self] in
+        completionImpl = { [weak self = self] in
             if let self {
                 self.animateSuccess()
             }
         }
         
-        copyLinkImpl = { [weak self] link in
+        copyLinkImpl = { [weak self = self] link in
             UIPasteboard.general.string = link
             
             guard let self else {
@@ -4127,7 +4127,7 @@ public final class PremiumIntroScreen: ViewControllerComponentContainer {
             self.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, position: .top, action: { _ in return true }), in: .current)
         }
         
-        shareLinkImpl = { [weak self] link in
+        shareLinkImpl = { [weak self = self] link in
             guard let self, case let .accountContext(context) = screenContext, let navigationController = self.navigationController as? NavigationController else {
                 return
             }

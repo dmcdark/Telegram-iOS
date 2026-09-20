@@ -148,7 +148,7 @@ final class PeerNameColorProfilePreviewItemNode: ListViewItemNode {
     }
         
     func asyncLayout() -> (_ item: PeerNameColorProfilePreviewItem, _ params: ListViewItemLayoutParams, _ neighbors: ItemListNeighbors) -> (ListViewItemNodeLayout, (ListViewItemUpdateAnimation) -> Void) {
-        return { [weak self] item, params, neighbors in
+        return { [weak self = self] item, params, neighbors in
             let separatorHeight = UIScreenPixel
             
             let contentSize = CGSize(width: params.width, height: 210.0 + item.topInset + item.bottomInset)
@@ -160,7 +160,7 @@ final class PeerNameColorProfilePreviewItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] animation in
+            return (layout, { [weak self = self] animation in
                 guard let self else {
                     return
                 }

@@ -42,7 +42,7 @@ public final class BackButtonComponent: Component {
             
             self.addSubview(self.arrowView)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     let transition: ComponentTransition = highlighted ? .immediate : .easeInOut(duration: 0.2)
                     if highlighted {

@@ -108,7 +108,7 @@ private final class StickerPreviewPeekContentNode: ASDisplayNode, PeekController
         self.addSubnode(self.textNode)
         
         if let animationNode = self.animationNode {
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }

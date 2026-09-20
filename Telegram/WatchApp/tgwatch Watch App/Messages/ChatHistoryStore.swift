@@ -313,7 +313,7 @@ final class ChatHistoryStore {
     func markVisible(messageId: Int64) {
         pendingViewIds.insert(messageId)
         viewDrainTask?.cancel()
-        viewDrainTask = Task { [weak self] in
+        viewDrainTask = Task { [weak self = self] in
             try? await Task.sleep(nanoseconds: Self.viewDrainDelayNs)
             if Task.isCancelled { return }
             await self?.drainPendingViews()
@@ -615,7 +615,7 @@ final class ChatHistoryStore {
         }
         guard !reprojectPending else { return }
         reprojectPending = true
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self = self] in
             guard let self else { return }
             guard self.reprojectPending else { return }
             self.reproject()

@@ -61,7 +61,7 @@ public final class LegacyLiveUploadInterface: VideoConversionWatcher, TGLiveUplo
             updateImpl?(path, size)
         })
         
-        updateImpl = { [weak self] path, size in
+        updateImpl = { [weak self = self] path, size in
             if let strongSelf = self {
                 if strongSelf.path == nil {
                     strongSelf.path = path

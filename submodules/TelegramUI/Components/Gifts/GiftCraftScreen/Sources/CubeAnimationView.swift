@@ -310,7 +310,7 @@ final class CubeAnimationView: UIView {
         self.warpCurrentQuad = startQuad
         startQuad.apply(to: view)
 
-        let link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max) { [weak self] _ in
+        let link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max) { [weak self = self] _ in
             self?.stepWarp()
         }
         link.isPaused = false
@@ -613,7 +613,7 @@ final class CubeAnimationView: UIView {
         }
 
         let delay: TimeInterval = index == 0 ? 0.0 : 1.0
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self = self] in
             guard let self else {
                 return
             }
@@ -670,7 +670,7 @@ final class CubeAnimationView: UIView {
 
     private func startSpinLoopIfNeeded() {
         if self.displayLink == nil {
-            let link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max) { [weak self] _ in
+            let link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max) { [weak self = self] _ in
                 self?.tick()
             }
             link.isPaused = false
@@ -742,7 +742,7 @@ final class CubeAnimationView: UIView {
 
     private func startFinishingAnimation() {
         self.finishDelayTimerX?.invalidate()
-        self.finishDelayTimerX = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: false) { [weak self] _ in
+        self.finishDelayTimerX = Timer.scheduledTimer(withTimeInterval: 0.75, repeats: false) { [weak self = self] _ in
             self?.beginFinishingX()
         }
     }
@@ -754,7 +754,7 @@ final class CubeAnimationView: UIView {
         self.finishTargetY = self.finishTargetX == 0 ? 0 : Float.pi
         self.isFinishingX = true
         self.finishDelayTimerY?.invalidate()
-        self.finishDelayTimerY = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+        self.finishDelayTimerY = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self = self] _ in
             self?.beginFinishingY()
         }
     }

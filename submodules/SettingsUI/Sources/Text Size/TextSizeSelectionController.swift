@@ -146,7 +146,7 @@ private final class TextSizeSelectionControllerNode: ASDisplayNode, ASScrollView
             dismiss()
         }
         var dismissed = false
-        self.toolbarNode.done = { [weak self] in
+        self.toolbarNode.done = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -155,14 +155,14 @@ private final class TextSizeSelectionControllerNode: ASDisplayNode, ASScrollView
                 apply(strongSelf.presentationThemeSettings.useSystemFont, strongSelf.presentationThemeSettings.fontSize, strongSelf.presentationThemeSettings.listsFontSize)
             }
         }
-        self.toolbarNode.updateUseSystemFont = { [weak self] value in
+        self.toolbarNode.updateUseSystemFont = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.presentationThemeSettings.useSystemFont = value
             strongSelf.updatePresentationThemeSettings(strongSelf.presentationThemeSettings)
         }
-        self.toolbarNode.updateCustomFontSize = { [weak self] value in
+        self.toolbarNode.updateCustomFontSize = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -176,7 +176,7 @@ private final class TextSizeSelectionControllerNode: ASDisplayNode, ASScrollView
         }
           
         let _ = (chatServiceBackgroundColor(wallpaper: self.presentationData.chatWallpaper, mediaBox: context.account.postbox.mediaBox)
-        |> deliverOnMainQueue).start(next: { [weak self] serviceColor in
+        |> deliverOnMainQueue).start(next: { [weak self = self] serviceColor in
             self?.pageControlBackgroundNode.backgroundColor = serviceColor
         })
     }
@@ -657,7 +657,7 @@ final class TextSizeSelectionController: ViewController {
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
             }
@@ -689,11 +689,11 @@ final class TextSizeSelectionController: ViewController {
     override public func loadDisplayNode() {
         super.loadDisplayNode()
         
-        self.displayNode = TextSizeSelectionControllerNode(context: self.context, presentationThemeSettings: self.presentationThemeSettings, focusOnItemTag: self.focusOnItemTag, dismiss: { [weak self] in
+        self.displayNode = TextSizeSelectionControllerNode(context: self.context, presentationThemeSettings: self.presentationThemeSettings, focusOnItemTag: self.focusOnItemTag, dismiss: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }
-        }, apply: { [weak self] useSystemFont, fontSize, listsFontSize in
+        }, apply: { [weak self = self] useSystemFont, fontSize, listsFontSize in
             if let strongSelf = self {
                 strongSelf.apply(useSystemFont: useSystemFont, fontSize: fontSize, listsFontSize: listsFontSize)
             }
@@ -709,7 +709,7 @@ final class TextSizeSelectionController: ViewController {
             current.listsFontSize = listsFontSize
             return current
         })
-        |> deliverOnMainQueue).start(completed: { [weak self] in
+        |> deliverOnMainQueue).start(completed: { [weak self = self] in
             self?.dismiss()
         })
     }
@@ -767,7 +767,7 @@ private final class TextSelectionToolbarNode: ASDisplayNode {
         
         self.updatePresentationData(presentationData: self.presentationData)
         
-        self.cancelButton.highligthedChanged = { [weak self] highlighted in
+        self.cancelButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.cancelButton.backgroundColor = strongSelf.presentationData.theme.list.itemHighlightedBackgroundColor
@@ -779,7 +779,7 @@ private final class TextSelectionToolbarNode: ASDisplayNode {
             }
         }
         
-        self.doneButton.highligthedChanged = { [weak self] highlighted in
+        self.doneButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.doneButton.backgroundColor = strongSelf.presentationData.theme.list.itemHighlightedBackgroundColor
@@ -827,10 +827,10 @@ private final class TextSelectionToolbarNode: ASDisplayNode {
     func updateLayout(width: CGFloat, bottomInset: CGFloat, layout: ContainerViewLayout, transition: ContainedViewLayoutTransition) -> CGFloat {
         var contentHeight: CGFloat = 0.0
         
-        let switchItem = ItemListSwitchItem(presentationData: ItemListPresentationData(self.presentationData), title: self.presentationData.strings.Appearance_TextSize_UseSystem, value: self.presentationThemeSettings.useSystemFont, disableLeadingInset: true, sectionId: 0, style: .blocks, updated: { [weak self] value in
+        let switchItem = ItemListSwitchItem(presentationData: ItemListPresentationData(self.presentationData), title: self.presentationData.strings.Appearance_TextSize_UseSystem, value: self.presentationThemeSettings.useSystemFont, disableLeadingInset: true, sectionId: 0, style: .blocks, updated: { [weak self = self] value in
             self?.updateUseSystemFont?(value)
         })
-        let fontSizeItem = ThemeSettingsFontSizeItem(theme: self.presentationData.theme, fontSize: self.customMode == .chat ? self.presentationThemeSettings.fontSize : self.presentationThemeSettings.listsFontSize, enabled: !self.presentationThemeSettings.useSystemFont, disableLeadingInset: true, disableDecorations: true, force: true, sectionId: 0, updated: { [weak self] value in
+        let fontSizeItem = ThemeSettingsFontSizeItem(theme: self.presentationData.theme, fontSize: self.customMode == .chat ? self.presentationThemeSettings.fontSize : self.presentationThemeSettings.listsFontSize, enabled: !self.presentationThemeSettings.useSystemFont, disableLeadingInset: true, disableDecorations: true, force: true, sectionId: 0, updated: { [weak self = self] value in
             self?.updateCustomFontSize?(value)
         })
         

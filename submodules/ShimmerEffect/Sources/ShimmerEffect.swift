@@ -37,7 +37,7 @@ public final class ShimmerEffectForegroundView: UIView {
         
         self.layer.addSublayer(self.trackingLayer)
         
-        self.trackingLayer.didEnterHierarchy = { [weak self] in
+        self.trackingLayer.didEnterHierarchy = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -45,7 +45,7 @@ public final class ShimmerEffectForegroundView: UIView {
             strongSelf.updateAnimation()
         }
         
-        self.trackingLayer.didExitHierarchy = { [weak self] in
+        self.trackingLayer.didExitHierarchy = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

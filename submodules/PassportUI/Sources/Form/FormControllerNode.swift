@@ -146,7 +146,7 @@ public class FormControllerNode<InitParams, InnerState: FormControllerInnerState
         self.addSubnode(self.scrollNode)
         
         self.scrollNode.view.delaysContentTouches = true
-        self.scrollNode.touchesPrevented = { [weak self] position in
+        self.scrollNode.touchesPrevented = { [weak self = self] position in
             guard let strongSelf = self else {
                 return false
             }

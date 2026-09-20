@@ -162,7 +162,7 @@ public final class StoryContentContextImpl: StoryContentContext {
                     return (views, peers, data, allEntityFiles, pendingForwardsInfo, forwardInfoStories, preferHighQualityStories)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] views, peers, data, allEntityFiles, pendingForwardsInfo, forwardInfoStories, preferHighQualityStories in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] views, peers, data, allEntityFiles, pendingForwardsInfo, forwardInfoStories, preferHighQualityStories in
                 guard let self else {
                     return
                 }
@@ -526,7 +526,7 @@ public final class StoryContentContextImpl: StoryContentContext {
             self.nextPeerContext = nextPeerContext
             
             self.centralDisposable = (centralPeerContext.updated.get()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -535,7 +535,7 @@ public final class StoryContentContextImpl: StoryContentContext {
             
             if let previousPeerContext {
                 self.previousDisposable = (previousPeerContext.updated.get()
-                |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -545,7 +545,7 @@ public final class StoryContentContextImpl: StoryContentContext {
             
             if let nextPeerContext {
                 self.nextDisposable = (nextPeerContext.updated.get()
-                |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -637,7 +637,7 @@ public final class StoryContentContextImpl: StoryContentContext {
                 context.engine.data.subscribe(TelegramEngine.EngineData.Item.Peer.Peer(id: focusedPeerId)),
                 singlePeerListContext.state
             )
-            |> deliverOnMainQueue).startStrict(next: { [weak self] peer, state in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] peer, state in
                 guard let self, let peer else {
                     return
                 }
@@ -732,7 +732,7 @@ public final class StoryContentContextImpl: StoryContentContext {
             })
         } else {
             self.storySubscriptionsDisposable = (context.engine.messages.storySubscriptions(isHidden: isHidden, tempKeepNewlyArchived: true)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] storySubscriptions in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] storySubscriptions in
                 guard let self else {
                     return
                 }
@@ -853,7 +853,7 @@ public final class StoryContentContextImpl: StoryContentContext {
             let subscriptionItems = currentStorySubscriptions.items
             
             if self.pendingState == nil {
-                let loadIds: ([StoryKey]) -> Void = { [weak self] keys in
+                let loadIds: ([StoryKey]) -> Void = { [weak self = self] keys in
                     guard let self else {
                         return
                     }
@@ -1272,7 +1272,7 @@ public final class SingleStoryContentContextImpl: StoryContentContext {
             },
             preferHighQualityStories
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] data, itemAndPeers, preferHighQualityStories in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] data, itemAndPeers, preferHighQualityStories in
             guard let self else {
                 return
             }
@@ -1527,7 +1527,7 @@ public final class PeerStoryListContentContextImpl: StoryContentContext {
             self.focusedIdUpdated.get(),
             preferHighQualityStories
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] state, _, preferHighQualityStories in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] state, _, preferHighQualityStories in
             guard let self else {
                 return
             }
@@ -1587,7 +1587,7 @@ public final class PeerStoryListContentContextImpl: StoryContentContext {
             }
             
             self.storyDataDisposable.set((peerData
-            |> deliverOnMainQueue).start(next: { [weak self] data in
+            |> deliverOnMainQueue).start(next: { [weak self = self] data in
                 guard let self else {
                     return
                 }
@@ -2446,7 +2446,7 @@ public final class RepostStoriesContentContextImpl: StoryContentContext {
                     return (views, peers, data, allEntityFiles, forwardInfoStories, preferHighQualityStories)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] views, peers, data, allEntityFiles, forwardInfoStories, preferHighQualityStories in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] views, peers, data, allEntityFiles, forwardInfoStories, preferHighQualityStories in
                 guard let self else {
                     return
                 }
@@ -2686,7 +2686,7 @@ public final class RepostStoriesContentContextImpl: StoryContentContext {
             self.nextPeerContext = nextPeerContext
             
             self.centralDisposable = (centralPeerContext.updated.get()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -2695,7 +2695,7 @@ public final class RepostStoriesContentContextImpl: StoryContentContext {
             
             if let previousPeerContext {
                 self.previousDisposable = (previousPeerContext.updated.get()
-                |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2705,7 +2705,7 @@ public final class RepostStoriesContentContextImpl: StoryContentContext {
             
             if let nextPeerContext {
                 self.nextDisposable = (nextPeerContext.updated.get()
-                |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -2794,7 +2794,7 @@ public final class RepostStoriesContentContextImpl: StoryContentContext {
         self.readGlobally = readGlobally
         
         self.storySubscriptionsDisposable = (viewListContext.state
-        |> deliverOnMainQueue).startStrict(next: { [weak self] viewListState in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] viewListState in
             guard let self else {
                 return
             }

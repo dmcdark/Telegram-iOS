@@ -18,7 +18,7 @@ extension PeerInfoScreenNode {
         }
         let _ = (self.context.account.viewTracker.peerView(peerId)
         |> take(1)
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] peerView in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerView in
             guard let self, let controller = self.controller, let peer = peerViewMainPeer(peerView) else {
                 return
             }
@@ -140,60 +140,60 @@ extension PeerInfoScreenNode {
         }
         self.view.endEditing(true)
 
-        return self.context.sharedContext.openChatMessage(OpenChatMessageParams(context: self.context, chatLocation: self.chatLocation, chatFilterTag: nil, chatLocationContextHolder: self.chatLocationContextHolder, message: galleryMessage._asMessage(), standalone: false, reverseMessageGalleryOrder: true, navigationController: navigationController, dismissInput: { [weak self] in
+        return self.context.sharedContext.openChatMessage(OpenChatMessageParams(context: self.context, chatLocation: self.chatLocation, chatFilterTag: nil, chatLocationContextHolder: self.chatLocationContextHolder, message: galleryMessage._asMessage(), standalone: false, reverseMessageGalleryOrder: true, navigationController: navigationController, dismissInput: { [weak self = self] in
             self?.view.endEditing(true)
-        }, present: { [weak self] c, a, _ in
+        }, present: { [weak self = self] c, a, _ in
             self?.controller?.present(c, in: .window(.root), with: a, blockInteraction: true)
-        }, transitionNode: { [weak self] messageId, media, _ in
+        }, transitionNode: { [weak self = self] messageId, media, _ in
             guard let strongSelf = self else {
                 return nil
             }
             return strongSelf.paneContainerNode.transitionNodeForGallery(messageId: messageId, media: EngineMedia(media))
-        }, addToTransitionSurface: { [weak self] view in
+        }, addToTransitionSurface: { [weak self = self] view in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.paneContainerNode.currentPane?.node.addToTransitionSurface(view: view)
-        }, openUrl: { [weak self] url in
+        }, openUrl: { [weak self = self] url in
             self?.openUrl(url: url, concealed: false, external: false)
-        }, openPeer: { [weak self] peer, navigation in
+        }, openPeer: { [weak self = self] peer, navigation in
             self?.openPeer(peerId: peer.id, navigation: navigation)
         }, callPeer: { peerId, isVideo in
         }, openConferenceCall: { _ in
         }, enqueueMessage: { _ in
-        }, sendSticker: nil, sendEmoji: nil, setupTemporaryHiddenMedia: { _, _, _ in }, chatAvatarHiddenMedia: { _, _ in }, actionInteraction: GalleryControllerActionInteraction(openUrl: { [weak self] url, concealed, forceExternal in
+        }, sendSticker: nil, sendEmoji: nil, setupTemporaryHiddenMedia: { _, _, _ in }, chatAvatarHiddenMedia: { _, _ in }, actionInteraction: GalleryControllerActionInteraction(openUrl: { [weak self = self] url, concealed, forceExternal in
             if let strongSelf = self {
                 strongSelf.openUrl(url: url, concealed: false, external: forceExternal)
             }
-        }, openUrlIn: { [weak self] url in
+        }, openUrlIn: { [weak self = self] url in
             if let strongSelf = self {
                 strongSelf.openUrlIn(url)
             }
-        }, openPeerMention: { [weak self] mention in
+        }, openPeerMention: { [weak self = self] mention in
             if let strongSelf = self {
                 strongSelf.openPeerMention(mention)
             }
-        }, openPeer: { [weak self] peer in
+        }, openPeer: { [weak self = self] peer in
             if let strongSelf = self {
                 strongSelf.openPeer(peerId: peer.id, navigation: .default)
             }
-        }, openHashtag: { [weak self] peerName, hashtag in
+        }, openHashtag: { [weak self = self] peerName, hashtag in
             if let strongSelf = self {
                 strongSelf.openHashtag(hashtag, peerName: peerName)
             }
         }, openBotCommand: { _ in
         }, openAd: { _ in
-        }, addContact: { [weak self] phoneNumber in
+        }, addContact: { [weak self = self] phoneNumber in
             if let strongSelf = self {
-                strongSelf.context.sharedContext.openAddContact(context: strongSelf.context, peer: nil, firstName: "", lastName: "", phoneNumber: phoneNumber, label: defaultContactLabel, present: { [weak self] controller, arguments in
+                strongSelf.context.sharedContext.openAddContact(context: strongSelf.context, peer: nil, firstName: "", lastName: "", phoneNumber: phoneNumber, label: defaultContactLabel, present: { [weak self = self] controller, arguments in
                     self?.controller?.present(controller, in: .window(.root), with: arguments)
-                }, pushController: { [weak self] controller in
+                }, pushController: { [weak self = self] controller in
                     if let strongSelf = self {
                         strongSelf.controller?.push(controller)
                     }
                 }, completed: {})
             }
-        }, storeMediaPlaybackState: { [weak self] messageId, timestamp, playbackRate in
+        }, storeMediaPlaybackState: { [weak self = self] messageId, timestamp, playbackRate in
             guard let strongSelf = self else {
                 return
             }
@@ -202,13 +202,13 @@ extension PeerInfoScreenNode {
                 storedState = MediaPlaybackStoredState(timestamp: timestamp, playbackRate: AudioPlaybackRate(playbackRate))
             }
             let _ = updateMediaPlaybackStoredStateInteractively(engine: strongSelf.context.engine, messageId: messageId, state: storedState).startStandalone()
-        }, editMedia: { [weak self] messageId, snapshots, transitionCompletion in
+        }, editMedia: { [weak self = self] messageId, snapshots, transitionCompletion in
             guard let strongSelf = self else {
                 return
             }
             
             let _ = (strongSelf.context.engine.data.get(TelegramEngine.EngineData.Item.Messages.Message(id: messageId))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] message in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] message in
                 guard let strongSelf = self, let message = message else {
                     return
                 }
@@ -232,19 +232,19 @@ extension PeerInfoScreenNode {
                         return nil
                     }, photoToolbarView: { [context = strongSelf.context] backButton, doneButton, solidBackground, hasSendStarsButton in
                         return makeMediaPickerPhotoToolbarView(context: context, backButton: backButton, doneButton: doneButton, solidBackground: solidBackground, hasSendStarsButton: hasSendStarsButton)
-                    }, hasSilentPosting: hasSilentPosting, hasSchedule: hasSchedule, reminder: peer.id == strongSelf.context.account.peerId, presentSchedulePicker: { [weak self] _, done in
+                    }, hasSilentPosting: hasSilentPosting, hasSchedule: hasSchedule, reminder: peer.id == strongSelf.context.account.peerId, presentSchedulePicker: { [weak self = self] _, done in
                         self?.presentMediaScheduleTimePicker(completion: { time, silentPosting in
                             done(time, silentPosting)
                         })
-                    }, sendMessagesWithSignals: { [weak self] signals, silentPosting, scheduleTime, _ in
+                    }, sendMessagesWithSignals: { [weak self = self] signals, silentPosting, scheduleTime, _ in
                         if let strongSelf = self {
                             strongSelf.enqueueMediaMessageDisposable.set((legacyAssetPickerEnqueueMessages(context: strongSelf.context, account: strongSelf.context.account, signals: signals!)
-                            |> deliverOnMainQueue).startStrict(next: { [weak self] messages in
+                            |> deliverOnMainQueue).startStrict(next: { [weak self = self] messages in
                                 if let strongSelf = self {
                                     let effectiveScheduleTime = scheduleTime == 0 ? nil : scheduleTime
                                     let mappedMessages = strongSelf.transformEditedMediaMessages(messages.map(\.message), replyToMessageId: message.id, silentPosting: silentPosting, scheduleTime: effectiveScheduleTime)
                                     let _ = (enqueueMessages(account: strongSelf.context.account, peerId: strongSelf.peerId, messages: mappedMessages)
-                                    |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+                                    |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                                         guard let self, let effectiveScheduleTime, effectiveScheduleTime != scheduleWhenOnlineTimestamp else {
                                             return
                                         }
@@ -253,13 +253,13 @@ extension PeerInfoScreenNode {
                                 }
                             }))
                         }
-                    }, present: { [weak self] c, a in
+                    }, present: { [weak self = self] c, a in
                         self?.controller?.present(c, in: .window(.root), with: a)
                     })
                 }
             })
         }, updateCanReadHistory: { _ in
-        }, sendSticker: nil), centralItemUpdated: { [weak self] messageId in
+        }, sendSticker: nil), centralItemUpdated: { [weak self = self] messageId in
             let _ = self?.paneContainerNode.requestExpandTabs?()
             self?.paneContainerNode.currentPane?.node.ensureMessageIsVisible(id: messageId)
         }))

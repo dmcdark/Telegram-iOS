@@ -188,7 +188,7 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 return peer?.isPremium ?? false
             }
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData, recommendedPeers, isPremium in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData, recommendedPeers, isPremium in
             guard let self else {
                 return
             }
@@ -196,7 +196,7 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             self.updateState(recommendedPeers: recommendedPeers, isPremium: isPremium, presentationData: presentationData)
         })
                 
-        self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             if let self {
                 self.layoutUnlockPanel(transition: .animated(duration: 0.4, curve: .spring))
             }
@@ -267,9 +267,9 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
         }
         
-        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, action: { [weak self] peer in
+        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, action: { [weak self = self] peer in
             self?.chatControllerInteraction.openPeer(peer, .default, nil, .default)
-        }, openPeerContextAction: { [weak self] peer, node, gesture in
+        }, openPeerContextAction: { [weak self = self] peer, node, gesture in
             self?.openPeerContextAction(true, peer, node, gesture)
         })
         
@@ -297,9 +297,9 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             }
         }
         
-        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, action: { [weak self] peer in
+        let transaction = preparedTransition(from: self.currentEntries, to: entries, context: self.context, presentationData: presentationData, action: { [weak self = self] peer in
             self?.chatControllerInteraction.openPeer(peer, .info(nil), nil, .default)
-        }, openPeerContextAction: { [weak self] peer, node, gesture in
+        }, openPeerContextAction: { [weak self = self] peer, node, gesture in
             self?.openPeerContextAction(true, peer, node, gesture)
         })
         
@@ -365,7 +365,7 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
                 unlockButton.iconPosition = .right
                 unlockButton.title = isBots ? presentationData.strings.PeerInfo_SimilarBots_ShowMore : presentationData.strings.Channel_SimilarChannels_ShowMore
                 
-                unlockButton.pressed = { [weak self] in
+                unlockButton.pressed = { [weak self = self] in
                     self?.unlockPressed()
                 }
             }
@@ -443,7 +443,7 @@ final class PeerInfoRecommendedPeersPaneNode: ASDisplayNode, PeerInfoPaneNode {
             options.insert(.Synchronous)
         }
         
-        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+        self.listNode.transaction(deleteIndices: transaction.deletions, insertIndicesAndItems: transaction.insertions, updateIndicesAndItems: transaction.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

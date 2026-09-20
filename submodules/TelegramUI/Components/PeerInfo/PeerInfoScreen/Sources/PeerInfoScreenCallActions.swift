@@ -19,7 +19,7 @@ extension PeerInfoScreenNode {
             return
         }
         let peerId = self.peerId
-        let requestCall: (EnginePeer.Id?, EngineGroupCallDescription?) -> Void = { [weak self] defaultJoinAsPeerId, activeCall in
+        let requestCall: (EnginePeer.Id?, EngineGroupCallDescription?) -> Void = { [weak self = self] defaultJoinAsPeerId, activeCall in
             if let activeCall = activeCall {
                 self?.context.joinGroupCall(peerId: peerId, invite: nil, requestJoinAsPeerId: { completion in
                     if let defaultJoinAsPeerId = defaultJoinAsPeerId {
@@ -78,14 +78,14 @@ extension PeerInfoScreenNode {
             return
         }
         if let _ = self.context.sharedContext.callManager {
-            let startCall: (Bool) -> Void = { [weak self] endCurrentIfAny in
+            let startCall: (Bool) -> Void = { [weak self = self] endCurrentIfAny in
                 guard let strongSelf = self else {
                     return
                 }
                 
                 var cancelImpl: (() -> Void)?
                 let presentationData = strongSelf.presentationData
-                let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+                let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
                     let controller = OverlayStatusController(theme: presentationData.theme,  type: .loading(cancelled: {
                         cancelImpl?()
                     }))
@@ -105,18 +105,18 @@ extension PeerInfoScreenNode {
                         progressDisposable.dispose()
                     }
                 }
-                cancelImpl = { [weak self] in
+                cancelImpl = { [weak self = self] in
                     self?.activeActionDisposable.set(nil)
                 }
                 strongSelf.activeActionDisposable.set((createSignal
-                |> deliverOnMainQueue).start(next: { [weak self] info in
+                |> deliverOnMainQueue).start(next: { [weak self = self] info in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.context.joinGroupCall(peerId: peerId, invite: nil, requestJoinAsPeerId: { result in
                         result(joinAsPeerId)
                     }, activeCall: EngineGroupCallDescription(id: info.id, accessHash: info.accessHash, title: info.title, scheduleTimestamp: nil, subscribedToScheduled: false, isStream: info.isStream))
-                }, error: { [weak self] error in
+                }, error: { [weak self = self] error in
                     guard let strongSelf = self else {
                         return
                     }
@@ -159,7 +159,7 @@ extension PeerInfoScreenNode {
             var result = currentAccountPeer
             result.append(contentsOf: availablePeers)
             return result
-        }).startStandalone(next: { [weak self] peers in
+        }).startStandalone(next: { [weak self = self] peers in
             guard let strongSelf = self else {
                 return
             }
@@ -230,7 +230,7 @@ extension PeerInfoScreenNode {
                     
                     if let sourceNode = strongSelf.headerNode.buttonNodes[.voiceChat]?.referenceNode, let controller = strongSelf.controller {
                         let contextController = makeContextController(presentationData: strongSelf.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: sourceNode)), items: .single(ContextController.Items(content: .list(items))), gesture: gesture)
-                        contextController.dismissed = { [weak self] in
+                        contextController.dismissed = { [weak self = self] in
                             if let strongSelf = self {
                                 strongSelf.state = strongSelf.state.withHighlightedButton(nil)
                                 if let (layout, navigationHeight) = strongSelf.validLayout {
@@ -268,7 +268,7 @@ extension PeerInfoScreenNode {
             var result = currentAccountPeer
             result.append(contentsOf: availablePeers)
             return result
-        }).startStandalone(next: { [weak self] peers in
+        }).startStandalone(next: { [weak self = self] peers in
             guard let strongSelf = self else {
                 return
             }
@@ -292,7 +292,7 @@ extension PeerInfoScreenNode {
                         strongSelf.openVoiceChatDisplayAsPeerSelection(completion: { joinAsPeerId in
                             let _ = context.engine.calls.updateGroupCallJoinAsPeer(peerId: peerId, joinAs: joinAsPeerId).startStandalone()
                             self?.openVoiceChatOptions(defaultJoinAsPeerId: joinAsPeerId, gesture: nil, contextController: c)
-                        }, gesture: gesture, contextController: c, result: f, backAction: { [weak self] c in
+                        }, gesture: gesture, contextController: c, result: f, backAction: { [weak self = self] c in
                             self?.openVoiceChatOptions(defaultJoinAsPeerId: defaultJoinAsPeerId, gesture: nil, contextController: c)
                         })
                         
@@ -358,7 +358,7 @@ extension PeerInfoScreenNode {
                 
                 if let sourceNode = strongSelf.headerNode.buttonNodes[.voiceChat]?.referenceNode, let controller = strongSelf.controller {
                     let contextController = makeContextController(presentationData: strongSelf.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: sourceNode)), items: .single(ContextController.Items(content: .list(items))), gesture: gesture)
-                    contextController.dismissed = { [weak self] in
+                    contextController.dismissed = { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.state = strongSelf.state.withHighlightedButton(nil)
                             if let (layout, navigationHeight) = strongSelf.validLayout {

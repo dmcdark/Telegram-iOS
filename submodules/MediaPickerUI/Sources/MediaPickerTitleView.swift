@@ -214,11 +214,11 @@ final class MediaPickerTitleView: UIView {
         
         super.init(frame: CGRect())
         
-        self.segmentedControlNode.selectedIndexChanged = { [weak self] index in
+        self.segmentedControlNode.selectedIndexChanged = { [weak self = self] index in
             self?.indexUpdated?(index)
         }
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }

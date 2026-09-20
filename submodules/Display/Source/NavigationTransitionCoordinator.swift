@@ -233,7 +233,7 @@ final class NavigationTransitionCoordinator {
     func animateCancel(_ completion: @escaping () -> ()) {
         self.currentCompletion = completion
         
-        self.updateProgress(0.0, transition: .animated(duration: 0.1, curve: .easeInOut), completion: { [weak self] in
+        self.updateProgress(0.0, transition: .animated(duration: 0.1, curve: .easeInOut), completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -283,7 +283,7 @@ final class NavigationTransitionCoordinator {
     }
     
     func performCompletion(completion: @escaping () -> ()) {
-        self.updateProgress(1.0, transition: .immediate, completion: { [weak self] in
+        self.updateProgress(1.0, transition: .immediate, completion: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dimNode.removeFromSupernode()
                 strongSelf.shadowNode.removeFromSupernode()

@@ -125,7 +125,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
         self.maskCircleLayer.fillColor = whiteColor.cgColor
         self.maskCircleLayer.isHidden = true
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             if let strongSelf = self, !strongSelf.ignoreHierarchyChanges {
                 strongSelf.isCurrentlyInHierarchy = value
                 strongSelf.updateAnimations()
@@ -150,7 +150,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
         self.maskView.addSubview(self.maskBlobView)
         self.maskView.layer.addSublayer(self.maskCircleLayer)
         
-        self.maskBlobView.scaleUpdated = { [weak self] scale in
+        self.maskBlobView.scaleUpdated = { [weak self = self] scale in
             if let strongSelf = self {
                 strongSelf.updateGlowScale(strongSelf.isActive ? scale : nil)
             }
@@ -178,7 +178,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
             animation.fromValue = previousValue
             animation.toValue = newValue
             
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 if let isCurrentlyInHierarchy = self?.isCurrentlyInHierarchy, isCurrentlyInHierarchy {
                     self?.setupGradientAnimations()
                 }
@@ -324,7 +324,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
         if self.animationsEnabled {
             self.maskBlobView.startAnimating()
         }
-        self.maskBlobView.layer.animateScale(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self] _ in
+        self.maskBlobView.layer.animateScale(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -355,7 +355,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
         if self.animationsEnabled {
             self.maskBlobView.startAnimating()
         }
-        self.maskBlobView.layer.animateScale(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self] _ in
+        self.maskBlobView.layer.animateScale(from: 1.0, to: 0.0, duration: 0.15, removeOnCompletion: false, completion: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -541,7 +541,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
         
         self.disableGlowAnimations = true
         self.maskGradientLayer.removeAllAnimations()
-        self.maskGradientLayer.animateSpring(from: 0.3 as NSNumber, to: 0.85 as NSNumber, keyPath: "transform.scale", duration: 0.45, completion: { [weak self] _ in
+        self.maskGradientLayer.animateSpring(from: 0.3 as NSNumber, to: 0.85 as NSNumber, keyPath: "transform.scale", duration: 0.45, completion: { [weak self = self] _ in
             self?.disableGlowAnimations = false
         })
     }
@@ -588,7 +588,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
                 if let transition = self.transition {
                     let type: Gradient = newActive ? .speaking : .active
                     if transition == .connecting {
-                        self.playConnectionAnimation(type: type) { [weak self] in
+                        self.playConnectionAnimation(type: type) { [weak self = self] in
                             self?.isActive = newActive
                         }
                     } else if transition == .disabled {
@@ -615,7 +615,7 @@ final class VoiceChatActionButtonBackgroundNode: ASDisplayNode {
                     if case .button = transition {
                         self.playScheduledAnimation()
                     } else if case .connecting = transition {
-                        self.playConnectionAnimation(type: .muted) { [weak self] in
+                        self.playConnectionAnimation(type: .muted) { [weak self = self] in
                             self?.isActive = false
                         }
                     } else if case let .blob(previousActive) = transition {

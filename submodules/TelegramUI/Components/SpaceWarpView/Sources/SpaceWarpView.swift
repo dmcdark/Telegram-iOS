@@ -292,7 +292,7 @@ open class SpaceWarpNodeImpl: ASDisplayNode, SpaceWarpNode {
         
         if self.link == nil {
             var previousTimestamp = CACurrentMediaTime()
-            self.link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+            self.link = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                 guard let self else {
                     return
                 }

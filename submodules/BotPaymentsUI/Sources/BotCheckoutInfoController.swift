@@ -82,9 +82,9 @@ final class BotCheckoutInfoController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = BotCheckoutInfoControllerNode(context: self.context, navigationBar: self.navigationBar, invoice: self.invoice, source: self.source, formInfo: self.initialFormInfo, focus: self.focus, theme: self.presentationData.theme, strings: self.presentationData.strings, dismiss: { [weak self] in
+        self.displayNode = BotCheckoutInfoControllerNode(context: self.context, navigationBar: self.navigationBar, invoice: self.invoice, source: self.source, formInfo: self.initialFormInfo, focus: self.focus, theme: self.presentationData.theme, strings: self.presentationData.strings, dismiss: { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
-        }, openCountrySelection: { [weak self] in
+        }, openCountrySelection: { [weak self = self] in
             if let strongSelf = self {
                 let controller = AuthorizationSequenceCountrySelectionController(strings: strongSelf.presentationData.strings, theme: strongSelf.presentationData.theme, displayCodes: false, glass: true)
                 controller.completeWithCountryCode = { _, id in
@@ -94,7 +94,7 @@ final class BotCheckoutInfoController: ViewController {
                 }
                 strongSelf.push(controller)
             }
-        }, updateStatus: { [weak self] status in
+        }, updateStatus: { [weak self = self] status in
             if let strongSelf = self {
                 switch status {
                     case .notReady:
@@ -117,12 +117,12 @@ final class BotCheckoutInfoController: ViewController {
                         }
                 }
             }
-        }, formInfoUpdated: { [weak self] formInfo, validatedInfo in
+        }, formInfoUpdated: { [weak self = self] formInfo, validatedInfo in
             if let strongSelf = self {
                 strongSelf.formInfoUpdated(formInfo, validatedInfo)
                 strongSelf.dismiss()
             }
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         })
         

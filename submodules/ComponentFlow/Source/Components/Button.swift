@@ -270,7 +270,7 @@ public final class Button: Component {
                 
                 self.holdActionTimer?.invalidate()
                 if #available(iOS 10.0, *) {
-                    let holdActionTimer = Timer(timeInterval: 0.5, repeats: false, block: { [weak self] _ in
+                    let holdActionTimer = Timer(timeInterval: 0.5, repeats: false, block: { [weak self = self] _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -289,7 +289,7 @@ public final class Button: Component {
         private func beginExecuteHoldActionTimer() {
             self.holdActionTimer?.invalidate()
             if #available(iOS 10.0, *) {
-                let holdActionTimer = Timer(timeInterval: 0.1, repeats: true, block: { [weak self] _ in
+                let holdActionTimer = Timer(timeInterval: 0.1, repeats: true, block: { [weak self = self] _ in
                     guard let strongSelf = self else {
                         return
                     }

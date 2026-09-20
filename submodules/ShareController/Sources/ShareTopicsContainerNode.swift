@@ -109,7 +109,7 @@ private class CancelButtonNode: ASDisplayNode {
         self.buttonNode.addSubnode(self.arrowNode)
         self.buttonNode.addSubnode(self.labelNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -247,7 +247,7 @@ final class ShareTopicsContainerNode: ASDisplayNode, ShareContentContainerNode {
                 
         let previousItems = Atomic<[ShareTopicEntry]?>(value: [])
         self.disposable.set((items
-        |> deliverOnMainQueue).start(next: { [weak self] entries in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entries in
             if let strongSelf = self {
                 let previousEntries = previousItems.swap(entries)
                 strongSelf.entries = entries
@@ -258,11 +258,11 @@ final class ShareTopicsContainerNode: ASDisplayNode, ShareContentContainerNode {
             }
         }))
         
-        self.contentGridNode.scrollingInitiated = { [weak self] in
+        self.contentGridNode.scrollingInitiated = { [weak self = self] in
             self?.contentDidBeginDragging?()
         }
 
-        self.contentGridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.contentGridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             self?.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
         }
         

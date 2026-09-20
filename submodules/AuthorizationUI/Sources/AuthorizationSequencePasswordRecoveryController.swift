@@ -62,11 +62,11 @@ final class AuthorizationSequencePasswordRecoveryController: ViewController {
         self.displayNode = AuthorizationSequencePasswordRecoveryControllerNode(strings: self.strings, theme: self.theme)
         self.displayNodeDidLoad()
         
-        self.controllerNode.recoverWithCode = { [weak self] _ in
+        self.controllerNode.recoverWithCode = { [weak self = self] _ in
             self?.nextPressed()
         }
         
-        self.controllerNode.noAccess = { [weak self] in
+        self.controllerNode.noAccess = { [weak self = self] in
             self?.noAccess?()
         }
         

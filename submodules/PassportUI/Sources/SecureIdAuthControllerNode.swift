@@ -55,7 +55,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
         self.addSubnode(self.scrollNode)
         
         self.backgroundColor = presentationData.theme.list.blocksBackgroundColor
-        self.acceptNode.pressed = { [weak self] in
+        self.acceptNode.pressed = { [weak self = self] in
             guard let strongSelf = self, let state = strongSelf.state, case let .form(form) = state, let encryptedFormData = form.encryptedFormData, let formData = form.formData else {
                 return
             }
@@ -264,7 +264,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                         case let .noChallenge(noChallengeState):
                             if let _ = self.contentNode as? SecureIdAuthPasswordSetupContentNode {
                             } else {
-                                let current = SecureIdAuthPasswordSetupContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, setupPassword: { [weak self] in
+                                let current = SecureIdAuthPasswordSetupContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, setupPassword: { [weak self = self] in
                                     self?.interaction.setupPassword()
                                 })
                                 contentNode = current
@@ -285,11 +285,11 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                                 }
                                 contentNode = current
                             } else {
-                                let current = SecureIdAuthPasswordOptionContentNode(theme: presentationData.theme, strings: presentationData.strings, hint: hint, checkPassword: { [weak self] password in
+                                let current = SecureIdAuthPasswordOptionContentNode(theme: presentationData.theme, strings: presentationData.strings, hint: hint, checkPassword: { [weak self = self] password in
                                     if let strongSelf = self {
                                         strongSelf.interaction.checkPassword(password)
                                     }
-                                }, passwordHelp: { [weak self] in
+                                }, passwordHelp: { [weak self = self] in
                                     self?.interaction.openPasswordHelp()
                                 })
                                 current.updateIsChecking(challengeState == .checking)
@@ -304,7 +304,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                                     current.updateValues(formData.values)
                                     contentNode = current
                                 } else {
-                                    let current = SecureIdAuthFormContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, peer: encryptedFormData.servicePeer, privacyPolicyUrl: encryptedFormData.form.termsUrl, form: formData, primaryLanguageByCountry: encryptedFormData.primaryLanguageByCountry, openField: { [weak self] field in
+                                    let current = SecureIdAuthFormContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, nameDisplayOrder: self.presentationData.nameDisplayOrder, peer: encryptedFormData.servicePeer, privacyPolicyUrl: encryptedFormData.form.termsUrl, form: formData, primaryLanguageByCountry: encryptedFormData.primaryLanguageByCountry, openField: { [weak self = self] field in
                                         if let strongSelf = self {
                                             switch field {
                                                 case .identity, .address:
@@ -315,11 +315,11 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                                                     strongSelf.presentPlaintextSelection(type: .email)
                                             }
                                         }
-                                    }, openURL: { [weak self] url in
+                                    }, openURL: { [weak self = self] url in
                                         self?.interaction.openUrl(url)
-                                    }, openMention: { [weak self] mention in
+                                    }, openMention: { [weak self = self] mention in
                                         self?.interaction.openMention(mention)
-                                    }, requestLayout: { [weak self] in
+                                    }, requestLayout: { [weak self = self] in
                                         if let strongSelf = self, let (layout, navigationHeight) = strongSelf.validLayout {
                                             strongSelf.containerLayoutUpdated(layout, navigationBarHeight: navigationHeight, transition: .immediate)
                                         }
@@ -370,9 +370,9 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                                 }
                                 contentNode = current
                             } else {
-                                let current = SecureIdAuthPasswordOptionContentNode(theme: presentationData.theme, strings: presentationData.strings, hint: hint, checkPassword: { [weak self] password in
+                                let current = SecureIdAuthPasswordOptionContentNode(theme: presentationData.theme, strings: presentationData.strings, hint: hint, checkPassword: { [weak self = self] password in
                                     self?.interaction.checkPassword(password)
-                                }, passwordHelp: { [weak self] in
+                                }, passwordHelp: { [weak self = self] in
                                     self?.interaction.openPasswordHelp()
                                 })
                                 current.updateIsChecking(challengeState == .checking)
@@ -389,11 +389,11 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                                     current.updateValues(values)
                                     contentNode = current
                                 } else {
-                                    let current = SecureIdAuthListContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, dateTimeFormat: self.presentationData.dateTimeFormat, openField: { [weak self] field in
+                                    let current = SecureIdAuthListContentNode(theme: self.presentationData.theme, strings: self.presentationData.strings, dateTimeFormat: self.presentationData.dateTimeFormat, openField: { [weak self = self] field in
                                         self?.openListField(field)
-                                    }, deleteAll: { [weak self] in
+                                    }, deleteAll: { [weak self = self] in
                                         self?.deleteAllValues()
-                                    }, requestLayout: { [weak self] in
+                                    }, requestLayout: { [weak self = self] in
                                         if let strongSelf = self, let (layout, navigationHeight) = strongSelf.validLayout {
                                             strongSelf.containerLayoutUpdated(layout, navigationBarHeight: navigationHeight, transition: .immediate)
                                         }
@@ -420,7 +420,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
         let requestId = self.scheduledLayoutTransitionRequestId
         self.scheduledLayoutTransitionRequestId += 1
         self.scheduledLayoutTransitionRequest = (requestId, transition)
-        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self] in
+        (self.view as? UITracingLayerView)?.schedule(layout: { [weak self = self] in
             if let strongSelf = self {
                 if let (currentRequestId, currentRequestTransition) = strongSelf.scheduledLayoutTransitionRequest, currentRequestId == requestId {
                     strongSelf.scheduledLayoutTransitionRequest = nil
@@ -435,7 +435,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
         guard let state = self.state, case let .form(form) = state, let verificationState = form.verificationState, case let .verified(secureIdContext) = verificationState, let encryptedFormData = form.encryptedFormData, let formData = form.formData else {
             return
         }
-        let updatedValues: ([SecureIdValueKey], [SecureIdValueWithContext]) -> Void = { [weak self] touchedKeys, updatedValues in
+        let updatedValues: ([SecureIdValueKey], [SecureIdValueWithContext]) -> Void = { [weak self = self] touchedKeys, updatedValues in
             guard let strongSelf = self else {
                 return
             }
@@ -607,7 +607,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                 break
         }
         
-        let completionImpl: (SecureIdDocumentFormRequestedData) -> Void = { [weak self] requestedData in
+        let completionImpl: (SecureIdDocumentFormRequestedData) -> Void = { [weak self = self] requestedData in
             guard let strongSelf = self, let state = strongSelf.state, let verificationState = state.verificationState, case .verified = verificationState, let formData = form.formData, let validLayout = strongSelf.validLayout?.0 else {
                 return
             }
@@ -652,9 +652,9 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
             })
             
             if let attachmentType = attachmentType, let type = attachmentTarget {
-                presentLegacySecureIdAttachmentMenu(context: strongSelf.context, present: { [weak self] c in
+                presentLegacySecureIdAttachmentMenu(context: strongSelf.context, present: { [weak self = self] c in
                     self?.interaction.present(c, nil)
-                    }, validLayout: validLayout, type: attachmentType, recognizeDocumentData: true, completion: { [weak self] resources, recognizedData in
+                    }, validLayout: validLayout, type: attachmentType, recognizeDocumentData: true, completion: { [weak self = self] resources, recognizedData in
                         guard let strongSelf = self else {
                             return
                         }
@@ -695,7 +695,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                 }
                 currentValue = findValue(formData.values, key: .email)?.1
         }
-        let openForm: () -> Void = { [weak self] in
+        let openForm: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -738,7 +738,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                     text = self.presentationData.strings.Passport_Email_Delete
             }
             controller.setItemGroups([
-                ActionSheetItemGroup(items: [ActionSheetButtonItem(title: text, color: .destructive, action: { [weak self] in
+                ActionSheetItemGroup(items: [ActionSheetButtonItem(title: text, color: .destructive, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return
@@ -785,7 +785,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
         }
         
         let updatedValues: (SecureIdValueKey) -> ([SecureIdValueWithContext]) -> Void = { valueKey in
-            return { [weak self] updatedValues in
+            return { [weak self = self] updatedValues in
                 guard let strongSelf = self else {
                     return
                 }
@@ -806,7 +806,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
             }
         }
         
-        let openAction: (SecureIdValueKey) -> Void = { [weak self] field in
+        let openAction: (SecureIdValueKey) -> Void = { [weak self = self] field in
             guard let strongSelf = self, let state = strongSelf.state, case let .list(list) = state else {
                 return
             }
@@ -841,7 +841,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
             }
         }
         
-        let deleteField: (SecureIdValueKey) -> Void = { [weak self] field in
+        let deleteField: (SecureIdValueKey) -> Void = { [weak self = self] field in
             guard let strongSelf = self else {
                 return
             }
@@ -858,7 +858,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
                     text = strongSelf.presentationData.strings.Passport_Email_Delete
             }
             controller.setItemGroups([
-                ActionSheetItemGroup(items: [ActionSheetButtonItem(title: text, color: .destructive, action: { [weak self] in
+                ActionSheetItemGroup(items: [ActionSheetButtonItem(title: text, color: .destructive, action: { [weak self = self] in
                     dismissAction()
                     guard let strongSelf = self else {
                         return
@@ -966,7 +966,7 @@ final class SecureIdAuthControllerNode: ViewControllerTracingNode {
         }
         let items: [ActionSheetItem] = [
             ActionSheetTextItem(title: self.presentationData.strings.Passport_DeletePassportConfirmation),
-            ActionSheetButtonItem(title: self.presentationData.strings.Common_Delete, color: .destructive, enabled: true, action: { [weak self] in
+            ActionSheetButtonItem(title: self.presentationData.strings.Common_Delete, color: .destructive, enabled: true, action: { [weak self = self] in
                 dismissAction()
                 self?.interaction.deleteAll()
             })

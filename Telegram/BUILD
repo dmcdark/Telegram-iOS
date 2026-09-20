@@ -1325,9 +1325,6 @@ swift_library(
     srcs = glob([
         "SiriIntents/**/*.swift",
     ]),
-    copts = [
-        "-warnings-as-errors",
-    ],
     data = glob([
         "SiriIntents/*.lproj/Intents.intentdefinition"
     ]) + [

@@ -96,7 +96,7 @@ private final class GiftValueSheetContent: CombinedComponent {
             super.init()
             
             self.disposable = (context.engine.payments.cachedStarGifts()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] starGifts in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] starGifts in
                 if let strongSelf = self {
                     var starGiftsMap: [Int64: StarGift.Gift] = [:]
                     if let starGifts {

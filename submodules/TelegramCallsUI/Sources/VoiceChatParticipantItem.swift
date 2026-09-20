@@ -209,7 +209,7 @@ class VoiceChatParticipantStatusNode: ASDisplayNode {
             var contentSize = textLayout.size
             contentSize.width += (iconSize.width + spacing) * CGFloat(icons.count)
             
-            return (contentSize, { [weak self] in
+            return (contentSize, { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -368,7 +368,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
         
         self.actionButtonNode.addTarget(self, action: #selector(self.actionButtonPressed), forControlEvents: .touchUpInside)
                 
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self else {
                 return false
             }
@@ -377,7 +377,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
             }
             return true
         }
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0, let contextAction = item.contextAction else {
                 gesture.cancel()
                 return
@@ -385,7 +385,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
             contextAction(strongSelf.contextSourceNode, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.layoutParams?.0 else {
                 return
             }
@@ -394,7 +394,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
             
             let inset: CGFloat = 0.0
             if isExtracted {
-                strongSelf.contextSourceNode.contentNode.customHitTest = { [weak self] point in
+                strongSelf.contextSourceNode.contentNode.customHitTest = { [weak self = self] point in
                     if let strongSelf = self {
                         if let avatarListWrapperNode = strongSelf.avatarListWrapperNode, avatarListWrapperNode.frame.contains(point) {
                             return strongSelf.avatarListNode?.view
@@ -457,7 +457,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                             let avatarListWrapperNode = PinchSourceContainerNode()
                             avatarListWrapperNode.clipsToBounds = true
                             avatarListWrapperNode.cornerRadius = backgroundCornerRadius
-                            avatarListWrapperNode.activate = { [weak self] sourceNode in
+                            avatarListWrapperNode.activate = { [weak self = self] sourceNode in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -467,7 +467,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                                 })
                                 item.context.sharedContext.mainWindow?.presentInGlobalOverlay(pinchController)
                             }
-                            avatarListWrapperNode.deactivated = { [weak self] in
+                            avatarListWrapperNode.deactivated = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -476,7 +476,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                             }
                             avatarListWrapperNode.update(size: targetRect.size, transition: .immediate)
                             avatarListWrapperNode.frame = CGRect(x: targetRect.minX, y: targetRect.minY, width: targetRect.width, height: targetRect.height + backgroundCornerRadius)
-                            avatarListWrapperNode.animatedOut = { [weak self] in
+                            avatarListWrapperNode.animatedOut = { [weak self = self] in
                                 guard let strongSelf = self else {
                                     return
                                 }
@@ -515,7 +515,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                             avatarListNode.peer = item.peer
                             avatarListNode.firstFullSizeOnly = true
                             avatarListNode.offsetLocation = true
-                            avatarListNode.customCenterTapAction = { [weak self] in
+                            avatarListNode.customCenterTapAction = { [weak self = self] in
                                 self?.contextSourceNode.requestDismiss?()
                             }
                             avatarListNode.frame = CGRect(x: targetRect.width / 2.0, y: targetRect.height / 2.0, width: targetRect.width, height: targetRect.height)
@@ -614,7 +614,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                         strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.1, delay: 0.1, timingFunction: CAMediaTimingFunctionName.easeOut.rawValue)
                     } else {
                         strongSelf.extractedBackgroundImageNode.alpha = 0.0
-                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self] _ in
+                        strongSelf.extractedBackgroundImageNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, delay: 0.0, timingFunction: CAMediaTimingFunctionName.easeInEaseOut.rawValue, removeOnCompletion: false, completion: { [weak self = self] _ in
                             if let strongSelf = self {
                                 strongSelf.backgroundImageNode.image = nil
                                 strongSelf.extractedBackgroundImageNode.image = nil
@@ -745,7 +745,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
             containerNode.addSubnode(self.avatarNode)
             
             self.avatarNode.layer.animateScale(from: 1.25, to: 1.0, duration: duration, timingFunction: timingFunction)
-            self.avatarNode.layer.animatePosition(from: startContainerAvatarPosition, to: targetContainerAvatarPosition, duration: duration, timingFunction: timingFunction, completion: { [weak self] _ in
+            self.avatarNode.layer.animatePosition(from: startContainerAvatarPosition, to: targetContainerAvatarPosition, duration: duration, timingFunction: timingFunction, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.avatarNode.position = initialAvatarPosition
                     strongSelf.offsetContainerNode.addSubnode(strongSelf.avatarNode)
@@ -891,7 +891,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                 }
             }
                         
-            return (layout, { [weak self] synchronousLoad, animated in
+            return (layout, { [weak self = self] synchronousLoad, animated in
                 if let strongSelf = self {
                     let hadItem = strongSelf.layoutParams?.0 != nil
                     strongSelf.layoutParams = (item, params, first, last)
@@ -1108,7 +1108,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
                                     } else {
                                         avatarScale = 1.0
                                         if strongSelf.silenceTimer == nil {
-                                            let silenceTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+                                            let silenceTimer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
                                                 self?.audioLevelView?.stopAnimating(duration: 0.75)
                                                 self?.silenceTimer = nil
                                             }, queue: Queue.mainQueue())
@@ -1269,7 +1269,7 @@ class VoiceChatParticipantItemNode: ItemListRevealOptionsItemNode {
         } else {
             if self.highlightContainerNode.supernode != nil {
                 if transition.isAnimated {
-                    self.highlightContainerNode.layer.animateAlpha(from: self.highlightContainerNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightContainerNode.layer.animateAlpha(from: self.highlightContainerNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightContainerNode.removeFromSupernode()

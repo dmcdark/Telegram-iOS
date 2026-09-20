@@ -1111,13 +1111,13 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
             
             presentationDataPromise.set(sharedContext.presentationData)
             
-            sharedContext.presentGlobalController = { [weak self] c, a in
+            sharedContext.presentGlobalController = { [weak self = self] c, a in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.mainWindow.present(c, on: .root)
             }
-            sharedContext.presentCrossfadeController = { [weak self] in
+            sharedContext.presentCrossfadeController = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1408,7 +1408,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
             if let context = context {
                 let presentationData = context.sharedContext.currentPresentationData.with({ $0 })
                 
-                let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+                let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
                     let statusController = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: nil))
                     self?.mainWindow.present(statusController, on: .root)
                     return ActionDisposable { [weak statusController] in
@@ -1532,7 +1532,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         }
         
         
-        DeviceProximityManager.shared().proximityChanged = { [weak self] value in
+        DeviceProximityManager.shared().proximityChanged = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.mainWindow.setProximityDimHidden(!value)
             }
@@ -2828,7 +2828,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
             }
         }
         self.openUrlWhenReadyDisposable.set((signal
-        |> deliverOnMainQueue).start(next: { [weak self] context in
+        |> deliverOnMainQueue).start(next: { [weak self = self] context in
             context.openUrl(url, external: external)
             
             Queue.mainQueue().after(1.0, {

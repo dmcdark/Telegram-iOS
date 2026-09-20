@@ -39,7 +39,7 @@ final class ChatSlowmodeHintController: TooltipController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

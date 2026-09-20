@@ -67,7 +67,7 @@ private final class PeerInfoScreenSwitchItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -78,11 +78,11 @@ private final class PeerInfoScreenSwitchItemNode: PeerInfoScreenItemNode {
         self.addSubnode(self.switchNode)
         self.addSubnode(self.activateArea)
         
-        self.switchNode.valueUpdated = { [weak self] value in
+        self.switchNode.valueUpdated = { [weak self = self] value in
             self?.item?.toggled?(value)
         }
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return false
             }

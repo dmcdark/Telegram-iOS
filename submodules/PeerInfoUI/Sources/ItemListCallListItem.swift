@@ -184,7 +184,7 @@ public class ItemListCallListItemNode: ListViewItemNode {
         let makeTitleLayout = TextNode.asyncLayout(self.titleNode)
         let currentItem = self.item
         
-        return { [weak self] item, params, neighbors in
+        return { [weak self = self] item, params, neighbors in
             if let strongSelf = self, strongSelf.callNodes.count != item.messages.count {
                 for pair in strongSelf.callNodes {
                     pair.0.removeFromSupernode()
@@ -286,7 +286,7 @@ public class ItemListCallListItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

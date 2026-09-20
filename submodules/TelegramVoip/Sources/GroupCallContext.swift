@@ -100,7 +100,7 @@ final class NetworkBroadcastPartSource: BroadcastPartSource {
             
             return (dataSource
             |> deliverOn(self.queue)
-            |> mapToSignal { [weak self] dataSource -> Signal<Int64?, NoError> in
+            |> mapToSignal { [weak self = self] dataSource -> Signal<Int64?, NoError> in
                 if let dataSource = dataSource {
                     self?.dataSource = dataSource
                     return engine.calls.requestStreamState(dataSource: dataSource, callId: callId, accessHash: accessHash)
@@ -152,7 +152,7 @@ final class NetworkBroadcastPartSource: BroadcastPartSource {
         let queue = self.queue
         let signal = dataSource
         |> deliverOn(self.queue)
-        |> mapToSignal { [weak self] dataSource -> Signal<GetAudioBroadcastPartResult?, NoError> in
+        |> mapToSignal { [weak self = self] dataSource -> Signal<GetAudioBroadcastPartResult?, NoError> in
             if let dataSource = dataSource {
                 self?.dataSource = dataSource
                 switch subject {
@@ -786,7 +786,7 @@ public final class OngoingGroupCallContext {
                 return broadcastPartsSource.with { $0 }
             }
             
-            networkStateUpdatedImpl = { [weak self] state in
+            networkStateUpdatedImpl = { [weak self = self] state in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -829,7 +829,7 @@ public final class OngoingGroupCallContext {
                 }
             }
             
-            self.context.emitJoinPayload({ [weak self] payload, ssrc in
+            self.context.emitJoinPayload({ [weak self = self] payload, ssrc in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -840,7 +840,7 @@ public final class OngoingGroupCallContext {
             
             if sharedAudioDevice == nil {
                 self.audioSessionActiveDisposable.set((audioSessionActive
-                |> deliverOn(queue)).start(next: { [weak self] isActive in
+                |> deliverOn(queue)).start(next: { [weak self = self] isActive in
                     guard let `self` = self else {
                         return
                     }
@@ -980,7 +980,7 @@ public final class OngoingGroupCallContext {
                 self.joinPayload.set(.never())
                 
                 let queue = self.queue
-                self.context.emitJoinPayload({ [weak self] payload, ssrc in
+                self.context.emitJoinPayload({ [weak self = self] payload, ssrc in
                     queue.async {
                         guard let strongSelf = self else {
                             return
@@ -1003,7 +1003,7 @@ public final class OngoingGroupCallContext {
         
         func requestVideo(_ capturer: OngoingCallVideoCapturer?) {
             let queue = self.queue
-            self.context.requestVideo(capturer?.impl, completion: { [weak self] payload, ssrc in
+            self.context.requestVideo(capturer?.impl, completion: { [weak self = self] payload, ssrc in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -1015,7 +1015,7 @@ public final class OngoingGroupCallContext {
         
         public func disableVideo() {
             let queue = self.queue
-            self.context.disableVideo({ [weak self] payload, ssrc in
+            self.context.disableVideo({ [weak self = self] payload, ssrc in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -1084,7 +1084,7 @@ public final class OngoingGroupCallContext {
 
         func video(endpointId: String) -> Signal<OngoingGroupCallContext.VideoFrameData, NoError> {
             let queue = self.queue
-            return Signal { [weak self] subscriber in
+            return Signal { [weak self = self] subscriber in
                 let disposable = MetaDisposable()
 
                 queue.async {

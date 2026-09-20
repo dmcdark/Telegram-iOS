@@ -492,7 +492,7 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
         
         self.dismissTapNode.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissTapGesture(_:))))
         
-        self.dismissAccessibilityArea.activate = { [weak self] in
+        self.dismissAccessibilityArea.activate = { [weak self = self] in
             self?.requestDismiss(.default)
             
             return true
@@ -824,20 +824,20 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
                     alwaysAllowPremiumReactions: reactionItems.alwaysAllowPremiumReactions,
                     allPresetReactionsAreAvailable: reactionItems.allPresetReactionsAreAvailable,
                     getEmojiContent: reactionItems.getEmojiContent,
-                    isExpandedUpdated: { [weak self] transition in
+                    isExpandedUpdated: { [weak self = self] transition in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.setCurrentReactionsPositionLock()
                         strongSelf.requestUpdate(transition)
                     },
-                    requestLayout: { [weak self] transition in
+                    requestLayout: { [weak self = self] transition in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.requestUpdate(transition)
                     },
-                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self] transition in
+                    requestUpdateOverlayWantsToBeBelowKeyboard: { [weak self = self] transition in
                         guard let strongSelf = self else {
                             return
                         }
@@ -852,14 +852,14 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
                     animateReactionsIn = true
                 }
                 
-                reactionContextNode.reactionSelected = { [weak self] reaction, isLarge in
+                reactionContextNode.reactionSelected = { [weak self = self] reaction, isLarge in
                     guard let strongSelf = self, let controller = strongSelf.getController() as? ContextControllerImpl else {
                         return
                     }
                     controller.reactionSelected?(reaction, isLarge)
                 }
                 let context = reactionItems.context
-                reactionContextNode.premiumReactionsSelected = { [weak self] file in
+                reactionContextNode.premiumReactionsSelected = { [weak self = self] file in
                     guard let strongSelf = self, let validLayout = strongSelf.validLayout, let controller = strongSelf.getController() as? ContextControllerImpl else {
                         return
                     }
@@ -1670,7 +1670,7 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
                 contentNode.containingItem.isExtractedToContextPreviewUpdated?(true)
                 contentNode.containingItem.willUpdateIsExtractedToContextPreview?(true, transition)
                 
-                contentNode.containingItem.layoutUpdated = { [weak self] _, animation in
+                contentNode.containingItem.layoutUpdated = { [weak self = self] _, animation in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1921,7 +1921,7 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
                     duration: duration,
                     delay: 0.0,
                     additive: true,
-                    completion: { [weak self] _ in
+                    completion: { [weak self = self] _ in
                         Queue.mainQueue().after(reactionContextNodeIsAnimatingOut ? 0.2 * UIView.animationDurationFactor() : 0.0, {
                             if let strongSelf = self, let contentNode = strongSelf.itemContentNode {
                                 if let staging = contentNode.portalStaging {
@@ -2110,7 +2110,7 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
             intermediateCompletion()
         })
         
-        reactionContextNode.animateOutToReaction(value: value, targetView: targetView, hideNode: hideNode, animateTargetContainer: animateTargetContainer, addStandaloneReactionAnimation: addStandaloneReactionAnimation, onHit: onHit, completion: { [weak self] in
+        reactionContextNode.animateOutToReaction(value: value, targetView: targetView, hideNode: hideNode, animateTargetContainer: animateTargetContainer, addStandaloneReactionAnimation: addStandaloneReactionAnimation, onHit: onHit, completion: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }

@@ -1955,7 +1955,7 @@ private final class ProfileGiftsContextImpl {
                 let cachedGifts = transaction.retrieveItemCacheEntry(id: giftsEntryId(peerId: peerId, collectionId: collectionId))?.get(CachedProfileGifts.self)
                 cachedGifts?.render(transaction: transaction)
                 return cachedGifts
-            } |> deliverOn(self.queue)).start(next: { [weak self] cachedGifts in
+            } |> deliverOn(self.queue)).start(next: { [weak self = self] cachedGifts in
                 guard let self, let cachedGifts else {
                     return
                 }
@@ -2070,7 +2070,7 @@ private final class ProfileGiftsContextImpl {
         }
         
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] (gifts, count, nextOffset, notificationsEnabled) in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] (gifts, count, nextOffset, notificationsEnabled) in
             guard let self else {
                 return
             }
@@ -2222,7 +2222,7 @@ private final class ProfileGiftsContextImpl {
             |> then(signal)
         }
         self.actionDisposable.set(
-            (signal |> deliverOn(self.queue)).startStrict(completed: { [weak self] in
+            (signal |> deliverOn(self.queue)).startStrict(completed: { [weak self = self] in
                 self?.reload()
             })
         )
@@ -2273,7 +2273,7 @@ private final class ProfileGiftsContextImpl {
             |> then(signal)
         }
         self.actionDisposable.set(
-            (signal |> deliverOn(self.queue)).startStrict(completed: { [weak self] in
+            (signal |> deliverOn(self.queue)).startStrict(completed: { [weak self = self] in
                 self?.reload()
             })
         )
@@ -2340,7 +2340,7 @@ private final class ProfileGiftsContextImpl {
         }
                 
         return _internal_buyStarGift(account: self.account, slug: slug, peerId: peerId, price: price ?? listingPrice)
-        |> afterCompleted { [weak self] in
+        |> afterCompleted { [weak self = self] in
             guard let self else {
                 return
             }
@@ -2501,7 +2501,7 @@ private final class ProfileGiftsContextImpl {
     }
     
     func upgradeStarGift(formId: Int64?, reference: StarGiftReference, keepOriginalInfo: Bool) -> Signal<ProfileGiftsContext.State.StarGift, UpgradeStarGiftError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }
@@ -2513,7 +2513,7 @@ private final class ProfileGiftsContextImpl {
                     reference: reference,
                     keepOriginalInfo: keepOriginalInfo
                 )
-                |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+                |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                     guard let self else {
                         return
                     }
@@ -2536,7 +2536,7 @@ private final class ProfileGiftsContextImpl {
     }
     
     func updateStarGiftResellPrice(reference: StarGiftReference, price: CurrencyAmount?, id: Int64?) -> Signal<Never, UpdateStarGiftPriceError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }
@@ -3301,7 +3301,7 @@ private final class CraftGiftsContextImpl {
         }
 
         self.disposable.set((signal
-        |> deliverOn(self.queue)).start(next: { [weak self] (gifts, count, nextOffset) in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] (gifts, count, nextOffset) in
             guard let self else {
                 return
             }
@@ -4071,7 +4071,7 @@ private final class ResaleGiftsContextImpl {
             }
         
             self.disposable.set((signal
-            |> deliverOn(self.queue)).start(next: { [weak self] (gifts, attributes, attributeCount, attributesHash, count, nextOffset) in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] (gifts, attributes, attributeCount, attributesHash, count, nextOffset) in
                 guard let self else {
                     return 
                 }
@@ -4147,7 +4147,7 @@ private final class ResaleGiftsContextImpl {
         }
         
         return _internal_buyStarGift(account: self.account, slug: slug, peerId: peerId, price: price ?? listingPrice)
-        |> afterCompleted { [weak self] in
+        |> afterCompleted { [weak self = self] in
             guard let self else {
                 return
             }
@@ -4167,7 +4167,7 @@ private final class ResaleGiftsContextImpl {
     }
     
     func updateStarGiftResellPrice(slug: String, price: CurrencyAmount?) -> Signal<Never, UpdateStarGiftPriceError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             guard let self else {
                 return EmptyDisposable
             }

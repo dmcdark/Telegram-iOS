@@ -41,14 +41,14 @@ extension MediaEditorScreenImpl {
             self.controller = controller
             
             self.authorizationStatusDisposables.add((DeviceAccess.authorizationStatus(subject: .camera(.video))
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let self {
                     self.cameraAuthorizationStatus = status
                 }
             }))
             
             self.authorizationStatusDisposables.add((DeviceAccess.authorizationStatus(subject: .microphone(.video))
-            |> deliverOnMainQueue).start(next: { [weak self] status in
+            |> deliverOnMainQueue).start(next: { [weak self = self] status in
                 if let self {
                     self.microphoneAuthorizationStatus = status
                 }
@@ -109,7 +109,7 @@ extension MediaEditorScreenImpl {
                     scale: 1.625,
                     position: PIPPosition.topRight.getPosition(storyDimensions)
                 )
-                recorder.onAutomaticStop = { [weak self] in
+                recorder.onAutomaticStop = { [weak self = self] in
                     if let self {
                         self.recorder = nil
                         self.controller?.node.requestLayout(forceUpdate: true, transition: .easeInOut(duration: 0.2))
@@ -121,7 +121,7 @@ extension MediaEditorScreenImpl {
                 self.cameraIsActive = true
             } else {
                 if let recorder = self.recorder {
-                    recorder.stopRecording(save: finished, completion: { [weak self] in
+                    recorder.stopRecording(save: finished, completion: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -146,12 +146,12 @@ extension MediaEditorScreenImpl {
                     let presentationData = controller.context.sharedContext.currentPresentationData.with { $0 }
                     let text = presentationData.strings.MediaEditor_HoldToRecordVideo
                     let tooltipController = TooltipController(content: .text(text), baseFontSize: presentationData.listsFontSize.baseDisplaySize, padding: 2.0)
-                    tooltipController.dismissed = { [weak self] _ in
+                    tooltipController.dismissed = { [weak self = self] _ in
                         if let self {
                             self.tooltipController = nil
                         }
                     }
-                    controller.present(tooltipController, in: .window(.root), with: TooltipControllerPresentationArguments(sourceViewAndRect: { [weak self] in
+                    controller.present(tooltipController, in: .window(.root), with: TooltipControllerPresentationArguments(sourceViewAndRect: { [weak self = self] in
                         if let view = self?.controller?.view {
                             return (view, rect)
                         }

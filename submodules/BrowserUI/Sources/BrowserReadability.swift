@@ -34,7 +34,7 @@ public class Readability: NSObject, WKNavigationDelegate {
         
         if let (html, subresources) = extractHtmlString(from: archiveData) {
             self.subresources = subresources
-            self.sanitizeHtmlString(html) { [weak self] html in
+            self.sanitizeHtmlString(html) { [weak self = self] html in
                 guard let self else {
                     return
                 }
@@ -50,7 +50,7 @@ public class Readability: NSObject, WKNavigationDelegate {
         }
         
         let domPurifyJS = extractDOMPurifyScript(from: readerModeJS) ?? readerModeJS
-        self.webView.evaluateJavaScript(domPurifyJS) { [weak self] _, error in
+        self.webView.evaluateJavaScript(domPurifyJS) { [weak self = self] _, error in
             guard let self else {
                 return
             }
@@ -91,7 +91,7 @@ public class Readability: NSObject, WKNavigationDelegate {
         
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if !self.hasRenderedReadabilityHTML {
-            self.initializeReadability() { [weak self] (webPage: TelegramMediaWebpage?, error: Error?) in
+            self.initializeReadability() { [weak self = self] (webPage: TelegramMediaWebpage?, error: Error?) in
                 guard let self else {
                     return
                 }

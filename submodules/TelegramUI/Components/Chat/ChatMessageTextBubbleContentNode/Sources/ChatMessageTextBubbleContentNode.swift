@@ -159,11 +159,11 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
         //self.containerNode.addSubnode(self.textAccessibilityOverlayNode)
         self.containerNode.addSubnode(self.textNode.textNode)
         
-        self.textAccessibilityOverlayNode.openUrl = { [weak self] url in
+        self.textAccessibilityOverlayNode.openUrl = { [weak self = self] url in
             self?.item?.controllerInteraction.openUrl(ChatControllerInteraction.OpenUrl(url: url, concealed: false, external: false))
         }
         
-        self.textNode.textNode.requestToggleBlockCollapsed = { [weak self] blockId in
+        self.textNode.textNode.requestToggleBlockCollapsed = { [weak self = self] blockId in
             guard let self, let item = self.item else {
                 return
             }
@@ -174,7 +174,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
             }
             item.controllerInteraction.requestMessageUpdate(item.message.id, false, nil)
         }
-        self.textNode.textNode.requestDisplayContentsUnderSpoilers = { [weak self] location in
+        self.textNode.textNode.requestDisplayContentsUnderSpoilers = { [weak self = self] location in
             guard let self else {
                 return
             }
@@ -187,7 +187,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
             }
             self.updateDisplayContentsUnderSpoilers(value: true, at: mappedLocation)
         }
-        self.textNode.textNode.canHandleTapAtPoint = { [weak self] point in
+        self.textNode.textNode.canHandleTapAtPoint = { [weak self = self] point in
             guard let self else {
                 return false
             }
@@ -788,7 +788,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
                     
                     boundingSize.height += topInset + bottomInset
                     
-                    return (boundingSize, { [weak self] animation, synchronousLoads, itemApply in
+                    return (boundingSize, { [weak self = self] animation, synchronousLoads, itemApply in
                         if let strongSelf = self {
                             strongSelf.item = item
                             if let updatedCachedChatMessageText = updatedCachedChatMessageText {
@@ -809,7 +809,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
                                     strongSelf.relativeDateTimer?.timer.invalidate()
                                     strongSelf.relativeDateTimer = nil
                                 }
-                                strongSelf.relativeDateTimer = (SwiftSignalKit.Timer(timeout: Double(formattedDateUpdatePeriod), repeat: true, completion: { [weak self] in
+                                strongSelf.relativeDateTimer = (SwiftSignalKit.Timer(timeout: Double(formattedDateUpdatePeriod), repeat: true, completion: { [weak self = self] in
                                     self?.requestFullUpdate?(ControlledTransition(duration: 0.15, curve: .easeInOut, interactive: false))
                                 }, queue: Queue.mainQueue()), formattedDateUpdatePeriod)
                                 strongSelf.relativeDateTimer?.timer.start()
@@ -1072,7 +1072,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
         }
 
         if self.textRevealLink == nil {
-            self.textRevealLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.textRevealLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -1148,7 +1148,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
         }
         
         func makeActivate(_ urlRange: NSRange?) -> (() -> Promise<Bool>?)? {
-            return { [weak self] in
+            return { [weak self = self] in
                 guard let self else {
                     return nil
                 }
@@ -1162,7 +1162,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
                     self.updateLinkProgressState()
                 }
                 
-                self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1615,9 +1615,9 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
                     knobColor = item.presentationData.theme.theme.chat.message.outgoing.textSelectionKnobColor
                 }
                 
-                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode.textNode), updateIsActive: { [weak self] value in
+                let textSelectionNode = TextSelectionNode(theme: TextSelectionTheme(selection: selectionColor, knob: knobColor, isDark: item.presentationData.theme.theme.overallDarkAppearance), strings: item.presentationData.strings, textNodeOrView: .node(self.textNode.textNode), updateIsActive: { [weak self = self] value in
                     self?.updateIsTextSelectionActive?(value)
-                }, present: { [weak self] c, a in
+                }, present: { [weak self = self] c, a in
                     guard let self, let item = self.item else {
                         return
                     }
@@ -1629,13 +1629,13 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
                     }
                 }, rootView: { [weak rootNode] in
                     return rootNode?.view
-                }, performAction: { [weak self] text, action in
+                }, performAction: { [weak self = self] text, action in
                     guard let strongSelf = self, let item = strongSelf.item else {
                         return
                     }
                     item.controllerInteraction.performTextSelectionAction(item.message, true, text, nil, action)
                 })
-                textSelectionNode.updateRange = { [weak self] selectionRange in
+                textSelectionNode.updateRange = { [weak self = self] selectionRange in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1747,7 +1747,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
             y: sourceView.frame.minY - (self.textNode.textNode.frame.minY - 3.0) - scrollOffset
         )
 
-        transition.vertical.animatePositionAdditive(layer: self.textNode.textNode.layer, offset: offset, completion: { [weak self] _ in
+        transition.vertical.animatePositionAdditive(layer: self.textNode.textNode.layer, offset: offset, completion: { [weak self = self] _ in
             guard let self else {
                 return
             }
@@ -1830,7 +1830,7 @@ public class ChatMessageTextBubbleContentNode: ChatMessageBubbleContentNode {
         self.containerNode.bounds = CGRect(origin: CGPoint(x: 0.0, y: offset), size: self.containerNode.bounds.size)
         self.containerNode.alpha = 0.0
         animation.animator.updateAlpha(layer: self.containerNode.layer, alpha: 1.0, completion: nil)
-        animation.animator.updateBounds(layer: self.containerNode.layer, bounds: CGRect(origin: CGPoint(), size: self.containerNode.bounds.size), completion: { [weak self] completed in
+        animation.animator.updateBounds(layer: self.containerNode.layer, bounds: CGRect(origin: CGPoint(), size: self.containerNode.bounds.size), completion: { [weak self = self] completed in
             guard let self, completed else {
                 return
             }

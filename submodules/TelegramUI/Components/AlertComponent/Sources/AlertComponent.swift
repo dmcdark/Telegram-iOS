@@ -319,7 +319,7 @@ private final class AlertScreenComponent: Component {
                     queue: Queue.mainQueue(),
                     component.content,
                     component.actions
-                ) |> deliverOnMainQueue).start(next: { [weak self] content, actions in
+                ) |> deliverOnMainQueue).start(next: { [weak self = self] content, actions in
                     guard let self else {
                         return
                     }
@@ -830,7 +830,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             
             if let componentView = self.node.hostView.componentView as? AlertScreenComponent.View {
                 let dismissedByTapOutside = componentView.dismissedByTapOutside
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     if let self {
                         self.dismissed?(dismissedByTapOutside)
                         self.superDismiss()
@@ -848,7 +848,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: UIKeyCommand.inputEscape,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.escape)
                     }
@@ -857,7 +857,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.escape)
                     }
@@ -866,7 +866,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: "\r",
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.enter)
                     }
@@ -875,7 +875,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.up)
                     }
@@ -884,7 +884,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: UIKeyCommand.inputDownArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.down)
                     }
@@ -893,7 +893,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: UIKeyCommand.inputLeftArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.left)
                     }
@@ -902,7 +902,7 @@ open class AlertScreen: ViewControllerComponentContainer, KeyShortcutResponder {
             KeyShortcut(
                 input: UIKeyCommand.inputRightArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? AlertScreenComponent.View {
                         componentView.handleKeyCommand(.right)
                     }

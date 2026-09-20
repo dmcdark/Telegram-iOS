@@ -61,17 +61,17 @@ final class CompressedAnimationRenderer: ASDisplayNode, AnimationRenderer {
     func render(queue: Queue, width: Int, height: Int, bytesPerRow: Int, data: Data, type: AnimationRendererFrameType, mulAlpha: Bool, completion: @escaping () -> Void, averageColor: ((UIColor) -> Void)?) {
         switch type {
         case .dct:
-            self.renderer.renderIdct(layer: self.layer as! MetalImageLayer, compressedImage: AnimationCompressor.CompressedImageData(data: data), completion: { [weak self] in
+            self.renderer.renderIdct(layer: self.layer as! MetalImageLayer, compressedImage: AnimationCompressor.CompressedImageData(data: data), completion: { [weak self = self] in
                 self?.updateHighlightedContentNode()
                 completion()
             })
         case .argb:
-            self.renderer.renderRgb(layer: self.layer as! MetalImageLayer, width: width, height: height, bytesPerRow: bytesPerRow, data: data, completion: { [weak self] in
+            self.renderer.renderRgb(layer: self.layer as! MetalImageLayer, width: width, height: height, bytesPerRow: bytesPerRow, data: data, completion: { [weak self = self] in
                 self?.updateHighlightedContentNode()
                 completion()
             })
         case .yuva:
-            self.renderer.renderYuva(layer: self.layer as! MetalImageLayer, width: width, height: height, data: data, completion: { [weak self] in
+            self.renderer.renderYuva(layer: self.layer as! MetalImageLayer, width: width, height: height, data: data, completion: { [weak self = self] in
                 self?.updateHighlightedContentNode()
                 completion()
             })
@@ -122,7 +122,7 @@ final class CompressedAnimationRenderer: ASDisplayNode, AnimationRenderer {
             self.updateHighlightedContentNode()
         } else if let highlightedContentNode = self.highlightedContentNode {
             highlightedContentNode.alpha = 0.0
-            highlightedContentNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self] completed in
+            highlightedContentNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self = self] completed in
                 guard let strongSelf = self, completed else {
                     return
                 }

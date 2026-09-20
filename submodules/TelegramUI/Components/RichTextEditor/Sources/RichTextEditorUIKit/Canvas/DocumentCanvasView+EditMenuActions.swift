@@ -31,20 +31,20 @@ extension DocumentCanvasView {
         guard selFrom < selTo else { return [] }
         var elements: [UIMenuElement] = [
             formatMenu(),
-            UIAction(title: "Look Up") { [weak self] _ in self?.presentLookUp() },
+            UIAction(title: "Look Up") { [weak self = self] _ in self?.presentLookUp() },
         ]
         if #available(iOS 17.4, *) {
-            elements.append(UIAction(title: "Translate") { [weak self] _ in self?.presentTranslate() })
+            elements.append(UIAction(title: "Translate") { [weak self = self] _ in self?.presentTranslate() })
         }
-        elements.append(UIAction(title: "Share") { [weak self] _ in self?.presentShare() })
+        elements.append(UIAction(title: "Share") { [weak self = self] _ in self?.presentShare() })
         return elements
     }
 
     private func formatMenu() -> UIMenu {
         UIMenu(title: "Format", children: [
-            UIAction(title: "Bold") { [weak self] _ in self?.toggleBold() },
-            UIAction(title: "Italic") { [weak self] _ in self?.toggleItalic() },
-            UIAction(title: "Underline") { [weak self] _ in self?.toggleUnderline() },
+            UIAction(title: "Bold") { [weak self = self] _ in self?.toggleBold() },
+            UIAction(title: "Italic") { [weak self = self] _ in self?.toggleItalic() },
+            UIAction(title: "Underline") { [weak self = self] _ in self?.toggleUnderline() },
         ])
     }
 

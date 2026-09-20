@@ -115,7 +115,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
             )
         )
         self.inputMediaNodeDataDisposable = (self.inputMediaNodeDataPromise.get()
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -141,27 +141,27 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
             },
             updateChoosingSticker: { _ in
             },
-            switchToTextInput: { [weak self] in
+            switchToTextInput: { [weak self = self] in
                 self?.activateInput()
             },
             dismissTextInput: {
             },
-            insertText: { [weak self] text in
+            insertText: { [weak self = self] text in
                 self?.inputPanelExternalState.insertText(text)
             },
-            backwardsDeleteText: { [weak self] in
+            backwardsDeleteText: { [weak self = self] in
                 self?.inputPanelExternalState.deleteBackward()
             },
             openStickerEditor: {
             },
-            presentController: { [weak self] controller, _ in
+            presentController: { [weak self = self] controller, _ in
                 guard let self else {
                     return
                 }
                 self.prepareForPresentedController(controller)
                 self.present(controller)
             },
-            presentGlobalOverlayController: { [weak self] controller, _ in
+            presentGlobalOverlayController: { [weak self = self] controller, _ in
                 guard let self else {
                     return
                 }
@@ -169,13 +169,13 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                 self.presentInGlobalOverlay(controller)
             },
             getNavigationController: getNavigationController,
-            requestLayout: { [weak self] transition in
+            requestLayout: { [weak self = self] transition in
                 self?.update(transition: transition)
             }
         )
         self.inputMediaInteraction?.forceTheme = defaultDarkColorPresentationTheme
 
-        self.state._updated = { [weak self] transition, _ in
+        self.state._updated = { [weak self = self] transition, _ in
             if let self {
                 self.update(transition: transition.containedViewLayoutTransition)
             }
@@ -386,7 +386,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                     queryTypes: [.mention, .hashtag],
                     alwaysDarkWhenHasText: false,
                     resetInputContents: resetInputContents,
-                    nextInputMode: { [weak self] _ in
+                    nextInputMode: { [weak self = self] _ in
                         guard let self else {
                             return .emoji
                         }
@@ -402,7 +402,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                     areVoiceMessagesAvailable: false,
                     presentController: self.present,
                     presentInGlobalOverlay: self.presentInGlobalOverlay,
-                    sendMessageAction: { [weak self] _ in
+                    sendMessageAction: { [weak self = self] _ in
                         if let self {
                             self.sendPressed?(self.caption())
                             let _ = self.dismissInput()
@@ -414,23 +414,23 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                     lockMediaRecording: nil,
                     stopAndPreviewMediaRecording: nil,
                     discardMediaRecordingPreview: nil,
-                    attachmentAction: { [weak self] in
+                    attachmentAction: { [weak self = self] in
                         self?.toggleIsCaptionAbove()
                     },
                     attachmentButtonMode: self.currentIsCaptionAbove ? .captionDown : .captionUp,
                     myReaction: nil,
                     likeAction: nil,
                     likeOptionsAction: nil,
-                    inputModeAction: { [weak self] in
+                    inputModeAction: { [weak self = self] in
                         self?.toggleInputMode()
                     },
-                    timeoutAction: hasTimer ? { [weak self] sourceView, gesture in
+                    timeoutAction: hasTimer ? { [weak self = self] sourceView, gesture in
                         self?.presentTimeoutSetup(sourceView: sourceView, gesture: gesture)
                     } : nil,
                     forwardAction: nil,
                     paidMessageAction: nil,
                     moreAction: nil,
-                    presentCaptionPositionTooltip: { [weak self] sourceView in
+                    presentCaptionPositionTooltip: { [weak self = self] sourceView in
                         self?.presentCaptionPositionTooltip(sourceView: sourceView)
                     },
                     presentVoiceMessagesUnavailableTooltip: nil,
@@ -457,7 +457,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                     isChannel: false,
                     storyItem: nil,
                     chatLocation: self.chatLocation,
-                    aiCompose: self.isAIEnabled ? { [weak self] in
+                    aiCompose: self.isAIEnabled ? { [weak self = self] in
                         self?.openAICompose()
                     } : nil
                 )
@@ -673,7 +673,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
     }
 
     private func openAICompose() {
-        Task { @MainActor [weak self] in
+        Task { @MainActor [weak self = self] in
             guard let self else {
                 return
             }
@@ -694,7 +694,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
                 theme: defaultDarkColorPresentationTheme,
                 mode: .edit(
                     saveRestoreStateId: self.chatLocation.peerId,
-                    completion: { [weak self] text in
+                    completion: { [weak self = self] text in
                         guard let self else {
                             return
                         }
@@ -761,7 +761,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
 
         var items: [ContextMenuItem] = []
 
-        let updateTimeout: (Int32?) -> Void = { [weak self] timeout in
+        let updateTimeout: (Int32?) -> Void = { [weak self = self] timeout in
             if let self {
                 let previousTimeout = self.currentTimeout
                 self.currentTimeout = timeout
@@ -874,7 +874,7 @@ public class LegacyMessageInputPanelNode: ASDisplayNode, TGCaptionPanelView {
         self.dismissAllTooltips()
 
         let _ = (ApplicationSpecificNotice.getCaptionAboveMediaTooltip(accountManager: self.context.sharedContext.accountManager)
-        |> deliverOnMainQueue).start(next: { [weak self] count in
+        |> deliverOnMainQueue).start(next: { [weak self = self] count in
             guard let self else {
                 return
             }

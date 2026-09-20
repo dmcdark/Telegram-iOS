@@ -345,7 +345,7 @@ private final class PeerInfoScreenPersonalChannelItemNode: PeerInfoScreenItemNod
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -366,7 +366,7 @@ private final class PeerInfoScreenPersonalChannelItemNode: PeerInfoScreenItemNod
         
         self.containerNode.isGestureEnabled = false
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let theme = strongSelf.theme else {
                 return
             }
@@ -395,7 +395,7 @@ private final class PeerInfoScreenPersonalChannelItemNode: PeerInfoScreenItemNod
         recognizer.tapActionAtPoint = { _ in
             return .waitForSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -431,7 +431,7 @@ private final class PeerInfoScreenPersonalChannelItemNode: PeerInfoScreenItemNod
         self.presentationData = presentationData
         self.theme = presentationData.theme
         
-        self.selectionNode.pressed = { [weak self] in
+        self.selectionNode.pressed = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.item?.action()
             }
@@ -528,7 +528,7 @@ private final class PeerInfoScreenPersonalChannelItemNode: PeerInfoScreenItemNod
             },
             hideChatFolderUpdates: {
             },
-            openStories: { [weak self] _, sourceNode in
+            openStories: { [weak self = self] _, sourceNode in
                 guard let self, let item = self.item else {
                     return
                 }

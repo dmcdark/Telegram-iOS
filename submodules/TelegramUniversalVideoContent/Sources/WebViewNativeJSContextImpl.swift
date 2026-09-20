@@ -151,7 +151,7 @@ private var ObjCKey_ContextReference: Int?
         
         let id = self.nextId
         self.nextId += 1
-        let timer = SwiftSignalKit.Timer(timeout: timeInterval, repeat: repeats, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: timeInterval, repeat: repeats, completion: { [weak self = self] in
             guard let self else {
                 return
             }

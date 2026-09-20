@@ -241,7 +241,7 @@ public final class BrowserBookmarksScreen: ViewController {
                 return true
             }
             
-            addBookmarkImpl = { [weak self] in
+            addBookmarkImpl = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -252,7 +252,7 @@ public final class BrowserBookmarksScreen: ViewController {
                 }
             }
             
-            openContextMenuImpl = { [weak self] message, sourceNode, rect, gesture in
+            openContextMenuImpl = { [weak self = self] message, sourceNode, rect, gesture in
                 guard let self, let sourceNode = sourceNode as? ContextExtractedContentContainingNode else {
                     return
                 }
@@ -269,7 +269,7 @@ public final class BrowserBookmarksScreen: ViewController {
                 if let webPage = foundWebpage, let url = webPage.content.url {
                     itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.WebBrowser_CopyLink, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Copy"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, f in
+                    }, action: { [weak self = self] _, f in
                         f(.default)
                         
                         UIPasteboard.general.string = url
@@ -280,7 +280,7 @@ public final class BrowserBookmarksScreen: ViewController {
                 }
                 itemList.append(.action(ContextMenuActionItem(text: presentationData.strings.WebBrowser_DeleteBookmark, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.contextMenu.destructiveColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
                      
                     if let self {
@@ -306,7 +306,7 @@ public final class BrowserBookmarksScreen: ViewController {
             }
             let tagMask: EngineMessage.Tags = .webPage
             
-            self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .navigation, placeholder: self.presentationData.strings.Common_Search, hasBackground: true, contentNode: ChatHistorySearchContainerNode(context: self.context, peerId: self.context.account.peerId, threadId: nil, tagMask: tagMask, interfaceInteraction: self.controllerInteraction), cancel: { [weak self] in
+            self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, mode: .navigation, placeholder: self.presentationData.strings.Common_Search, hasBackground: true, contentNode: ChatHistorySearchContainerNode(context: self.context, peerId: self.context.account.peerId, threadId: nil, tagMask: tagMask, interfaceInteraction: self.controllerInteraction), cancel: { [weak self = self] in
                 self?.controller?.deactivateSearch()
             }, fieldStyle: placeholderNode.fieldStyle)
             
@@ -405,12 +405,12 @@ public final class BrowserBookmarksScreen: ViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "___close", style: .plain, target: self, action: #selector(self.cancelPressed))
         self.title = self.presentationData.strings.WebBrowser_Bookmarks_Title
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let self {
                 if let searchContentNode = self.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -420,7 +420,7 @@ public final class BrowserBookmarksScreen: ViewController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -445,7 +445,7 @@ public final class BrowserBookmarksScreen: ViewController {
     override public func loadDisplayNode() {
         self.displayNode = Node(context: self.context, controller: self, presentationData: self.presentationData)
         
-        self.node.historyNode.contentPositionChanged = { [weak self] offset in
+        self.node.historyNode.contentPositionChanged = { [weak self = self] offset in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
@@ -581,7 +581,7 @@ private class BottomPanelNode: ASDisplayNode {
                         id: AnyHashable(0),
                         component: AnyComponent(HStack(buttonItems, spacing: 7.0))
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.action()
                     }
                 )

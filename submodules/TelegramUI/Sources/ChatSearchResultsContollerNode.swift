@@ -233,7 +233,7 @@ class ChatSearchResultsControllerNode: ViewControllerTracingNode, ASScrollViewDe
         }, togglePeerSelected: { _, _ in
         }, togglePeersSelection: { _, _ in
         }, additionalCategorySelected: { _ in
-        }, messageSelected: { [weak self] peer, _, message, _ in
+        }, messageSelected: { [weak self = self] peer, _, message, _ in
             if let strongSelf = self {
                 if let index = strongSelf.searchResult.messages.firstIndex(where: { $0.index == message.index }) {
                     if message.id.peerId.namespace == Namespaces.Peer.SecretChat {
@@ -260,7 +260,7 @@ class ChatSearchResultsControllerNode: ViewControllerTracingNode, ASScrollViewDe
         }, toggleArchivedFolderHiddenByDefault: {
         }, toggleThreadsSelection: { _, _ in
         }, hidePsa: { _ in
-        }, activateChatPreview: { [weak self] item, _, node, gesture, _ in
+        }, activateChatPreview: { [weak self = self] item, _, node, gesture, _ in
             guard let strongSelf = self else {
                 gesture?.cancel()
                 return
@@ -304,7 +304,7 @@ class ChatSearchResultsControllerNode: ViewControllerTracingNode, ASScrollViewDe
         self.interaction = interaction
         
         self.disposable.set((signal
-        |> deliverOnMainQueue).startStrict(next: { [weak self] entries in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] entries in
             if let strongSelf = self {
                 let previousEntries = strongSelf.previousEntries.swap(entries)
                 
@@ -314,7 +314,7 @@ class ChatSearchResultsControllerNode: ViewControllerTracingNode, ASScrollViewDe
             }
         }))
         
-        self.listNode.visibleBottomContentOffsetChanged = { [weak self] offset in
+        self.listNode.visibleBottomContentOffsetChanged = { [weak self = self] offset in
             guard let strongSelf = self else {
                 return
             }
@@ -340,7 +340,7 @@ class ChatSearchResultsControllerNode: ViewControllerTracingNode, ASScrollViewDe
         self.isLoadingMore = true
         
         self.loadMoreDisposable.set((self.context.engine.messages.searchMessages(location: self.location, query: self.searchQuery, state: self.searchState)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] (updatedResult, updatedState) in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] (updatedResult, updatedState) in
             guard let strongSelf = self else {
                 return
             }

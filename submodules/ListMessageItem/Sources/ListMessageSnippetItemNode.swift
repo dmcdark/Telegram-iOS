@@ -153,7 +153,7 @@ public final class ListMessageSnippetItemNode: ListMessageNode {
         self.offsetContainerNode.addSubnode(self.iconImageNode)
         self.offsetContainerNode.addSubnode(self.authorNode)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self, let item = strongSelf.item, let message = item.message else {
                 return
             }
@@ -161,7 +161,7 @@ public final class ListMessageSnippetItemNode: ListMessageNode {
             item.interaction.openMessageContextMenu(message, false, strongSelf.contextSourceNode, strongSelf.contextSourceNode.bounds, gesture)
         }
         
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -194,13 +194,13 @@ public final class ListMessageSnippetItemNode: ListMessageNode {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self, let _ = strongSelf.urlAtPoint(point) {
                 return .waitForSingleTap
             }
             return .fail
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             if let strongSelf = self {
                 strongSelf.updateTouchesAtPoint(point)
             }
@@ -250,7 +250,7 @@ public final class ListMessageSnippetItemNode: ListMessageNode {
         
         let selectionNodeLayout = ItemListSelectableControlNode.asyncLayout(self.selectionNode)
         
-        return { [weak self] item, params, _, _, dateHeaderAtBottom in
+        return { [weak self = self] item, params, _, _, dateHeaderAtBottom in
             var updatedTheme: PresentationTheme?
             
             if currentItem?.presentationData.theme.theme !== item.presentationData.theme.theme {
@@ -845,7 +845,7 @@ public final class ListMessageSnippetItemNode: ListMessageNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

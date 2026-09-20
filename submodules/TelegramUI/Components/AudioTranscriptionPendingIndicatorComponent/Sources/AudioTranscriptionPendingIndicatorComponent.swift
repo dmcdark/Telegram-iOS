@@ -38,7 +38,7 @@ public final class AudioTranscriptionPendingIndicatorComponent: Component {
                 self.layer.addSublayer(dotLayer)
             }
             
-            self.dotLayers[0].didEnterHierarchy = { [weak self] in
+            self.dotLayers[0].didEnterHierarchy = { [weak self = self] in
                 self?.restartAnimations()
             }
         }

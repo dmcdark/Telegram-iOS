@@ -248,7 +248,7 @@ public final class BatchVideoRenderingContext {
     private func updateDisplayLink() {
         if !self.targetContexts.isEmpty {
             if self.displayLink == nil {
-                self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                self.displayLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -301,7 +301,7 @@ public final class BatchVideoRenderingContext {
                     readingContexts[id] = (count, readingContext)
                 }
             }
-            BatchVideoRenderingContext.sharedQueue.async { [weak self] in
+            BatchVideoRenderingContext.sharedQueue.async { [weak self = self] in
                 var sampleBuffers: [Int: [CMSampleBuffer]] = [:]
                 for (id, (count, readingContext)) in readingContexts {
                     guard let readingContext = readingContext.unsafeGet() else {

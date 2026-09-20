@@ -178,7 +178,7 @@ public final class ManagedDiceAnimationNode: ManagedAnimationNode {
                 case .rolling:
                     switch diceState {
                         case let .value(value, _):
-                            item = animationItem(account: context.account, emojis: self.emojis.get(), configuration: self.configuration.get(), emoji: self.emoji, value: value, successCallback: { [weak self] in
+                            item = animationItem(account: context.account, emojis: self.emojis.get(), configuration: self.configuration.get(), emoji: self.emoji, value: value, successCallback: { [weak self = self] in
                                 self?.success?()
                             })
                         case .rolling:
@@ -195,7 +195,7 @@ public final class ManagedDiceAnimationNode: ManagedAnimationNode {
         } else {
             switch diceState {
                 case let .value(value, immediate):
-                    item = animationItem(account: context.account, emojis: self.emojis.get(), configuration: self.configuration.get(), emoji: self.emoji, value: value, immediate: immediate, roll: true, successCallback: { [weak self] in
+                    item = animationItem(account: context.account, emojis: self.emojis.get(), configuration: self.configuration.get(), emoji: self.emoji, value: value, immediate: immediate, roll: true, successCallback: { [weak self = self] in
                         self?.success?()
                     })
                 case .rolling:
@@ -204,7 +204,7 @@ public final class ManagedDiceAnimationNode: ManagedAnimationNode {
         }
         
         if let item = item {
-            self.disposable.set((item |> deliverOnMainQueue).start(next: { [weak self] item in
+            self.disposable.set((item |> deliverOnMainQueue).start(next: { [weak self = self] item in
                 if let strongSelf = self, let item = item {
                     strongSelf.trackTo(item: item)
                 }

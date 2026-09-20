@@ -212,7 +212,7 @@ public final class ChatMediaInputStickerGridItemNode: GridItemNode {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -272,7 +272,7 @@ public final class ChatMediaInputStickerGridItemNode: GridItemNode {
                         let animationNode = DefaultAnimatedStickerNodeImpl()
                         animationNode.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.imageNodeTap(_:))))
                         self.animationNode = animationNode
-                        animationNode.started = { [weak self] in
+                        animationNode.started = { [weak self = self] in
                             self?.imageNode.isHidden = true
                         }
                         if let placeholderNode = self.placeholderNode {

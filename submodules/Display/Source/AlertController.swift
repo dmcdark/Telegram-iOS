@@ -115,7 +115,7 @@ open class AlertController: ViewController, StandalonePresentableController, Key
         
         self.controllerNode.existingAlertControllerNode = self.existingAlertController?.controllerNode
         
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             if let strongSelf = self, strongSelf.contentNode.dismissOnOutsideTap {
                 strongSelf.willDismiss?()
                 strongSelf.controllerNode.animateOut {
@@ -151,7 +151,7 @@ open class AlertController: ViewController, StandalonePresentableController, Key
     }
     
     open func dismissAnimated() {
-        self.controllerNode.animateOut { [weak self] in
+        self.controllerNode.animateOut { [weak self = self] in
             self?.dismiss()
         }
     }
@@ -161,35 +161,35 @@ open class AlertController: ViewController, StandalonePresentableController, Key
             KeyShortcut(
                 input: UIKeyCommand.inputEscape,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissAnimated()
                 }
             ),
             KeyShortcut(
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismissAnimated()
                 }
             ),
             KeyShortcut(
                 input: "\r",
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.performHighlightedAction()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.decreaseHighlightedIndex()
                 }
             ),
             KeyShortcut(
                 input: UIKeyCommand.inputDownArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.controllerNode.increaseHighlightedIndex()
                 }
             )

@@ -3153,7 +3153,7 @@ final class TextContentItemLayer: SimpleLayer {
                     self.currentAnimationId += 1
                     let animationId = self.currentAnimationId
                     
-                    animation.animator.updateFrame(layer: blockBackgroundView.layer, frame: blockBackgroundFrame, completion: { [weak self] completed in
+                    animation.animator.updateFrame(layer: blockBackgroundView.layer, frame: blockBackgroundFrame, completion: { [weak self = self] completed in
                         guard completed, let self, self.currentAnimationId == animationId, let params = self.params else {
                             return
                         }
@@ -3418,7 +3418,7 @@ final class TextContentItemLayer: SimpleLayer {
                 self.renderNode.layer.mask = maskLayer
                 maskLayer.frame = maskFrame
                 
-                animateRadialExpansionMask(maskLayer: maskLayer, expandedRect: rectangularExpandedRect, transition: revealTransition, inverse: false, completion: { [weak self] in
+                animateRadialExpansionMask(maskLayer: maskLayer, expandedRect: rectangularExpandedRect, transition: revealTransition, inverse: false, completion: { [weak self = self] in
                     guard let self, let params = self.params else {
                         return
                     }
@@ -3450,7 +3450,7 @@ final class TextContentItemLayer: SimpleLayer {
                     let spoilerLocalPosition = self.convert(rectangularExpandedRect.center, to: spoilerEffectNode.layer)
                     spoilerEffectNode.revealWithoutMaskAtLocation(spoilerLocalPosition)
                     
-                    animateRadialExpansionMask(maskLayer: spoilerMaskLayer, expandedRect: rectangularExpandedRect, transition: revealTransition, inverse: true, completion: { [weak self] in
+                    animateRadialExpansionMask(maskLayer: spoilerMaskLayer, expandedRect: rectangularExpandedRect, transition: revealTransition, inverse: true, completion: { [weak self = self] in
                         guard let self, let spoilerEffectNode = self.spoilerEffectNode else {
                             return
                         }

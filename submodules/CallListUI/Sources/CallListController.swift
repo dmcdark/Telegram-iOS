@@ -150,7 +150,7 @@ public final class CallListController: TelegramBaseController {
             }
         }
         
-        self.segmentedTitleView.indexUpdated = { [weak self] index in
+        self.segmentedTitleView.indexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 strongSelf.segmentedTitleView.index = index
                 strongSelf.controllerNode.updateType(index == 0 ? .all : .missed)
@@ -158,7 +158,7 @@ public final class CallListController: TelegramBaseController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -171,7 +171,7 @@ public final class CallListController: TelegramBaseController {
             }
         }).strict()
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             self?.controllerNode.scrollToLatest()
         }
         
@@ -249,7 +249,7 @@ public final class CallListController: TelegramBaseController {
         var cancelImpl: (() -> Void)?
         var signal = self.context.engine.calls.createConferenceCall()
         let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 cancelImpl?()
             }))
@@ -270,7 +270,7 @@ public final class CallListController: TelegramBaseController {
                 progressDisposable.dispose()
             }
         }
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -280,14 +280,14 @@ public final class CallListController: TelegramBaseController {
         
         self.createConferenceCallDisposable?.dispose()
         self.createConferenceCallDisposable = (signal
-        |> deliverOnMainQueue).startStrict(next: { [weak self] call in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] call in
             guard let self else {
                 return
             }
             self.createConferenceCallDisposable?.dispose()
             self.createConferenceCallDisposable = nil
             
-            let openCall: () -> Void = { [weak self] in
+            let openCall: () -> Void = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -319,7 +319,7 @@ public final class CallListController: TelegramBaseController {
                     mode: .groupCall(InviteLinkInviteController.Mode.GroupCall(callId: call.callInfo.id, accessHash: call.callInfo.accessHash, isRecentlyCreated: true, canRevoke: true)),
                     initialInvite: .link(link: call.link, title: nil, isPermanent: true, requestApproval: false, isRevoked: false, adminId: self.context.account.peerId, date: 0, startDate: nil, expireDate: nil, usageLimit: nil, count: nil, requestedCount: nil, pricing: nil),
                     parentNavigationController: self.navigationController as? NavigationController,
-                    completed: { [weak self] result in
+                    completed: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -345,7 +345,7 @@ public final class CallListController: TelegramBaseController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = CallListControllerNode(controller: self, context: self.context, mode: self.mode, presentationData: self.presentationData, call: { [weak self] message in
+        self.displayNode = CallListControllerNode(controller: self, context: self.context, mode: self.mode, presentationData: self.presentationData, call: { [weak self = self] message in
             guard let self else {
                 return
             }
@@ -359,14 +359,14 @@ public final class CallListController: TelegramBaseController {
                     }
                 }
             }
-        }, joinGroupCall: { [weak self] peerId, activeCall in
+        }, joinGroupCall: { [weak self = self] peerId, activeCall in
             if let self {
                 guard !self.presentAccountFrozenInfoIfNeeded() else {
                     return
                 }
                 self.joinGroupCall(peerId: peerId, invite: nil, activeCall: activeCall)
             }
-        }, openInfo: { [weak self] peerId, messages in
+        }, openInfo: { [weak self = self] peerId, messages in
             if let strongSelf = self {
                 let _ = (strongSelf.context.engine.data.get(
                     TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
@@ -377,7 +377,7 @@ public final class CallListController: TelegramBaseController {
                     }
                 })
             }
-        }, emptyStateUpdated: { [weak self] empty in
+        }, emptyStateUpdated: { [weak self = self] empty in
             if let strongSelf = self {
                 if empty != strongSelf.isEmpty {
                     strongSelf.isEmpty = empty
@@ -428,7 +428,7 @@ public final class CallListController: TelegramBaseController {
                     }
                 }
             }
-        }, openNewCall: { [weak self] in
+        }, openNewCall: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.callPressed()
             }
@@ -439,7 +439,7 @@ public final class CallListController: TelegramBaseController {
             self.navigationBar?.updateBackgroundAlpha(0.0, transition: .immediate)
         }
         
-        self.controllerNode.startNewCall = { [weak self] in
+        self.controllerNode.startNewCall = { [weak self = self] in
             self?.beginCallImpl()
         }
         self._ready.set(self.controllerNode.ready)
@@ -476,7 +476,7 @@ public final class CallListController: TelegramBaseController {
     @objc private func deleteAllPressed(buttonNode: DeleteAllButtonNode) {
         var items: [ContextMenuItem] = []
         
-        let beginClear: (Bool) -> Void = { [weak self] forEveryone in
+        let beginClear: (Bool) -> Void = { [weak self = self] forEveryone in
             guard let strongSelf = self else {
                 return
             }
@@ -563,7 +563,7 @@ public final class CallListController: TelegramBaseController {
 
         var dismissSelectionController: (() -> Void)?
         
-        let options = [ContactListAdditionalOption(title: self.presentationData.strings.CallList_NewCallLink, icon: .generic(PresentationResourcesItemList.linkIcon(presentationData.theme)!), action: { [weak self] in
+        let options = [ContactListAdditionalOption(title: self.presentationData.strings.CallList_NewCallLink, icon: .generic(PresentationResourcesItemList.linkIcon(presentationData.theme)!), action: { [weak self = self] in
             guard let self else {
                 return
             }
@@ -622,14 +622,14 @@ public final class CallListController: TelegramBaseController {
 
             if peerIds.count == 1 {
                 controller?.dismiss()
-                self.call(peerIds[0], isVideo: isVideo, began: { [weak self] in
+                self.call(peerIds[0], isVideo: isVideo, began: { [weak self = self] in
                     if let strongSelf = self {
                         let _ = (strongSelf.context.sharedContext.hasOngoingCall.get()
                         |> filter { $0 }
                         |> timeout(1.0, queue: Queue.mainQueue(), alternate: .single(true))
                         |> delay(0.5, queue: Queue.mainQueue())
                         |> take(1)
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] _ in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] _ in
                             if let _ = self, let controller = controller, let navigationController = controller.navigationController as? NavigationController {
                                 if navigationController.viewControllers.last === controller {
                                     let _ = navigationController.popViewController(animated: true)
@@ -722,7 +722,7 @@ public final class CallListController: TelegramBaseController {
         }
         self.peerViewDisposable.set((self.context.account.viewTracker.peerView(peerId)
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] view in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] view in
             if let strongSelf = self {
                 guard let peer = peerViewMainPeer(view) else {
                     return
@@ -763,13 +763,13 @@ public final class CallListController: TelegramBaseController {
         
         let signal = self.context.engine.peers.joinCallInvitationInformation(messageId: message.id)
         let _ = (signal
-        |> deliverOnMainQueue).startStandalone(next: { [weak self] resolvedCallLink in
+        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] resolvedCallLink in
             guard let self else {
                 return
             }
             
             let _ = (self.context.engine.calls.getGroupCallPersistentSettings(callId: resolvedCallLink.id)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] value in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -778,7 +778,7 @@ public final class CallListController: TelegramBaseController {
                 
                 self.context.joinConferenceCall(call: resolvedCallLink, isVideo: conferenceCall.flags.contains(.isVideo), unmuteByDefault: value.isMicrophoneEnabledByDefault)
             })
-        }, error: { [weak self] error in
+        }, error: { [weak self = self] error in
             guard let self else {
                 return
             }
@@ -796,8 +796,8 @@ public final class CallListController: TelegramBaseController {
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Calls_StartNewCall, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddUser"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] c, f in
-            c?.dismiss(completion: { [weak self] in
+        }, action: { [weak self = self] c, f in
+            c?.dismiss(completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -806,8 +806,8 @@ public final class CallListController: TelegramBaseController {
         })))
         items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Calls_HideCallsTab, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Peer Info/HideIcon"), color: theme.contextMenu.primaryColor)
-        }, action: { [weak self] c, f in
-            c?.dismiss(completion: { [weak self] in
+        }, action: { [weak self = self] c, f in
+            c?.dismiss(completion: { [weak self = self] in
                 guard let self else {
                     return
                 }

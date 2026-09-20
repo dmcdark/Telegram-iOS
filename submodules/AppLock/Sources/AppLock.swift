@@ -122,7 +122,7 @@ public final class AppLockContextImpl: AppLockContext {
             applicationBindings.applicationIsActive,
             self.currentState.get()
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] accessChallengeData, sharedData, presentationData, appInForeground, state in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] accessChallengeData, sharedData, presentationData, appInForeground, state in
             guard let strongSelf = self else {
                 return
             }
@@ -258,7 +258,7 @@ public final class AppLockContextImpl: AppLockContext {
         self.currentState.set(.single(self.currentStateValue))
         
         self.autolockTimeoutDisposable = (self.autolockTimeout.get()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] autolockTimeout in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] autolockTimeout in
             self?.updateLockState { state in
                 var state = state
                 state.autolockTimeout = autolockTimeout
@@ -275,7 +275,7 @@ public final class AppLockContextImpl: AppLockContext {
     private func updateTimestampRenewTimer(shouldRun: Bool) {
         if shouldRun {
             if self.timestampRenewTimer == nil {
-                let timestampRenewTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: true, completion: { [weak self] in
+                let timestampRenewTimer = SwiftSignalKit.Timer(timeout: 5.0, repeat: true, completion: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

@@ -408,7 +408,7 @@ private final class ItemListRevealOptionNode: ASDisplayNode {
         }
 
         if self.contentAnimationLink == nil {
-            self.contentAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] deltaTime in
+            self.contentAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] deltaTime in
                 self?.tickManualContentAnimation(deltaTime: deltaTime)
             })
             self.contentAnimationLink?.isPaused = false
@@ -667,7 +667,7 @@ public final class ItemListRevealOptionsNode: ASDisplayNode {
         super.didLoad()
 
         let gestureRecognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
-        gestureRecognizer.highlight = { [weak self] location in
+        gestureRecognizer.highlight = { [weak self = self] location in
             guard let strongSelf = self, let location = location else {
                 return
             }
@@ -773,7 +773,7 @@ public final class ItemListRevealOptionsNode: ASDisplayNode {
         }
 
         if self.visualRevealAnimationLink == nil {
-            self.visualRevealAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] deltaTime in
+            self.visualRevealAnimationLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] deltaTime in
                 self?.tickVisualRevealAnimation(deltaTime: deltaTime)
             })
             self.visualRevealAnimationLink?.isPaused = false
@@ -833,7 +833,7 @@ public final class ItemListRevealOptionsNode: ASDisplayNode {
             clippingFrameX = 0.0
         }
         let clippingFrame = CGRect(origin: CGPoint(x: clippingFrameX, y: 0.0), size: CGSize(width: revealedDistance, height: size.height))
-        transition.updateFrame(node: self.clippingContainerNode, frame: clippingFrame, completion: { [weak self] completed in
+        transition.updateFrame(node: self.clippingContainerNode, frame: clippingFrame, completion: { [weak self = self] completed in
             guard completed, revealedDistance < CGFloat.ulpOfOne, let self, abs(self.revealOffset) < CGFloat.ulpOfOne else {
                 return
             }

@@ -29,7 +29,7 @@ extension ChatControllerImpl {
         var cancelImpl: (() -> Void)?
         let presentationData = self.presentationData
         let displayTime = CACurrentMediaTime()
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 if CACurrentMediaTime() - displayTime > 1.5 {
                     cancelImpl?()
@@ -59,13 +59,13 @@ extension ChatControllerImpl {
                     progressDisposable.set(progressSignal.startStrict())
                 }
             }
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.loadingMessage.set(.single(nil))
                 strongSelf.chatDisplayNode.historyNode.scrollToEndOfHistory()
             }
         }))
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.loadingMessage.set(.single(nil))
                 strongSelf.messageIndexDisposable.set(nil)
@@ -93,7 +93,7 @@ extension ChatControllerImpl {
         var cancelImpl: (() -> Void)?
         let presentationData = self.presentationData
         let displayTime = CACurrentMediaTime()
-        let progressSignal = Signal<Never, NoError> { [weak self] subscriber in
+        let progressSignal = Signal<Never, NoError> { [weak self = self] subscriber in
             let controller = OverlayStatusController(theme: presentationData.theme, type: .loading(cancelled: {
                 if CACurrentMediaTime() - displayTime > 1.5 {
                     cancelImpl?()
@@ -123,13 +123,13 @@ extension ChatControllerImpl {
                     progressDisposable.set(progressSignal.startStrict())
                 }
             }
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.loadingMessage.set(.single(nil))
                 strongSelf.chatDisplayNode.historyNode.scrollToStartOfHistory()
             }
         }))
-        cancelImpl = { [weak self] in
+        cancelImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.loadingMessage.set(.single(nil))
                 strongSelf.messageIndexDisposable.set(nil)

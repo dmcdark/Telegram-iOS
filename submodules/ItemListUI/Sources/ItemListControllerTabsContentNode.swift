@@ -94,7 +94,7 @@ final class ItemListControllerTabsContentNode: NavigationBarContentNode {
                 ),
                 items: mappedItems,
                 selectedId: AnyHashable(self.index),
-                setSelectedId: { [weak self] id in
+                setSelectedId: { [weak self = self] id in
                     guard let self, let index = id.base as? Int else {
                         return
                     }

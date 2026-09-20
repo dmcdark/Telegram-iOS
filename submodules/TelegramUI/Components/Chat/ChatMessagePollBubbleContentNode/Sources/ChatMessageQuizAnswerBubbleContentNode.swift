@@ -66,7 +66,7 @@ public final class ChatMessageQuizAnswerBubbleContentNode: ChatMessageBubbleCont
                 return (refinedWidth, { boundingWidth in
                     let (size, apply) = finalizeLayout(boundingWidth)
                     
-                    return (size, { [weak self] animation, synchronousLoads, applyInfo in
+                    return (size, { [weak self = self] animation, synchronousLoads, applyInfo in
                         if let strongSelf = self {
                             strongSelf.item = item
                             
@@ -74,7 +74,7 @@ public final class ChatMessageQuizAnswerBubbleContentNode: ChatMessageBubbleCont
                             
                             strongSelf.contentNode.frame = CGRect(origin: CGPoint(), size: size)
                             
-                            strongSelf.contentNode.openMedia = { [weak self] _ in
+                            strongSelf.contentNode.openMedia = { [weak self = self] _ in
                                 if let item = self?.item, let solution {
                                     item.controllerInteraction.openPollMedia(item.message, .solution(solution))
                                 }

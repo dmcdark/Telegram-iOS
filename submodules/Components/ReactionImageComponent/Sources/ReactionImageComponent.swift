@@ -141,7 +141,7 @@ public final class ReactionImageNode: ASDisplayNode {
             super.init()
             
             self.disposable = (reactionStaticImage(context: context, animation: animationFile, pixelSize: CGSize(width: displaySize.width * UIScreenScale, height: displaySize.height * UIScreenScale), queue: sharedReactionStaticImage)
-            |> deliverOnMainQueue).start(next: { [weak self] data in
+            |> deliverOnMainQueue).start(next: { [weak self = self] data in
                 guard let strongSelf = self else {
                     return
                 }
@@ -159,7 +159,7 @@ public final class ReactionImageNode: ASDisplayNode {
             super.init()
             
             self.disposable = (context.engine.resources.data(resource: EngineMediaResource(file.resource))
-            |> deliverOnMainQueue).start(next: { [weak self] data in
+            |> deliverOnMainQueue).start(next: { [weak self = self] data in
                 guard let strongSelf = self else {
                     return
                 }

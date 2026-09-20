@@ -143,7 +143,7 @@ final class PasscodeEntryButtonNode: HighlightTrackingButtonNode {
         }
         self.addSubnode(self.backgroundNode)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 strongSelf.updateState(highlighted: highlighted)
             }
@@ -264,10 +264,10 @@ final class PasscodeEntryKeyboardNode: ASDisplayNode {
         } else {
             for (title, subtitle) in buttonsData {
                 let buttonNode = PasscodeEntryButtonNode(presentationData: presentationData, background: background, title: title, subtitle: subtitle)
-                buttonNode.action = { [weak self] in
+                buttonNode.action = { [weak self = self] in
                     self?.charactedEntered?(title)
                 }
-                buttonNode.cancelAction = { [weak self] in
+                buttonNode.cancelAction = { [weak self = self] in
                     self?.backspace?()
                 }
                 self.addSubnode(buttonNode)

@@ -64,7 +64,7 @@ public final class ChannelMembersSearchControllerImpl: ViewController, ChannelMe
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "___close", style: .plain, target: self, action: #selector(self.cancelPressed))
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -73,13 +73,13 @@ public final class ChannelMembersSearchControllerImpl: ViewController, ChannelMe
             }
         }
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
         
         self.presentationDataDisposable = ((params.updatedPresentationData?.signal ?? params.context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let strongSelf = self else {
                 return
             }
@@ -93,7 +93,7 @@ public final class ChannelMembersSearchControllerImpl: ViewController, ChannelMe
         
         let _ = (params.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: self.peerId))
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] peer in
             guard let self, let peer else {
                 return
             }
@@ -123,31 +123,31 @@ public final class ChannelMembersSearchControllerImpl: ViewController, ChannelMe
     override public func loadDisplayNode() {
         self.displayNode = ChannelMembersSearchControllerNode(context: self.context, presentationData: self.presentationData, forceTheme: self.forceTheme, peerId: self.peerId, mode: self.mode, filters: self.filters)
         self.controllerNode.navigationBar = self.navigationBar
-        self.controllerNode.requestActivateSearch = { [weak self] in
+        self.controllerNode.requestActivateSearch = { [weak self = self] in
             self?.activateSearch()
         }
-        self.controllerNode.requestDeactivateSearch = { [weak self] in
+        self.controllerNode.requestDeactivateSearch = { [weak self = self] in
             self?.deactivateSearch(animated: true)
         }
-        self.controllerNode.requestOpenPeerFromSearch = { [weak self] peer, participant in
+        self.controllerNode.requestOpenPeerFromSearch = { [weak self = self] peer, participant in
             self?.openPeer(peer, participant)
         }
-        self.controllerNode.requestCopyInviteLink = { [weak self] in
+        self.controllerNode.requestCopyInviteLink = { [weak self = self] in
             self?.copyInviteLink?()
         }
-        self.controllerNode.pushController = { [weak self] c in
+        self.controllerNode.pushController = { [weak self = self] c in
             (self?.navigationController as? NavigationController)?.pushViewController(c)
         }
         
         self.displayNodeDidLoad()
         
-        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
         }
         
-        self.controllerNode.listNode.didEndScrolling = { [weak self] _ in
+        self.controllerNode.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 let _ = fixNavigationSearchableListNodeScrolling(strongSelf.controllerNode.listNode, searchNode: searchContentNode)
             }

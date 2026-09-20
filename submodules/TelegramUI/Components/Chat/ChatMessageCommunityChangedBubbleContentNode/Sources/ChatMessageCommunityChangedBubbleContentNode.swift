@@ -73,7 +73,7 @@ public class ChatMessageCommunityChangedBubbleContentNode: ChatMessageBubbleCont
         self.addSubnode(self.buttonNode)
         self.addSubnode(self.buttonTitleNode)
         
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -167,7 +167,7 @@ public class ChatMessageCommunityChangedBubbleContentNode: ChatMessageBubbleCont
                 let backgroundSize = CGSize(width: width, height: subtitleLayout.size.height + 165.0)
                 
                 return (backgroundSize.width, { _ in
-                    return (backgroundSize, { [weak self] _, synchronousLoads, _ in
+                    return (backgroundSize, { [weak self = self] _, synchronousLoads, _ in
                         guard let strongSelf = self else {
                             return
                         }
@@ -248,7 +248,7 @@ public class ChatMessageCommunityChangedBubbleContentNode: ChatMessageBubbleCont
     
     override public func tapActionAtPoint(_ point: CGPoint, gesture: TapLongTapOrDoubleTapGesture, isEstimating: Bool) -> ChatMessageBubbleContentTapAction {
         if self.mediaBackgroundNode.frame.contains(point) {
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.buttonPressed()
             }))
         } else {

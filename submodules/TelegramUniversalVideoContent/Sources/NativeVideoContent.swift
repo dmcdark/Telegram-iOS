@@ -413,7 +413,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
         
         var didProcessFramesToDisplay = false
         self.playerNode.isHidden = true
-        self.playerNode.hasSentFramesToDisplay = { [weak self] in
+        self.playerNode.hasSentFramesToDisplay = { [weak self = self] in
             guard let self, !didProcessFramesToDisplay else {
                 return
             }
@@ -432,7 +432,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
                 setLayerDisableScreenshots(self.imageNode.layer, captureProtected)
             }
             
-            self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: userLocation, videoReference: fileReference, previewSourceFileReference: previewSourceFileReference, imageReference: imageReference, onlyFullSize: onlyFullSizeThumbnail, useLargeThumbnail: useLargeThumbnail, autoFetchFullSizeThumbnail: autoFetchFullSizeThumbnail || fileReference.media.isInstantVideo) |> map { [weak self] getSize, getData in
+            self.imageNode.setSignal(internalMediaGridMessageVideo(postbox: postbox, userLocation: userLocation, videoReference: fileReference, previewSourceFileReference: previewSourceFileReference, imageReference: imageReference, onlyFullSize: onlyFullSizeThumbnail, useLargeThumbnail: useLargeThumbnail, autoFetchFullSizeThumbnail: autoFetchFullSizeThumbnail || fileReference.media.isInstantVideo) |> map { [weak self = self] getSize, getData in
                 Queue.mainQueue().async {
                     if let strongSelf = self, strongSelf.dimensions == nil {
                         if let dimensions = getSize() {
@@ -453,7 +453,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
         self.addSubnode(self.playerNode)
         
         self.fetchStatusDisposable.set((postbox.mediaBox.resourceStatus(selectedFile.resource)
-        |> deliverOnMainQueue).start(next: { [weak self] status in
+        |> deliverOnMainQueue).start(next: { [weak self = self] status in
             guard let strongSelf = self else {
                 return
             }
@@ -476,7 +476,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
         }
         
         if self.displayImage {
-            self.imageNode.imageUpdated = { [weak self] _ in
+            self.imageNode.imageUpdated = { [weak self = self] _ in
                 self?._ready.set(.single(Void()))
             }
         } else {
@@ -574,7 +574,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
                 actionAtEndImpl?()
             })
         }
-        actionAtEndImpl = { [weak self] in
+        actionAtEndImpl = { [weak self = self] in
             self?.performActionAtEnd()
         }
         
@@ -646,7 +646,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
             })
         }
         
-        actionAtEndImpl = { [weak self] in
+        actionAtEndImpl = { [weak self = self] in
             self?.performActionAtEnd()
         }
         
@@ -668,7 +668,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
         }
         
         var processedSentFramesToDisplay = false
-        thumbnailNode.hasSentFramesToDisplay = { [weak self] in
+        thumbnailNode.hasSentFramesToDisplay = { [weak self = self] in
             guard !processedSentFramesToDisplay, let strongSelf = self else {
                 return
             }
@@ -782,7 +782,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
             return
         }
         
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             Queue.mainQueue().async {
                 self?.performActionAtEnd()
             }
@@ -797,12 +797,12 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
             case .repeatIfNeeded:
                 let _ = (player.status
                 |> deliverOnMainQueue
-                |> take(1)).start(next: { [weak self] status in
+                |> take(1)).start(next: { [weak self = self] status in
                     guard let strongSelf = self, var player = strongSelf.player else {
                         return
                     }
                     if status.timestamp > status.duration * 0.1 {
-                        player.actionAtEnd = .loop({ [weak self] in
+                        player.actionAtEnd = .loop({ [weak self = self] in
                             guard let strongSelf = self, var player = strongSelf.player else {
                                 return
                             }
@@ -869,7 +869,7 @@ private final class NativeVideoContentNode: ASDisplayNode, UniversalVideoContent
             return
         }
         
-        let action = { [weak self] in
+        let action = { [weak self = self] in
             Queue.mainQueue().async {
                 self?.performActionAtEnd()
             }

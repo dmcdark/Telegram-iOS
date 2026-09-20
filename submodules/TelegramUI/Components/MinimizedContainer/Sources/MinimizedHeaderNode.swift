@@ -134,7 +134,7 @@ final class MinimizedHeaderNode: ASDisplayNode {
                     }
                     
                     self.titleDisposable = (combineLatest(signals)
-                    |> deliverOnMainQueue).start(next: { [weak self] titles in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] titles in
                         guard let self else {
                             return
                         }
@@ -293,7 +293,7 @@ final class MinimizedHeaderNode: ASDisplayNode {
                     ),
                     effectAlignment: .center,
                     minSize: CGSize(width: 56.0, height: 56.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.requestClose()
                     },
                     animateScale: false

@@ -132,7 +132,7 @@ extension ChatControllerImpl {
             }
             
             if case let .peer(peerId) = self.chatLocation {
-                let beginClear: (InteractiveHistoryClearingType) -> Void = { [weak self] type in
+                let beginClear: (InteractiveHistoryClearingType) -> Void = { [weak self = self] type in
                     self?.beginClearHistory(type: type)
                 }
                 
@@ -148,7 +148,7 @@ extension ChatControllerImpl {
                         return (false, false)
                     }
                 }
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] parameters in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] parameters in
                     guard let strongSelf = self else {
                         return
                     }
@@ -397,7 +397,7 @@ extension ChatControllerImpl {
                 })
             }
         case let .openChatInfo(expandAvatar, section):
-            let _ = self.presentVoiceMessageDiscardAlert(action: { [weak self] in
+            let _ = self.presentVoiceMessageDiscardAlert(action: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -409,7 +409,7 @@ extension ChatControllerImpl {
                 case let .peer(peerView):
                     self.navigationActionDisposable.set((peerView.get()
                     |> take(1)
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] peerView in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView in
                         guard let self else {
                             return
                         }
@@ -472,7 +472,7 @@ extension ChatControllerImpl {
                     } else if let monoforumPeer = self.presentationInterfaceState.renderedPeer?.peer, case let .replyThread(replyThreadMessage) = self.chatLocation, monoforumPeer.isMonoForum {
                         let context = self.context
                         if #available(iOS 13.0, *) {
-                            Task { @MainActor [weak self] in
+                            Task { @MainActor [weak self = self] in
                                 guard let peer = await context.engine.data.get(
                                     TelegramEngine.EngineData.Item.Peer.Peer(id: EnginePeer.Id(replyThreadMessage.threadId))
                                 ).get() else {
@@ -521,7 +521,7 @@ extension ChatControllerImpl {
             case let .peer(peerView):
                 self.navigationActionDisposable.set((peerView.get()
                 |> take(1)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] peerView in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] peerView in
                     guard let strongSelf = self, let peer = peerView.peers[peerView.peerId] else {
                         return
                     }
@@ -675,7 +675,7 @@ extension ChatControllerImpl {
                                     disposable.set(nil)
                                 }
                                 disposable.set((signal
-                                |> deliverOnMainQueue).startStrict(completed: { [weak self] in
+                                |> deliverOnMainQueue).startStrict(completed: { [weak self = self] in
                                     if let strongSelf = self, let _ = strongSelf.validLayout {
                                         strongSelf.present(UndoOverlayController(presentationData: presentationData, content: .succeed(text: presentationData.strings.ClearCache_Success("\(dataSizeString(selectedSize, formatting: DataSizeStringFormatting(presentationData: presentationData)))", stringForDeviceType()).string, timeout: nil, customUndoText: nil), elevatedLayout: false, action: { _ in return false }), in: .current)
                                     }
@@ -685,7 +685,7 @@ extension ChatControllerImpl {
                                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState({ $0.withoutSelectionState() }) })
                             }))
                             
-                            items.append(ActionSheetButtonItem(title: presentationData.strings.ClearCache_StorageUsage, action: { [weak self] in
+                            items.append(ActionSheetButtonItem(title: presentationData.strings.ClearCache_StorageUsage, action: { [weak self = self] in
                                 dismissAction()
                                 strongSelf.updateChatPresentationInterfaceState(animated: true, interactive: true, { $0.updatedInterfaceState({ $0.withoutSelectionState() }) })
                                 

@@ -397,7 +397,7 @@ public final class AccountFreezeInfoScreen: ViewControllerComponentContainer {
         
         self.navigationPresentation = .flatModal
                              
-        openTermsImpl = { [weak self] in
+        openTermsImpl = { [weak self = self] in
             guard let self, let navigationController = self.navigationController as? NavigationController else {
                 return
             }
@@ -406,7 +406,7 @@ public final class AccountFreezeInfoScreen: ViewControllerComponentContainer {
                 context.sharedContext.openExternalUrl(context: context, urlContext: .generic, url: presentationData.strings.FrozenAccount_Violation_TextNew_URL, forceExternal: false, presentationData: presentationData, navigationController: navigationController, dismissInput: {})
             }
         }
-        submitAppealImpl = { [weak self] in
+        submitAppealImpl = { [weak self = self] in
             guard let self, let navigationController = self.navigationController as? NavigationController, let url = configuration.freezeAppealUrl else {
                 return
             }

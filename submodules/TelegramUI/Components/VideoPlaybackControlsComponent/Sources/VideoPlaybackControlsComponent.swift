@@ -303,7 +303,7 @@ private final class PlaybackIconView: HighlightTrackingButton {
         
         self.addSubview(self.backgroundIconView)
         
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }

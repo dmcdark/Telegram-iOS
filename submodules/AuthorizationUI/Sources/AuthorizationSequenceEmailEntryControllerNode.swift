@@ -157,7 +157,7 @@ final class AuthorizationSequenceEmailEntryControllerNode: ASDisplayNode, UIText
         self.addSubnode(self.dividerNode)
         
         self.codeField.textField.addTarget(self, action: #selector(self.textDidChange), for: .editingChanged)
-        self.proceedNode.pressed = { [weak self] in
+        self.proceedNode.pressed = { [weak self = self] in
             self?.proceedPressed()
         }
         self.signInWithAppleButton?.addTarget(self, action: #selector(self.signInWithApplePressed), for: .touchUpInside)

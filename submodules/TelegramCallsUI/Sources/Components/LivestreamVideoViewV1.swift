@@ -88,7 +88,7 @@ final class LivestreamVideoViewV1: UIView {
         }
         
         self.playerStatusDisposable = (self.player.status
-        |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
             guard let self else {
                 return
             }
@@ -97,7 +97,7 @@ final class LivestreamVideoViewV1: UIView {
         
         var didProcessFramesToDisplay = false
         self.playerNode.isHidden = true
-        self.playerNode.hasSentFramesToDisplay = { [weak self] in
+        self.playerNode.hasSentFramesToDisplay = { [weak self = self] in
             guard let self, !didProcessFramesToDisplay else {
                 return
             }
@@ -107,7 +107,7 @@ final class LivestreamVideoViewV1: UIView {
         
         if let call = call as? PresentationGroupCallImpl {
             self.streamingContextDisposable = (call.externalMediaStream.get()
-            |> deliverOnMainQueue).startStrict(next: { [weak self] externalMediaStream in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] externalMediaStream in
                 guard let self else {
                     return
                 }
@@ -143,7 +143,7 @@ final class LivestreamVideoViewV1: UIView {
             return
         }
         self.playlistDisposable = (streamingContext.playlistData()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] playlist in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] playlist in
             guard let self else {
                 return
             }

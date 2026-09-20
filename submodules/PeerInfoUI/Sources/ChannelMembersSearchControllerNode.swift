@@ -232,11 +232,11 @@ class ChannelMembersSearchControllerNode: ASDisplayNode {
         self.addSubnode(self.listNode)
         
         let interaction = ChannelMembersSearchInteraction(
-            openPeer: { [weak self] peer, participant in
+            openPeer: { [weak self = self] peer, participant in
                 self?.requestOpenPeerFromSearch?(peer, participant)
                 self?.listNode.clearHighlightAnimated(true)
             },
-            copyInviteLink: { [weak self] in
+            copyInviteLink: { [weak self = self] in
                 self?.requestCopyInviteLink?()
                 self?.listNode.clearHighlightAnimated(true)
             }
@@ -254,7 +254,7 @@ class ChannelMembersSearchControllerNode: ASDisplayNode {
                 context.engine.data.subscribe(
                     TelegramEngine.EngineData.Item.Contacts.List(includePresences: true)
                 )
-            ).start(next: { [weak self] peerView, contactsView in
+            ).start(next: { [weak self = self] peerView, contactsView in
                 guard let strongSelf = self else {
                     return
                 }
@@ -455,7 +455,7 @@ class ChannelMembersSearchControllerNode: ASDisplayNode {
                context.engine.data.subscribe(
                    TelegramEngine.EngineData.Item.Contacts.List(includePresences: true)
                )
-            ).start(next: { [weak self] state, contactsState, peerView, contactsView in
+            ).start(next: { [weak self = self] state, contactsState, peerView, contactsView in
                 guard let strongSelf = self else {
                     return
                 }
@@ -631,7 +631,7 @@ class ChannelMembersSearchControllerNode: ASDisplayNode {
             }
         }
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.view.endEditing(true)
         }
     }
@@ -682,13 +682,13 @@ class ChannelMembersSearchControllerNode: ASDisplayNode {
             return
         }
         
-        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ChannelMembersSearchContainerNode(context: self.context, forceTheme: self.forceTheme, peerId: self.peerId, mode: .banAndPromoteActions, filters: self.filters, searchContext: nil, openPeer: { [weak self] peer, participant in
+        self.searchDisplayController = SearchDisplayController(presentationData: self.presentationData, contentNode: ChannelMembersSearchContainerNode(context: self.context, forceTheme: self.forceTheme, peerId: self.peerId, mode: .banAndPromoteActions, filters: self.filters, searchContext: nil, openPeer: { [weak self = self] peer, participant in
             self?.requestOpenPeerFromSearch?(peer, participant)
         }, updateActivity: { value in
             
-        }, pushController: { [weak self] c in
+        }, pushController: { [weak self = self] c in
             self?.pushController?(c)
-        }), cancel: { [weak self] in
+        }), cancel: { [weak self = self] in
             if let requestDeactivateSearch = self?.requestDeactivateSearch {
                 requestDeactivateSearch()
             }

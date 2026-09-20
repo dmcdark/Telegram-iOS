@@ -50,7 +50,7 @@ final class ScreencastInProcessIPCContext: ScreencastIPCContext {
             screencastCapturer.injectSampleBuffer(sampleBuffer, rotation: screencastFrame.1, completion: {})
         })
         self.screencastAudioDataDisposable = (screencastBufferServerContext.audioData
-        |> deliverOnMainQueue).start(next: { [weak self] data in
+        |> deliverOnMainQueue).start(next: { [weak self = self] data in
             Queue.mainQueue().async {
                 guard let self else {
                     return

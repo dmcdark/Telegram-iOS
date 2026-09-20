@@ -81,7 +81,7 @@ private final class EffectBadgeView: UIView {
                 return nil
             }
             
-            self.effectDisposable.set((messageEffect |> deliverOnMainQueue).start(next: { [weak self] effect in
+            self.effectDisposable.set((messageEffect |> deliverOnMainQueue).start(next: { [weak self = self] effect in
                 guard let self, let effect else {
                     return
                 }
@@ -222,7 +222,7 @@ public final class ChatTextInputActionButtonsNode: ASDisplayNode, ChatSendMessag
         self.isAccessibilityElement = true
         self.accessibilityTraits = [.button, .notEnabled]
         
-        self.sendButton.highligthedChanged = { [weak self] highlighted in
+        self.sendButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if !strongSelf.sendButtonLongPressEnabled {
                     if highlighted {
@@ -252,7 +252,7 @@ public final class ChatTextInputActionButtonsNode: ASDisplayNode, ChatSendMessag
         self.sendContainerNode.addSubnode(self.textNode)
         self.view.addSubview(self.expandMediaInputButtonBackgroundView)
         
-        self.expandMediaInputButton.highligthedChanged = { [weak self] highlighted in
+        self.expandMediaInputButton.highligthedChanged = { [weak self = self] highlighted in
             guard let self else {
                 return
             }
@@ -274,7 +274,7 @@ public final class ChatTextInputActionButtonsNode: ASDisplayNode, ChatSendMessag
         let gestureRecognizer = ContextGesture(target: nil, action: nil)
         self.gestureRecognizer = gestureRecognizer
         self.sendButton.view.addGestureRecognizer(gestureRecognizer)
-        gestureRecognizer.activated = { [weak self] recognizer, _ in
+        gestureRecognizer.activated = { [weak self = self] recognizer, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -429,7 +429,7 @@ public final class ChatTextInputActionButtonsNode: ASDisplayNode, ChatSendMessag
             slowmodeProgressTransition.updateFrame(layer: slowmodeProgressLayer, frame: sendButtonBackgroundFrame)
             
             if self.slowmodeProgressTimer == nil {
-                self.slowmodeProgressTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self] _ in
+                self.slowmodeProgressTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }

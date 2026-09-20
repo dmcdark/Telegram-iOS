@@ -568,7 +568,7 @@ private final class PeerInfoPendingPane {
         self.pane = PeerInfoPaneWrapper(key: key, node: paneNode)
         self.disposable = (paneNode.isReady
         |> take(1)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] _ in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
             self?.isReady = true
             hasBecomeReady(key)
         })
@@ -683,7 +683,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
     override func didLoad() {
         super.didLoad()
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
             guard let strongSelf = self else {
                 return []
             }
@@ -881,7 +881,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
         var items: [ContextMenuItem] = []
         items.append(.action(ContextMenuActionItem(text: params.presentationData.strings.PeerInfo_Tabs_SetMainTab, icon: { theme in
             return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/ReorderItems"), color: theme.actionSheet.primaryTextColor)
-        }, action: { [weak self] _, f in
+        }, action: { [weak self = self] _, f in
             guard let self else {
                 return
             }
@@ -893,7 +893,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
             Queue.mainQueue().after(0.15) {
                 self.didJustReorderTabs = true
                 let _ = (self.context.engine.peers.setMainProfileTab(peerId: self.peerId, tab: tab)
-                |> deliverOnMainQueue).start(completed: { [weak self] in
+                |> deliverOnMainQueue).start(completed: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1040,13 +1040,13 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
                     updatedPresentationData: self.updatedPresentationData,
                     chatControllerInteraction: self.chatControllerInteraction!,
                     data: data,
-                    openPeerContextAction: { [weak self] recommended, peer, node, gesture in
+                    openPeerContextAction: { [weak self = self] recommended, peer, node, gesture in
                         self?.openPeerContextAction?(recommended, peer, node, gesture)
                     },
-                    openAddMemberAction: { [weak self] in
+                    openAddMemberAction: { [weak self = self] in
                         self?.openAddMemberAction?()
                     },
-                    requestPerformPeerMemberAction: { [weak self] member, action in
+                    requestPerformPeerMemberAction: { [weak self = self] member, action in
                         self?.requestPerformPeerMemberAction?(member, action)
                     },
                     peerId: self.peerId,
@@ -1057,7 +1057,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
                     initialGiftCollectionId: initialGiftCollectionId,
                     switchToMediaTarget: switchToMediaTarget,
                     key: key,
-                    hasBecomeReady: { [weak self] key in
+                    hasBecomeReady: { [weak self = self] key in
                         let apply: () -> Void = {
                             guard let strongSelf = self else {
                                 return
@@ -1075,31 +1075,31 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
                         }
                     },
                     parentController: self.parentController,
-                    openMediaCalendar: { [weak self] in
+                    openMediaCalendar: { [weak self = self] in
                         self?.openMediaCalendar?()
                     },
-                    openAddStory: { [weak self] in
+                    openAddStory: { [weak self = self] in
                         self?.openAddStory?()
                     },
-                    paneDidScroll: { [weak self] in
+                    paneDidScroll: { [weak self = self] in
                         self?.paneDidScroll?()
                     },
-                    expandIfNeeded: { [weak self] in
+                    expandIfNeeded: { [weak self = self] in
                         let _ = self?.requestExpandTabs?()
                     },
-                    ensureRectVisible: { [weak self] sourceView, rect in
+                    ensureRectVisible: { [weak self = self] sourceView, rect in
                         guard let self else {
                             return
                         }
                         self.ensurePaneRectVisible?(self.view, sourceView.convert(rect, to: self.view))
                     },
-                    externalDataUpdated: { [weak self] transition in
+                    externalDataUpdated: { [weak self = self] transition in
                         guard let self else {
                             return
                         }
                         self.requestUpdate?(transition)
                     },
-                    openShareLink: { [weak self] url in
+                    openShareLink: { [weak self = self] url in
                         guard let self else {
                             return
                         }
@@ -1321,7 +1321,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
                         id: AnyHashable(paneKey),
                         content: content,
                         badge: nil,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1353,7 +1353,7 @@ final class PeerInfoPaneContainerNode: ASDisplayNode, ASGestureRecognizerDelegat
                                 }
                             }
                         },
-                        contextAction: paneKey != availablePanes.first && canManageTabs && canReorder ? { [weak self] sourceView, gesture in
+                        contextAction: paneKey != availablePanes.first && canManageTabs && canReorder ? { [weak self = self] sourceView, gesture in
                             guard let self else {
                                 return
                             }

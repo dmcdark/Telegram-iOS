@@ -306,7 +306,7 @@ public final class ChatListSearchRecentPeersNode: ASDisplayNode {
         
         let previous: Atomic<[ChatListSearchRecentPeersEntry]> = Atomic(value: [])
         let firstTime:Atomic<Bool> = Atomic(value: true)
-        peersDisposable.add((combineLatest(queue: .mainQueue(), recent, self.itemCustomWidthValuePromise.get(), self.themeAndStringsPromise.get()) |> deliverOnMainQueue).startStrict(next: { [weak self] peers, itemCustomWidth, themeAndStrings in
+        peersDisposable.add((combineLatest(queue: .mainQueue(), recent, self.itemCustomWidthValuePromise.get(), self.themeAndStringsPromise.get()) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers, itemCustomWidth, themeAndStrings in
             if let strongSelf = self {
                 var entries: [ChatListSearchRecentPeersEntry] = []
                 for peer in peers.0 {
@@ -360,7 +360,7 @@ public final class ChatListSearchRecentPeersNode: ASDisplayNode {
             } else if transition.animated {
                 options.insert(.AnimateInsertion)
             }
-            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listView.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let self else {
                     return
                 }

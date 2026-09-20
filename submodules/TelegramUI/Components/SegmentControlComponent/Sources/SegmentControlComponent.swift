@@ -178,7 +178,7 @@ public final class SegmentControlComponent: Component {
                     segmentedView = current
                 } else {
                     let mappedActions: [UIAction] = component.items.map { item -> UIAction in
-                        return UIAction(title: item.title, handler: { [weak self] _ in
+                        return UIAction(title: item.title, handler: { [weak self = self] _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -222,7 +222,7 @@ public final class SegmentControlComponent: Component {
                     self.legacySegmentedNode = segmentedNode
                     self.addSubnode(segmentedNode)
                     
-                    segmentedNode.selectedIndexChanged = { [weak self] index in
+                    segmentedNode.selectedIndexChanged = { [weak self = self] index in
                         guard let self, let component = self.component else {
                             return
                         }

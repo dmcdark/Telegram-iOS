@@ -172,14 +172,14 @@ private final class ItemNode: ASDisplayNode {
         self.buttonNode.isExclusiveTouch = true
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
         
-        self.containerNode.activated = { [weak self] gesture, _ in
+        self.containerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
             contextGesture(strongSelf.extractedContainerNode, gesture, strongSelf.isDisabled)
         }
         
-        self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+        self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
             guard let strongSelf = self else {
                 return
             }
@@ -254,7 +254,7 @@ private final class ItemNode: ASDisplayNode {
                 
         if isReordering && !isNoFilter {
             if self.deleteButtonNode == nil {
-                let deleteButtonNode = ItemNodeDeleteButtonNode(pressed: { [weak self] in
+                let deleteButtonNode = ItemNodeDeleteButtonNode(pressed: { [weak self = self] in
                     self?.requestedDeletion()
                 })
                 self.extractedContainerNode.contentNode.addSubnode(deleteButtonNode)
@@ -564,7 +564,7 @@ public final class ChatListFilterTabContainerNode: ASDisplayNode {
         self.backgroundView.contentView.addSubview(self.scrollNode.view)
         self.scrollNode.addSubnode(self.selectedBackgroundNode)
         
-        let reorderingGesture = ReorderingGestureRecognizer(shouldBegin: { [weak self] point in
+        let reorderingGesture = ReorderingGestureRecognizer(shouldBegin: { [weak self = self] point in
             guard let strongSelf = self else {
                 return false
             }
@@ -574,7 +574,7 @@ public final class ChatListFilterTabContainerNode: ASDisplayNode {
                 }
             }
             return false
-        }, began: { [weak self] point in
+        }, began: { [weak self = self] point in
             guard let strongSelf = self, let _ = strongSelf.currentParams else {
                 return
             }
@@ -611,7 +611,7 @@ public final class ChatListFilterTabContainerNode: ASDisplayNode {
                     return
                 }
             }
-        }, ended: { [weak self] in
+        }, ended: { [weak self = self] in
             guard let strongSelf = self, let reorderingItem = strongSelf.reorderingItem else {
                 return
             }
@@ -633,7 +633,7 @@ public final class ChatListFilterTabContainerNode: ASDisplayNode {
             if let (size, sideInset, filters, selectedFilter, isReordering, isEditing, canReorderAllChats, filtersLimit, transitionFraction, presentationData) = strongSelf.currentParams {
                 strongSelf.update(size: size, sideInset: sideInset, filters: filters, selectedFilter: selectedFilter, isReordering: isReordering, isEditing: isEditing, canReorderAllChats: canReorderAllChats, filtersLimit: filtersLimit, transitionFraction: transitionFraction, presentationData: presentationData, transition: .animated(duration: 0.25, curve: .easeInOut))
             }
-        }, moved: { [weak self] offset in
+        }, moved: { [weak self = self] offset in
             guard let strongSelf = self, let reorderingItem = strongSelf.reorderingItem else {
                 return
             }
@@ -776,11 +776,11 @@ public final class ChatListFilterTabContainerNode: ASDisplayNode {
             } else {
                 itemNodeTransition = .immediate
                 wasAdded = true
-                itemNode = ItemNode(context: self.context, pressed: { [weak self] disabled in
+                itemNode = ItemNode(context: self.context, pressed: { [weak self = self] disabled in
                     self?.tabSelected?(filter.id, disabled)
-                }, requestedDeletion: { [weak self] in
+                }, requestedDeletion: { [weak self = self] in
                     self?.tabRequestedDeletion?(filter.id)
-                }, contextGesture: { [weak self] sourceNode, gesture, isDisabled in
+                }, contextGesture: { [weak self = self] sourceNode, gesture, isDisabled in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1065,7 +1065,7 @@ private final class ReorderingGestureRecognizer: UIGestureRecognizer, UIGestureR
                     return
                 }
                 self.initialLocation = location
-                let timer = Foundation.Timer(timeInterval: 0.2, target: ReorderingGestureRecognizerTimerTarget { [weak self] in
+                let timer = Foundation.Timer(timeInterval: 0.2, target: ReorderingGestureRecognizerTimerTarget { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }

@@ -191,7 +191,7 @@ public final class ChatHistorySearchContainerNode: SearchDisplayControllerConten
         let previousEntriesValue = Atomic<[ChatHistorySearchEntry]?>(value: nil)
         
         self.searchQueryDisposable.set((self.searchQuery.get()
-        |> deliverOnMainQueue).startStrict(next: { [weak self] query in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] query in
             if let strongSelf = self {
                 let signal: Signal<([ChatHistorySearchEntry], [EngineMessage.Id: EngineRawMessage])?, NoError>
                 if let query = query, !query.isEmpty {
@@ -232,11 +232,11 @@ public final class ChatHistorySearchContainerNode: SearchDisplayControllerConten
             }
         }))
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             self?.dismissInput?()
         }
         
-        self.presentationDataDisposable = context.sharedContext.presentationData.startStrict(next: { [weak self] presentationData in
+        self.presentationDataDisposable = context.sharedContext.presentationData.startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.themeAndStringsPromise.set(.single((presentationData.theme, presentationData.strings, presentationData.dateTimeFormat, presentationData.listsFontSize)))
                 
@@ -322,7 +322,7 @@ public final class ChatHistorySearchContainerNode: SearchDisplayControllerConten
             }
             
             let displayingResults = transition.displayingResults
-            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     if displayingResults != !strongSelf.listNode.isHidden || strongSelf.currentQuery != transition.query {
                         strongSelf.currentQuery = transition.query

@@ -66,7 +66,7 @@ public final class ContextReferenceButtonComponent: Component {
             self.buttonView.addSubnode(self.sourceView)
             self.sourceView.addSubnode(self.contextContentView)
             
-            self.sourceView.activated = { [weak self] gesture, _ in
+            self.sourceView.activated = { [weak self = self] gesture, _ in
                 if let self, let component = self.component {
                     component.action(self, gesture)
                 }

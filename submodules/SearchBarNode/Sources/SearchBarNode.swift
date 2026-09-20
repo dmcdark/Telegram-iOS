@@ -178,7 +178,7 @@ private final class TokenNode: ASDisplayNode {
     }
     
     func animateOut() {
-        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, completion: { [weak self = self] _ in
             self?.removeFromSupernode()
         })
         self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3)
@@ -384,7 +384,7 @@ private class SearchBarTextField: UITextField, UIScrollViewDelegate {
                 tokenNode = TokenNode(theme: self.theme, token: token)
                 self.tokenNodes[token.id] = tokenNode
             }
-            tokenNode.tapped = { [weak self] in
+            tokenNode.tapped = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.selectedTokenIndex = i
                     if !strongSelf.isFirstResponder {
@@ -1091,7 +1091,7 @@ public class SearchBarNode: ASDisplayNode, UITextFieldDelegate {
         self.textField.delegate = self
         self.textField.addTarget(self, action: #selector(self.textFieldDidChange(_:)), for: .editingChanged)
         
-        self.textField.didDeleteBackward = { [weak self] in
+        self.textField.didDeleteBackward = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -1236,7 +1236,7 @@ public class SearchBarNode: ASDisplayNode, UITextFieldDelegate {
                 if self.inlineSearchPlaceholderContentsView == nil {
                     isFirstTime = true
                     let inlineSearchPlaceholderContentsView = self.inlineSearchPlaceholder.takeContents()
-                    inlineSearchPlaceholderContentsView.onCancel = { [weak self] in
+                    inlineSearchPlaceholderContentsView.onCancel = { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -1285,7 +1285,7 @@ public class SearchBarNode: ASDisplayNode, UITextFieldDelegate {
         self.inlineSearchPlaceholder.isHidden = true
         
         let takenSearchPlaceholderContentView = node.takeContents()
-        takenSearchPlaceholderContentView.onCancel = { [weak self] in
+        takenSearchPlaceholderContentView.onCancel = { [weak self = self] in
             guard let self else {
                 return
             }

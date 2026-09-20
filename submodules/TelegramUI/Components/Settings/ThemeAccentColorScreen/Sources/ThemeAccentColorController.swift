@@ -93,7 +93,7 @@ public final class ThemeAccentColorController: ViewController {
         self.statusBar.statusBarStyle = self.presentationData.theme.rootController.statusBarStyle.style
         self.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .portrait)
         
-        self.segmentedTitleView.indexUpdated = { [weak self] index in
+        self.segmentedTitleView.indexUpdated = { [weak self = self] index in
             guard let strongSelf = self, let section = ThemeColorSection(rawValue: index) else {
                 return
             }
@@ -101,7 +101,7 @@ public final class ThemeAccentColorController: ViewController {
                 return
             }
 
-            let updateSection: () -> Void = { [weak self] in
+            let updateSection: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -164,11 +164,11 @@ public final class ThemeAccentColorController: ViewController {
             initialWallpaper = self.presentationData.chatWallpaper
         }
         
-        self.displayNode = ThemeAccentColorControllerNode(context: self.context, mode: self.mode, resultMode: self.resultMode, theme: theme, wallpaper: initialWallpaper, dismiss: { [weak self] in
+        self.displayNode = ThemeAccentColorControllerNode(context: self.context, mode: self.mode, resultMode: self.resultMode, theme: theme, wallpaper: initialWallpaper, dismiss: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.dismiss()
             }
-        }, apply: { [weak self] state, serviceBackgroundColor, forBoth in
+        }, apply: { [weak self = self] state, serviceBackgroundColor, forBoth in
             if let strongSelf = self {
                 let context = strongSelf.context
                 let autoNightModeTriggered = strongSelf.presentationData.autoNightModeTriggered
@@ -326,7 +326,7 @@ public final class ThemeAccentColorController: ViewController {
                     
                     let disposable = strongSelf.applyDisposable
                     var cancelImpl: (() -> Void)?
-                    let progress = Signal<Never, NoError> { [weak self] subscriber in
+                    let progress = Signal<Never, NoError> { [weak self = self] subscriber in
                         let controller = OverlayStatusController(theme: strongSelf.presentationData.theme, type: .loading(cancelled: {
                             cancelImpl?()
                         }))
@@ -380,12 +380,12 @@ public final class ThemeAccentColorController: ViewController {
                 }
             }
         }, ready: self._ready)
-        self.controllerNode.themeUpdated = { [weak self] theme in
+        self.controllerNode.themeUpdated = { [weak self = self] theme in
             if let strongSelf = self {
                 strongSelf.segmentedTitleView.theme = theme
             }
         }
-        self.controllerNode.requestSectionUpdate = { [weak self] section in
+        self.controllerNode.requestSectionUpdate = { [weak self = self] section in
             if let strongSelf = self {
                 strongSelf.segmentedTitleView.index = section.rawValue
             }
@@ -395,7 +395,7 @@ public final class ThemeAccentColorController: ViewController {
             self.context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.presentationThemeSettings]) |> take(1),
             context.engine.themes.wallpapers() |> take(1)
         )
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData, wallpapers in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData, wallpapers in
             guard let strongSelf = self else {
                 return
             }

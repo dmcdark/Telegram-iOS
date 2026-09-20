@@ -1177,7 +1177,7 @@ private final class SheetContent: CombinedComponent {
             if needsBalance {
                 if let starsContext = component.context.starsContext {
                     self.starsStateDisposable = (starsContext.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         if let self, let balance = state?.balance {
                             self.starsBalance = balance
                             self.updated()
@@ -1186,7 +1186,7 @@ private final class SheetContent: CombinedComponent {
                 }
                 if let tonContext = component.context.tonContext {
                     self.tonStateDisposable = (tonContext.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         if let self, let balance = state?.balance {
                             self.tonBalance = balance
                             self.updated()
@@ -1213,7 +1213,7 @@ private final class SheetContent: CombinedComponent {
                     let _ = (self.context.engine.payments.cachedStarGifts()
                      |> filter { $0 != nil }
                      |> take(1)
-                     |> deliverOnMainQueue).start(next: { [weak self] gifts in
+                     |> deliverOnMainQueue).start(next: { [weak self = self] gifts in
                         guard let self, let gifts else {
                             return
                         }
@@ -1875,7 +1875,7 @@ public final class AmountFieldComponent: Component {
                             forceMinValue: component.forceMinValue,
                             allowZero: component.allowZero,
                             maxValue: component.maxValue ?? Int64.max,
-                            updated: { [weak self] value in
+                            updated: { [weak self = self] value in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1883,13 +1883,13 @@ public final class AmountFieldComponent: Component {
                                     component.amountUpdated(value == 0 ? nil : value)
                                 }
                             },
-                            isEmptyUpdated: { [weak self] isEmpty in
+                            isEmptyUpdated: { [weak self = self] isEmpty in
                                 guard let self else {
                                     return
                                 }
                                 self.placeholderView.view?.isHidden = !isEmpty
                             },
-                            animateError: { [weak self] in
+                            animateError: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1912,7 +1912,7 @@ public final class AmountFieldComponent: Component {
                             forceMinValue: component.forceMinValue,
                             allowZero: component.allowZero,
                             maxValue: component.maxValue ?? 10000000,
-                            updated: { [weak self] value in
+                            updated: { [weak self = self] value in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1920,13 +1920,13 @@ public final class AmountFieldComponent: Component {
                                     component.amountUpdated(value == 0 ? nil : value)
                                 }
                             },
-                            isEmptyUpdated: { [weak self] isEmpty in
+                            isEmptyUpdated: { [weak self = self] isEmpty in
                                 guard let self else {
                                     return
                                 }
                                 self.placeholderView.view?.isHidden = !isEmpty
                             },
-                            animateError: { [weak self] in
+                            animateError: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -2542,7 +2542,7 @@ private final class MenuButtonComponent: Component {
             
             self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.selectionLayer.opacity = 1.0
@@ -2715,7 +2715,7 @@ private final class DurationMenuComponent: Component {
                             text: repeatString,
                             isSelected: component.value == value,
                             width: self.width,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

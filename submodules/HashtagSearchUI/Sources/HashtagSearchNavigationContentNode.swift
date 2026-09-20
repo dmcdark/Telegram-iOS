@@ -100,16 +100,16 @@ final class HashtagSearchNavigationContentNode: NavigationBarContentNode {
             self.addSubnode(self.searchBar)
         }
         
-        self.searchBar.cancel = { [weak self] in
+        self.searchBar.cancel = { [weak self = self] in
             self?.searchBar.deactivate(clear: false)
             self?.cancel()
         }
         
-        self.searchBar.textUpdated = { [weak self] query, _ in
+        self.searchBar.textUpdated = { [weak self = self] query, _ in
             self?.queryUpdated?(query)
         }
         
-        self.searchBar.textReturned = { [weak self] query in
+        self.searchBar.textReturned = { [weak self = self] query in
             self?.onReturn(query)
         }
     }
@@ -153,7 +153,7 @@ final class HashtagSearchNavigationContentNode: NavigationBarContentNode {
                     id: AnyHashable(0),
                     content: .title(HorizontalTabsComponent.Tab.Title(text: self.strings.HashtagSearch_ThisChat, entities: [], enableAnimations: false)),
                     badge: nil,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -168,7 +168,7 @@ final class HashtagSearchNavigationContentNode: NavigationBarContentNode {
                 id: AnyHashable(1),
                 content: .title(HorizontalTabsComponent.Tab.Title(text: self.strings.HashtagSearch_MyMessages, entities: [], enableAnimations: false)),
                 badge: nil,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -182,7 +182,7 @@ final class HashtagSearchNavigationContentNode: NavigationBarContentNode {
                 id: AnyHashable(2),
                 content: .title(HorizontalTabsComponent.Tab.Title(text: self.strings.HashtagSearch_PublicPosts, entities: [], enableAnimations: false)),
                 badge: nil,
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self else {
                         return
                     }

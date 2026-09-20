@@ -90,7 +90,7 @@ final class SecureIdDocumentGalleryItemNode: ZoomableContentGalleryItemNode {
         
         super.init()
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         
@@ -118,7 +118,7 @@ final class SecureIdDocumentGalleryItemNode: ZoomableContentGalleryItemNode {
         if self.contextAndMedia == nil || !self.contextAndMedia!.2.isEqual(to: resource) {
             let displaySize = CGSize(width: 1280.0, height: 1280.0)
             //self.imageNode.asyncLayout()(TransformImageArguments(corners: ImageCorners(), imageSize: displaySize, boundingSize: displaySize, intrinsicInsets: UIEdgeInsets()))()
-            self.imageNode.setSignal(securePhotoInternal(account: context.account, resource: resource, accessContext: secureIdContext) |> beforeNext { [weak self] value in
+            self.imageNode.setSignal(securePhotoInternal(account: context.account, resource: resource, accessContext: secureIdContext) |> beforeNext { [weak self = self] value in
                 Queue.mainQueue().async {
                     if let strongSelf = self {
                         if let size = value.0(), strongSelf.zoomableContent?.0 != size {

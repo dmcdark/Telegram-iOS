@@ -100,7 +100,7 @@ private final class IconComponent: Component {
 
                     self.disposable = (svgIconImageFile(account: component.account, fileReference: fileReference)
                     |> runOn(Queue.concurrentDefaultQueue())
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] transform in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] transform in
                         let arguments = TransformImageArguments(corners: ImageCorners(), imageSize: availableSize, boundingSize: availableSize, intrinsicInsets: UIEdgeInsets())
                         let drawingContext = transform(arguments)
                         let image = drawingContext?.generateImage()?.withRenderingMode(.alwaysTemplate)
@@ -576,7 +576,7 @@ private final class MainButtonNode: HighlightTrackingButtonNode {
         self.addSubnode(self.textNode)
         self.addSubnode(self.statusNode)
 
-        self.highligthedChanged = { [weak self] highlighted in
+        self.highligthedChanged = { [weak self = self] highlighted in
             if let self, self.state.isEnabled {
                 if highlighted {
                     self.layer.removeAnimation(forKey: "opacity")
@@ -756,7 +756,7 @@ private final class MainButtonNode: HighlightTrackingButtonNode {
             animation.toValue = newValue
             animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 
-            CATransaction.setCompletionBlock { [weak self] in
+            CATransaction.setCompletionBlock { [weak self = self] in
                 self?.setupGradientAnimations()
             }
 
@@ -1137,7 +1137,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }, forwardSelectedMessages: {
         }, forwardCurrentForwardMessages: {
         }, forwardMessages: { _ in
-        }, updateForwardOptionsState: { [weak self] value in
+        }, updateForwardOptionsState: { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, { $0.updatedInterfaceState({ $0.withUpdatedForwardOptionsState($0.forwardOptionsState) }) })
             }
@@ -1146,7 +1146,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }, presentLinkOptions: { _ in
         }, presentSuggestPostOptions: {
         }, shareSelectedMessages: {
-        }, updateTextInputStateAndMode: { [weak self] f in
+        }, updateTextInputStateAndMode: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, { state in
                     let (updatedState, updatedMode) = f(state.interfaceState.effectiveInputState, state.inputMode)
@@ -1155,7 +1155,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                     }.updatedInputMode({ _ in updatedMode })
                 })
             }
-        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self] f in
+        }, updateInputModeAndDismissedButtonKeyboardMessageId: { [weak self = self] f in
             if let strongSelf = self {
                 strongSelf.updateChatPresentationInterfaceState(animated: true, {
                     let (updatedInputMode, updatedClosedButtonKeyboardMessageId) = f($0)
@@ -1217,9 +1217,9 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }, toggleMessageStickerStarred: { _ in
         }, presentController: { _, _ in
         }, presentControllerInCurrent: { _, _ in
-        }, getNavigationController: { [weak self] in
+        }, getNavigationController: { [weak self = self] in
             return self?.getNavigationController()
-        }, presentGlobalOverlayController: { [weak self] controller, _ in
+        }, presentGlobalOverlayController: { [weak self = self] controller, _ in
             self?.presentInGlobalOverlay(controller)
         }, navigateFeed: {
         }, openGrouping: {
@@ -1228,7 +1228,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }, requestStopPollInMessage: { _ in
         }, updateInputLanguage: { _ in
         }, unarchiveChat: {
-        }, openLinkEditing: { [weak self] in
+        }, openLinkEditing: { [weak self = self] in
             if let strongSelf = self {
                 var selectionRange: Range<Int>?
                 var text: NSAttributedString?
@@ -1253,7 +1253,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 }
 
                 let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
-                let controller = strongSelf.context.sharedContext.makeLinkEditController(context: strongSelf.context, updatedPresentationData: (presentationData, .never()), text: text?.string ?? "", link: link, apply: { [weak self] link, _ in
+                let controller = strongSelf.context.sharedContext.makeLinkEditController(context: strongSelf.context, updatedPresentationData: (presentationData, .never()), text: text?.string ?? "", link: link, apply: { [weak self = self] link, _ in
                     if let strongSelf = self, let inputMode = inputMode, let selectionRange = selectionRange {
                         if let link = link {
                             strongSelf.updateChatPresentationInterfaceState(animated: true, { state in
@@ -1277,7 +1277,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }, openDateEditing: {
 
         }, displaySlowmodeTooltip: { _, _ in
-        }, displaySendMessageOptions: { [weak self] node, gesture in
+        }, displaySendMessageOptions: { [weak self = self] node, gesture in
             guard let strongSelf = self, let textInputPanelNode = strongSelf.textInputPanelNode else {
                 return
             }
@@ -1314,7 +1314,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 availableMessageEffects,
                 hasPremium
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peerView, effectItems, availableMessageEffects, hasPremium in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerView, effectItems, availableMessageEffects, hasPremium in
                 guard let strongSelf = self, let peer = peerViewMainPeer(peerView) else {
                     return
                 }
@@ -1411,7 +1411,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                             }
                             mediaPickerContext.setPrice(price)
                         },
-                        openPremiumPaywall: { [weak self] c in
+                        openPremiumPaywall: { [weak self = self] c in
                             guard let self else {
                                 return
                             }
@@ -1490,7 +1490,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                     return .single(nil) |> delay(0.2, queue: .mainQueue())
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] playlistStateAndType in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] playlistStateAndType in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1536,7 +1536,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         }
 
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
 
@@ -1588,7 +1588,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 }
             }
             |> distinctUntilChanged
-            |> deliverOnMainQueue).start(next: { [weak self] amount in
+            |> deliverOnMainQueue).start(next: { [weak self = self] amount in
                 guard let self else {
                     return
                 }
@@ -1744,18 +1744,18 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
 
     private func makeMediaAccessoryPanel() -> MediaNavigationAccessoryPanel {
         let mediaAccessoryPanel = MediaNavigationAccessoryPanel(context: self.context, presentationData: self.presentationData, displayBackground: false, customTintColor: self.presentationData.theme.rootController.tabBar.textColor)
-        mediaAccessoryPanel.getController = { [weak self] in
+        mediaAccessoryPanel.getController = { [weak self = self] in
             return self?.controller
         }
-        mediaAccessoryPanel.presentInGlobalOverlay = { [weak self] controller in
+        mediaAccessoryPanel.presentInGlobalOverlay = { [weak self = self] controller in
             self?.presentInGlobalOverlay(controller)
         }
-        mediaAccessoryPanel.close = { [weak self] in
+        mediaAccessoryPanel.close = { [weak self = self] in
             if let self, let (_, _, _, _, type, _) = self.playlistStateAndType {
                 self.context.sharedContext.mediaManager.setPlaylist(nil, type: type, control: SharedMediaPlayerControlAction.playback(.pause))
             }
         }
-        mediaAccessoryPanel.setRate = { [weak self] rate, changeType in
+        mediaAccessoryPanel.setRate = { [weak self = self] rate, changeType in
             guard let self else {
                 return
             }
@@ -1767,7 +1767,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 })
                 return rate
             }
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] baseRate in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] baseRate in
                 guard let self, let (_, _, _, _, type, _) = self.playlistStateAndType else {
                     return
                 }
@@ -1775,17 +1775,17 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 self.presentAudioRateTooltip(baseRate: baseRate, changeType: changeType)
             })
         }
-        mediaAccessoryPanel.togglePlayPause = { [weak self] in
+        mediaAccessoryPanel.togglePlayPause = { [weak self = self] in
             if let self, let (_, _, _, _, type, _) = self.playlistStateAndType {
                 self.context.sharedContext.mediaManager.playlistControl(.playback(.togglePlayPause), type: type)
             }
         }
-        mediaAccessoryPanel.playPrevious = { [weak self] in
+        mediaAccessoryPanel.playPrevious = { [weak self = self] in
             if let self, let (_, _, _, _, type, _) = self.playlistStateAndType {
                 self.context.sharedContext.mediaManager.playlistControl(.next, type: type)
             }
         }
-        mediaAccessoryPanel.playNext = { [weak self] in
+        mediaAccessoryPanel.playNext = { [weak self = self] in
             if let self, let (_, _, _, _, type, _) = self.playlistStateAndType {
                 self.context.sharedContext.mediaManager.playlistControl(.previous, type: type)
             }
@@ -2119,7 +2119,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                     isSelected: false,
                     strings: self.presentationData.strings,
                     theme: self.presentationData.theme,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         if let strongSelf = self {
                             strongSelf.selectionOverrideIndex = i
                             if strongSelf.selectionChanged(type) {
@@ -2132,7 +2132,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                             }
                             strongSelf.selectionOverrideIndex = nil
                         }
-                    }, longPressAction: { [weak self] in
+                    }, longPressAction: { [weak self = self] in
                         if let strongSelf = self, i == strongSelf.selectedIndex {
                             strongSelf.longPressed(type)
                         }
@@ -2242,13 +2242,13 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
     private func loadTextNodeIfNeeded() {
         if let _ = self.textInputPanelNode {
         } else {
-            let textInputPanelNode = AttachmentTextInputPanelNode(context: self.context, presentationInterfaceState: self.presentationInterfaceState, glass: self.panelStyle == .glass, isAttachment: true, isScheduledMessages: self.isScheduledMessages, customEmojiAvailable: self.customEmojiAvailable, presentController: { [weak self] c in
+            let textInputPanelNode = AttachmentTextInputPanelNode(context: self.context, presentationInterfaceState: self.presentationInterfaceState, glass: self.panelStyle == .glass, isAttachment: true, isScheduledMessages: self.isScheduledMessages, customEmojiAvailable: self.customEmojiAvailable, presentController: { [weak self = self] c in
                 if let strongSelf = self {
                     strongSelf.present(c)
                 }
-            }, presentInGlobalOverlay: { [weak self] c in
+            }, presentInGlobalOverlay: { [weak self = self] c in
                 self?.presentInGlobalOverlay(c)
-            }, getNavigationController: { [weak self] in
+            }, getNavigationController: { [weak self = self] in
                 return self?.getNavigationController()
             })
             if let data = self.context.currentAppConfiguration.with({ $0 }).data, let value = data["ios_disable_ai_chat"] as? Double, value == 1.0 {
@@ -2256,22 +2256,22 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 textInputPanelNode.isAIEnabled = true
             }
             textInputPanelNode.interfaceInteraction = self.interfaceInteraction
-            textInputPanelNode.sendMessage = { [weak self] mode, messageEffect in
+            textInputPanelNode.sendMessage = { [weak self = self] mode, messageEffect in
                 if let strongSelf = self {
                     strongSelf.sendMessagePressed(mode, messageEffect)
                 }
             }
-            textInputPanelNode.invokeAICompose = { [weak self] in
+            textInputPanelNode.invokeAICompose = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.invokeAICompose()
                 }
             }
-            textInputPanelNode.focusUpdated = { [weak self] focus in
+            textInputPanelNode.focusUpdated = { [weak self = self] focus in
                 if let strongSelf = self, focus {
                     strongSelf.beganTextEditing()
                 }
             }
-            textInputPanelNode.updateHeight = { [weak self] _ in
+            textInputPanelNode.updateHeight = { [weak self = self] _ in
                 if let strongSelf = self {
                     strongSelf.requestLayout()
                 }

@@ -319,7 +319,7 @@ final class CallListControllerNode: ASDisplayNode {
         
         self.emptyButtonIconNode.image = generateTintedImage(image: UIImage(bundleImageName: "Call List/CallIcon"), color: presentationData.theme.list.itemAccentColor)
         
-        self.emptyButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.emptyButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.emptyButtonIconNode.layer.removeAnimation(forKey: "opacity")
@@ -336,7 +336,7 @@ final class CallListControllerNode: ASDisplayNode {
         }
         self.emptyButtonNode.addTarget(self, action: #selector(self.emptyButtonPressed), forControlEvents: .touchUpInside)
         
-        let nodeInteraction = CallListNodeInteraction(setMessageIdWithRevealedOptions: { [weak self] messageId, fromMessageId in
+        let nodeInteraction = CallListNodeInteraction(setMessageIdWithRevealedOptions: { [weak self = self] messageId, fromMessageId in
             if let strongSelf = self {
                 strongSelf.updateState { state in
                     if (messageId == nil && fromMessageId == state.messageIdWithRevealedOptions) || (messageId != nil && fromMessageId == nil) {
@@ -346,11 +346,11 @@ final class CallListControllerNode: ASDisplayNode {
                     }
                 }
             }
-        }, call: { [weak self] message in
+        }, call: { [weak self = self] message in
             self?.call(message)
-        }, openInfo: { [weak self] peerId, messages in
+        }, openInfo: { [weak self = self] peerId, messages in
             self?.openInfo(peerId, messages)
-        }, delete: { [weak self] messageIds in
+        }, delete: { [weak self = self] messageIds in
             guard let peerId = messageIds.first?.peerId else {
                 return
             }
@@ -395,7 +395,7 @@ final class CallListControllerNode: ASDisplayNode {
                 ])
                 strongSelf.controller?.present(actionSheet, in: .window(.root))
             })
-        }, updateShowCallsTab: { [weak self] value in
+        }, updateShowCallsTab: { [weak self = self] value in
             if let strongSelf = self {
                 let _ = updateCallListSettingsInteractively(accountManager: strongSelf.context.sharedContext.accountManager, {
                     $0.withUpdatedShowTab(value)
@@ -405,7 +405,7 @@ final class CallListControllerNode: ASDisplayNode {
                     let _ = ApplicationSpecificNotice.incrementCallsTabTips(accountManager: strongSelf.context.sharedContext.accountManager, count: 4).startStandalone()
                 }
             }
-        }, openGroupCall: { [weak self] peerId in
+        }, openGroupCall: { [weak self = self] peerId in
             guard let strongSelf = self else {
                 return
             }
@@ -462,7 +462,7 @@ final class CallListControllerNode: ASDisplayNode {
                     strongSelf.joinGroupCall(peerId, activeCall)
                 }
             }))
-        }, openNewCall: { [weak self] in
+        }, openNewCall: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -617,14 +617,14 @@ final class CallListControllerNode: ASDisplayNode {
         
         let appliedTransition = callListNodeViewTransition
         |> deliverOnMainQueue
-        |> mapToQueue { [weak self] transition -> Signal<Void, NoError> in
+        |> mapToQueue { [weak self = self] transition -> Signal<Void, NoError> in
             if let strongSelf = self {
                 return strongSelf.enqueueTransition(transition)
             }
             return .complete()
         }
         
-        self.listNode.displayedItemRangeChanged = { [weak self] range, transactionOpaqueState in
+        self.listNode.displayedItemRangeChanged = { [weak self = self] range, transactionOpaqueState in
             if let strongSelf = self, let range = range.loadedRange, let view = (transactionOpaqueState as? CallListOpaqueTransactionState)?.callListView.originalView {
                 var location: CallListNodeLocation?
                 if range.firstIndex < 5 && view.hasLater {
@@ -650,14 +650,14 @@ final class CallListControllerNode: ASDisplayNode {
         }
         |> distinctUntilChanged
         
-        self.emptyStateDisposable.set((combineLatest(emptySignal, typeSignal, self.statePromise.get()) |> deliverOnMainQueue).startStrict(next: { [weak self] isEmpty, type, state in
+        self.emptyStateDisposable.set((combineLatest(emptySignal, typeSignal, self.statePromise.get()) |> deliverOnMainQueue).startStrict(next: { [weak self = self] isEmpty, type, state in
             if let strongSelf = self {
                 strongSelf.updateEmptyPlaceholder(theme: state.presentationData.theme, strings: state.presentationData.strings, type: type, isHidden: !isEmpty)
             }
         }))
         
         if case .navigation = mode {
-            self.listNode.itemNodeHitTest = { [weak self] point in
+            self.listNode.itemNodeHitTest = { [weak self = self] point in
                 if let strongSelf = self {
                     return point.x > strongSelf.leftOverlayNode.frame.maxX && point.x < strongSelf.rightOverlayNode.frame.minX
                 } else {
@@ -665,7 +665,7 @@ final class CallListControllerNode: ASDisplayNode {
                 }
             }
             
-            self.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+            self.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
                 if let strongSelf = self {
                     var previousContentOffsetValue: CGFloat?
                     if let previousContentOffset = strongSelf.previousContentOffset, case let .known(value) = previousContentOffset {
@@ -689,7 +689,7 @@ final class CallListControllerNode: ASDisplayNode {
             }
         }
         
-        self.listNode.onEdgeEffectExtensionUpdated = { [weak self] transition in
+        self.listNode.onEdgeEffectExtensionUpdated = { [weak self = self] transition in
             guard let self else {
                 return
             }
@@ -747,7 +747,7 @@ final class CallListControllerNode: ASDisplayNode {
             self.emptyAnimationNode.visibility = true
         }
         self.emptyAnimationNode.alpha = alpha
-        self.emptyAnimationNode.layer.animateAlpha(from: previousAlpha, to: alpha, duration: 0.25, completion: { [weak self] _ in
+        self.emptyAnimationNode.layer.animateAlpha(from: previousAlpha, to: alpha, duration: 0.25, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 if !previousAlpha.isZero && strongSelf.emptyAnimationNode.alpha.isZero {
                     strongSelf.emptyAnimationNode.visibility = false
@@ -820,7 +820,7 @@ final class CallListControllerNode: ASDisplayNode {
     }
     
     private func enqueueTransition(_ transition: CallListNodeListViewTransition) -> Signal<Void, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 if let _ = strongSelf.enqueuedTransition {
                     preconditionFailure()
@@ -850,7 +850,7 @@ final class CallListControllerNode: ASDisplayNode {
         if let (transition, completion) = self.enqueuedTransition {
             self.enqueuedTransition = nil
             
-            let completion: (ListViewDisplayedItemRange) -> Void = { [weak self] visibleRange in
+            let completion: (ListViewDisplayedItemRange) -> Void = { [weak self = self] visibleRange in
                 if let strongSelf = self {
                     strongSelf.callListView = transition.callListView
                     

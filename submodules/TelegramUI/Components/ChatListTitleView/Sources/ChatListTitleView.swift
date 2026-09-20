@@ -171,7 +171,7 @@ public final class ChatListTitleView: UIView, NavigationBarTitleView, Navigation
                         content: statusContent,
                         particleColor: statusParticleColor,
                         isVisibleForAnimations: true,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -276,7 +276,7 @@ public final class ChatListTitleView: UIView, NavigationBarTitleView, Navigation
         self.addSubview(self.buttonView)
         self.addSubview(self.proxyButton)
         
-        self.buttonView.highligthedChanged = { [weak self] highlighted in
+        self.buttonView.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted && !strongSelf.lockView.isHidden && strongSelf.activityIndicator.isHidden {
                     strongSelf.titleNode.layer.removeAnimation(forKey: "opacity")
@@ -298,7 +298,7 @@ public final class ChatListTitleView: UIView, NavigationBarTitleView, Navigation
         
         self.buttonView.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
         
-        self.proxyButton.highligthedChanged = { [weak self] highlighted in
+        self.proxyButton.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.proxyNode.layer.removeAnimation(forKey: "opacity")
@@ -420,7 +420,7 @@ public final class ChatListTitleView: UIView, NavigationBarTitleView, Navigation
                     animationRenderer: self.animationRenderer,
                     content: statusContent,
                     isVisibleForAnimations: true,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

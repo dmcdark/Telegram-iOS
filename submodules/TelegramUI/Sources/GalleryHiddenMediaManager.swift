@@ -50,7 +50,7 @@ final class GalleryHiddenMediaManagerImpl: GalleryHiddenMediaManager {
     private var targets: [GalleryHiddenMediaTargetHolder] = []
     
     func hiddenIds() -> Signal<Set<GalleryHiddenMediaId>, NoError> {
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             let disposable = MetaDisposable()
             Queue.mainQueue().async {
                 if let strongSelf = self {

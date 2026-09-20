@@ -219,11 +219,11 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
                 }
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] ringingStates, enableCallKit in
+        |> deliverOnMainQueue).start(next: { [weak self = self] ringingStates, enableCallKit in
             self?.ringingStatesUpdated(ringingStates, enableCallKit: enableCallKit)
         })
         
-        startCallImpl = { [weak self] context, uuid, maybePeerId, handle, isVideo in
+        startCallImpl = { [weak self = self] context, uuid, maybePeerId, handle, isVideo in
             guard let strongSelf = self else {
                 return .single(false)
             }
@@ -245,13 +245,13 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
             }
         }
         
-        answerCallImpl = { [weak self] uuid in
+        answerCallImpl = { [weak self = self] uuid in
             if let strongSelf = self {
                 strongSelf.currentCall?.answer(fromCallKitAction: true)
             }
         }
         
-        endCallImpl = { [weak self] uuid in
+        endCallImpl = { [weak self = self] uuid in
             guard let self else {
                 return .single(false)
             }
@@ -271,13 +271,13 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
             }
         }
         
-        setCallMutedImpl = { [weak self] uuid, isMuted in
+        setCallMutedImpl = { [weak self = self] uuid, isMuted in
             if let strongSelf = self, let currentCall = strongSelf.currentCall {
                 currentCall.setIsMuted(isMuted)
             }
         }
         
-        audioSessionActivationChangedImpl = { [weak self] value in
+        audioSessionActivationChangedImpl = { [weak self = self] value in
             if value {
                 self?.audioSession.callKitActivatedAudioSession()
             } else {
@@ -286,7 +286,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
         }
         
         self.proxyServerDisposable = (accountManager.sharedData(keys: [SharedDataKeys.proxySettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self, let settings = sharedData.entries[SharedDataKeys.proxySettings]?.get(ProxySettings.self) {
                 if settings.enabled && settings.useForCalls {
                     strongSelf.proxyServer = settings.activeServer
@@ -297,7 +297,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
         })
         
         self.callSettingsDisposable = (accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.voiceCallSettings])
-        |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 strongSelf.callSettings = sharedData.entries[ApplicationSpecificSharedDataKeys.voiceCallSettings]?.get(VoiceCallSettings.self) ?? .defaultSettings
             }
@@ -326,7 +326,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
                     ) |> take(1),
                     accountManager.sharedData(keys: [SharedDataKeys.autodownloadSettings, ApplicationSpecificSharedDataKeys.experimentalUISettings]) |> take(1)
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] preferences, sharedData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] preferences, sharedData in
                     guard let strongSelf = self else {
                         return
                     }
@@ -375,7 +375,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
                     ) |> take(1),
                     accountManager.sharedData(keys: [SharedDataKeys.autodownloadSettings, ApplicationSpecificSharedDataKeys.experimentalUISettings]) |> take(1)
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] preferences, sharedData in
+                |> deliverOnMainQueue).start(next: { [weak self = self] preferences, sharedData in
                     guard let strongSelf = self else {
                         return
                     }
@@ -449,7 +449,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
             return .alreadyInProgress(alreadyInCallType)
         }
         if let _ = callKitIntegrationIfEnabled(self.callKitIntegration, settings: self.callSettings) {
-            let begin: () -> Void = { [weak self] in
+            let begin: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -542,7 +542,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
                 begin()
             }
         } else {
-            let begin: () -> Void = { [weak self] in
+            let begin: () -> Void = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -612,7 +612,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
         let networkType = context.account.networkType
         let accountManager = self.accountManager
         return accessEnabledSignal
-        |> mapToSignal { [weak self] accessEnabled -> Signal<Bool, NoError> in
+        |> mapToSignal { [weak self = self] accessEnabled -> Signal<Bool, NoError> in
             if !accessEnabled {
                 return .single(false)
             }
@@ -885,7 +885,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
             if let parentController {
                 parentController.push(ScheduleVideoChatSheetScreen(
                     context: accountContext,
-                    scheduleAction: { [weak self] timestamp in
+                    scheduleAction: { [weak self = self] timestamp in
                         guard let self else {
                             return
                         }
@@ -971,7 +971,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
     }
     
     public func joinGroupCall(context: AccountContext, peerId: PeerId, invite: String?, requestJoinAsPeerId: ((@escaping (PeerId?) -> Void) -> Void)?, initialCall: EngineGroupCallDescription, endCurrentIfAny: Bool) -> JoinGroupCallManagerResult {
-        let begin: () -> Void = { [weak self] in
+        let begin: () -> Void = { [weak self = self] in
             if let requestJoinAsPeerId = requestJoinAsPeerId, (initialCall.isStream == nil || initialCall.isStream == false) {
                 requestJoinAsPeerId({ joinAsPeerId in
                     guard let self else {
@@ -1077,7 +1077,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
             accountContext.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
         )
         |> deliverOnMainQueue
-        |> mapToSignal { [weak self] accessEnabled, peer -> Signal<Bool, NoError> in
+        |> mapToSignal { [weak self = self] accessEnabled, peer -> Signal<Bool, NoError> in
             guard let strongSelf = self else {
                 return .single(false)
             }
@@ -1145,7 +1145,7 @@ public final class PresentationCallManagerImpl: PresentationCallManager {
         endCurrentIfAny: Bool,
         unmuteByDefault: Bool
     ) -> JoinGroupCallManagerResult {
-        let begin: () -> Void = { [weak self] in
+        let begin: () -> Void = { [weak self = self] in
             guard let self else {
                 return
             }

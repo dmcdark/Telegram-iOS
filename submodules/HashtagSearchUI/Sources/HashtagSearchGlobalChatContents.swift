@@ -58,7 +58,7 @@ final class HashtagSearchGlobalChatContents: ChatCustomContentsProtocol {
             
             self.isSearchingPromise.set(true)
             self.historyViewDisposable = (search
-            |> deliverOn(self.queue)).start(next: { [weak self] result in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }
@@ -106,7 +106,7 @@ final class HashtagSearchGlobalChatContents: ChatCustomContentsProtocol {
             
             self.historyViewDisposable?.dispose()
             self.historyViewDisposable = (search
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                 guard let self else {
                     return
                 }

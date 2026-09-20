@@ -274,7 +274,7 @@ public final class MediaItemNodeView: UIView, RichTextMediaItemView, UIScrollVie
             // component whose `isSpoiler` (part of `==`) reflects the current state is what makes the toggle
             // re-render. `usesAspectFit` rides a size change (1↔mosaic), so it needn't be in `==`.
             let component = RichTextMediaContentComponent(context: context, media: item.media, showsMoreButton: self.showsControls, usesAspectFit: usesAspectFit, isSpoiler: item.isSpoiler)
-            component.onControlTapped = { [weak self] kind, anchorView, rect in
+            component.onControlTapped = { [weak self = self] kind, anchorView, rect in
                 self?.onControlTapped?(kind, reportedIndex, anchorView, rect)
             }
             self.mosaicCells[cellKey] = (host, component)

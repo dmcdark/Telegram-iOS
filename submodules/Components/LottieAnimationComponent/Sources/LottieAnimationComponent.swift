@@ -107,7 +107,7 @@ public final class LottieAnimationComponent: Component {
             super.init(frame: frame)
             
             self.layer.addSublayer(self.hierarchyTrackingLayer)
-            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+            self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
                 guard let strongSelf = self, let animationView = strongSelf.animationView else {
                     return
                 }
@@ -142,11 +142,11 @@ public final class LottieAnimationComponent: Component {
             animationView.loopMode = .playOnce
             
             if let range = component.animation.range {
-                animationView.play(fromProgress: range.0, toProgress: range.1, completion: { [weak self] _ in
+                animationView.play(fromProgress: range.0, toProgress: range.1, completion: { [weak self = self] _ in
                     self?.currentCompletion?()
                 })
             } else {
-                animationView.play { [weak self] _ in
+                animationView.play { [weak self = self] _ in
                     self?.currentCompletion?()
                 }
             }
@@ -167,7 +167,7 @@ public final class LottieAnimationComponent: Component {
                 if let animationView = self.animationView {
                     if case .animateTransitionFromPrevious = component.animation.mode, !animationView.isAnimationPlaying, !self.didPlayToCompletion {
                         updateComponent = false
-                        animationView.play { [weak self] _ in
+                        animationView.play { [weak self = self] _ in
                             self?.currentCompletion?()
                         }
                     }
@@ -175,7 +175,7 @@ public final class LottieAnimationComponent: Component {
                 
                 if let animationView = self.animationView, animationView.isAnimationPlaying && component.animation.waitForCompletion {
                     updateComponent = false
-                    self.currentCompletion = { [weak self] in
+                    self.currentCompletion = { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -292,11 +292,11 @@ public final class LottieAnimationComponent: Component {
                     if case .animating = component.animation.mode {
                         if !animationView.isAnimationPlaying {
                             if let range = component.animation.range {
-                                animationView.play(fromProgress: range.0, toProgress: range.1, completion: { [weak self] _ in
+                                animationView.play(fromProgress: range.0, toProgress: range.1, completion: { [weak self = self] _ in
                                     self?.currentCompletion?()
                                 })
                             } else {
-                                animationView.play { [weak self] _ in
+                                animationView.play { [weak self = self] _ in
                                     self?.currentCompletion?()
                                 }
                             }

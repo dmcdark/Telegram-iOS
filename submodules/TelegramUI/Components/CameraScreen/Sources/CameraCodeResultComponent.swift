@@ -77,7 +77,7 @@ final class CameraCodeResultComponent: Component {
             self.contentView.addSubview(self.contentWrapperView)
             self.contentWrapperView.addSubview(self.avatarNode.view)
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }

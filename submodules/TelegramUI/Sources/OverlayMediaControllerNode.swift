@@ -54,7 +54,7 @@ final class OverlayMediaControllerNode: ASDisplayNode, ASGestureRecognizerDelega
             return OverlayMediaControllerNodeView()
         })
         
-        (self.view as! OverlayMediaControllerNodeView).hitTestImpl = { [weak self] point, event in
+        (self.view as! OverlayMediaControllerNodeView).hitTestImpl = { [weak self = self] point, event in
             return self?.hitTest(point, with: event)
         }
         
@@ -267,7 +267,7 @@ final class OverlayMediaControllerNode: ASDisplayNode, ASGestureRecognizerDelega
                 node.layer.animatePosition(from: CGPoint(x: positionX - node.layer.position.x, y: 0.0), to: CGPoint(), duration: 0.3, timingFunction: kCAMediaTimingFunctionSpring, additive: true)
             }
         }
-        node.hasAttachedContextUpdated = { [weak self] _ in
+        node.hasAttachedContextUpdated = { [weak self = self] _ in
             if let strongSelf = self, let validLayout = strongSelf.validLayout, !customTransition {
                 strongSelf.containerLayoutUpdated(validLayout, transition: .animated(duration: 0.3, curve: .spring))
             }

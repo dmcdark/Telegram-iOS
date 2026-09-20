@@ -29,7 +29,7 @@ extension AVPlayer {
         }
         
         var invalidateImpl: (() -> Void)?
-        let timer = SwiftSignalKit.Timer(timeout: Double(interval), repeat: true, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: Double(interval), repeat: true, completion: { [weak self = self] in
             if let self, !reachedTarget() {
                 self.volume += step
             } else {

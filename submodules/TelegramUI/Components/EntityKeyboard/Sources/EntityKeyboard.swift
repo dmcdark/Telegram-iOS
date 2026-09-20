@@ -363,7 +363,7 @@ public final class EntityKeyboardComponent: Component {
                                     useAccentColor: false,
                                     customTintColor: component.customTintColor,
                                     title: title,
-                                    pressed: { [weak self] in
+                                    pressed: { [weak self = self] in
                                         self?.scrollToItemGroup(contentId: "masks", groupId: itemGroup.supergroupId, subgroupId: nil)
                                     }
                                 ))
@@ -385,7 +385,7 @@ public final class EntityKeyboardComponent: Component {
                                         theme: component.theme,
                                         title: itemGroup.title ?? "",
                                         customTintColor: component.customTintColor,
-                                        pressed: { [weak self] in
+                                        pressed: { [weak self = self] in
                                             self?.scrollToItemGroup(contentId: "masks", groupId: itemGroup.supergroupId, subgroupId: nil)
                                         }
                                     ))
@@ -403,7 +403,7 @@ public final class EntityKeyboardComponent: Component {
                     containerSideInset: component.containerInsets.left + component.topPanelInsets.left,
                     defaultActiveItemId: maskContent.panelItemGroups.first?.groupId,
                     activeContentItemIdUpdated: masksContentItemIdUpdated,
-                    reorderItems: { [weak self] items in
+                    reorderItems: { [weak self = self] items in
                         guard let strongSelf = self else {
                             return
                         }
@@ -449,7 +449,7 @@ public final class EntityKeyboardComponent: Component {
                             useAccentColor: false,
                             customTintColor: component.customTintColor,
                             title: component.strings.Stickers_Trending,
-                            pressed: { [weak self] in
+                            pressed: { [weak self = self] in
                                 self?.component?.stickerContent?.inputInteractionHolder.inputInteraction?.openFeatured?()
                             }
                         ))
@@ -468,7 +468,7 @@ public final class EntityKeyboardComponent: Component {
                                         peer: avatarPeer,
                                         theme: component.theme,
                                         title: avatarPeer.compactDisplayTitle,
-                                        pressed: { [weak self] in
+                                        pressed: { [weak self = self] in
                                             self?.scrollToItemGroup(contentId: "stickers", groupId: itemGroup.supergroupId, subgroupId: nil)
                                         }
                                     ))
@@ -496,7 +496,7 @@ public final class EntityKeyboardComponent: Component {
                                         useAccentColor: false,
                                         customTintColor: component.customTintColor,
                                         title: title,
-                                        pressed: { [weak self] in
+                                        pressed: { [weak self = self] in
                                             self?.scrollToItemGroup(contentId: "stickers", groupId: itemGroup.supergroupId, subgroupId: nil)
                                         }
                                     ))
@@ -519,7 +519,7 @@ public final class EntityKeyboardComponent: Component {
                                         theme: component.theme,
                                         title: itemGroup.title ?? "",
                                         customTintColor: component.customTintColor,
-                                        pressed: { [weak self] in
+                                        pressed: { [weak self = self] in
                                             self?.scrollToItemGroup(contentId: "stickers", groupId: itemGroup.supergroupId, subgroupId: nil)
                                         }
                                     ))
@@ -537,7 +537,7 @@ public final class EntityKeyboardComponent: Component {
                     containerSideInset: component.containerInsets.left + component.topPanelInsets.left,
                     defaultActiveItemId: stickerContent.panelItemGroups.first?.groupId,
                     activeContentItemIdUpdated: stickersContentItemIdUpdated,
-                    reorderItems: { [weak self] items in
+                    reorderItems: { [weak self = self] items in
                         guard let strongSelf = self else {
                             return
                         }
@@ -595,7 +595,7 @@ public final class EntityKeyboardComponent: Component {
                                             useAccentColor: false,
                                             customTintColor: component.customTintColor,
                                             title: title,
-                                            pressed: { [weak self] in
+                                            pressed: { [weak self = self] in
                                                 self?.scrollToItemGroup(contentId: "emoji", groupId: itemGroup.supergroupId, subgroupId: nil)
                                             }
                                         ))
@@ -608,7 +608,7 @@ public final class EntityKeyboardComponent: Component {
                                     content: AnyComponent(EntityKeyboardStaticStickersPanelComponent(
                                         theme: component.theme,
                                         title: component.strings.EmojiInput_PanelTitleEmoji,
-                                        pressed: { [weak self] subgroupId in
+                                        pressed: { [weak self = self] subgroupId in
                                             guard let strongSelf = self else {
                                                 return
                                             }
@@ -632,7 +632,7 @@ public final class EntityKeyboardComponent: Component {
                                         theme: component.theme,
                                         title: itemGroup.title ?? "",
                                         customTintColor: component.customTintColor ?? itemGroup.customTintColor,
-                                        pressed: { [weak self] in
+                                        pressed: { [weak self = self] in
                                             self?.scrollToItemGroup(contentId: "emoji", groupId: itemGroup.supergroupId, subgroupId: nil)
                                         }
                                     ))
@@ -649,7 +649,7 @@ public final class EntityKeyboardComponent: Component {
                     containerSideInset: component.containerInsets.left + component.topPanelInsets.left,
                     activeContentItemIdUpdated: emojiContentItemIdUpdated,
                     activeContentItemMapping: ["popular": "recent"],
-                    reorderItems: { [weak self] items in
+                    reorderItems: { [weak self = self] items in
                         guard let strongSelf = self else {
                             return
                         }
@@ -661,7 +661,7 @@ public final class EntityKeyboardComponent: Component {
                     contentAccessoryLeftButtons.append(AnyComponentWithIdentity(id: "emoji", component: AnyComponent(EntityKeyboardBottomPanelButton(
                         icon: "Chat/Input/Media/EntityInputGlobeIcon",
                         theme: component.theme,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let strongSelf = self, let component = strongSelf.component else {
                                 return
                             }
@@ -740,33 +740,33 @@ public final class EntityKeyboardComponent: Component {
                     bottomPanel: component.displayBottomPanel ? AnyComponent(EntityKeyboardBottomPanelComponent(
                         theme: component.theme,
                         containerInsets: bottomPanelContainerInsets,
-                        deleteBackwards: { [weak self] in
+                        deleteBackwards: { [weak self = self] in
                             self?.component?.emojiContent?.inputInteractionHolder.inputInteraction?.deleteBackwards?()
                             AudioServicesPlaySystemSound(0x451)
                         }
                     )) : nil,
                     externalBottomPanelContainer: component.externalBottomPanelContainer,
                     externalTintMaskContainer: component.externalTintMaskContainer,
-                    panelStateUpdated: { [weak self] panelState, transition in
+                    panelStateUpdated: { [weak self = self] panelState, transition in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.topPanelExtensionUpdated(height: panelState.topPanelHeight, transition: transition)
                         strongSelf.topPanelScrollingOffset(offset: panelState.scrollingPanelOffsetToTopEdge, transition: transition)
                     },
-                    isTopPanelExpandedUpdated: { [weak self] isExpanded, transition in
+                    isTopPanelExpandedUpdated: { [weak self = self] isExpanded, transition in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.isTopPanelExpandedUpdated(isExpanded: isExpanded, transition: transition)
                     },
-                    isTopPanelHiddenUpdated: { [weak self] isTopPanelHidden, transition in
+                    isTopPanelHiddenUpdated: { [weak self = self] isTopPanelHidden, transition in
                         guard let strongSelf = self else {
                             return
                         }
                         strongSelf.isTopPanelHiddenUpdated(isTopPanelHidden: isTopPanelHidden, transition: transition)
                     },
-                    contentIdUpdated: { [weak self] id in
+                    contentIdUpdated: { [weak self = self] id in
                         guard let strongSelf = self, let component = strongSelf.component else {
                             return
                         }
@@ -942,7 +942,7 @@ public final class EntityKeyboardComponent: Component {
                         makeContainerNode: {
                             return component.makeSearchContainerNode(contentType)
                         },
-                        dismissSearch: { [weak self] in
+                        dismissSearch: { [weak self = self] in
                             self?.closeSearch()
                         }
                     )
@@ -968,7 +968,7 @@ public final class EntityKeyboardComponent: Component {
                     makeContainerNode: {
                         return content
                     },
-                    dismissSearch: { [weak self] in
+                    dismissSearch: { [weak self = self] in
                         self?.closeSearch()
                     }
                 )

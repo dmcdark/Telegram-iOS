@@ -136,7 +136,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
         self.updateBarButtons()
         
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let strongSelf = self, strongSelf.presentationData.theme !== presentationData.theme else {
                 return
             }
@@ -154,7 +154,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
             }
         })
                         
-        self.interaction = LocationPickerInteraction(sendLocation: { [weak self] coordinate, name, geoAddress in
+        self.interaction = LocationPickerInteraction(sendLocation: { [weak self = self] coordinate, name, geoAddress in
             guard let strongSelf = self else {
                 return
             }
@@ -175,7 +175,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 geoAddress?.country
             )
             strongSelf.dismiss()
-        }, sendLiveLocation: { [weak self] coordinate in
+        }, sendLiveLocation: { [weak self = self] coordinate in
             guard let strongSelf = self else {
                 return
             }
@@ -183,7 +183,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 strongSelf.present(c, in: .window(.root), with: a)
             }, openSettings: {
                 strongSelf.context.sharedContext.applicationBindings.openSettings()
-            }, { [weak self] authorized in
+            }, { [weak self = self] authorized in
                 guard let strongSelf = self, authorized else {
                     return
                 }
@@ -197,7 +197,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                     presentationData: strongSelf.presentationData,
                     sourceView: sourceView!,
                     title: title,
-                    selectPeriod: { [weak self] period in
+                    selectPeriod: { [weak self = self] period in
                         guard let self else {
                             return
                         }
@@ -207,7 +207,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 )
                 strongSelf.presentInGlobalOverlay(controller)
             })
-        }, sendVenue: { [weak self] venue, queryId, resultId in
+        }, sendVenue: { [weak self = self] venue, queryId, resultId in
             guard let strongSelf = self else {
                 return
             }
@@ -218,7 +218,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 completion(venue, queryId, resultId, venue.venue?.address, nil)
             }
             strongSelf.dismiss()
-        }, toggleMapModeSelection: { [weak self] in
+        }, toggleMapModeSelection: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -227,7 +227,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 state.displayingMapModeOptions = !state.displayingMapModeOptions
                 return state
             }
-        }, updateMapMode: { [weak self] mode in
+        }, updateMapMode: { [weak self = self] mode in
             guard let strongSelf = self else {
                 return
             }
@@ -237,12 +237,12 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 state.displayingMapModeOptions = false
                 return state
             }
-        }, goToUserLocation: { [weak self] in
+        }, goToUserLocation: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controllerNode.goToUserLocation()
-        }, goToCoordinate: { [weak self] coordinate, zoomOut in
+        }, goToCoordinate: { [weak self = self] coordinate, zoomOut in
             guard let strongSelf = self else {
                 return
             }
@@ -253,7 +253,7 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 state.searchingVenuesAround = false
                 return state
             }
-        }, openSearch: { [weak self] in
+        }, openSearch: { [weak self = self] in
             guard let self, let interaction = self.interaction, let navigationBar = self.navigationBar else {
                 return
             }
@@ -275,18 +275,18 @@ public final class LocationPickerController: ViewController, AttachmentContainab
                 contentNode.activate()
 
                 self.isSearchingDisposable.set((isSearching
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     if let strongSelf = self, let searchNavigationContentNode = strongSelf.searchNavigationContentNode {
                         searchNavigationContentNode.updateActivity(value)
                     }
                 }))
             }
-        }, updateSearchQuery: { [weak self] query in
+        }, updateSearchQuery: { [weak self = self] query in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controllerNode.searchContainerNode?.searchTextUpdated(text: query)
-        }, dismissSearch: { [weak self] in
+        }, dismissSearch: { [weak self = self] in
             guard let self, let navigationBar = self.navigationBar else {
                 return
             }
@@ -299,26 +299,26 @@ public final class LocationPickerController: ViewController, AttachmentContainab
             if !self.controllerNode.isPickingLocation {
                 self.updateTabBarVisibility(true, .animated(duration: 0.4, curve: .spring))
             }
-        }, dismissInput: { [weak self] in
+        }, dismissInput: { [weak self = self] in
             guard let self else {
                 return
             }
             self.searchNavigationContentNode?.deactivate()
             self.controllerNode.deactivateInput()
-        }, openHomeWorkInfo: { [weak self] in
+        }, openHomeWorkInfo: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             let controller = textAlertController(context: strongSelf.context, updatedPresentationData: updatedPresentationData, title: strongSelf.presentationData.strings.Map_HomeAndWorkTitle, text: strongSelf.presentationData.strings.Map_HomeAndWorkInfo, actions: [TextAlertAction(type: .defaultAction, title: strongSelf.presentationData.strings.Common_OK, action: {})])
             strongSelf.present(controller, in: .window(.root))
-        }, showPlacesInThisArea: { [weak self] in
+        }, showPlacesInThisArea: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controllerNode.requestPlacesAtSelectedLocation()
         })
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.controllerNode.scrollToTop()
             }
@@ -357,16 +357,16 @@ public final class LocationPickerController: ViewController, AttachmentContainab
         
         self.displayNode = LocationPickerControllerNode(controller: self, context: self.context, presentationData: self.presentationData, mode: self.mode, source: self.source, interaction: interaction, locationManager: self.locationManager)
         self.displayNodeDidLoad()
-        self.controllerNode.beganInteractiveDragging = { [weak self] in
+        self.controllerNode.beganInteractiveDragging = { [weak self = self] in
             self?.requestAttachmentMenuExpansion()
         }
-        self.controllerNode.locationAccessDeniedUpdated = { [weak self] denied in
+        self.controllerNode.locationAccessDeniedUpdated = { [weak self = self] denied in
             self?.locationAccessDenied = denied
             self?.updateBarButtons()
         }
         
         self.permissionDisposable = (DeviceAccess.authorizationStatus(subject: .location(.send))
-        |> deliverOnMainQueue).start(next: { [weak self] next in
+        |> deliverOnMainQueue).start(next: { [weak self = self] next in
             guard let strongSelf = self else {
                 return
             }

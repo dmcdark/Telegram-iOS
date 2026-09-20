@@ -345,7 +345,7 @@ private final class BadgeComponent: Component {
                 badgeAnimation.toValue = badgeNewValue
                 badgeAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 
-                CATransaction.setCompletionBlock { [weak self] in
+                CATransaction.setCompletionBlock { [weak self = self] in
                     self?.setupGradientAnimations()
                 }
                 self.badgeForeground.add(badgeAnimation, forKey: "movement")
@@ -590,7 +590,7 @@ private final class PeerComponent: Component {
             self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
             self.addSubview(self.button)
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.selectionLayer.removeAnimation(forKey: "opacity")
@@ -1272,13 +1272,13 @@ private final class GiftAuctionBidScreenComponent: Component {
             
             self.containerView.addSubnode(self.hierarchyTrackingNode)
             
-            self.hierarchyTrackingNode.updated = { [weak self] value in
+            self.hierarchyTrackingNode.updated = { [weak self = self] value in
                 guard let self else {
                     return
                 }
                 if value {
                     if self.badgePhysicsLink == nil {
-                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] _ in
+                        let badgePhysicsLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -1353,7 +1353,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                 return
             }
             self.giftAuctionAcquiredGiftsDisposable.set((component.context.engine.payments.getGiftAuctionAcquiredGifts(giftId: gift.id)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] acquiredGifts in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] acquiredGifts in
                 guard let self else {
                     return
                 }
@@ -1521,7 +1521,7 @@ private final class GiftAuctionBidScreenComponent: Component {
             if balance < StarsAmount(value: requiredStars, nanos: 0) {
                 let _ = (component.context.engine.payments.starsTopUpOptions()
                 |> take(1)
-                |> deliverOnMainQueue).startStandalone(next: { [weak self] options in
+                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] options in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -1556,7 +1556,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                             customUndoText: presentationData.strings.Gift_AuctionBid_AddMoreStars_Set
                         ),
                         position: .bottom,
-                        action: { [weak self] action in
+                        action: { [weak self = self] action in
                             if let self, case .undo = action {
                                 self.resetSliderValue(component: self.component, forceMinimum: true)
                             }
@@ -1640,7 +1640,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                 Queue.mainQueue().after(2.5) {
                     component.context.starsContext?.load(force: true)
                 }
-            }, error: { [weak self] _ in
+            }, error: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -1826,7 +1826,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                 controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
             })))
             
-            items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Auction_Context_Share, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+            items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Auction_Context_Share, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                 f(.default)
                 
                 self?.share()
@@ -1864,13 +1864,13 @@ private final class GiftAuctionBidScreenComponent: Component {
                 action: environment.strings.Gift_AuctionBid_CustomBid_Done,
                 minValue: minBidAmount,
                 value: minBidAmount,
-                apply: { [weak self] value in
+                apply: { [weak self = self] value in
                     guard let self else {
                         return
                     }
                     self.commitBid(value: value)
                 },
-                cancel: { [weak self] in
+                cancel: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -1936,7 +1936,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                         peerId: component.context.account.peerId,
                         theme: environment.theme,
                         currency: .stars,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let starsContext = context.starsContext, let navigationController = self.environment?.controller()?.navigationController as? NavigationController else {
                                 return
                             }
@@ -1976,7 +1976,7 @@ private final class GiftAuctionBidScreenComponent: Component {
             if self.component == nil {
                 if let starsContext = component.context.starsContext {
                     self.balanceDisposable = (starsContext.state
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                         guard let self else {
                             return
                         }
@@ -1992,7 +1992,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                 let context = component.context
                 let auctionContext = component.auctionContext
                 self.giftAuctionDisposable = (component.auctionContext.state
-                |> deliverOnMainQueue).start(next: { [weak self] auctionState in
+                |> deliverOnMainQueue).start(next: { [weak self = self] auctionState in
                     guard let self else {
                         return
                     }
@@ -2011,7 +2011,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                         if let acquiredGifts = component.acquiredGifts {
                             self.giftAuctionAcquiredGiftsDisposable.set((acquiredGifts
                             |> take(1)
-                            |> deliverOnMainQueue).start(next: { [weak self] acquiredGifts in
+                            |> deliverOnMainQueue).start(next: { [weak self = self] acquiredGifts in
                                 self?.giftAuctionAcquiredGifts = acquiredGifts
                             }))
                         } else if let acquiredCount = auctionState?.myState.acquiredCount, acquiredCount > 0 {
@@ -2027,7 +2027,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                                 return TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
                             }
                         ))
-                        |> deliverOnMainQueue).startStandalone(next: { [weak self] peers in
+                        |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peers in
                             guard let self else {
                                 return
                             }
@@ -2090,7 +2090,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                     }
                 })
                 
-                self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                     let _ = self
                     self?.state?.updated()
                 }, queue: Queue.mainQueue())
@@ -2120,7 +2120,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                         valueCount: self.amount.maxSliderValue + 1,
                         value: self.amount.sliderValue,
                         markPositions: false,
-                        valueUpdated: { [weak self] value in
+                        valueUpdated: { [weak self = self] value in
                             guard let self else {
                                 return
                             }
@@ -2165,7 +2165,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                     trackForegroundColor: .clear,
                     knobSize: 26.0,
                     knobColor: .white,
-                    isTrackingUpdated: { [weak self] isTracking in
+                    isTrackingUpdated: { [weak self = self] isTracking in
                         guard let self else {
                             return
                         }
@@ -2186,7 +2186,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                         content: AnyComponent(
                             MultilineTextComponent(text: .plain(NSAttributedString(string: "+", font: Font.with(size: 26.0, design: .round, weight: .regular), textColor: environment.theme.list.itemSecondaryTextColor.withAlphaComponent(0.5))))
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             self?.presentCustomBidController()
                         }
                     ).minSize(CGSize(width: 30.0, height: 30.0))
@@ -2642,7 +2642,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                                     BundleIconComponent(name: "Chat/Context Menu/Arrow", tintColor: environment.theme.actionSheet.controlAccentColor)
                                 ))
                             ], spacing: 0.0)
-                        ), action: { [weak self] in
+                        ), action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -2693,7 +2693,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -2728,7 +2728,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                             playOnce: self.moreButtonPlayOnce
                         )
                     )),
-                    action: { [weak self] view in
+                    action: { [weak self = self] view in
                         guard let self else {
                             return
                         }
@@ -2996,7 +2996,7 @@ private final class GiftAuctionBidScreenComponent: Component {
                     ),
                     isEnabled: true,
                     displaysProgress: self.isLoading,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -3170,7 +3170,7 @@ public class GiftAuctionBidScreen: ViewControllerComponentContainer {
             self.dismissAllTooltips()
             
             if let componentView = self.node.hostView.componentView as? GiftAuctionBidScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

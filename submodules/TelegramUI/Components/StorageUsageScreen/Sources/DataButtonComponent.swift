@@ -69,7 +69,7 @@ final class DataButtonComponent: Component {
             self.clipsToBounds = true
             self.layer.cornerRadius = 26.0
             
-            self.highligthedChanged = { [weak self] isHighlighted in
+            self.highligthedChanged = { [weak self = self] isHighlighted in
                 guard let self, let component = self.component, let highlightBackgroundFrame = self.highlightBackgroundFrame else {
                     return
                 }

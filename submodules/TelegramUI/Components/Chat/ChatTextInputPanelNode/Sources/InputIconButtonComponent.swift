@@ -51,7 +51,7 @@ final class InputIconButtonComponent: Component {
             self.backgroundView.contentView.addSubview(self.button)
             
             self.button.addTarget(self, action: #selector(self.buttonPressed), for: .touchUpInside)
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }

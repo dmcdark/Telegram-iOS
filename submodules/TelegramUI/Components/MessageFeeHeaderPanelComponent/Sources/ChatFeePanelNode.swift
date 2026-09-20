@@ -68,7 +68,7 @@ final class ChatFeePanelNode: ASDisplayNode {
         self.contextContainer.addSubnode(self.removeButtonNode)
         
         self.removeButtonNode.addTarget(self, action: #selector(self.removePressed), forControlEvents: [.touchUpInside])
-        self.removeButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.removeButtonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.removeTextNode.layer.removeAnimation(forKey: "opacity")

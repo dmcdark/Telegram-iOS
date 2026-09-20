@@ -175,7 +175,7 @@ class DeleteAccountPeersItemNode: ListViewItemNode, ItemListItemNode {
         let previous: Atomic<[PeersEntry]> = Atomic(value: [])
         let firstTime:Atomic<Bool> = Atomic(value: true)
         
-        self.disposable = (self.dataPromise.get() |> deliverOnMainQueue).start(next: { [weak self] data in
+        self.disposable = (self.dataPromise.get() |> deliverOnMainQueue).start(next: { [weak self = self] data in
             if let strongSelf = self {
                 let (context, peers, theme, strings) = data
                 
@@ -230,7 +230,7 @@ class DeleteAccountPeersItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

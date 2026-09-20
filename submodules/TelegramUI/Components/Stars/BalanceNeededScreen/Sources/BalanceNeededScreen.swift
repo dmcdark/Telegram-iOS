@@ -178,7 +178,7 @@ private final class BalanceNeededSheetContentComponent: Component {
                     isEnabled: true,
                     allowActionWhenDisabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -264,7 +264,7 @@ private final class BalanceNeededScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     guard let self, let environment = self.environment else {
                         return
                     }
@@ -281,11 +281,11 @@ private final class BalanceNeededScreenComponent: Component {
                     content: AnyComponent(BalanceNeededSheetContentComponent(
                         context: component.context,
                         amount: component.amount,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
-                            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+                            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                                 if let controller = environment.controller() {
                                     controller.dismiss(completion: nil)
                                 }

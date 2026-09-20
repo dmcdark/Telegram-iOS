@@ -756,7 +756,7 @@ public final class StorageBox {
             next(self.totalSize)
             
             let queue = self.queue
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     guard let `self` = self else {
                         return

@@ -175,7 +175,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         
         super.init(rotated: rotated)
         
-        self.containerNode.shouldBegin = { [weak self] location in
+        self.containerNode.shouldBegin = { [weak self = self] location in
             guard let strongSelf = self else {
                 return false
             }
@@ -198,7 +198,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             return true
         }
         
-        self.containerNode.activated = { [weak self] gesture, location in
+        self.containerNode.activated = { [weak self = self] gesture, location in
             guard let strongSelf = self, let item = strongSelf.item else {
                 return
             }
@@ -214,7 +214,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         }
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self else {
                 return
             }
@@ -243,7 +243,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         self.contextSourceNode.contentNode.addSubnode(self.dateAndStatusNode)
         self.addSubnode(self.messageAccessibilityArea)
         
-        self.messageAccessibilityArea.focused = { [weak self] in
+        self.messageAccessibilityArea.focused = { [weak self = self] in
             self?.accessibilityElementDidBecomeFocused()
         }
     }
@@ -264,7 +264,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         if !animated {
             self.placeholderNode.removeFromSupernode()
         } else {
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
             })
         }
@@ -274,7 +274,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         super.didLoad()
         
         let recognizer = TapLongTapOrDoubleTapGestureRecognizer(target: self, action: #selector(self.tapLongTapOrDoubleTapGesture(_:)))
-        recognizer.tapActionAtPoint = { [weak self] point in
+        recognizer.tapActionAtPoint = { [weak self = self] point in
             if let strongSelf = self {
                 if let shareButtonNode = strongSelf.shareButtonNode, shareButtonNode.frame.contains(point) {
                     return .fail
@@ -298,7 +298,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             }
             return .waitForDoubleTap
         }
-        recognizer.longTap = { [weak self] point, recognizer in
+        recognizer.longTap = { [weak self = self] point, recognizer in
             guard let strongSelf = self else {
                 return
             }
@@ -324,7 +324,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             replyRecognizer.allowBothDirections = false//!item.context.sharedContext.immediateExperimentalUISettings.unidirectionalSwipeToReply
             self.view.disablesInteractiveTransitionGestureRecognizer = false
         }
-        replyRecognizer.shouldBegin = { [weak self] in
+        replyRecognizer.shouldBegin = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 if strongSelf.selectionNode != nil {
                     return false
@@ -390,7 +390,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             if telegramDice.emoji == "🎰" {
                 let animationNode = SlotMachineAnimationNode(account: item.context.account)
                 if !item.message.effectivelyIncoming(item.context.account.peerId) {
-                    animationNode.success = { [weak self] onlyHaptic in
+                    animationNode.success = { [weak self = self] onlyHaptic in
                         if let strongSelf = self, let item = strongSelf.item {
                             item.controllerInteraction.animateDiceSuccess(true, !onlyHaptic)
                         }
@@ -400,7 +400,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             } else {
                 let animationNode = ManagedDiceAnimationNode(context: item.context, emoji: telegramDice.emoji.strippedEmoji)
                 if !item.message.effectivelyIncoming(item.context.account.peerId) {
-                    animationNode.success = { [weak self] in
+                    animationNode.success = { [weak self = self] in
                         if let strongSelf = self, let item = strongSelf.item {
                             item.controllerInteraction.animateDiceSuccess(true, true)
                         }
@@ -410,7 +410,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
             }
         } else {
             let animationNode = DefaultAnimatedStickerNodeImpl(useMetalCache: false)
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.imageNode.alpha = 0.0
                     if !strongSelf.enableSynchronousImageApply {
@@ -2099,7 +2099,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
         guard self.additionalAnimationsCommitTimer == nil else {
             return
         }
-        let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self] in
+        let timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: false, completion: { [weak self = self] in
             self?.commitEnqueuedAnimations()
             self?.additionalAnimationsCommitTimer?.invalidate()
             self?.additionalAnimationsCommitTimer = nil
@@ -2523,7 +2523,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
                             
                             if shouldPlay {
                                 let _ = (appConfiguration
-                                |> deliverOnMainQueue).startStandalone(next: { [weak self] appConfiguration in
+                                |> deliverOnMainQueue).startStandalone(next: { [weak self = self] appConfiguration in
                                     guard let strongSelf = self else {
                                         return
                                     }
@@ -2535,13 +2535,13 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
                                             let mediaManager = item.context.sharedContext.mediaManager
                                             let mediaPlayer = MediaPlayer(audioSessionManager: mediaManager.audioSession, postbox: item.context.account.postbox, userLocation: .peer(item.message.id.peerId), userContentType: .other, resourceReference: .standalone(resource: file.resource), streamable: .none, video: false, preferSoftwareDecoding: false, enableSound: true, fetchAutomatically: true, ambient: true)
                                             mediaPlayer.togglePlayPause()
-                                            mediaPlayer.actionAtEnd = .action({ [weak self] in
+                                            mediaPlayer.actionAtEnd = .action({ [weak self = self] in
                                                 self?.mediaPlayer = nil
                                             })
                                             strongSelf.mediaPlayer = mediaPlayer
                                             
                                             strongSelf.mediaStatusDisposable.set((mediaPlayer.status
-                                            |> deliverOnMainQueue).startStrict(next: { [weak self] status in
+                                            |> deliverOnMainQueue).startStrict(next: { [weak self = self] status in
                                                 if let strongSelf = self {
                                                     if let haptic = haptic, !haptic.active {
                                                         haptic.start(time: 0.0)
@@ -2846,7 +2846,7 @@ public class ChatMessageAnimatedStickerItemNode: ChatMessageItemView {
                 selectionNode.updateLayout(size: selectionFrame.size, leftInset: self.safeInsets.left)
                 self.subnodeTransform = CATransform3DMakeTranslation(offset, 0.0, 0.0);
             } else {
-                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self] value in
+                let selectionNode = ChatMessageSelectionNode(wallpaper: item.presentationData.theme.wallpaper, theme: item.presentationData.theme.theme, toggle: { [weak self = self] value in
                     if let strongSelf = self, let item = strongSelf.item {
                         item.controllerInteraction.toggleMessagesSelection([item.message.id], value)
                     }

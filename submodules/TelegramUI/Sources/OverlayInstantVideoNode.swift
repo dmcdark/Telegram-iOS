@@ -51,12 +51,12 @@ final class OverlayInstantVideoNode: OverlayMediaItemNode {
         
         super.init()
         
-        togglePlayPauseImpl = { [weak self] in
+        togglePlayPauseImpl = { [weak self = self] in
             self?.videoNode.togglePlayPause()
         }
         
         self.addSubnode(self.videoNode)
-        self.videoNode.ownsContentNodeUpdated = { [weak self] value in
+        self.videoNode.ownsContentNodeUpdated = { [weak self = self] value in
             if let strongSelf = self {
                 let previous = strongSelf.hasAttachedContext
                 strongSelf.hasAttachedContext = value
@@ -66,7 +66,7 @@ final class OverlayInstantVideoNode: OverlayMediaItemNode {
             }
         }
         
-        self.videoNode.playbackCompleted = { [weak self] in
+        self.videoNode.playbackCompleted = { [weak self = self] in
             self?.playbackEnded?()
         }
         

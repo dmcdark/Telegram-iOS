@@ -180,7 +180,7 @@ final class ThemeGridControllerItemNode: GridItemNode {
                     selectionNode.frame = CGRect(origin: CGPoint(), size: self.bounds.size)
                 } else {
                     let theme = item.context.sharedContext.currentPresentationData.with { $0 }.theme
-                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self] value in
+                    let selectionNode = GridMessageSelectionNode(theme: theme, toggle: { [weak self = self] value in
                         if let strongSelf = self {
                             strongSelf.item?.interaction.toggleWallpaperSelection(item.wallpaperId, value)
                         }

@@ -211,7 +211,7 @@ public final class StickerPreviewPeekContentNode: ASDisplayNode, PeekControllerC
             self.addSubnode(animationNode)
             
             if isPremiumSticker {
-                animationNode.completed = { [weak self] _ in
+                animationNode.completed = { [weak self = self] _ in
                     if let strongSelf = self, let animationNode = strongSelf.animationNode, let additionalAnimationNode = strongSelf.additionalAnimationNode {
                         Queue.mainQueue().async {
                             animationNode.play(firstFrame: false, fromIndex: nil)
@@ -231,14 +231,14 @@ public final class StickerPreviewPeekContentNode: ASDisplayNode, PeekControllerC
         self.addSubnode(self.portalWrapperNode)
         
         if let animationNode = self.animationNode {
-            animationNode.started = { [weak self] in
+            animationNode.started = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf._ready.set(.single(true))
             }
         } else {
-            self.imageNode.imageUpdated = { [weak self] _ in
+            self.imageNode.imageUpdated = { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -379,7 +379,7 @@ final class PremiumStickerPackAccessoryNode: SparseNode, PeekControllerAccessory
         self.addSubnode(self.proceedButton)
         self.addSubnode(self.cancelButton)
         
-        self.proceedButton.pressed = { [weak self] in
+        self.proceedButton.pressed = { [weak self = self] in
             self?.dismiss()
             self?.proceed()
         }
@@ -496,17 +496,17 @@ final class EmojiStickerAccessoryNode: SparseNode, PeekControllerAccessoryNode {
                 
         super.init()
         
-        layoutImpl = { [weak self] transition in
+        layoutImpl = { [weak self = self] transition in
             self?.requestLayout(forceUpdate: true, transition: transition)
         }
         
-        reactionContextNode.emojiSelected = { [weak self] emoji in
+        reactionContextNode.emojiSelected = { [weak self = self] emoji in
             guard let self else {
                 return
             }
             let _ = (selectedItems.get()
             |> take(1)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] items in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] items in
                 guard let self else {
                     return
                 }
@@ -526,7 +526,7 @@ final class EmojiStickerAccessoryNode: SparseNode, PeekControllerAccessoryNode {
         self.addSubnode(reactionContextNode)
         
         self.selectedItemsDisposable = (selectedItems.get()
-        |> deliverOnMainQueue).start(next: { [weak self] items in
+        |> deliverOnMainQueue).start(next: { [weak self = self] items in
             guard let self else {
                 return
             }

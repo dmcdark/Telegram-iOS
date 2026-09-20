@@ -168,7 +168,7 @@ public final class SparseMessageList {
                         return .single(SparseItems(items: []))
                     }
                 }
-                |> deliverOn(self.queue)).start(next: { [weak self] sparseItems in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] sparseItems in
                     guard let strongSelf = self else {
                         return
                     }
@@ -205,7 +205,7 @@ public final class SparseMessageList {
             }
 
             self.deletedMessagesDisposable = (account.postbox.combinedView(keys: [.deletedMessages(peerId: peerId)])
-            |> deliverOn(self.queue)).start(next: { [weak self] views in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] views in
                 guard let strongSelf = self else {
                     return
                 }
@@ -230,7 +230,7 @@ public final class SparseMessageList {
             let location: ChatLocationInput = .peer(peerId: self.peerId, threadId: self.threadId)
             
             self.topItemsDisposable.set((self.account.postbox.aroundMessageHistoryViewForLocation(location, anchor: .upperBound, ignoreMessagesInTimestampRange: nil, ignoreMessageIds: Set(), count: count, fixedCombinedReadStates: nil, topTaggedMessageIdNamespaces: Set(), tag: .tag(self.messageTag), appendMessagesFromTheSameGroup: false, namespaces: .not(Namespaces.Message.allNonRegular), orderStatistics: [])
-            |> deliverOn(self.queue)).start(next: { [weak self] view, updateType, _ in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] view, updateType, _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -407,7 +407,7 @@ public final class SparseMessageList {
                     return result.ids.sorted(by: { $0 > $1 }).compactMap(transaction.getMessage)
                 }
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] messages in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] messages in
                 guard let strongSelf = self else {
                     completion()
                     return
@@ -485,7 +485,7 @@ public final class SparseMessageList {
                     return result.ids.sorted(by: { $0 > $1 }).compactMap(transaction.getMessage)
                 }
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] messages in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] messages in
                 guard let strongSelf = self else {
                     completion()
                     return
@@ -924,7 +924,7 @@ public final class SparseMessageCalendar {
                     }
                 }
             }
-            |> deliverOn(self.queue)).start(next: { [weak self] result in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] result in
                 guard let strongSelf = self else {
                     return
                 }
@@ -968,7 +968,7 @@ public final class SparseMessageCalendar {
             return Impl(queue: queue, account: account, peerId: peerId, threadId: threadId, messageTag: messageTag, displayMedia: displayMedia)
         })
 
-        self.disposable = self.state.start(next: { [weak self] state in
+        self.disposable = self.state.start(next: { [weak self = self] state in
             self?.minTimestamp = state.minTimestamp
         })
     }

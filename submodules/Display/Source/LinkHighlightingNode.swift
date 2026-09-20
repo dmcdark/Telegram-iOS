@@ -404,7 +404,7 @@ public final class LinkHighlightingNode: ASDisplayNode {
         let currentInset = self.inset
         let useModernPathCalculation = self.useModernPathCalculation
         
-        return { [weak self] color, rects, innerRadius, outerRadius, inset in
+        return { [weak self = self] color, rects, innerRadius, outerRadius, inset in
             var updatedImage: (CGPoint, UIImage?)?
             if currentRects != rects || !currentColor.isEqual(color) || currentInnerRadius != innerRadius || currentOuterRadius != outerRadius || currentInset != inset {
                 updatedImage = generateRectsImage(color: color, rects: rects, inset: inset, outerRadius: outerRadius, innerRadius: innerRadius, useModernPathCalculation: useModernPathCalculation)

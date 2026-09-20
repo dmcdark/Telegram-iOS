@@ -273,7 +273,7 @@ final class LocationActionListItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()
@@ -295,7 +295,7 @@ final class LocationActionListItemNode: ListViewItemNode {
         let makeSubtitleLayout = TextNode.asyncLayout(self.subtitleNode)
         let iconLayout = self.venueIconNode.asyncLayout()
         
-        return { [weak self] item, params, hasSeparator in
+        return { [weak self = self] item, params, hasSeparator in
             let leftInset: CGFloat = (item.isOpaque ? 65.0 : 72.0 ) + params.leftInset
             let rightInset: CGFloat = params.rightInset
             let verticalInset: CGFloat = 8.0
@@ -320,7 +320,7 @@ final class LocationActionListItemNode: ListViewItemNode {
             
             var hasSeparator = hasSeparator
             
-            return (nodeLayout, { [weak self] in
+            return (nodeLayout, { [weak self = self] in
                 var updatedTheme: PresentationTheme?
                 if currentItem?.presentationData.theme !== item.presentationData.theme {
                     updatedTheme = item.presentationData.theme

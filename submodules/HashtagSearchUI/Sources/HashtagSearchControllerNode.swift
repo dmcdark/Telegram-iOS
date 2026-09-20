@@ -158,7 +158,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
             }
         }
         
-        self.searchContentNode.indexUpdated = { [weak self] index in
+        self.searchContentNode.indexUpdated = { [weak self = self] index in
             guard let self else {
                 return
             }
@@ -173,7 +173,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
             self.requestUpdate(transition: .animated(duration: 0.4, curve: .spring))
         }
                
-        self.recentListNode.setSearchQuery = { [weak self] query in
+        self.recentListNode.setSearchQuery = { [weak self = self] query in
             guard let self else {
                 return
             }
@@ -185,7 +185,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
             }
         }
         
-        self.currentController?.isSelectingMessagesUpdated = { [weak self] isSelecting in
+        self.currentController?.isSelectingMessagesUpdated = { [weak self = self] isSelecting in
             if let strongSelf = self {
                 let button: UIBarButtonItem? = isSelecting ? UIBarButtonItem(title: presentationData.strings.Common_Cancel, style: .done, target: self, action: #selector(strongSelf.cancelPressed)) : nil
                 strongSelf.controller?.navigationItem.setRightBarButton(button, animated: true)
@@ -200,7 +200,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
             self.addSubnode(self.shimmerNode)
         }
         
-        self.searchContentNode.setQueryUpdated { [weak self] query in
+        self.searchContentNode.setQueryUpdated { [weak self = self] query in
             self?.searchQueryPromise.set(query)
         }
         
@@ -222,7 +222,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
         }
         
         self.searchQueryDisposable = (throttledSearchQuery
-        |> deliverOnMainQueue).start(next: { [weak self] query in
+        |> deliverOnMainQueue).start(next: { [weak self = self] query in
             if let self {
                 let prefix: String
                 if self.isCashtag {
@@ -235,7 +235,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
         })
         
         self.isSearchingDisposable = (self.isSearching.get()
-        |> deliverOnMainQueue).start(next: { [weak self] isSearching in
+        |> deliverOnMainQueue).start(next: { [weak self = self] isSearching in
             if let self {
                 self.searchContentNode.isSearching = isSearching
                 let transition: ContainedViewLayoutTransition = isSearching ? .immediate : .animated(duration: 0.2, curve: .easeInOut)
@@ -245,7 +245,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
         
         if let currentController = self.currentController {
             self.searchResultsCountDisposable = (currentController.searchResultsCount.get()
-            |> deliverOnMainQueue).start(next: { [weak self] searchResultsCount in
+            |> deliverOnMainQueue).start(next: { [weak self = self] searchResultsCount in
                 guard let self else {
                     return
                 }
@@ -287,7 +287,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
     override func didLoad() {
         super.didLoad()
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let self else {
                 return []
             }
@@ -412,7 +412,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
             }
             let storySearchContext = SearchStoryListContext(account: self.context.account, source: .hashtag(peerId, self.query))
             self.storySearchDisposable.set((storySearchContext.state
-            |> deliverOnMainQueue).startStrict(next: { [weak self] state in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] state in
                 guard let self else {
                     return
                 }
@@ -552,7 +552,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
                         peer: self.controller?.mode == .chatOnly ? self.peer : nil,
                         state: panelSearchState,
                         sideInset: layout.safeInsets.left,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -644,7 +644,7 @@ final class HashtagSearchControllerNode: ASDisplayNode, ASGestureRecognizerDeleg
                     captureProtected: false,
                     isProfileEmbedded: false,
                     canManageStories: false,
-                    navigationController: { [weak self] in
+                    navigationController: { [weak self = self] in
                         guard let self else {
                             return nil
                         }

@@ -729,7 +729,7 @@ public final class FetchManagerImpl: FetchManager {
             context = current
         } else {
             let queue = self.queue
-            context = FetchManagerCategoryContext(postbox: self.postbox, storeManager: self.storeManager, entryCompleted: { [weak self] id in
+            context = FetchManagerCategoryContext(postbox: self.postbox, storeManager: self.storeManager, entryCompleted: { [weak self = self] id in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -738,7 +738,7 @@ public final class FetchManagerImpl: FetchManager {
                         context.cancelEntry(id, isCompleted: true)
                     })
                 }
-            }, activeEntriesUpdated: { [weak self] in
+            }, activeEntriesUpdated: { [weak self = self] in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -774,7 +774,7 @@ public final class FetchManagerImpl: FetchManager {
     
     public func interactivelyFetched(category: FetchManagerCategory, location: FetchManagerLocation, locationKey: FetchManagerLocationKey, mediaReference: AnyMediaReference?, resourceReference: MediaResourceReference, ranges: RangeSet<Int64>, statsCategory: MediaResourceStatsCategory, elevatedPriority: Bool, userInitiated: Bool, priority: FetchManagerPriority = .userInitiated, storeToDownloadsPeerId: EnginePeer.Id?) -> Signal<Void, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 var assignedEpisode: Int32?
                 var assignedUserInitiatedIndex: Int32?
@@ -905,7 +905,7 @@ public final class FetchManagerImpl: FetchManager {
     
     public func fetchStatus(category: FetchManagerCategory, location: FetchManagerLocation, locationKey: FetchManagerLocationKey, resource: MediaResource) -> Signal<MediaResourceStatus, NoError> {
         let queue = self.queue
-        return Signal { [weak self] subscriber in
+        return Signal { [weak self = self] subscriber in
             if let strongSelf = self {
                 var assignedIndex: Int?
                 

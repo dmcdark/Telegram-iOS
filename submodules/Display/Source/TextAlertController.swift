@@ -48,7 +48,7 @@ public final class TextAlertContentActionNode: HighlightableButtonNode {
         
         self.titleNode.maximumNumberOfLines = 2
         
-        self.highligthedChanged = { [weak self] value in
+        self.highligthedChanged = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.setHighlighted(value, animated: true)
             }
@@ -62,11 +62,11 @@ public final class TextAlertContentActionNode: HighlightableButtonNode {
         
         self.addTarget(self, action: #selector(self.pressed), forControlEvents: .touchUpInside)
         
-        self.pointerInteraction = PointerInteraction(node: self, style: .hover, willEnter: { [weak self] in
+        self.pointerInteraction = PointerInteraction(node: self, style: .hover, willEnter: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setHighlighted(true, animated: false)
             }
-        }, willExit: { [weak self] in
+        }, willExit: { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.setHighlighted(false, animated: false)
             }
@@ -270,7 +270,7 @@ public final class TextAlertContentNode: AlertContentNode {
             self.addSubnode(actionNode)
             
             let index = i
-            actionNode.highlightedUpdated = { [weak self] highlighted in
+            actionNode.highlightedUpdated = { [weak self = self] highlighted in
                 if highlighted {
                     self?.highlightedItemIndex = index
                 }

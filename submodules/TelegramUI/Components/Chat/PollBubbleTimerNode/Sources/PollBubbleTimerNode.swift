@@ -76,7 +76,7 @@ public final class PollBubbleTimerNode: ASDisplayNode {
         self.addSubnode(self.textNode)
         self.addSubnode(self.contentNode)
         
-        updateInHierarchy = { [weak self] value in
+        updateInHierarchy = { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -252,7 +252,7 @@ public final class PollBubbleTimerNode: ASDisplayNode {
             self.animator = nil
         } else {
             if self.animator == nil {
-                let animator = ConstantDisplayLinkAnimator(update: { [weak self] in
+                let animator = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateValues()
                 })
                 self.animator = animator

@@ -87,7 +87,7 @@ public final class AccountGroupCallContextImpl: AccountGroupCallContext {
             state,
             peer
         )
-        |> deliverOnMainQueue).start(next: { [weak self] state, peer in
+        |> deliverOnMainQueue).start(next: { [weak self = self] state, peer in
             guard let self, let state = state else {
                 return
             }
@@ -197,7 +197,7 @@ public final class AccountGroupCallContextCacheImpl: AccountGroupCallContextCach
                     if let strongResult = result, let self, self.contexts[call.id] === strongResult {
                         strongResult.subscribers.remove(index)
                         if strongResult.subscribers.isEmpty {
-                            let removeTimer = SwiftSignalKit.Timer(timeout: 30, repeat: false, completion: { [weak self] in
+                            let removeTimer = SwiftSignalKit.Timer(timeout: 30, repeat: false, completion: { [weak self = self] in
                                 if let result = result, let self, self.contexts[call.id] === result, result.subscribers.isEmpty {
                                     self.contexts.removeValue(forKey: call.id)
                                 }
@@ -211,7 +211,7 @@ public final class AccountGroupCallContextCacheImpl: AccountGroupCallContextCach
         }
 
         public func leaveInBackground(engine: TelegramEngine, id: Int64, accessHash: Int64, source: UInt32) {
-            let disposable = engine.calls.leaveGroupCall(callId: id, accessHash: accessHash, source: source).start(completed: { [weak self] in
+            let disposable = engine.calls.leaveGroupCall(callId: id, accessHash: accessHash, source: source).start(completed: { [weak self = self] in
                 guard let self else {
                     return
                 }

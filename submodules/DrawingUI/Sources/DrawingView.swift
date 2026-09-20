@@ -190,7 +190,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
         self.layer.addSublayer(self.brushSizePreviewLayer)
         
         let drawingGesturePipeline = DrawingGesturePipeline(drawingView: self, gestureView: gestureView ?? self)
-        drawingGesturePipeline.gestureRecognizer?.shouldBegin = { [weak self] point in
+        drawingGesturePipeline.gestureRecognizer?.shouldBegin = { [weak self = self] point in
             if let strongSelf = self {
                 if !strongSelf.shouldBegin(point) {
                     return false
@@ -209,7 +209,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
                 return false
             }
         }
-        drawingGesturePipeline.onDrawing = { [weak self] state, point in
+        drawingGesturePipeline.onDrawing = { [weak self = self] state, point in
             guard let strongSelf = self else {
                 return
             }
@@ -297,7 +297,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
 //                        }
 //                            
 //                        if strongSelf.strokeRecognitionTimer == nil, let startTimestamp = strongSelf.drawingGestureStartTimestamp, currentTimestamp - startTimestamp < 3.0 {
-//                            strongSelf.strokeRecognitionTimer = SwiftSignalKit.Timer(timeout: 0.85, repeat: false, completion: { [weak self] in
+//                            strongSelf.strokeRecognitionTimer = SwiftSignalKit.Timer(timeout: 0.85, repeat: false, completion: { [weak self = self] in
 //                                guard let strongSelf = self else {
 //                                    return
 //                                }
@@ -540,7 +540,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
                     self.layer.addSublayer(fillCircleLayer)
                     self.fillCircleLayer = fillCircleLayer
                     
-                    fillCircleLayer.animateScale(from: 0.01, to: 12.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self] _ in
+                    fillCircleLayer.animateScale(from: 0.01, to: 12.0, duration: 0.35, removeOnCompletion: false, completion: { [weak self = self] _ in
                         if let strongSelf = self {
                             if let fillCircleLayer = strongSelf.fillCircleLayer {
                                 strongSelf.fillCircleLayer = nil
@@ -728,7 +728,7 @@ public final class DrawingView: UIView, UIGestureRecognizerDelegate, UIPencilInt
         self.layer.contents = nil
         
         Queue.mainQueue().justDispatch {
-            snapshotView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak snapshotView] _ in
+            snapshotView.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, removeOnCompletion: false, completion: { [weak snapshotView = snapshotView] _ in
                 snapshotView?.removeFromSuperview()
             })
         }

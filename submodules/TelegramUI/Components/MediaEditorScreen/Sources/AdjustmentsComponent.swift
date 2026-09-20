@@ -93,7 +93,7 @@ private final class AdjustmentSliderRowComponent: Component {
             
             var internalIsTrackingUpdated: ((Bool) -> Void)?
             if let isTrackingUpdated = component.isTrackingUpdated {
-                internalIsTrackingUpdated = { [weak self] isTracking in
+                internalIsTrackingUpdated = { [weak self = self] isTracking in
                     isTrackingUpdated(isTracking)
                     if let self {
                         let transition: ComponentTransition
@@ -166,7 +166,7 @@ private final class AdjustmentSliderRowComponent: Component {
                             value: CGFloat(component.value),
                             range: CGFloat(component.minValue) ... CGFloat(component.maxValue),
                             startValue: CGFloat(component.startValue),
-                            valueUpdated: { [weak self] value in
+                            valueUpdated: { [weak self = self] value in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -262,7 +262,7 @@ final class AdjustmentsComponent: Component {
             self.state = state
             
             let valueUpdated = component.valueUpdated
-            let isTrackingUpdated: (EditorToolKey, Bool) -> Void = { [weak self] trackingTool, isTracking in
+            let isTrackingUpdated: (EditorToolKey, Bool) -> Void = { [weak self = self] trackingTool, isTracking in
                 component.isTrackingUpdated(isTracking)
                 
                 if let self {

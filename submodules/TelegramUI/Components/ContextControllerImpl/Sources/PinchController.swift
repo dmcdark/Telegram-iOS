@@ -49,14 +49,14 @@ private final class PinchControllerNode: ViewControllerTracingNode {
         self.addSubnode(self.clippingNode)
         self.clippingNode.addSubnode(self.scrollingContainer)
 
-        self.sourceNode.deactivate = { [weak self] in
+        self.sourceNode.deactivate = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
             strongSelf.controller?.dismiss()
         }
 
-        self.sourceNode.updated = { [weak self] scale, pinchLocation, offset in
+        self.sourceNode.updated = { [weak self = self] scale, pinchLocation, offset in
             guard let strongSelf = self, let initialSourceFrame = strongSelf.initialSourceFrame else {
                 return
             }
@@ -114,7 +114,7 @@ private final class PinchControllerNode: ViewControllerTracingNode {
     func animateOut(completion: @escaping () -> Void) {
         self.isAnimatingOut = true
 
-        let performCompletion: () -> Void = { [weak self] in
+        let performCompletion: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -249,7 +249,7 @@ public final class PinchControllerImpl: ViewController, PinchController, Standal
     override public func dismiss(completion: (() -> Void)? = nil) {
         if !self.wasDismissed {
             self.wasDismissed = true
-            self.controllerNode.animateOut(completion: { [weak self] in
+            self.controllerNode.animateOut(completion: { [weak self = self] in
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
                 completion?()
             })

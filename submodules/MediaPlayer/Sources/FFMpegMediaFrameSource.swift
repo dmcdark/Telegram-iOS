@@ -203,12 +203,12 @@ public final class FFMpegMediaFrameSource: NSObject, MediaFrameSource {
         let storeAfterDownload = self.storeAfterDownload
         let isAudioVideoMessage = self.isAudioVideoMessage
         
-        self.performWithContext { [weak self] context in
+        self.performWithContext { [weak self = self] context in
             context.initializeState(postbox: postbox, userLocation: userLocation, resourceReference: resourceReference, tempFilePath: tempFilePath, limitedFileRange: limitedFileRange, streamable: streamable, isSeekable: isSeekable, video: video, preferSoftwareDecoding: preferSoftwareDecoding, fetchAutomatically: fetchAutomatically, maximumFetchSize: maximumFetchSize, storeAfterDownload: storeAfterDownload, isAudioVideoMessage: isAudioVideoMessage)
             
             let (frames, endOfStream) = context.takeFrames(until: timestamp, types: types)
             
-            queue.async { [weak self] in
+            queue.async { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.generatingFrames = false
                     
@@ -264,7 +264,7 @@ public final class FFMpegMediaFrameSource: NSObject, MediaFrameSource {
                 currentSemaphore.with({ $0 })?.with({ $0 })?.signal()
             })
             
-            self.performWithContext { [weak self] context in
+            self.performWithContext { [weak self = self] context in
                 let _ = currentSemaphore.swap(context.currentSemaphore)
                 
                 context.initializeState(postbox: postbox, userLocation: userLocation, resourceReference: resourceReference, tempFilePath: tempFilePath, limitedFileRange: limitedFileRange, streamable: streamable, isSeekable: isSeekable, video: video, preferSoftwareDecoding: preferSoftwareDecoding, fetchAutomatically: fetchAutomatically, maximumFetchSize: maximumFetchSize, storeAfterDownload: storeAfterDownload, isAudioVideoMessage: isAudioVideoMessage)

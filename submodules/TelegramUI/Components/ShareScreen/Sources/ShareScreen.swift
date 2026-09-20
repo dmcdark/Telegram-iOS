@@ -316,7 +316,7 @@ private final class ShareScreenSheetComponent: Component {
                             interactionUpdated: { [weak state] interactionState in
                                 state?.updateInteractionState(interactionState)
                             },
-                            trackedScrollViewUpdated: { [weak self] scrollView in
+                            trackedScrollViewUpdated: { [weak self = self] scrollView in
                                 self?.sheetExternalState.setTrackedScrollView(scrollView)
                             },
                             dismiss: {
@@ -539,7 +539,7 @@ private final class BottomPanelComponent: Component {
                     },
                     presentInGlobalOverlay: { c in
                     },
-                    sendMessageAction: { [weak self] _ in
+                    sendMessageAction: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -558,7 +558,7 @@ private final class BottomPanelComponent: Component {
                     myReaction: nil,
                     likeAction: nil,
                     likeOptionsAction: nil,
-                    inputModeAction: { [weak self] in
+                    inputModeAction: { [weak self = self] in
                         if let self {
                             let _ = self
 //                            switch self.currentInputMode {
@@ -656,7 +656,7 @@ private final class BottomPanelComponent: Component {
                     content: buttonTitle,
                     isEnabled: true,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -931,7 +931,7 @@ private final class SearchInputPanelComponent: Component {
                     isDark: component.theme.overallDarkAppearance,
                     state: .glass,
                     component: rightButtonContent,
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -1004,7 +1004,7 @@ private final class SearchInputPanelComponent: Component {
                     )),
                     effectAlignment: .center,
                     minSize: CGSize(width: 44.0, height: 44.0),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

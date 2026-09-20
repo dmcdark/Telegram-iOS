@@ -192,7 +192,7 @@ public final class SecretMediaPreviewController: ViewController {
         
         self.statusBar.statusBarStyle = .White
         
-        self.disposable.set((context.account.postbox.messageView(messageId) |> deliverOnMainQueue).start(next: { [weak self] view in
+        self.disposable.set((context.account.postbox.messageView(messageId) |> deliverOnMainQueue).start(next: { [weak self = self] view in
             if let strongSelf = self {
                 strongSelf.messageView = view
                 if strongSelf.isViewLoaded {
@@ -210,7 +210,7 @@ public final class SecretMediaPreviewController: ViewController {
             }
         })
         
-        self.centralItemAttributesDisposable.add(self.footerContentNode.get().start(next: { [weak self] footerContentNode, _ in
+        self.centralItemAttributesDisposable.add(self.footerContentNode.get().start(next: { [weak self = self] footerContentNode, _ in
             guard let self else {
                 return
             }
@@ -242,30 +242,30 @@ public final class SecretMediaPreviewController: ViewController {
     }
     
     public override func loadDisplayNode() {
-        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self] controller, arguments in
+        let controllerInteraction = GalleryControllerInteraction(presentController: { [weak self = self] controller, arguments in
             if let strongSelf = self {
                 strongSelf.present(controller, in: .window(.root), with: arguments, blockInteraction: true)
             }
         }, pushController: { _ in
-        }, dismissController: { [weak self] in
+        }, dismissController: { [weak self = self] in
             self?.dismiss(forceAway: true)
         }, replaceRootController: { _, _ in
         }, editMedia: { _ in
-        }, controller: { [weak self] in
+        }, controller: { [weak self = self] in
             return self
-        }, currentItemNode: { [weak self] in
+        }, currentItemNode: { [weak self = self] in
             return self?.controllerNode.pager.centralItemNode()
         })
         self.displayNode = SecretMediaPreviewControllerNode(context: self.context, controllerInteraction: controllerInteraction, titleView: nil)
         self.displayNodeDidLoad()
         
-        self.controllerNode.statusPressed = { [weak self] _ in
+        self.controllerNode.statusPressed = { [weak self = self] _ in
             if let self {
                 self.presentViewOnceTooltip()
             }
         }
         
-        self.controllerNode.onDismissTransitionUpdate = { [weak self] _ in
+        self.controllerNode.onDismissTransitionUpdate = { [weak self = self] _ in
             if let self {
                 self.dismissAllTooltips()
             }
@@ -274,7 +274,7 @@ public final class SecretMediaPreviewController: ViewController {
         self.controllerNode.statusBar = self.statusBar
         self.controllerNode.navigationBar = self.navigationBar
         
-        self.controllerNode.transitionDataForCentralItem = { [weak self] in
+        self.controllerNode.transitionDataForCentralItem = { [weak self = self] in
             if let strongSelf = self {
                 if let _ = strongSelf.controllerNode.pager.centralItemNode(), let presentationArguments = strongSelf.presentationArguments as? GalleryControllerPresentationArguments {
                     if let message = strongSelf.messageView?.message {
@@ -286,12 +286,12 @@ public final class SecretMediaPreviewController: ViewController {
             }
             return nil
         }
-        self.controllerNode.dismiss = { [weak self] in
+        self.controllerNode.dismiss = { [weak self = self] in
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
-        self.controllerNode.beginCustomDismiss = { [weak self] _ in
+        self.controllerNode.beginCustomDismiss = { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf._hiddenMedia.set(.single(nil))
                 
@@ -302,12 +302,12 @@ public final class SecretMediaPreviewController: ViewController {
             }
         }
         
-        self.controllerNode.completeCustomDismiss = { [weak self] _ in
+        self.controllerNode.completeCustomDismiss = { [weak self = self] _ in
             self?._hiddenMedia.set(.single(nil))
             self?.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
-        self.controllerNode.pager.centralItemIndexUpdated = { [weak self] index in
+        self.controllerNode.pager.centralItemIndexUpdated = { [weak self = self] index in
             if let strongSelf = self {
                 var hiddenItem: (MessageId, Media)?
                 if let _ = index {
@@ -419,7 +419,7 @@ public final class SecretMediaPreviewController: ViewController {
         
         if self.screenCaptureEventsDisposable == nil {
             self.screenCaptureEventsDisposable = (screenCaptureEvents()
-            |> deliverOnMainQueue).start(next: { [weak self] _ in
+            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 if let strongSelf = self, strongSelf.traceVisibility() {
                     if strongSelf.messageId.peerId.namespace == Namespaces.Peer.CloudUser {
                         let _ = enqueueMessages(account: strongSelf.context.account, peerId: strongSelf.messageId.peerId, messages: [.message(text: "", attributes: [], inlineStickers: [:], mediaReference: .standalone(media: TelegramMediaAction(action: TelegramMediaActionType.historyScreenshot)), threadId: nil, replyToMessageId: nil, replyToStoryId: nil, localGroupingKey: nil, correlationId: nil, bubbleUpEmojiOrStickersets: [])]).start()
@@ -458,7 +458,7 @@ public final class SecretMediaPreviewController: ViewController {
         
         if self.currentNodeMessageIsViewOnce {
             let _ = (ApplicationSpecificNotice.incrementViewOnceTooltip(accountManager: self.context.sharedContext.accountManager)
-            |> deliverOnMainQueue).start(next: { [weak self] count in
+            |> deliverOnMainQueue).start(next: { [weak self = self] count in
                 guard let self else {
                     return
                 }
@@ -475,7 +475,7 @@ public final class SecretMediaPreviewController: ViewController {
         var animatedOutNode = true
         var animatedOutInterface = false
         
-        let completion = { [weak self] in
+        let completion = { [weak self = self] in
             if animatedOutNode && animatedOutInterface {
                 self?._hiddenMedia.set(.single(nil))
                 self?.presentingViewController?.dismiss(animated: false, completion: nil)
@@ -528,7 +528,7 @@ public final class SecretMediaPreviewController: ViewController {
                 }
                                 
                 let entry = GalleryEntry(entry: MessageHistoryEntry(message: message, isRead: false, location: nil, monthLocation: nil, attributes: MutableMessageHistoryEntryAttributes(authorIsContact: false)))
-                guard let item = galleryItemForEntry(context: self.context, presentationData: self.presentationData, entry: entry, streamVideos: false, hideControls: true, isSecret: true, playbackRate: { nil }, peerIsCopyProtected: true, tempFilePath: tempFilePath, playbackCompleted: { [weak self] in
+                guard let item = galleryItemForEntry(context: self.context, presentationData: self.presentationData, entry: entry, streamVideos: false, hideControls: true, isSecret: true, playbackRate: { nil }, peerIsCopyProtected: true, tempFilePath: tempFilePath, playbackCompleted: { [weak self = self] in
                     if let self {
                         if self.currentNodeMessageIsViewOnce || (duration < 30.0 && !self.currentMessageIsDismissed) {
                             if let node = self.controllerNode.pager.centralItemNode() as? UniversalVideoGalleryItemNode {
@@ -544,7 +544,7 @@ public final class SecretMediaPreviewController: ViewController {
                 }
                 
                 self.controllerNode.pager.replaceItems([item], centralItemIndex: 0)
-                let ready = self.controllerNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self] _ in
+                let ready = self.controllerNode.pager.ready() |> timeout(2.0, queue: Queue.mainQueue(), alternate: .single(Void())) |> afterNext { [weak self = self] _ in
                     self?.didSetReady = true
                 }
                 self._ready.set(ready |> map { true })

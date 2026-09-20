@@ -154,7 +154,7 @@ final class StorageUsagePanelContainerComponent: Component {
             self.tabsBackgroundContainer.contentView.addSubview(self.tabsBackgroundView)
             self.addSubview(self.tabsBackgroundContainer)
 
-            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
                 guard let self, let component = self.component, let currentId = self.currentId else {
                     return []
                 }
@@ -348,7 +348,7 @@ final class StorageUsagePanelContainerComponent: Component {
                             id: item.id,
                             content: .title(HorizontalTabsComponent.Tab.Title(text: item.title, entities: [], enableAnimations: false)),
                             badge: nil,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -488,7 +488,7 @@ final class StorageUsagePanelContainerComponent: Component {
                             self.insertSubview(panelView, belowSubview: self.tabsBackgroundContainer)
                         }
                         
-                        panelTransition.setFrame(view: panelView, frame: itemFrame, completion: { [weak self] _ in
+                        panelTransition.setFrame(view: panelView, frame: itemFrame, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }

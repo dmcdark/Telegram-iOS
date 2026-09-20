@@ -175,7 +175,7 @@ private final class StoryProgressLayer: HierarchyTrackingLayer {
         self.indefiniteReplicatorLayer.transform = CATransform3DMakeRotation(-.pi / 2.0, 0.0, 0.0, 1.0)
         self.indefiniteReplicatorLayer.instanceDelay = 0.025
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -207,7 +207,7 @@ private final class StoryProgressLayer: HierarchyTrackingLayer {
             var animateIn = false
             if self.indefiniteReplicatorLayer.superlayer != nil {
                 self.indefiniteReplicatorLayer.opacity = 0.0
-                self.indefiniteReplicatorLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] finished in
+                self.indefiniteReplicatorLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] finished in
                     guard let self, finished else {
                         return
                     }
@@ -236,7 +236,7 @@ private final class StoryProgressLayer: HierarchyTrackingLayer {
             var animateIn = false
             if self.uploadProgressLayer.superlayer != nil {
                 self.uploadProgressLayer.opacity = 0.0
-                self.uploadProgressLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] finished in
+                self.uploadProgressLayer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] finished in
                     guard let self, finished else {
                         return
                     }
@@ -604,7 +604,7 @@ public final class StoryPeerListItemComponent: Component {
             self.indicatorShapeUnseenLayer.strokeColor = UIColor.white.cgColor
             self.indicatorShapeUnseenLayer.lineCap = .round
             
-            self.button.highligthedChanged = { [weak self] highlighted in
+            self.button.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -618,12 +618,12 @@ public final class StoryPeerListItemComponent: Component {
             }
             self.button.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
                 self.button.isEnabled = false
-                DispatchQueue.main.async { [weak self] in
+                DispatchQueue.main.async { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -633,7 +633,7 @@ public final class StoryPeerListItemComponent: Component {
             }
             self.containerNode.additionalActivationProgressLayer = self.avatarBackgroundContainer.layer
             
-            self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtracted, transition in
+            self.extractedContainerNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtracted, transition in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -641,7 +641,7 @@ public final class StoryPeerListItemComponent: Component {
                 if isExtracted {
                     self.extractedBackgroundView.image = generateStretchableFilledCircleImage(diameter: 24.0, color: component.theme.contextMenu.backgroundColor)
                 }
-                transition.updateAlpha(layer: self.extractedBackgroundView.layer, alpha: isExtracted ? 1.0 : 0.0, completion: { [weak self] _ in
+                transition.updateAlpha(layer: self.extractedBackgroundView.layer, alpha: isExtracted ? 1.0 : 0.0, completion: { [weak self = self] _ in
                     if !isExtracted {
                         self?.extractedBackgroundView.image = nil
                     }
@@ -975,7 +975,7 @@ public final class StoryPeerListItemComponent: Component {
                 titleTransition = .immediate
                 
                 self.avatarContent.layer.transform = CATransform3DMakeScale(1.08, 1.08, 1.0)
-                self.avatarContent.layer.animateScale(from: 1.0, to: 1.08, duration: 0.2, completion: { [weak self] _ in
+                self.avatarContent.layer.animateScale(from: 1.0, to: 1.08, duration: 0.2, completion: { [weak self = self] _ in
                     self?.avatarContent.layer.transform = CATransform3DMakeScale(1.0, 1.0, 1.0)
                     self?.avatarContent.layer.animateScale(from: 1.08, to: 1.0, duration: 0.15)
                 })
@@ -983,7 +983,7 @@ public final class StoryPeerListItemComponent: Component {
                 let initialLineWidth: CGFloat = baseLineUnseenWidth
                 let targetLineWidth: CGFloat = baseLineUnseenWidth * 1.5
                 self.indicatorShapeSeenLayer.lineWidth = targetLineWidth
-                self.indicatorShapeSeenLayer.animateShapeLineWidth(from: initialLineWidth, to: targetLineWidth, duration: 0.2, completion: { [weak self] _ in
+                self.indicatorShapeSeenLayer.animateShapeLineWidth(from: initialLineWidth, to: targetLineWidth, duration: 0.2, completion: { [weak self = self] _ in
                     self?.indicatorShapeSeenLayer.lineWidth = initialLineWidth
                     self?.indicatorShapeSeenLayer.animateShapeLineWidth(from: targetLineWidth, to: initialLineWidth, duration: 0.15)
                 })

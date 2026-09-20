@@ -82,13 +82,13 @@ public final class GroupCallHeaderPanelComponent: Component {
                 panel = GroupCallNavigationAccessoryPanel(
                     context: component.context,
                     presentationData: presentationData,
-                    tapAction: { [weak self] in
+                    tapAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
                         component.onTapAction()
                     },
-                    notifyScheduledTapAction: { [weak self] in
+                    notifyScheduledTapAction: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

@@ -407,7 +407,7 @@ private final class FetchImpl {
             self.update()
             
             self.requiredRangesDisposable = (intervals
-            |> deliverOn(self.queue)).startStrict(next: { [weak self] intervals in
+            |> deliverOn(self.queue)).startStrict(next: { [weak self = self] intervals in
                 guard let `self` = self else {
                     return
                 }
@@ -685,7 +685,7 @@ private final class FetchImpl {
                     let cdnData = state.cdnData
                     
                     state.disposable = (reuploadSignal
-                    |> deliverOn(self.queue)).startStrict(next: { [weak self] result in
+                    |> deliverOn(self.queue)).startStrict(next: { [weak self = self] result in
                         guard let `self` = self else {
                             return
                         }
@@ -700,7 +700,7 @@ private final class FetchImpl {
                             decryptionState: nil
                         ))
                         self.update()
-                    }, error: { [weak self] error in
+                    }, error: { [weak self = self] error in
                         guard let `self` = self else {
                             return
                         }
@@ -722,7 +722,7 @@ private final class FetchImpl {
                             info: info,
                             resource: self.resource
                         )
-                        |> deliverOn(self.queue)).startStrict(next: { [weak self] validationResult in
+                        |> deliverOn(self.queue)).startStrict(next: { [weak self = self] validationResult in
                             guard let `self` = self else {
                                 return
                             }
@@ -750,7 +750,7 @@ private final class FetchImpl {
                             ))
                             
                             self.update()
-                        }, error: { [weak self] _ in
+                        }, error: { [weak self = self] _ in
                             guard let `self` = self else {
                                 return
                             }
@@ -849,7 +849,7 @@ private final class FetchImpl {
                                 limit: Int32(requestedLength)),
                             tag: self.parameters?.tag,
                             continueInBackground: self.continueInBackground,
-                            onFloodWaitError: { [weak self] error in
+                            onFloodWaitError: { [weak self = self] error in
                                 queue.async {
                                     guard let self else {
                                         return

@@ -62,7 +62,7 @@ private final class ContactSyncManagerImpl {
     
     func beginSync(importableContacts: Signal<[DeviceContactNormalizedPhoneNumber: ImportableDeviceContactData], NoError>) {
         self.importableContactsDisposable.set((importableContacts
-        |> deliverOn(self.queue)).start(next: { [weak self] importableContacts in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] importableContacts in
             guard let strongSelf = self else {
                 return
             }
@@ -71,7 +71,7 @@ private final class ContactSyncManagerImpl {
             strongSelf.addOperation(.sync(importableContacts: importableContacts))
         }))
         self.significantStateUpdateCompletedDisposable.set((self.stateManager.significantStateUpdateCompleted
-        |> deliverOn(self.queue)).start(next: { [weak self] in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -160,7 +160,7 @@ private final class ContactSyncManagerImpl {
             first.isRunning = true
             let id = first.id
             let queue = self.queue
-            self.startOperation(first.content, disposable: first.disposable, completion: { [weak self] in
+            self.startOperation(first.content, disposable: first.disposable, completion: { [weak self = self] in
                 queue.async {
                     guard let strongSelf = self else {
                         return
@@ -202,7 +202,7 @@ private final class ContactSyncManagerImpl {
                     }
                     |> then(importSignal)
                     |> deliverOn(self.queue)
-                ).start(next: { [weak self] result in
+                ).start(next: { [weak self = self] result in
                     guard let strongSelf = self else {
                         return
                     }

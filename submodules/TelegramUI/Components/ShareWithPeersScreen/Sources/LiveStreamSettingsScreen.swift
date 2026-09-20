@@ -144,7 +144,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                 peerId: component.stateContext.sendAsPeerId ?? component.context.account.peerId,
                 credentialsPromise: self.credentialsPromise,
                 mode: .create(liveStream: true),
-                completion: { [weak self] in
+                completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -175,7 +175,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                 liveStream: true,
                 editing: false
             )
-            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self] _ in
+            let _ = (stateContext.ready |> filter { $0 } |> take(1) |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 guard let self else {
                     return
                 }
@@ -186,7 +186,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                     completion: { _, _, _, _, _, _, _ in },
                     editCategory: { _, _, _, _ in },
                     editBlockedPeers: { _, _, _, _ in },
-                    peerCompletion: { [weak self] peerId in
+                    peerCompletion: { [weak self = self] peerId in
                         guard let self else {
                             return
                         }
@@ -307,7 +307,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                         rightAccessory: screenState.isCustomTarget ? .none : .disclosure,
                         selectionState: .none,
                         hasNext: false,
-                        action: screenState.isCustomTarget ? nil : { [weak self] _, _, _ in
+                        action: screenState.isCustomTarget ? nil : { [weak self = self] _, _, _ in
                             guard let self else {
                                 return
                             }
@@ -508,7 +508,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                             subtitle: item.actionTitle,
                             selectionState: .editing(isSelected:isSelected, isTinted: false),
                             hasNext: i != categoryItems.count - 1,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() as? LiveStreamSettingsScreen else {
                                     return
                                 }
@@ -554,7 +554,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                                 }
                                 self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.35, curve: .spring)))
                             },
-                            secondaryAction: { [weak self] in
+                            secondaryAction: { [weak self = self] in
                                 guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() as? LiveStreamSettingsScreen else {
                                     return
                                 }
@@ -615,7 +615,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component, let environment = self.environment, let controller = environment.controller() as? LiveStreamSettingsScreen else {
                             return
                         }
@@ -672,7 +672,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                         theme: theme,
                         style: .glass,
                         title: AnyComponent(MultilineTextComponent(text: .plain(NSAttributedString(string: strings.LiveStreamSettings_ConnectStream, font: Font.regular(presentationData.listsFontSize.baseDisplaySize), textColor: theme.list.itemPrimaryTextColor)))),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }
@@ -721,7 +721,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                     )),
                     maximumNumberOfLines: 1
                 )),
-                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: screenState.allowComments, action: { [weak self] _ in
+                accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: screenState.allowComments, action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -743,7 +743,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                         )),
                         maximumNumberOfLines: 1
                     )),
-                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: !screenState.isForwardingDisabled, action: { [weak self] _ in
+                    accessory: .toggle(ListActionItemComponent.Toggle(style: .regular, isOn: !screenState.isForwardingDisabled, action: { [weak self = self] _ in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -786,7 +786,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                         lowerBoundTitle: "0",
                         upperBoundTitle: "\(presentationStringsFormattedNumber(Int32(clamping: screenState.maxPaidMessageStars), environment.dateTimeFormat.groupingSeparator))",
                         title: screenState.paidMessageStars == 0 ? strings.LiveStreamSettings_PricePerComment_Free : strings.LiveStreamSettings_PricePerComment_Stars(Int32(clamping: screenState.paidMessageStars)),
-                        valueUpdated: { [weak self] value in
+                        valueUpdated: { [weak self = self] value in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -891,7 +891,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                             tintColor: environment.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self, let controller = self.environment?.controller() as? LiveStreamSettingsScreen else {
                             return
                         }
@@ -924,7 +924,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                                 tintColor: environment.theme.list.itemCheckColors.foregroundColor
                             )
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             guard let self, let component = self.component, let controller = self.environment?.controller() as? LiveStreamSettingsScreen else {
                                 return
                             }
@@ -970,7 +970,7 @@ final class LiveStreamSettingsScreenComponent: Component {
                             ),
                             isEnabled: true,
                             displaysProgress: false,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let controller = self.environment?.controller() as? LiveStreamSettingsScreen else {
                                     return
                                 }
@@ -1069,7 +1069,7 @@ public class LiveStreamSettingsScreen: ViewControllerComponentContainer {
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
                 
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? LiveStreamSettingsScreenComponent.View else {
                 return
             }
@@ -1325,7 +1325,7 @@ public class LiveStreamSettingsScreen: ViewControllerComponentContainer {
                 savedPeers,
                 closeFriends,
                 grayListPeers
-            ).start(next: { [weak self] accountPeer, adminedChannelsWithParticipants, savedPeers, closeFriends, grayListPeers in
+            ).start(next: { [weak self = self] accountPeer, adminedChannelsWithParticipants, savedPeers, closeFriends, grayListPeers in
                 guard let self else {
                     return
                 }

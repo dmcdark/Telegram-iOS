@@ -120,7 +120,7 @@ public final class StoryLiveChatMessageComponent: Component {
             self.containerNode.targetNodeForActivationProgress = self.extractedContainerNode.contentNode
             self.contentContainer.addSubview(self.containerNode.view)
             
-            self.containerNode.activated = { [weak self] gesture, _ in
+            self.containerNode.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -150,7 +150,7 @@ public final class StoryLiveChatMessageComponent: Component {
         public func flashHighlight() {
             if let backgroundView = self.backgroundView, backgroundView.alpha != 1.0 {
                 let initialAlpha = backgroundView.alpha
-                backgroundView.layer.animateAlpha(from: initialAlpha, to: 1.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+                backgroundView.layer.animateAlpha(from: initialAlpha, to: 1.0, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                     guard let self, let backgroundView = self.backgroundView else {
                         return
                     }

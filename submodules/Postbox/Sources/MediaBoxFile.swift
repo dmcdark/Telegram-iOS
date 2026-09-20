@@ -397,7 +397,7 @@ final class MediaBoxPartialFile {
         }))
         
         let queue = self.queue
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.dataRequests.remove(index)
@@ -422,7 +422,7 @@ final class MediaBoxPartialFile {
         }
         
         let queue = self.queue
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     if let updatedRanges = strongSelf.missingRanges.removeRequest(fileMap: strongSelf.fileMap, index: index) {
@@ -442,7 +442,7 @@ final class MediaBoxPartialFile {
         
         disposable.set(self.fetched(range: 0 ..< Int64.max, priority: .default, fetch: fetch, error: { e in
             error(e)
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.fullRangeRequests.remove(index)
@@ -454,7 +454,7 @@ final class MediaBoxPartialFile {
             }
         }))
         
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.fullRangeRequests.remove(index)
@@ -495,7 +495,7 @@ final class MediaBoxPartialFile {
         let index = self.rangeStatusRequests.add((next, completed))
         
         let queue = self.queue
-        return ActionDisposable { [weak self] in
+        return ActionDisposable { [weak self = self] in
             queue.async {
                 if let strongSelf = self {
                     strongSelf.rangeStatusRequests.remove(index)
@@ -544,7 +544,7 @@ final class MediaBoxPartialFile {
             return EmptyDisposable
         } else {
             let queue = self.queue
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 queue.async {
                     if let strongSelf = self {
                         strongSelf.statusRequests.remove(index)
@@ -577,7 +577,7 @@ final class MediaBoxPartialFile {
                 self.currentFetch = (promise, disposable)
                 self.updateStatuses()
                 disposable.set((fetch(promise.get())
-                |> deliverOn(self.queue)).start(next: { [weak self] data in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] data in
                     if let strongSelf = self {
                         switch data {
                             case .reset:
@@ -623,7 +623,7 @@ final class MediaBoxPartialFile {
                             }
                         }
                     }
-                }, error: { [weak self] e in
+                }, error: { [weak self = self] e in
                     guard let strongSelf = self else {
                         return
                     }

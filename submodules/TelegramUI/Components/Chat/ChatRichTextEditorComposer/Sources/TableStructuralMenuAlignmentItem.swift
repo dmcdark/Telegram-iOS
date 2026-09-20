@@ -176,7 +176,7 @@ private final class TableStructuralMenuAlignmentItemNode: ASDisplayNode, Context
                                 tintColor: self.presentationData.theme.contextMenu.primaryColor,
                             )),
                             minSize: itemSize,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

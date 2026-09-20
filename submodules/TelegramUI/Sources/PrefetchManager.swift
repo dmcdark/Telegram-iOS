@@ -95,7 +95,7 @@ private final class PrefetchManagerInnerImpl {
         }
         
         self.listDisposable = (combineLatest(orderedPreloadMedia, sharedContext.automaticMediaDownloadSettings, networkType)
-        |> deliverOn(self.queue)).startStrict(next: { [weak self] orderedPreloadMedia, automaticDownloadSettings, networkType in
+        |> deliverOn(self.queue)).startStrict(next: { [weak self = self] orderedPreloadMedia, automaticDownloadSettings, networkType in
             self?.updateOrderedPreloadMedia(orderedPreloadMedia, automaticDownloadSettings: automaticDownloadSettings, networkType: networkType)
         })
     }

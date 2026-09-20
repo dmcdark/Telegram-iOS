@@ -87,7 +87,7 @@ final class AvatarLayer: SimpleLayer {
             if let previousCornerRadius, self.animation(forKey: "cornerRadius") == nil {
                 self.cornerRadius = previousCornerRadius
             }
-            transition.setCornerRadius(layer: self, cornerRadius: cornerRadius, completion: { [weak self] completed in
+            transition.setCornerRadius(layer: self, cornerRadius: cornerRadius, completion: { [weak self = self] completed in
                 guard let self, completed else {
                     return
                 }

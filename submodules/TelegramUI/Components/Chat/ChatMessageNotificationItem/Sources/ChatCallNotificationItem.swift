@@ -175,7 +175,7 @@ final class ChatCallNotificationItemNode: NotificationItemNode {
                 ])),
                 effectAlignment: .center,
                 minSize: CGSize(width: avatarSize, height: avatarSize),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self, let item = self.item else {
                         return
                     }
@@ -200,7 +200,7 @@ final class ChatCallNotificationItemNode: NotificationItemNode {
                 ])),
                 effectAlignment: .center,
                 minSize: CGSize(width: avatarSize, height: avatarSize),
-                action: { [weak self] in
+                action: { [weak self = self] in
                     guard let self, let item = self.item else {
                         return
                     }

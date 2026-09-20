@@ -34,7 +34,7 @@ public class FormController<InnerState, InitParams, Node: FormControllerNode<Ini
     
     override public func loadDisplayNode() {
         self.displayNode = Node(initParams: self.initParams, presentationData: self.presentationData)
-        self.controllerNode.present = { [weak self] c, a in
+        self.controllerNode.present = { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
         }
         

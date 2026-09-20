@@ -186,7 +186,7 @@ class ForwardPrivacyChatPreviewItemNode: ListViewItemNode {
             let authorNameWidth = authorNameLayout.size.width
             let authorNameCenter = authorNameWidth / 2.0 + 3.0
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     

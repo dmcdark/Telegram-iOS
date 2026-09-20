@@ -43,7 +43,7 @@ final class BadgeBusinessView: UIView, PhoneDemoDecorationView {
         }
         
         let transition = ContainedViewLayoutTransition.animated(duration: 0.3, curve: .linear)
-        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.5 : 0.0, completion: { [weak self] finished in
+        transition.updateAlpha(layer: self.layer, alpha: visible ? 0.5 : 0.0, completion: { [weak self = self] finished in
             if let strongSelf = self, finished && !visible && strongSelf.leftParticles?.parent != nil {
                 strongSelf.leftParticles?.removeFromParentNode()
                 strongSelf.rightParticles?.removeFromParentNode()

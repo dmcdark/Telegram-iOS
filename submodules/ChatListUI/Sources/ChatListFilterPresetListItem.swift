@@ -215,7 +215,7 @@ final class ChatListFilterPresetListItemNode: ItemListRevealOptionsItemNode {
         self.containerNode.addSubnode(self.sharedIconNode)
         self.addSubnode(self.activateArea)
         
-        self.activateArea.activate = { [weak self] in
+        self.activateArea.activate = { [weak self = self] in
             self?.item?.action()
             return true
         }
@@ -302,7 +302,7 @@ final class ChatListFilterPresetListItemNode: ItemListRevealOptionsItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] animated in
+            return (layout, { [weak self = self] animated in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params

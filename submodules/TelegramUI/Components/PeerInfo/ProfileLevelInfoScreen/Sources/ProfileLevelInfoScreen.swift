@@ -333,7 +333,7 @@ private final class SheetContent: Component {
                                 return nil
                             }
                         },
-                        tapAction: { [weak self] attributes, _ in
+                        tapAction: { [weak self = self] attributes, _ in
                             guard let self else {
                                 return
                             }

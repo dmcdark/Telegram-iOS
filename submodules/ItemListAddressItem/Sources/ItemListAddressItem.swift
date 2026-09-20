@@ -217,7 +217,7 @@ public class ItemListAddressItemNode: ListViewItemNode {
             let contentSize = CGSize(width: params.width, height: max(textLayout.size.height + padding, imageSize.height + 14.0) + verticalInset * 2.0)
             
             let nodeLayout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
-            return (nodeLayout, { [weak self] animation in
+            return (nodeLayout, { [weak self = self] animation in
                 if let strongSelf = self {
                     let transition: ContainedViewLayoutTransition
                     if animation.isAnimated {
@@ -380,7 +380,7 @@ public class ItemListAddressItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

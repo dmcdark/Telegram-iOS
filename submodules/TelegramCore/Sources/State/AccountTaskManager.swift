@@ -37,7 +37,7 @@ final class AccountTaskManager {
             self.isMainApp = isMainApp
             self.testingEnvironment = testingEnvironment
             
-            stateManager.isPremiumUpdated = { [weak self] in
+            stateManager.isPremiumUpdated = { [weak self = self] in
                 guard let self = self else {
                     return
                 }
@@ -49,7 +49,7 @@ final class AccountTaskManager {
             self.stateDisposable = (stateManager.isUpdating
             |> filter { !$0 }
             |> take(1)
-            |> deliverOn(self.queue)).start(next: { [weak self] value in
+            |> deliverOn(self.queue)).start(next: { [weak self = self] value in
                 guard let self = self else {
                     return
                 }

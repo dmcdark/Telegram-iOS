@@ -2130,7 +2130,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
 
         let foundItems: Signal<([ChatListSearchEntry], Bool, String?)?, NoError> = combineLatest(queue: .mainQueue(), searchQuery, self.approvedGlobalPostQueryState.get(), searchOptions, self.searchScopePromise.get(), downloadItems, globalPostSearchStateType, isPremium)
         |> debounceOnMainThread
-        |> mapToSignal { [weak self] query, approvedGlobalPostQueryState, options, searchScope, downloadItems, _, _ -> Signal<([ChatListSearchEntry], Bool, String?)?, NoError> in
+        |> mapToSignal { [weak self = self] query, approvedGlobalPostQueryState, options, searchScope, downloadItems, _, _ -> Signal<([ChatListSearchEntry], Bool, String?)?, NoError> in
             if query == nil && (options == nil || options?.withUpdatedFolder(nil).isEmpty == true) && [.chats, .topics, .channels, .apps].contains(key) {
                 let _ = currentRemotePeers.swap(nil)
                 return .single(nil)
@@ -3530,7 +3530,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             })))
         }
 
-        transitionNodeImpl = { [weak self] messageId, media in
+        transitionNodeImpl = { [weak self = self] messageId, media in
             if let self {
                 return self.mediaNode?.transitionNodeForGallery(messageId: messageId, media: media._asMedia())
             } else {
@@ -3538,14 +3538,14 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             }
         }
 
-        addToTransitionSurfaceImpl = { [weak self] view in
+        addToTransitionSurfaceImpl = { [weak self = self] view in
             if let self {
                 self.mediaNode?.addToTransitionSurface(view: view)
             }
         }
 
         let chatListInteraction = ChatListNodeInteraction(context: context, animationCache: self.animationCache, animationRenderer: self.animationRenderer, activateSearch: {
-        }, peerSelected: { [weak self] peer, chatPeer, threadId, _, openApp in
+        }, peerSelected: { [weak self = self] peer, chatPeer, threadId, _, openApp in
             interaction.dismissInput()
             if openApp, let self {
                 if case let .user(user) = peer, let botInfo = user.botInfo, botInfo.flags.contains(.hasWebApp), let parentController = self.parentController {
@@ -3580,14 +3580,14 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         }, togglePeerSelected: { _, _ in
         }, togglePeersSelection: { _, _ in
         }, additionalCategorySelected: { _ in
-        }, messageSelected: { [weak self] peer, threadId, message, _ in
+        }, messageSelected: { [weak self = self] peer, threadId, message, _ in
             interaction.dismissInput()
             if let strongSelf = self, let peer = message.peers[message.id.peerId] {
                 interaction.openMessage(EnginePeer(peer), threadId, message.id, strongSelf.key == .chats)
             }
             self?.listNode?.clearHighlightAnimated(true)
         }, groupSelected: { _ in
-        }, addContact: { [weak self] phoneNumber in
+        }, addContact: { [weak self = self] phoneNumber in
             interaction.dismissInput()
             interaction.addContact(phoneNumber)
             self?.listNode?.clearHighlightAnimated(true)
@@ -3624,12 +3624,12 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             }
         }, present: { c in
             interaction.present(c, nil)
-        }, openForumThread: { [weak self] peerId, threadId in
+        }, openForumThread: { [weak self = self] peerId, threadId in
             guard let self else {
                 return
             }
             let _ = (self.context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: peerId))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] peer in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peer in
                 guard let self, let peer else {
                     return
                 }
@@ -3648,7 +3648,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         }, performBotConnectionReviewAction: { _, _ in
         }, openChatFolderUpdates: {
         }, hideChatFolderUpdates: {
-        }, openStories: { [weak self] subject, sourceNode in
+        }, openStories: { [weak self = self] subject, sourceNode in
             guard let self else {
                 return
             }
@@ -3669,7 +3669,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         })
         chatListInteraction.isSearchMode = true
 
-        let listInteraction = ListMessageItemInteraction(openMessage: { [weak self] message, mode -> Bool in
+        let listInteraction = ListMessageItemInteraction(openMessage: { [weak self = self] message, mode -> Bool in
             guard let strongSelf = self else {
                 return false
             }
@@ -3723,7 +3723,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             }, openConferenceCall: { _ in
             }, enqueueMessage: { _ in
             }, sendSticker: nil, sendEmoji: nil, setupTemporaryHiddenMedia: { _, _, _ in }, chatAvatarHiddenMedia: { _, _ in }, playlistLocation: playlistLocation, gallerySource: gallerySource))
-        }, openMessageContextMenu: { [weak self] message, _, node, rect, gesture in
+        }, openMessageContextMenu: { [weak self = self] message, _, node, rect, gesture in
             guard let strongSelf = self, let currentEntries = strongSelf.currentEntries else {
                 return
             }
@@ -3747,7 +3747,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             }
         }, openUrl: { url, _, _, message in
             interaction.openUrl(url)
-        }, openInstantPage: { [weak self] message, data in
+        }, openInstantPage: { [weak self = self] message, data in
             if let self, let navigationController = self.navigationController {
                 if let controller = self.context.sharedContext.makeInstantPageController(context: self.context, message: message, sourcePeerType: .channel) {
                     navigationController.pushViewController(controller)
@@ -3784,7 +3784,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             TelegramEngine.EngineData.Item.Messages.GlobalPostSearchState()
         ))
         self.approvedSearchQueryDisposable = (combineLatest(queue: .mainQueue(), self.approvedGlobalPostQueryState.get(), self.globalPostSearchState.get(), isPremium)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] approvedGlobalPostQueryState, globalPostSearchState, isPremium in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] approvedGlobalPostQueryState, globalPostSearchState, isPremium in
             guard let self else {
                 return
             }
@@ -3794,7 +3794,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
 
             if let globalPostSearchState, globalPostSearchState.unlockTimestamp != nil {
                 if self.globalPostSearchUnlockTimer == nil {
-                    self.globalPostSearchUnlockTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.globalPostSearchUnlockTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -3804,7 +3804,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                             remainingTime = max(0, remainingTime)
                             if remainingTime == 0 {
                                 if self.refreshGlobalPostSearchStateDisposable == nil {
-                                    self.refreshGlobalPostSearchStateDisposable = self.context.engine.messages.refreshGlobalPostSearchState().start(completed: { [weak self] in
+                                    self.refreshGlobalPostSearchStateDisposable = self.context.engine.messages.refreshGlobalPostSearchState().start(completed: { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
@@ -3824,7 +3824,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         })
 
         self.searchOptionsDisposable = (searchOptions
-        |> deliverOnMainQueue).startStrict(next: { [weak self] options in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] options in
             self?.searchOptionsValue = options
         })
 
@@ -3899,7 +3899,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                 return (mappedItems, isSearching, query)
             }
         }
-        |> deliverOnMainQueue).startStrict(next: { [weak self] foundItems in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] foundItems in
             if let strongSelf = self {
                 let previousSelectedMessageIds = previousSelectedMessages.swap(strongSelf.selectedMessages)
                 let previousExpandGlobalSearch = previousExpandGlobalSearch.swap(strongSelf.searchStateValue.expandGlobalSearch)
@@ -4536,7 +4536,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             presentationDataPromise.get(),
             recentItems
         )
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData, recentItems in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData, recentItems in
             if let strongSelf = self {
                 let previousRecentItems = previousRecentItemsValue.swap(recentItems)
 
@@ -4711,7 +4711,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         }))
 
         self.presentationDataDisposable = ((updatedPresentationData?.signal ?? context.sharedContext.presentationData)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 strongSelf.presentationData = presentationData
                 strongSelf.presentationDataPromise.set(.single(ChatListPresentationData(theme: presentationData.theme, fontSize: presentationData.listsFontSize, strings: presentationData.strings, dateTimeFormat: presentationData.dateTimeFormat, nameSortOrder: presentationData.nameSortOrder, nameDisplayOrder: presentationData.nameDisplayOrder, disableAnimations: true)))
@@ -4788,7 +4788,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                     return .single(nil)
                 }
             }
-            |> deliverOnMainQueue).startStrict(next: { [weak self] playlistStateAndType in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] playlistStateAndType in
                 guard let self else {
                     return
                 }
@@ -4812,7 +4812,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
         }
 
         self.deletedMessagesDisposable = (context.account.stateManager.deletedMessages
-        |> deliverOnMainQueue).startStrict(next: { [weak self] messageIds in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] messageIds in
             if let strongSelf = self {
                 strongSelf.updateState { state in
                     var state = state
@@ -4885,7 +4885,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
     func scheduleMarkRecentDownloadsAsSeen() {
         if !self.scheduledMarkRecentDownloadsAsSeen {
             self.scheduledMarkRecentDownloadsAsSeen = true
-            Queue.mainQueue().after(0.1, { [weak self] in
+            Queue.mainQueue().after(0.1, { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -4977,18 +4977,18 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
 
                 let mediaAccessoryPanel = MediaNavigationAccessoryPanel(context: self.context, presentationData: self.presentationData, displayBackground: true)
                 mediaAccessoryPanel.containerNode.headerNode.displayScrubber = item.playbackData?.type != .instantVideo
-                mediaAccessoryPanel.getController = { [weak self] in
+                mediaAccessoryPanel.getController = { [weak self = self] in
                     return self?.navigationController?.topViewController as? ViewController
                 }
-                mediaAccessoryPanel.presentInGlobalOverlay = { [weak self] c in
+                mediaAccessoryPanel.presentInGlobalOverlay = { [weak self = self] c in
                     (self?.navigationController?.topViewController as? ViewController)?.presentInGlobalOverlay(c)
                 }
-                mediaAccessoryPanel.close = { [weak self] in
+                mediaAccessoryPanel.close = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.setPlaylist(nil, type: type, control: SharedMediaPlayerControlAction.playback(.pause))
                     }
                 }
-                mediaAccessoryPanel.setRate = { [weak self] rate, changeType in
+                mediaAccessoryPanel.setRate = { [weak self = self] rate, changeType in
                     guard let strongSelf = self else {
                         return
                     }
@@ -5070,22 +5070,22 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                         }
                     })
                 }
-                mediaAccessoryPanel.togglePlayPause = { [weak self] in
+                mediaAccessoryPanel.togglePlayPause = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.playback(.togglePlayPause), type: type)
                     }
                 }
-                mediaAccessoryPanel.playPrevious = { [weak self] in
+                mediaAccessoryPanel.playPrevious = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.next, type: type)
                     }
                 }
-                mediaAccessoryPanel.playNext = { [weak self] in
+                mediaAccessoryPanel.playNext = { [weak self = self] in
                     if let strongSelf = self, let (_, _, _, _, type, _) = strongSelf.playlistStateAndType {
                         strongSelf.context.sharedContext.mediaManager.playlistControl(.previous, type: type)
                     }
                 }
-                mediaAccessoryPanel.tapAction = { [weak self] in
+                mediaAccessoryPanel.tapAction = { [weak self = self] in
                     guard let strongSelf = self, let navigationController = strongSelf.navigationController, let (state, _, _, order, type, account) = strongSelf.playlistStateAndType else {
                         return
                     }
@@ -5270,7 +5270,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                         theme: self.presentationData.theme,
                         strings: self.presentationData.strings,
                         content: emptyResultsButtonContent,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -5477,7 +5477,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                 options.insert(.AnimateInsertion)
             }
 
-            self.recentListNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.recentListNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 guard let strongSelf = self else {
                     return
                 }
@@ -5539,7 +5539,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
                 options.insert(.PreferSynchronousResourceLoading)
             }
 
-            self.listNode?.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+            self.listNode?.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
                 if let strongSelf = self {
                     let searchOptions = strongSelf.searchOptionsValue
                     strongSelf.listNode?.isHidden = strongSelf.tagMask == .photoOrVideo && (strongSelf.searchQueryValue ?? "").isEmpty
@@ -5744,14 +5744,14 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
     func openMessagesFilter(sourceNode: ASDisplayNode) {
         self.interaction.dismissInput()
         let _ = (self.searchScopePromise.get()
-        |> take(1)).start(next: { [weak self] scope in
+        |> take(1)).start(next: { [weak self = self] scope in
             guard let self else {
                 return
             }
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.ChatList_Search_Messages_Menu_AllChats, icon: { theme in
                 return scope == .everywhere ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -5760,7 +5760,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             })))
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.ChatList_Search_Messages_Menu_PrivateChats, icon: { theme in
                 return scope == .privateChats ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -5769,7 +5769,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             })))
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.ChatList_Search_Messages_Menu_GroupChats, icon: { theme in
                 return scope == .groups ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -5778,7 +5778,7 @@ final class ChatListSearchListPaneNode: ASDisplayNode, ChatListSearchPaneNode {
             })))
             items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.ChatList_Search_Messages_Menu_Channels, icon: { theme in
                 return scope == .channels ? generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Check"), color: theme.contextMenu.primaryColor) : UIImage()
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 guard let self else {
                     return
                 }
@@ -6525,7 +6525,7 @@ private final class EmptyResultsButtonPaidSearchContent: Component {
                 subtitleText = component.strings.ChatList_GlobalSearch_SearchButtonPaidSubtitle(stringForRemainingTime(remainingTime)).string
 
                 if self.timer == nil {
-                    self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                    self.timer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -6677,7 +6677,7 @@ private final class EmptyResultsButton: Component {
                     ),
                     content: buttonContent,
                     isEnabled: isEnabled,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

@@ -118,14 +118,14 @@ private final class SystemVideoContentNode: ASDisplayNode, UniversalVideoContent
         self.addSubnode(self.playerNode)
         self.player.actionAtItemEnd = .pause
         
-        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self] notification in
+        self.didPlayToEndTimeObserver = NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player.currentItem, queue: nil, using: { [weak self = self] notification in
             if let strongSelf = self {
                 strongSelf.player.seek(to: CMTime(seconds: 0.0, preferredTimescale: 30))
                 strongSelf.play()
             }
         })
         
-        self.imageNode.imageUpdated = { [weak self] _ in
+        self.imageNode.imageUpdated = { [weak self = self] _ in
             self?._ready.set(.single(Void()))
         }
         
@@ -137,7 +137,7 @@ private final class SystemVideoContentNode: ASDisplayNode, UniversalVideoContent
         self._bufferingStatus.set(.single(nil))
         self._status.set(self.statusValue)
         
-        self.timeObserver = self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 10), queue: DispatchQueue.main) { [weak self] time in
+        self.timeObserver = self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 10), queue: DispatchQueue.main) { [weak self = self] time in
             guard let strongSelf = self else {
                 return
             }
@@ -230,10 +230,10 @@ private final class SystemVideoContentNode: ASDisplayNode, UniversalVideoContent
             self._status.set(MediaPlayerStatus(generationTimestamp: 0.0, duration: self.approximateDuration, dimensions: CGSize(), timestamp: 0.0, baseRate: 1.0, seekId: self.seekId, status: .buffering(initial: true, whilePlaying: true, progress: 0.0, display: true), soundEnabled: true))
         }
         if !self.hasAudioSession {
-            self.audioSessionDisposable.set(self.audioSessionManager.push(audioSessionType: .play(mixWithOthers: false), activate: { [weak self] _ in
+            self.audioSessionDisposable.set(self.audioSessionManager.push(audioSessionType: .play(mixWithOthers: false), activate: { [weak self = self] _ in
                 self?.hasAudioSession = true
                 self?.player.play()
-            }, deactivate: { [weak self] _ in
+            }, deactivate: { [weak self = self] _ in
                 self?.hasAudioSession = false
                 self?.player.pause()
                 return .complete()

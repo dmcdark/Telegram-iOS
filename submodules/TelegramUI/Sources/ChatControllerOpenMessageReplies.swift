@@ -17,7 +17,7 @@ extension ChatControllerImpl {
         }
         
         let _ = self.presentVoiceMessageDiscardAlert(action: {
-            let progressSignal: Signal<Never, NoError> = Signal { [weak self] _ in
+            let progressSignal: Signal<Never, NoError> = Signal { [weak self = self] _ in
                 guard let strongSelf = self, let controllerInteraction = strongSelf.controllerInteraction else {
                     return EmptyDisposable
                 }
@@ -48,7 +48,7 @@ extension ChatControllerImpl {
             let progress = (progressSignal
             |> delay(0.15, queue: .mainQueue())).startStrict()
             
-            self.navigationActionDisposable.set((ChatControllerImpl.openMessageReplies(context: self.context, updatedPresentationData: self.updatedPresentationData, navigationController: navigationController, present: { [weak self] c, a in
+            self.navigationActionDisposable.set((ChatControllerImpl.openMessageReplies(context: self.context, updatedPresentationData: self.updatedPresentationData, navigationController: navigationController, present: { [weak self = self] c, a in
                 self?.present(c, in: .window(.root), with: a)
             }, messageId: messageId, isChannelPost: isChannelPost, atMessage: atMessageId, displayModalProgress: displayModalProgress)
             |> afterDisposed {

@@ -210,7 +210,7 @@ final class VideoAdComponent: Component {
                             Image(image: self.adIcon, contentMode: .center)
                         ),
                         effectAlignment: .center,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             if let self {
                                 component.moreAction(self.buttonNode)
                             }
@@ -237,7 +237,7 @@ final class VideoAdComponent: Component {
                         initialTimestamp: component.initialTimestamp,
                         minDisplayDuration: 10,
                         maxDisplayDuration: 30,
-                        action: { [weak self] available in
+                        action: { [weak self = self] available in
                             guard let self, let component = self.component else {
                                 return
                             }

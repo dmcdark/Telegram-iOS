@@ -134,7 +134,7 @@ final class EntityKeyboardAnimationTopPanelComponent: Component {
                     blurredBadgeColor: .clear,
                     accentIconColor: component.theme.list.itemAccentColor,
                     pointSize: displaySize,
-                    onUpdateDisplayPlaceholder: { [weak self] displayPlaceholder, duration in
+                    onUpdateDisplayPlaceholder: { [weak self = self] displayPlaceholder, duration in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1017,7 +1017,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongTapTimer() {
         self.longTapTimer?.invalidate()
-        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self] in
+        let longTapTimer = SwiftSignalKit.Timer(timeout: 0.25, repeat: false, completion: { [weak self = self] in
             self?.longTapTimerFired()
         }, queue: Queue.mainQueue())
         self.longTapTimer = longTapTimer
@@ -1032,7 +1032,7 @@ private final class ReorderGestureRecognizer: UIGestureRecognizer {
     
     private func startLongPressTimer() {
         self.longPressTimer?.invalidate()
-        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self] in
+        let longPressTimer = SwiftSignalKit.Timer(timeout: 0.6, repeat: false, completion: { [weak self = self] in
             self?.longPressTimerFired()
         }, queue: Queue.mainQueue())
         self.longPressTimer = longPressTimer
@@ -1588,7 +1588,7 @@ public final class EntityKeyboardTopPanelComponent: Component {
             
             self.clipsToBounds = true
             
-            self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+            self.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
                 guard let strongSelf = self else {
                     return false
                 }
@@ -1596,7 +1596,7 @@ public final class EntityKeyboardTopPanelComponent: Component {
             }
             
             let reorderGestureRecognizer = ReorderGestureRecognizer(
-                shouldBegin: { [weak self] point in
+                shouldBegin: { [weak self = self] point in
                     guard let strongSelf = self else {
                         return (false, false, nil)
                     }
@@ -1616,22 +1616,22 @@ public final class EntityKeyboardTopPanelComponent: Component {
                     }
                     return (false, false, nil)
                 }, willBegin: { _ in
-                }, began: { [weak self] itemView in
+                }, began: { [weak self = self] itemView in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.beginReordering(itemView: itemView)
-                }, ended: { [weak self] in
+                }, ended: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.endReordering()
-                }, moved: { [weak self] value in
+                }, moved: { [weak self = self] value in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.updateReordering(offset: value)
-                }, isActiveUpdated: { [weak self] isActive in
+                }, isActiveUpdated: { [weak self = self] isActive in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1756,7 +1756,7 @@ public final class EntityKeyboardTopPanelComponent: Component {
                 }
                 
                 if self.draggingStoppedTimer == nil {
-                    self.draggingStoppedTimer = SwiftSignalKit.Timer(timeout: 0.8, repeat: false, completion: { [weak self] in
+                    self.draggingStoppedTimer = SwiftSignalKit.Timer(timeout: 0.8, repeat: false, completion: { [weak self = self] in
                         guard let strongSelf = self else {
                             return
                         }
@@ -1822,7 +1822,7 @@ public final class EntityKeyboardTopPanelComponent: Component {
             self.reorderingHapticFeedback.impact()
             
             if self.currentReorderingScrollDisplayLink == nil {
-                self.currentReorderingScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.currentReorderingScrollDisplayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -2264,14 +2264,14 @@ public final class EntityKeyboardTopPanelComponent: Component {
             transition.setAlpha(view: self.highlightedIconBackgroundView, alpha: highlightAlpha)
             transition.setAlpha(view: self.highlightedIconTintBackgroundView, alpha: highlightAlpha)
             
-            panelEnvironment.visibilityFractionUpdated.connect { [weak self] (fraction, transition) in
+            panelEnvironment.visibilityFractionUpdated.connect { [weak self = self] (fraction, transition) in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.visibilityFractionUpdated(value: fraction, transition: transition)
             }
             
-            component.activeContentItemIdUpdated.connect { [weak self] (itemId, subcontentItemId, transition) in
+            component.activeContentItemIdUpdated.connect { [weak self = self] (itemId, subcontentItemId, transition) in
                 guard let strongSelf = self, let component = strongSelf.component else {
                     return
                 }

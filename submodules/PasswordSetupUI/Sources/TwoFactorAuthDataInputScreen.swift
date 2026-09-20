@@ -108,7 +108,7 @@ public final class TwoFactorDataInputScreen: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = TwoFactorDataInputScreenNode(sharedContext: self.sharedContext, presentationData: self.presentationData, mode: self.mode, action: { [weak self] in
+        self.displayNode = TwoFactorDataInputScreenNode(sharedContext: self.sharedContext, presentationData: self.presentationData, mode: self.mode, action: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -429,7 +429,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                 (strongSelf.displayNode as? TwoFactorDataInputScreenNode)?.isLoading = true
                 
                 let _ = (engine.auth.requestTwoStepVerifiationSettings(password: value)
-                |> deliverOnMainQueue).start(error: { [weak self] error in
+                |> deliverOnMainQueue).start(error: { [weak self = self] error in
                     guard let strongSelf = self else {
                         return
                     }
@@ -451,7 +451,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                     } else {
                         (strongSelf.displayNode as? TwoFactorDataInputScreenNode)?.onAction(success: false)
                     }
-                }, completed: { [weak self] in
+                }, completed: { [weak self = self] in
                     guard let strongSelf = self else {
                         return
                     }
@@ -475,7 +475,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                     navigationController.setViewControllers(controllers, animated: true)
                 })
             }
-        }, skipAction: { [weak self] in
+        }, skipAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -571,7 +571,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                 
                 disposable.set((strongSelf.forgotDataPromise.get()
                 |> take(1)
-                |> deliverOnMainQueue).start(next: { [weak self] configuration in
+                |> deliverOnMainQueue).start(next: { [weak self = self] configuration in
                     if let strongSelf = self, let configuration = configuration {
                         switch configuration {
                             case let .set(_, hasRecoveryEmail, _, _, pendingResetTimestamp):
@@ -593,7 +593,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                                                 navigationController?.filterController(strongSelf, animated: true)
                                             case .pendingPasswordReset:
                                                 let _ = (engine.auth.twoStepVerificationConfiguration()
-                                                |> deliverOnMainQueue).start(next: { [weak self] configuration in
+                                                |> deliverOnMainQueue).start(next: { [weak self = self] configuration in
                                                     if let strongSelf = self {
                                                         if let navigationController = navigationController, let twoStepAuthSettingsController = strongSelf.twoStepAuthSettingsController?(configuration) {
                                                             var controllers = navigationController.viewControllers.filter { controller in
@@ -622,7 +622,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                                                 switch result {
                                                 case .done, .waitingForReset:
                                                     let _ = (engine.auth.twoStepVerificationConfiguration()
-                                                    |> deliverOnMainQueue).start(next: { [weak self] configuration in
+                                                    |> deliverOnMainQueue).start(next: { [weak self = self] configuration in
                                                         if let strongSelf = self {
                                                             if let navigationController = navigationController, let twoStepAuthSettingsController = strongSelf.twoStepAuthSettingsController?(configuration) {
                                                                 var controllers = navigationController.viewControllers.filter { controller in
@@ -662,7 +662,7 @@ public final class TwoFactorDataInputScreen: ViewController {
                                                 switch result {
                                                 case .done, .waitingForReset:
                                                     let _ = (engine.auth.twoStepVerificationConfiguration()
-                                                    |> deliverOnMainQueue).start(next: { [weak self] configuration in
+                                                    |> deliverOnMainQueue).start(next: { [weak self = self] configuration in
                                                         if let strongSelf = self {
                                                             if let navigationController = navigationController, let twoStepAuthSettingsController = strongSelf.twoStepAuthSettingsController?(configuration) {
                                                                 var controllers = navigationController.viewControllers.filter { controller in
@@ -705,7 +705,7 @@ public final class TwoFactorDataInputScreen: ViewController {
             default:
                 break
             }
-        }, changeEmailAction: { [weak self] in
+        }, changeEmailAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -770,7 +770,7 @@ public final class TwoFactorDataInputScreen: ViewController {
             default:
                 break
             }
-        }, resendCodeAction: { [weak self] in
+        }, resendCodeAction: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1597,7 +1597,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
             action()
         }
         
-        self.skipActionButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.skipActionButtonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -1611,7 +1611,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
         }
         self.skipActionButtonNode.addTarget(self, action: #selector(self.skipActionPressed), forControlEvents: .touchUpInside)
         
-        self.changeEmailActionButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.changeEmailActionButtonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -1625,7 +1625,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
         }
         self.changeEmailActionButtonNode.addTarget(self, action: #selector(self.changeEmailActionPressed), forControlEvents: .touchUpInside)
         
-        self.resendCodeActionButtonNode.highligthedChanged = { [weak self] highlighted in
+        self.resendCodeActionButtonNode.highligthedChanged = { [weak self = self] highlighted in
             guard let strongSelf = self else {
                 return
             }
@@ -1639,7 +1639,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
         }
         self.resendCodeActionButtonNode.addTarget(self, action: #selector(self.resendCodeActionPressed), forControlEvents: .touchUpInside)
         
-        next = { [weak self] node in
+        next = { [weak self = self] node in
             guard let strongSelf = self else {
                 return
             }
@@ -1652,7 +1652,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
             }
         }
         var textHidden = true
-        let updateAnimations: () -> Void = { [weak self] in
+        let updateAnimations: () -> Void = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -1703,7 +1703,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
                 updateAnimations()
             }
         }
-        updated = { [weak self] _ in
+        updated = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1771,7 +1771,7 @@ private final class TwoFactorDataInputScreenNode: ViewControllerTracingNode, ASS
             }
             updateAnimations()
         }
-        toggleTextHidden = { [weak self] _ in
+        toggleTextHidden = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }

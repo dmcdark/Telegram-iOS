@@ -64,7 +64,7 @@ private final class SearchContextItemNode: ASDisplayNode, ContextMenuCustomNode,
         
         super.init()
         
-        self.state._updated = { [weak self] transition, _ in
+        self.state._updated = { [weak self = self] transition, _ in
             guard let self, let size = self.validLayout else {
                 return
             }
@@ -162,7 +162,7 @@ private final class SearchContextItemNode: ASDisplayNode, ContextMenuCustomNode,
                     content: AnyComponent(
                         BundleIconComponent(name: "Components/Search Bar/Clear", tintColor: self.presentationData.theme.contextMenu.secondaryColor, maxSize: CGSize(width: 24.0, height: 24.0))
                     ),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self else {
                             return
                         }

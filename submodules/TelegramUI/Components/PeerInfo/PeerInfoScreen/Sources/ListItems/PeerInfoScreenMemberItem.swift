@@ -75,7 +75,7 @@ private final class PeerInfoScreenMemberItemNode: PeerInfoScreenItemNode {
         
         super.init()
         
-        bringToFrontForHighlightImpl = { [weak self] in
+        bringToFrontForHighlightImpl = { [weak self = self] in
             self?.bringToFrontForHighlight?()
         }
         
@@ -90,7 +90,7 @@ private final class PeerInfoScreenMemberItemNode: PeerInfoScreenItemNode {
         recognizer.tapActionAtPoint = { point in
             return .keepWithSingleTap
         }
-        recognizer.highlight = { [weak self] point in
+        recognizer.highlight = { [weak self = self] point in
             guard let strongSelf = self else {
                 return
             }
@@ -223,7 +223,7 @@ private final class PeerInfoScreenMemberItemNode: PeerInfoScreenItemNode {
             
         }, removePeer: { _ in
             
-        }, contextAction: item.contextAction, hasTopStripe: false, hasTopGroupInset: false, noInsets: true, noCorners: true, displayDecorations: false, storyStats: item.member.storyStats, openStories: { [weak self] sourceView in
+        }, contextAction: item.contextAction, hasTopStripe: false, hasTopGroupInset: false, noInsets: true, noCorners: true, displayDecorations: false, storyStats: item.member.storyStats, openStories: { [weak self = self] sourceView in
             guard let self, let item = self.item else {
                 return
             }

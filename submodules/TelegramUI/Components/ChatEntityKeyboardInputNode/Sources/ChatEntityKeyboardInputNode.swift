@@ -578,7 +578,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                             interaction.sendEmoji(text, emojiAttribute, true)
                         }
                     },
-                    setStatus: { [weak self] file in
+                    setStatus: { [weak self = self] file in
                         guard let strongSelf = self else {
                             return
                         }
@@ -597,7 +597,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         strongSelf.currentUndoOverlayController = controller
                         interaction.presentController(controller, nil)
                     },
-                    copyEmoji: { [weak self] file in
+                    copyEmoji: { [weak self = self] file in
                         guard let strongSelf = self else {
                             return
                         }
@@ -636,7 +636,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     presentController: interaction.presentController,
                     presentGlobalOverlayController: interaction.presentGlobalOverlayController,
                     navigationController: interaction.getNavigationController,
-                    updateIsPreviewing: { [weak self] value in
+                    updateIsPreviewing: { [weak self = self] value in
                         self?.previewingStickersPromise.set(value)
                     }
                 ),
@@ -904,7 +904,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             navigationController: { [weak interaction] in
                 return interaction?.getNavigationController()
             },
-            requestUpdate: { [weak self] transition in
+            requestUpdate: { [weak self = self] transition in
                 guard let strongSelf = self else {
                     return
                 }
@@ -912,7 +912,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     strongSelf.interaction?.requestLayout(transition.containedViewLayoutTransition)
                 }
             },
-            updateSearchQuery: { [weak self] query in
+            updateSearchQuery: { [weak self = self] query in
                 guard let self = self else {
                     return
                 }
@@ -1122,7 +1122,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         self.emojiSearchStateValue.isSearching = true
                         self.emojiSearchDisposable.set((resultSignal
                         |> delay(0.25, queue: .mainQueue())
-                        |> deliverOnMainQueue).start(next: { [weak self] result in
+                        |> deliverOnMainQueue).start(next: { [weak self = self] result in
                             guard let self else {
                                 return
                             }
@@ -1178,7 +1178,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
 
                     var version = 0
                     self.emojiSearchDisposable.set((resultSignal
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -1217,7 +1217,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             updateScrollingToItemGroup: {
             },
             onScroll: {},
-            loadMore: { [weak self] in
+            loadMore: { [weak self = self] in
                 self?.emojiSearchContext?.loadMore()
             },
             chatPeerId: chatPeerId,
@@ -1328,7 +1328,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     }
                 ))
             },
-            openSearch: { [weak self] in
+            openSearch: { [weak self = self] in
                 if let strongSelf = self, let pagerView = strongSelf.entityKeyboardView.view as? EntityKeyboardComponent.View {
                     pagerView.openSearch()
                 }
@@ -1460,7 +1460,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             },
             requestUpdate: { _ in
             },
-            updateSearchQuery: { [weak self] query in
+            updateSearchQuery: { [weak self = self] query in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1575,7 +1575,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             self.emojiSearchState.get(),
             self.stickerSearchState.get()
         )
-        |> deliverOnMainQueue).start(next: { [weak self] inputData, gifs, emojiSearchState, stickerSearchState in
+        |> deliverOnMainQueue).start(next: { [weak self = self] inputData, gifs, emojiSearchState, stickerSearchState in
             guard let strongSelf = self else {
                 return
             }
@@ -1690,24 +1690,24 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     let _ = interaction.sendGif(item.file, view, rect, false, false)
                 }
             },
-            openGifContextMenu: { [weak self] item, sourceView, sourceRect, gesture, isSaved in
+            openGifContextMenu: { [weak self = self] item, sourceView, sourceRect, gesture, isSaved in
                 guard let strongSelf = self else {
                     return
                 }
                 strongSelf.openGifContextMenu(file: item.file, contextResult: item.contextResult, sourceView: sourceView, sourceRect: sourceRect, gesture: gesture, isSaved: isSaved)
             },
-            loadMore: { [weak self] token in
+            loadMore: { [weak self = self] token in
                 guard let strongSelf = self, let gifContext = strongSelf.gifContext else {
                     return
                 }
                 gifContext.loadMore(token: token)
             },
-            openSearch: { [weak self] in
+            openSearch: { [weak self = self] in
                 if let strongSelf = self, let pagerView = strongSelf.entityKeyboardView.view as? EntityKeyboardComponent.View {
                     pagerView.openSearch()
                 }
             },
-            updateSearchQuery: { [weak self] query in
+            updateSearchQuery: { [weak self = self] query in
                 guard let self else {
                     return
                 }
@@ -1721,7 +1721,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             hasSearch: currentInputData.gifs?.component.inputInteraction.hasSearch ?? false
         )
 
-        self.switchToTextInput = { [weak self] in
+        self.switchToTextInput = { [weak self = self] in
             if let self {
                 self.interaction?.switchToTextInput()
             }
@@ -1734,7 +1734,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             }
 
             self.hasRecentGifsDisposable = (hasRecentGifs
-            |> deliverOnMainQueue).start(next: { [weak self] hasRecentGifs in
+            |> deliverOnMainQueue).start(next: { [weak self = self] hasRecentGifs in
                 guard let strongSelf = self else {
                     return
                 }
@@ -1750,7 +1750,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
         }
 
         self.choosingStickerDisposable = (self.choosingSticker
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let self {
                 self.interaction?.updateChoosingSticker(value)
             }
@@ -1923,7 +1923,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                 externalBottomPanelContainer: nil,
                 externalTintMaskContainer: self.backgroundTintMaskContentView,
                 displayTopPanelBackground: self.opaqueTopPanelBackground ? .opaque : .none,
-                topPanelExtensionUpdated: { [weak self] topPanelExtension, transition in
+                topPanelExtensionUpdated: { [weak self = self] topPanelExtension, transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1933,7 +1933,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     }
                 },
                 topPanelScrollingOffset: { _, _ in },
-                hideInputUpdated: { [weak self] hideInput, adjustLayout, transition in
+                hideInputUpdated: { [weak self = self] hideInput, adjustLayout, transition in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1943,23 +1943,23 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         strongSelf.hideInputUpdated?(transition.containedViewLayoutTransition)
                     }
                 },
-                hideTopPanelUpdated: { [weak self] hideTopPanel, transition in
+                hideTopPanelUpdated: { [weak self = self] hideTopPanel, transition in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.isEmojiSearchActive = hideTopPanel
                     strongSelf.performLayout(transition: transition)
                 },
-                switchToTextInput: { [weak self] in
+                switchToTextInput: { [weak self = self] in
                     self?.switchToTextInput?()
                 },
-                switchToGifSubject: { [weak self] subject in
+                switchToGifSubject: { [weak self = self] subject in
                     guard let strongSelf = self else {
                         return
                     }
                     strongSelf.gifMode = subject
                 },
-                reorderItems: { [weak self] category, items in
+                reorderItems: { [weak self = self] category, items in
                     guard let strongSelf = self else {
                         return
                     }
@@ -1991,7 +1991,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         },
                         peekBehavior: self.emojiInputInteraction?.peekBehavior
                     )
-                    searchContainerNode.openGifContextMenu = { [weak self] item, sourceNode, sourceRect, gesture, isSaved in
+                    searchContainerNode.openGifContextMenu = { [weak self = self] item, sourceNode, sourceRect, gesture, isSaved in
                         guard let self else {
                             return
                         }
@@ -2196,7 +2196,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
         self.stableReorderableGroupOrder.removeValue(forKey: category)
 
         let _ = (self.context.engine.stickers.reorderStickerPacks(namespace: namespace, itemIds: currentIds)
-        |> deliverOnMainQueue).start(completed: { [weak self] in
+        |> deliverOnMainQueue).start(completed: { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -2224,7 +2224,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
         }
 
         let _ = (self.context.engine.stickers.isGifSaved(id: file.media.fileId)
-        |> deliverOnMainQueue).start(next: { [weak self] isGifSaved in
+        |> deliverOnMainQueue).start(next: { [weak self = self] isGifSaved in
             guard let strongSelf = self else {
                 return
             }
@@ -2241,7 +2241,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             var items: [ContextMenuItem] = []
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.MediaPicker_Send, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Resend"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 if let self {
                     if isSaved {
@@ -2264,7 +2264,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         if peerId != self?.context.account.peerId && peerId.namespace != Namespaces.Peer.SecretChat  {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_SendMessage_SendSilently, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Menu/SilentIcon"), color: theme.actionSheet.primaryTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.default)
                                 if let self {
                                     if isSaved {
@@ -2279,7 +2279,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                         if isSaved && interfaceState.sendPaidMessageStars == nil {
                             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_SendMessage_ScheduleMessage, icon: { theme in
                                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Input/Menu/ScheduleIcon"), color: theme.actionSheet.primaryTextColor)
-                            }, action: { [weak self] _, f in
+                            }, action: { [weak self = self] _, f in
                                 f(.default)
                                 if let self {
                                     let _ = self.interaction?.sendGif(file, sourceView, sourceRect, false, true)
@@ -2292,7 +2292,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
 
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Preview_Gif_AddCaption, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/AddCaption"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 if let self {
                     let _ = self.interaction?.editGif(file, true)
@@ -2301,7 +2301,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
 
             items.append(.action(ContextMenuActionItem(text: presentationData.strings.Preview_Gif_Edit, icon: { theme in
                 return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Draw"), color: theme.actionSheet.primaryTextColor)
-            }, action: { [weak self] _, f in
+            }, action: { [weak self = self] _, f in
                 f(.default)
                 if let self {
                     let _ = self.interaction?.editGif(file, false)
@@ -2311,7 +2311,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             if isSaved || isGifSaved {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.Conversation_ContextMenuDelete, textColor: .destructive, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Delete"), color: theme.actionSheet.destructiveActionTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
 
                     if let self {
@@ -2321,7 +2321,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             } else if canSaveGif && !isGifSaved {
                 items.append(.action(ContextMenuActionItem(text: presentationData.strings.Preview_SaveGif, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Save"), color: theme.actionSheet.primaryTextColor)
-                }, action: { [weak self] _, f in
+                }, action: { [weak self = self] _, f in
                     f(.dismissWithoutContent)
 
                     guard let strongSelf = self else {
@@ -2331,7 +2331,7 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                     let context = strongSelf.context
                     let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                     let _ = (toggleGifSaved(account: context.account, fileReference: file, saved: true)
-                    |> deliverOnMainQueue).start(next: { [weak self]  result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self]  result in
                         guard let strongSelf = self else {
                             return
                         }
@@ -2445,7 +2445,7 @@ public final class EntityInputView: UIInputView, LegacyMessageInputPanelInputVie
         self.clipsToBounds = true
 
         let inputInteraction = EmojiPagerContentComponent.InputInteraction(
-            performItemAction: { [weak self] groupId, item, _, _, _, _ in
+            performItemAction: { [weak self = self] groupId, item, _, _, _, _ in
                 let hasPremium: Signal<Bool, NoError>
                 if forceHasPremium {
                     hasPremium = .single(true)
@@ -2519,7 +2519,7 @@ public final class EntityInputView: UIInputView, LegacyMessageInputPanelInputVie
                     }
                 })
             },
-            deleteBackwards: { [weak self] in
+            deleteBackwards: { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -2533,7 +2533,7 @@ public final class EntityInputView: UIInputView, LegacyMessageInputPanelInputVie
             },
             addGroupAction: { _, _, _ in
             },
-            clearGroup: { [weak self] groupId in
+            clearGroup: { [weak self = self] groupId in
                 guard let strongSelf = self else {
                     return
                 }
@@ -2643,7 +2643,7 @@ public final class EntityInputView: UIInputView, LegacyMessageInputPanelInputVie
             inputNode.clipContentToTopPanel = true
             inputNode.emojiInputInteraction = inputInteraction
             inputNode.externalTopPanelContainerImpl = nil
-            inputNode.switchToTextInput = { [weak self] in
+            inputNode.switchToTextInput = { [weak self = self] in
                 self?.switchToKeyboard?()
             }
             if !hideBackground {
@@ -2824,7 +2824,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                 ),
                 elevatedLayout: false,
                 animateInAsReplacement: animateInAsReplacement,
-                action: { [weak self] overlayAction in
+                action: { [weak self = self] overlayAction in
                     if case .undo = overlayAction {
                         let _ = self?.context.engine.stickers.addStickerPackInteractively(info: action.info, items: action.items, positionInList: positionInList).start()
                     }
@@ -3064,7 +3064,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                             )
 
                             if !file.isPremiumSticker {
-                                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.Stickers_EditSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Draw"), color: theme.contextMenu.primaryColor) }, action: { [weak self] _, f in
+                                menuItems.append(.action(ContextMenuActionItem(text: presentationData.strings.Stickers_EditSticker, icon: { theme in generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Draw"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] _, f in
                                     f(.default)
 
                                     var emoji: [String] = []
@@ -3106,7 +3106,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                                                 let controller = strongSelf.context.sharedContext.makeStickerPackScreen(context: context, updatedPresentationData: nil, mainStickerPack: packReference, stickerPacks: [packReference], loadedStickerPacks: [], actionTitle: nil, isEditing: false, expandIfNeeded: false, parentNavigationController: interaction.navigationController(), sendSticker: { file, sourceView, sourceRect in
                                                     sendSticker(file, false, false, nil, false, sourceView, sourceRect, nil)
                                                     return true
-                                                }, actionPerformed: { [weak self] actions in
+                                                }, actionPerformed: { [weak self = self] actions in
                                                     guard let self else {
                                                         return
                                                     }
@@ -3157,7 +3157,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                         }))
                     }
                 }
-            }, present: { [weak self] content, sourceView, sourceRect in
+            }, present: { [weak self = self] content, sourceView, sourceRect in
                 guard let strongSelf = self else {
                     return nil
                 }
@@ -3169,7 +3169,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                 let controller = makePeekController(presentationData: presentationData, content: content, sourceView: {
                     return (sourceView, sourceRect)
                 })
-                controller.visibilityUpdated = { [weak self] visible in
+                controller.visibilityUpdated = { [weak self = self] visible in
                     guard let strongSelf = self, let interaction = strongSelf.interaction else {
                         return
                     }
@@ -3178,7 +3178,7 @@ public final class EmojiContentPeekBehaviorImpl: EmojiContentPeekBehavior {
                 strongSelf.peekController = controller
                 strongSelf.present(controller, nil)
                 return controller
-            }, updateContent: { [weak self] content in
+            }, updateContent: { [weak self = self] content in
                 guard let strongSelf = self else {
                     return
                 }

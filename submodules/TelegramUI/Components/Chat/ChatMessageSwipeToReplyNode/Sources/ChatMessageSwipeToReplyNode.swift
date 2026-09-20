@@ -180,7 +180,7 @@ public final class ChatMessageSwipeToReplyNode: ASDisplayNode {
             return
         }
         self.layer.transform = CATransform3DMakeScale(1.1, 1.1, 1.0)
-        self.layer.animateScale(from: 1.0, to: 1.1, duration: 0.2, completion: { [weak self] _ in
+        self.layer.animateScale(from: 1.0, to: 1.1, duration: 0.2, completion: { [weak self = self] _ in
             self?.layer.transform = CATransform3DMakeScale(1.0, 1.0, 1.0)
             self?.layer.animateScale(from: 1.1, to: 1.0, duration: 0.15)
         })

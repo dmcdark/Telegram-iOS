@@ -155,7 +155,7 @@ public final class PeerInfoChatPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScro
         self.clipsToBounds = true
         
         self.presentationDataDisposable = (self.context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             guard let self else {
                 return
             }
@@ -195,7 +195,7 @@ public final class PeerInfoChatPaneNode: ASDisplayNode, PeerInfoPaneNode, ASScro
         self.addSubnode(self.chatController.displayNode)
         self.chatController.displayNode.clipsToBounds = true
         
-        self.chatController.stateUpdated = { [weak self] transition in
+        self.chatController.stateUpdated = { [weak self = self] transition in
             guard let self else {
                 return
             }

@@ -128,7 +128,7 @@ private final class StarsTransactionSheetContent: CombinedComponent {
                         return TelegramEngine.EngineData.Item.Peer.Peer(id: peerId)
                     }
                 )
-            ) |> deliverOnMainQueue).startStrict(next: { [weak self] peers in
+            ) |> deliverOnMainQueue).startStrict(next: { [weak self = self] peers in
                 if let strongSelf = self {
                     var peersMap: [EnginePeer.Id: EnginePeer] = [:]
                     for peerId in peerIds {
@@ -1943,7 +1943,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
         self.navigationPresentation = .flatModal
         self.automaticallyControlPresentationContextLayout = false
         
-        openPeerImpl = { [weak self] peer, isProfile in
+        openPeerImpl = { [weak self = self] peer, isProfile in
             guard let self, let navigationController = self.navigationController as? NavigationController else {
                 return
             }
@@ -1966,7 +1966,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             })
         }
         
-        openMessageImpl = { [weak self] messageId in
+        openMessageImpl = { [weak self = self] messageId in
             guard let self else {
                 return
             }
@@ -1983,7 +1983,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             })
         }
         
-        openMediaImpl = { [weak self] media, transitionNode, addToTransitionSurface in
+        openMediaImpl = { [weak self = self] media, transitionNode, addToTransitionSurface in
             guard let self else {
                 return
             }
@@ -2024,12 +2024,12 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             }))
         }
         
-        openAppExamplesImpl = { [weak self] in
+        openAppExamplesImpl = { [weak self = self] in
             guard let self else {
                 return
             }
             let _ = (context.sharedContext.makeMiniAppListScreenInitialData(context: context)
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] initialData in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] initialData in
                 guard let self, let navigationController = self.navigationController as? NavigationController else {
                     return
                 }
@@ -2037,7 +2037,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             })
         }
         
-        openPaidMessageFeeImpl = { [weak self] in
+        openPaidMessageFeeImpl = { [weak self = self] in
             guard let self, let navigationController = self.navigationController as? NavigationController else {
                 return
             }
@@ -2054,7 +2054,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             })
         }
         
-        copyTransactionIdImpl = { [weak self] transactionId in
+        copyTransactionIdImpl = { [weak self = self] transactionId in
             guard let self else {
                 return
             }
@@ -2068,7 +2068,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             HapticFeedback().tap()
         }
         
-        updateSubscriptionImpl = { [weak self] in
+        updateSubscriptionImpl = { [weak self = self] in
             guard let self, case let .subscription(subscription) = subject, let navigationController = self.navigationController as? NavigationController else {
                 return
             }
@@ -2102,7 +2102,7 @@ public class StarsTransactionScreen: ViewControllerComponentContainer {
             }
         }
         
-        sendGiftImpl = { [weak self] peerId in
+        sendGiftImpl = { [weak self = self] peerId in
             guard let self else {
                 return
             }

@@ -108,7 +108,7 @@ class RecentSessionsHeaderItemNode: ListViewItemNode {
         }
         self.titleNode.view.addGestureRecognizer(recognizer)
         
-        self.buttonNode.pressed = { [weak self] in
+        self.buttonNode.pressed = { [weak self = self] in
             if let strongSelf = self, let item = strongSelf.item {
                 item.buttonAction()
             }
@@ -140,7 +140,7 @@ class RecentSessionsHeaderItemNode: ListViewItemNode {
             
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     if strongSelf.item == nil {
                         strongSelf.animationNode.autoplay = true

@@ -109,7 +109,7 @@ private final class MediaGridLayer: SimpleLayer {
             |> map { generator -> UIImage? in
                 return generator(TransformImageArguments(corners: ImageCorners(radius: 0.0), imageSize: dimensions, boundingSize: CGSize(width: 100.0, height: 100.0), intrinsicInsets: UIEdgeInsets()))?.generateImage()
             }
-            |> deliverOnMainQueue).start(next: { [weak self] image in
+            |> deliverOnMainQueue).start(next: { [weak self = self] image in
                 guard let self, let image else {
                     return
                 }
@@ -400,7 +400,7 @@ final class StorageMediaGridPanelComponent: Component {
             
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:))))
             
-            self.shouldBegin = { [weak self] point in
+            self.shouldBegin = { [weak self = self] point in
                 guard let self else {
                     return false
                 }
@@ -423,7 +423,7 @@ final class StorageMediaGridPanelComponent: Component {
                 return true
             }
 
-            self.customActivationProgress = { [weak self] progress, update in
+            self.customActivationProgress = { [weak self = self] progress, update in
                 guard let self, let itemLayer = self.currentGestureItemLayer else {
                     return
                 }
@@ -459,7 +459,7 @@ final class StorageMediaGridPanelComponent: Component {
                 }
             }
             
-            self.activated = { [weak self] gesture, _ in
+            self.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component, let itemLayer = self.currentGestureItemLayer else {
                     return
                 }

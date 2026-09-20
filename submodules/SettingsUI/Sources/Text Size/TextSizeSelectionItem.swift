@@ -183,7 +183,7 @@ class BubbleSettingsRadiusItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     let firstTime = strongSelf.item == nil || item.force
                     strongSelf.item = item

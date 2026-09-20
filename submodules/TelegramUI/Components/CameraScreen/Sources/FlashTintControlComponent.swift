@@ -193,7 +193,7 @@ final class FlashTintControlComponent: Component {
          
             self.dismissView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissTapped)))
             
-            sizeUpdateImpl = { [weak self] size in
+            sizeUpdateImpl = { [weak self = self] size in
                 if let self, let component {
                     component.updateSize(size)
                 }

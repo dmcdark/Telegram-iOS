@@ -193,7 +193,7 @@ private final class ChatMessagePollOptionRadioNode: ASDisplayNode {
                 self.startTime = timestamp
             }
             if self.displayLink == nil {
-                self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self] in
+                self.displayLink = ConstantDisplayLinkAnimator(update: { [weak self = self] in
                     self?.updateAnimating()
                     self?.setNeedsDisplay()
                 })
@@ -576,7 +576,7 @@ private final class ChatMessagePollOptionNode: ASDisplayNode {
         self.containerNode.addSubnode(self.avatarsNode)
 
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.containerNode.view.tag = 0x2bad
@@ -631,7 +631,7 @@ private final class ChatMessagePollOptionNode: ASDisplayNode {
             }
         }
 
-        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self] isExtractedToContextPreview, transition in
+        self.contextSourceNode.willUpdateIsExtractedToContextPreview = { [weak self = self] isExtractedToContextPreview, transition in
             guard let self else {
                 return
             }
@@ -708,7 +708,7 @@ private final class ChatMessagePollOptionNode: ASDisplayNode {
             }
         }
 
-        self.contextSourceNode.isExtractedToContextPreviewUpdated = { [weak self] isExtracted in
+        self.contextSourceNode.isExtractedToContextPreviewUpdated = { [weak self = self] isExtracted in
             guard let self else {
                 return
             }
@@ -1578,7 +1578,7 @@ private final class ChatMessagePollAddOptionNode: ASDisplayNode {
         self.imageButton.isExclusiveTouch = true
         self.imageButton.addTarget(self, action: #selector(self.imageButtonPressed), forControlEvents: .touchUpInside)
         self.textField.parentState = self.textFieldState
-        self.textFieldState._updated = { [weak self] transition, _ in
+        self.textFieldState._updated = { [weak self = self] transition, _ in
             self?.handleTextFieldStateUpdated(transition: transition)
         }
     }
@@ -1648,7 +1648,7 @@ private final class ChatMessagePollAddOptionNode: ASDisplayNode {
                     },
                     paste: { _ in
                     },
-                    returnKeyAction: { [weak self] in
+                    returnKeyAction: { [weak self = self] in
                         self?.requestSave?()
                     },
                     backspaceKeyAction: {
@@ -1892,7 +1892,7 @@ private final class ChatMessagePollAddOptionNode: ASDisplayNode {
                         size: modeSelectorSize
                     )),
                     effectAlignment: .center,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.leftAccessoryPressed()
                     },
                     animateScale: false
@@ -2340,7 +2340,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
         self.addSubnode(self.buttonViewResultsTextNode)
         self.addSubnode(self.buttonNode)
 
-        displaySolution = { [weak self] in
+        displaySolution = { [weak self = self] in
             guard let strongSelf = self, let item = strongSelf.item, let poll = strongSelf.poll, let solution = poll.results.solution else {
                 return
             }
@@ -2348,7 +2348,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
         }
 
         self.buttonNode.addTarget(self, action: #selector(self.buttonPressed), forControlEvents: .touchUpInside)
-        self.buttonNode.highligthedChanged = { [weak self] highlighted in
+        self.buttonNode.highligthedChanged = { [weak self = self] highlighted in
             if let strongSelf = self {
                 if highlighted {
                     strongSelf.buttonSubmitActiveTextNode.layer.removeAnimation(forKey: "opacity")
@@ -2368,7 +2368,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
             }
         }
 
-        self.avatarsNode.pressed = { [weak self] in
+        self.avatarsNode.pressed = { [weak self = self] in
             self?.buttonPressed()
         }
     }
@@ -2498,7 +2498,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
             present: { [weak item] controller, _ in
                 item?.controllerInteraction.navigationController()?.pushViewController(controller)
             },
-            completion: { [weak self] media in
+            completion: { [weak self = self] media in
                 guard let self else {
                     return
                 }
@@ -2526,7 +2526,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                 source: .resource(media.media.resourceReference(largest.resource)),
                 dimensions: largest.dimensions
             )
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -2559,7 +2559,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                 attributes: file.attributes,
                 hintFileIsLarge: false
             )
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -3097,7 +3097,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                     let buttonSaveTextFrame = CGRect(origin: CGPoint(x: floor((resultSize.width - buttonSaveTextLayout.size.width) / 2.0), y: optionsButtonSpacing), size: buttonSaveTextLayout.size)
                     let buttonViewResultsTextFrame = CGRect(origin: CGPoint(x: floor((resultSize.width - buttonViewResultsTextLayout.size.width) / 2.0), y: optionsButtonSpacing), size: buttonViewResultsTextLayout.size)
                     
-                    return (resultSize, { [weak self] animation, synchronousLoad, _ in
+                    return (resultSize, { [weak self = self] animation, synchronousLoad, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.poll = poll
@@ -3147,7 +3147,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                                     strongSelf.addSubnode(optionNode)
                                     let option = optionNode.option
                                     
-                                    optionNode.pressed = { [weak self] in
+                                    optionNode.pressed = { [weak self = self] in
                                         guard let self,
                                               let item = self.item,
                                               let option else {
@@ -3155,7 +3155,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                                         }
                                         item.controllerInteraction.requestSelectMessagePollOptions(item.message.id, [option.opaqueIdentifier])
                                     }
-                                    optionNode.resultPressed = { [weak self] in
+                                    optionNode.resultPressed = { [weak self = self] in
                                         guard let self,
                                               let item = self.item,
                                               let option else {
@@ -3169,13 +3169,13 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                                             }
                                         }
                                     }
-                                    optionNode.selectionUpdated = { [weak self] in
+                                    optionNode.selectionUpdated = { [weak self = self] in
                                         guard let self else {
                                             return
                                         }
                                         self.updateSelection()
                                     }
-                                    optionNode.longTapped = { [weak self] in
+                                    optionNode.longTapped = { [weak self = self] in
                                         guard let self,
                                               let item = self.item,
                                               let option else {
@@ -3222,25 +3222,25 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                                 }
                                 addOptionNode.frame = addOptionNodeFrame
                                 addOptionNode.isUserInteractionEnabled = !isRequesting
-                                addOptionNode.textUpdated = { [weak self] text in
+                                addOptionNode.textUpdated = { [weak self = self] text in
                                     self?.updateNewOptionText(text)
                                 }
-                                addOptionNode.heightUpdated = { [weak self] in
+                                addOptionNode.heightUpdated = { [weak self = self] in
                                     self?.requestNewOptionLayoutUpdate()
                                 }
-                                addOptionNode.attachPressed = { [weak self] in
+                                addOptionNode.attachPressed = { [weak self = self] in
                                     self?.openNewOptionAttachment()
                                 }
-                                addOptionNode.mediaPressed = { [weak self] in
+                                addOptionNode.mediaPressed = { [weak self = self] in
                                     self?.openNewOptionAttachment()
                                 }
-                                addOptionNode.modeSelectorPressed = { [weak self] in
+                                addOptionNode.modeSelectorPressed = { [weak self = self] in
                                     self?.toggleNewOptionInputMode()
                                 }
-                                addOptionNode.requestSave = { [weak self] in
+                                addOptionNode.requestSave = { [weak self = self] in
                                     self?.buttonPressed()
                                 }
-                                addOptionNode.focusUpdated = { [weak self] focused in
+                                addOptionNode.focusUpdated = { [weak self = self] focused in
                                     guard let self else {
                                         return
                                     }
@@ -3718,7 +3718,7 @@ public class ChatMessagePollBubbleContentNode: ChatMessageBubbleContentNode {
                             if case .longTap = gesture, let webpage = media as? TelegramMediaWebpage, let url = webpage.content.url {
                                 return ChatMessageBubbleContentTapAction(content: .url(ChatMessageBubbleContentTapAction.Url(url: url, concealed: true)), rects: [absoluteMediaFrame])
                             } else if case .tap = gesture {
-                                return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+                                return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                                     if let item = self?.item {
                                         item.controllerInteraction.openPollMedia(item.message, .option(option))
                                     }
@@ -3973,7 +3973,7 @@ private class DeadlineTimerNode: ASDisplayNode {
         
         if duration > 0 && duration < 60 * 60 * 24 {
             if self.timer == nil {
-                self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self] in
+                self.timer = SwiftSignalKit.Timer(timeout: 1.0, repeat: true, completion: { [weak self = self] in
                     guard let self, let params = self.params else {
                         return
                     }

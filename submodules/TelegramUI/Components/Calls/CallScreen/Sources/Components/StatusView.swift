@@ -63,7 +63,7 @@ private final class AnimatedDotsLayer: SimpleLayer {
             self.addSublayer(dotLayer)
         }
         
-        self.didEnterHierarchy = { [weak self] in
+        self.didEnterHierarchy = { [weak self = self] in
             self?.updateAnimations()
         }
     }
@@ -276,7 +276,7 @@ final class StatusView: UIView {
                 let duration = timestamp - activeState.startTimestamp
                 let nextTickDelay = ceil(duration) - duration + 0.05
                 
-                self.activeDurationTimer = Foundation.Timer.scheduledTimer(withTimeInterval: nextTickDelay, repeats: false, block: { [weak self] _ in
+                self.activeDurationTimer = Foundation.Timer.scheduledTimer(withTimeInterval: nextTickDelay, repeats: false, block: { [weak self = self] _ in
                     guard let self else {
                         return
                     }

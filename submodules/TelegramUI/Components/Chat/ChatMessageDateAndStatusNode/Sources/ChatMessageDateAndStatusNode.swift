@@ -337,7 +337,7 @@ public class ChatMessageDateAndStatusNode: ASDisplayNode {
 
         let reactionButtonsContainer = self.reactionButtonsContainer
         
-        return { [weak self] arguments in
+        return { [weak self = self] arguments in
             let dateColor: UIColor
             var backgroundImage: UIImage?
             var blurredBackgroundColor: (UIColor, Bool)?

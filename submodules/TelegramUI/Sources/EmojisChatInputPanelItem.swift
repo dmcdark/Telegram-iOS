@@ -117,7 +117,7 @@ final class EmojisChatInputPanelItemNode: ListViewItemNode {
     
     func asyncLayout() -> (_ item: EmojisChatInputPanelItem, _ params: ListViewItemLayoutParams, _ mergedTop: Bool, _ mergedBottom: Bool) -> (ListViewItemNodeLayout, (ListViewItemUpdateAnimation) -> Void) {
         let makeSymbolLayout = TextNode.asyncLayout(self.symbolNode)
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let (symbolLayout, symbolApply) = makeSymbolLayout(TextNodeLayoutArguments(attributedString: NSAttributedString(string: "\(item.symbol)", font: textFont, textColor: item.theme.list.itemPrimaryTextColor), backgroundColor: nil, maximumNumberOfLines: 1, truncationType: .end, constrainedSize: CGSize(width: 50.0, height: 50.0), alignment: .natural, cutout: nil, insets: UIEdgeInsets()))
             
             let nodeLayout = ListViewItemNodeLayout(contentSize: EmojisChatInputPanelItemNode.itemSize, insets: UIEdgeInsets())

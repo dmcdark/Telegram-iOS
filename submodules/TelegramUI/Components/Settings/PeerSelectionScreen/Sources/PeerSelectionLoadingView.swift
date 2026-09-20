@@ -36,10 +36,10 @@ final class ShimmerEffectView: UIView {
         self.imageViewContainer.addSubview(self.imageView)
         self.addSubview(self.imageViewContainer)
         
-        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didEnterHierarchy = { [weak self = self] in
             self?.didEnterHierarchy()
         }
-        self.hierarchyTrackingLayer.didExitHierarchy = { [weak self] in
+        self.hierarchyTrackingLayer.didExitHierarchy = { [weak self = self] in
             self?.didExitHierarchy()
         }
     }

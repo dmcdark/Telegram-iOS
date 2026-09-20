@@ -254,7 +254,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
                     }
                     let fittedDimensions = dimensions.cgSize.aspectFitted(fitToSize)
                     self.disposables.add((source.directDataPath(attemptSynchronously: true)
-                    |> deliverOn(self.queue)).start(next: { [weak self] path in
+                    |> deliverOn(self.queue)).start(next: { [weak self = self] path in
                         if let strongSelf = self, let path {
                             if let data = try? Data(contentsOf: URL(fileURLWithPath: path), options: [.mappedRead]) {
                                 let queue = strongSelf.queue
@@ -300,7 +300,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
             } else {
                 self.isAnimated = false
                 self.disposables.add((chatMessageSticker(postbox: postbox, userLocation: .other, file: file, small: false, fetched: true, onlyFullSize: true, thumbnail: false, synchronousLoad: false, colorSpace: self.colorSpace)
-                |> deliverOn(self.queue)).start(next: { [weak self] generator in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] generator in
                     if let self {
                         let context = generator(TransformImageArguments(corners: ImageCorners(), imageSize: baseSize, boundingSize: baseSize, intrinsicInsets: UIEdgeInsets()))
                         let image = context?.generateImage(colorSpace: self.colorSpace)
@@ -465,7 +465,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
                 tintColor = self.tintColor ?? UIColor(rgb: 0xffffff)
             }
             
-            let processFrame: (Double?, Int?, Int?, (Int) -> AnimatedStickerFrame?) -> Void = { [weak self] duration, frameCount, frameRate, takeFrame in
+            let processFrame: (Double?, Int?, Int?, (Int) -> AnimatedStickerFrame?) -> Void = { [weak self = self] duration, frameCount, frameRate, takeFrame in
                 guard let strongSelf = self else {
                     completion(nil)
                     return
@@ -553,7 +553,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
             if self.isVideoSticker {
                 self.disposables.add((self.videoFrameSource.get()
                 |> take(1)
-                |> deliverOn(self.queue)).start(next: { [weak self] frameSource in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] frameSource in
                     guard let strongSelf = self else {
                         completion(nil)
                         return
@@ -577,7 +577,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
             } else {
                 self.disposables.add((self.frameSource.get()
                 |> take(1)
-                |> deliverOn(self.queue)).start(next: { [weak self] frameSource in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] frameSource in
                     guard let strongSelf = self else {
                         completion(nil)
                         return
@@ -607,7 +607,7 @@ final class MediaEditorComposerStickerEntity: MediaEditorComposerEntity {
             } else {
                 let _ = (self.imagePromise.get()
                 |> take(1)
-                |> deliverOn(self.queue)).start(next: { [weak self] image in
+                |> deliverOn(self.queue)).start(next: { [weak self = self] image in
                     if let self {
                         self.image = CIImage(image: image, options: [.colorSpace: self.colorSpace])
                         completion(self.image)

@@ -86,7 +86,7 @@ final class InstantPageSettingsNode: ASDisplayNode {
                 InstantPageSettingsBacklightItemNode(theme: self.theme)
             ],
             [
-                InstantPageSettingsFontSizeItemNode(theme: self.theme, fontSizeVariant: Int(settings.fontSize.rawValue), updated: { [weak self] value in
+                InstantPageSettingsFontSizeItemNode(theme: self.theme, fontSizeVariant: Int(settings.fontSize.rawValue), updated: { [weak self = self] value in
                     if let strongSelf = self {
                         strongSelf.updateSettings {
                             let size: InstantPagePresentationFontSize = InstantPagePresentationFontSize(rawValue: Int32(value)) ?? .standard
@@ -112,7 +112,7 @@ final class InstantPageSettingsNode: ASDisplayNode {
             }
         }
         
-        updateSerifImpl = { [weak self] value in
+        updateSerifImpl = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.updateSettings {
                     return $0.withUpdatedForceSerif(value)
@@ -120,7 +120,7 @@ final class InstantPageSettingsNode: ASDisplayNode {
             }
         }
         
-        updateThemeTypeImpl = { [weak self] value in
+        updateThemeTypeImpl = { [weak self = self] value in
             if let strongSelf = self {
                 let disableAutoNightMode = strongSelf.currentThemeType.1
                 strongSelf.updateSettings {
@@ -134,14 +134,14 @@ final class InstantPageSettingsNode: ASDisplayNode {
             }
         }
         
-        updateAutoNightImpl = { [weak self] value in
+        updateAutoNightImpl = { [weak self = self] value in
             if let strongSelf = self {
                 strongSelf.updateSettings {
                     return $0.withUpdatedAutoNightMode(value).withUpdatedIgnoreAutoNightModeUntil(0)
                 }
             }
         }
-        openInSafariImpl = { [weak self] in
+        openInSafariImpl = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.openInSafari()
             }
@@ -212,14 +212,14 @@ final class InstantPageSettingsNode: ASDisplayNode {
     
     func animateIn() {
         self.layer.allowsGroupOpacity = true
-        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.3, completion: { [weak self = self] _ in
             self?.layer.allowsGroupOpacity = false
         })
     }
     
     func animateOut(completion: @escaping () -> Void) {
         self.layer.allowsGroupOpacity = true
-        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self] _ in
+        self.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak self = self] _ in
             self?.layer.allowsGroupOpacity = false
             completion()
         })

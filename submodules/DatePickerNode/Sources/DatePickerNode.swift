@@ -512,7 +512,7 @@ public final class DatePickerNode: ASDisplayNode {
         self.dateButtonNode.addTarget(self, action: #selector(self.dateButtonPressed), forControlEvents: .touchUpInside)
         self.timeButtonNode.addTarget(self, action: #selector(self.timeButtonPressed), forControlEvents: .touchUpInside)
         
-        timeChangedImpl = { [weak self] date in
+        timeChangedImpl = { [weak self = self] date in
             if let strongSelf = self {
                 let updatedState = State(minDate: strongSelf.state.minDate, maxDate: strongSelf.state.maxDate, date: date, displayingMonthSelection: strongSelf.state.displayingMonthSelection, displayingDateSelection: strongSelf.state.displayingDateSelection, displayingTimeSelection: strongSelf.state.displayingTimeSelection, selectedMonth: strongSelf.state.selectedMonth)
                 strongSelf.updateState(updatedState, animated: false)
@@ -521,7 +521,7 @@ public final class DatePickerNode: ASDisplayNode {
             }
         }
         
-        monthChangedImpl = { [weak self] date in
+        monthChangedImpl = { [weak self = self] date in
             if let strongSelf = self {
                 let updatedState = State(minDate: strongSelf.state.minDate, maxDate: strongSelf.state.maxDate, date: date, displayingMonthSelection: strongSelf.state.displayingMonthSelection, displayingDateSelection: strongSelf.state.displayingDateSelection, displayingTimeSelection: strongSelf.state.displayingTimeSelection, selectedMonth: monthForDate(date))
                 strongSelf.updateState(updatedState, animated: false)

@@ -77,7 +77,7 @@ public final class ActionPanelComponent: Component {
             self.dismissButton.addSubview(self.dismissIconView)
             self.addSubview(self.dismissButton)
             
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.contentView.layer.removeAnimation(forKey: "opacity")
@@ -90,7 +90,7 @@ public final class ActionPanelComponent: Component {
             }
             self.addTarget(self, action: #selector(self.pressed), for: .touchUpInside)
             
-            self.dismissButton.highligthedChanged = { [weak self] highlighted in
+            self.dismissButton.highligthedChanged = { [weak self = self] highlighted in
                 if let self {
                     if highlighted {
                         self.dismissButton.layer.removeAnimation(forKey: "opacity")

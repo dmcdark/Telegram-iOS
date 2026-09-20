@@ -340,7 +340,7 @@ private class MessagePriceItemNode: ListViewItemNode, ItemListItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -502,7 +502,7 @@ private class MessagePriceItemNode: ListViewItemNode, ItemListItemNode {
                                     tintWhenDisabled: false,
                                     allowActionWhenDisabled: false,
                                     displaysProgress: false,
-                                    action: { [weak self] in
+                                    action: { [weak self = self] in
                                         guard let self, let item = self.item else {
                                             return
                                         }

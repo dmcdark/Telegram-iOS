@@ -34,7 +34,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
             self.disposable.set((value.value.ready.get()
             |> filter { $0 }
             |> take(1)
-            |> deliverOnMainQueue).start(next: { [weak self] _ in
+            |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                 if localIsReady == nil {
                     localIsReady = true
                 } else if let strongSelf = self {
@@ -138,13 +138,13 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
     public override func didLoad() {
         super.didLoad()
         
-        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] _ in
+        let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] _ in
             guard let strongSelf = self, strongSelf.controllers.count > 1 else {
                 return []
             }
             return .right
         })
-        /*panRecognizer.dynamicEdgeWidth = { [weak self] _ in
+        /*panRecognizer.dynamicEdgeWidth = { [weak self = self] _ in
             guard let self, let controller = self.controllers.last, let value = controller.interactiveNavivationGestureEdgeWidth else {
                 return .constant(16.0)
             }
@@ -159,7 +159,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
         self.panRecognizer = panRecognizer
         self.view.addGestureRecognizer(panRecognizer)
         
-        /*self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self] in
+        /*self.view.disablesInteractiveTransitionGestureRecognizerNow = { [weak self = self] in
             guard let strongSelf = self else {
                 return false
             }
@@ -284,7 +284,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
                 
                 if velocity > 1000 || navigationTransitionCoordinator.progress > 0.2 {
                     self.state.top?.value.viewWillLeaveNavigation()
-                    navigationTransitionCoordinator.animateCompletion(velocity, completion: { [weak self] in
+                    navigationTransitionCoordinator.animateCompletion(velocity, completion: { [weak self = self] in
                         guard let strongSelf = self, let _ = strongSelf.state.layout, let _ = strongSelf.state.transition, let top = strongSelf.state.top else {
                             return
                         }
@@ -302,7 +302,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
                         strongSelf.ignoreInputHeight = false
                     })
                 } else {
-                    navigationTransitionCoordinator.animateCancel({ [weak self] in
+                    navigationTransitionCoordinator.animateCancel({ [weak self = self] in
                         guard let strongSelf = self, let top = strongSelf.state.top, let transition = strongSelf.state.transition else {
                             return
                         }
@@ -378,7 +378,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
                         if last.view.disableAutomaticKeyboardHandling.isEmpty {
                             updatedLayout = updatedLayout.withUpdatedInputHeight(nil)
                         }
-                        self.state.pending = PendingChild(value: self.makeChild(layout: updatedLayout, value: last), transitionType: transitionType, transition: transition, update: { [weak self] pendingChild in
+                        self.state.pending = PendingChild(value: self.makeChild(layout: updatedLayout, value: last), transitionType: transitionType, transition: transition, update: { [weak self = self] pendingChild in
                             self?.pendingChildIsReady(pendingChild)
                         })
                     }
@@ -492,7 +492,7 @@ public final class NavigationContainer: ASDisplayNode, ASGestureRecognizerDelega
             toValue.value.setIgnoreAppearanceMethodInvocations(false)
             
             let screenCornerRadius = self.minimizedContainer == nil && self.state.canBeClosed != true ? layout.deviceMetrics.screenCornerRadius : 0.0
-            let topTransition = TopTransition(type: transitionType, previous: fromValue, coordinator: NavigationTransitionCoordinator(transition: mappedTransitionType, isInteractive: false, isFlat: self.isFlat, container: self, topNode: topController.displayNode, topNavigationBar: topController.transitionNavigationBar, bottomNode: bottomController.displayNode, bottomNavigationBar: bottomController.transitionNavigationBar, screenCornerRadius: screenCornerRadius, didUpdateProgress: { [weak self] _, transition, topFrame, bottomFrame in
+            let topTransition = TopTransition(type: transitionType, previous: fromValue, coordinator: NavigationTransitionCoordinator(transition: mappedTransitionType, isInteractive: false, isFlat: self.isFlat, container: self, topNode: topController.displayNode, topNavigationBar: topController.transitionNavigationBar, bottomNode: bottomController.displayNode, bottomNavigationBar: bottomController.transitionNavigationBar, screenCornerRadius: screenCornerRadius, didUpdateProgress: { [weak self = self] _, transition, topFrame, bottomFrame in
                 guard let strongSelf = self else {
                     return
                 }

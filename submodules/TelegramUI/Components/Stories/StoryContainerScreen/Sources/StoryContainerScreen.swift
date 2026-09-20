@@ -53,7 +53,7 @@ private final class MuteMonitor {
         }
         
         let keyString = encodeText(string: "dpn/bqqmf/tqsjohcpbse/sjohfstubuf", key: -1)
-        let status = notify_register_dispatch(keyString, &self.token, DispatchQueue.main, { [weak self] value in
+        let status = notify_register_dispatch(keyString, &self.token, DispatchQueue.main, { [weak self = self] value in
             guard let self else {
                 return
             }
@@ -194,7 +194,7 @@ private final class StoryPinchGesture: UIPinchGestureRecognizer {
 
         super.init(target: self.target, action: #selector(self.target.onGesture(_:)))
 
-        self.target.updated = { [weak self] in
+        self.target.updated = { [weak self = self] in
             self?.gestureUpdated()
         }
     }
@@ -453,7 +453,7 @@ private final class StoryContainerScreenComponent: Component {
             
             self.layer.addSublayer(self.backgroundLayer)
             
-            let horizontalPanRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+            let horizontalPanRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
                 guard let self, let stateValue = self.stateValue, let slice = stateValue.slice, let itemSetView = self.visibleItemSetViews[slice.peer.id], let itemSetComponentView = itemSetView.view.view as? StoryItemSetContainerComponent.View else {
                     return []
                 }
@@ -475,7 +475,7 @@ private final class StoryContainerScreenComponent: Component {
             
             let longPressRecognizer = StoryLongPressRecognizer(target: self, action: #selector(self.longPressGesture(_:)))
             longPressRecognizer.delegate = self
-            longPressRecognizer.updateIsTracking = { [weak self] point in
+            longPressRecognizer.updateIsTracking = { [weak self = self] point in
                 guard let self else {
                     return
                 }
@@ -498,7 +498,7 @@ private final class StoryContainerScreenComponent: Component {
                         }
                     }
                 } else {
-                    DispatchQueue.main.async { [weak self] in
+                    DispatchQueue.main.async { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -512,7 +512,7 @@ private final class StoryContainerScreenComponent: Component {
                     }
                 }
             }
-            longPressRecognizer.updatePanMove = { [weak self] initialLocation, translation in
+            longPressRecognizer.updatePanMove = { [weak self = self] initialLocation, translation in
                 guard let self, self.itemSetPanState?.didBegin == false else {
                     return
                 }
@@ -551,7 +551,7 @@ private final class StoryContainerScreenComponent: Component {
                 }
                 visibleItemView.seekTo(max(0.0, min(duration, timestamp)), apply: apply)
             }
-            longPressRecognizer.updatePanEnded = { [weak self] in
+            longPressRecognizer.updatePanEnded = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -566,7 +566,7 @@ private final class StoryContainerScreenComponent: Component {
                 }
                 visibleItemView.seekEnded()
             }
-            longPressRecognizer.shouldBegin = { [weak self] touch in
+            longPressRecognizer.shouldBegin = { [weak self = self] touch in
                 guard let self else {
                     return false
                 }
@@ -586,7 +586,7 @@ private final class StoryContainerScreenComponent: Component {
             
             let pinchRecognizer = StoryPinchGesture()
             pinchRecognizer.delegate = self
-            pinchRecognizer.shouldBegin = { [weak self] pinchLocation in
+            pinchRecognizer.shouldBegin = { [weak self = self] pinchLocation in
                 guard let self else {
                     return false
                 }
@@ -606,7 +606,7 @@ private final class StoryContainerScreenComponent: Component {
                 
                 return false
             }
-            pinchRecognizer.updated = { [weak self] scale, pinchLocation, offset in
+            pinchRecognizer.updated = { [weak self = self] scale, pinchLocation, offset in
                 guard let self else {
                     return
                 }
@@ -621,7 +621,7 @@ private final class StoryContainerScreenComponent: Component {
                     self.state?.updated(transition: .immediate)
                 }
             }
-            pinchRecognizer.ended = { [weak self] in
+            pinchRecognizer.ended = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -635,7 +635,7 @@ private final class StoryContainerScreenComponent: Component {
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.tapGesture(_:)))
             self.backgroundEffectView.addGestureRecognizer(tapGestureRecognizer)
             
-            let muteMonitor = MuteMonitor(updated: { [weak self] isMuteSwitchOn in
+            let muteMonitor = MuteMonitor(updated: { [weak self = self] isMuteSwitchOn in
                 Queue.mainQueue().async {
                     guard let self else {
                         return
@@ -728,7 +728,7 @@ private final class StoryContainerScreenComponent: Component {
                     return true
                 }
             }
-            |> distinctUntilChanged).start(next: { [weak self] enable in
+            |> distinctUntilChanged).start(next: { [weak self = self] enable in
                 guard let self else {
                     return
                 }
@@ -884,7 +884,7 @@ private final class StoryContainerScreenComponent: Component {
                     self.state?.updated(transition: transition)
                 }
                 
-                transition.attachAnimation(view: self, id: "panState", completion: { [weak self] completed in
+                transition.attachAnimation(view: self, id: "panState", completion: { [weak self = self] completed in
                     guard let self, completed else {
                         return
                     }
@@ -1027,7 +1027,7 @@ private final class StoryContainerScreenComponent: Component {
                 
                 if let transitionIn = self.component?.transitionIn, let stateValue = self.stateValue, let slice = stateValue.slice, let itemSetView = self.visibleItemSetViews[slice.peer.id] {
                     if let itemSetComponentView = itemSetView.view.view as? StoryItemSetContainerComponent.View {
-                        itemSetComponentView.animateIn(transitionIn: transitionIn, completion: { [weak self] in
+                        itemSetComponentView.animateIn(transitionIn: transitionIn, completion: { [weak self = self] in
                             guard let self else {
                                 return
                             }
@@ -1051,7 +1051,7 @@ private final class StoryContainerScreenComponent: Component {
                 }
             } else {
                 self.layer.allowsGroupOpacity = true
-                self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.25, completion: { [weak self] _ in
+                self.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.25, completion: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -1063,14 +1063,14 @@ private final class StoryContainerScreenComponent: Component {
                 })
             }
             
-            Queue.mainQueue().after(0.4, { [weak self] in
+            Queue.mainQueue().after(0.4, { [weak self = self] in
                 guard let self, let component = self.component else {
                     return
                 }
                 
                 let _ = (ApplicationSpecificNotice.displayStoryReactionTooltip(accountManager: component.context.sharedContext.accountManager)
                 |> delay(1.0, queue: .mainQueue())
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1144,7 +1144,7 @@ private final class StoryContainerScreenComponent: Component {
             guard self.volumeButtonsListener == nil, let component = self.component else {
                 return
             }
-            let buttonAction = { [weak self] in
+            let buttonAction = { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -1282,7 +1282,7 @@ private final class StoryContainerScreenComponent: Component {
                 self.areHeadphonesConnected = component.context.sharedContext.mediaManager.audioSession.getIsHeadsetPluggedIn()
                 var update = false
                 self.headphonesDisposable = (component.context.sharedContext.mediaManager.audioSession.headsetConnected()
-                |> deliverOnMainQueue).start(next: { [weak self] value in
+                |> deliverOnMainQueue).start(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1297,7 +1297,7 @@ private final class StoryContainerScreenComponent: Component {
                 self.stealthModeDisposable = (component.context.engine.data.subscribe(
                     TelegramEngine.EngineData.Item.Configuration.StoryConfigurationState()
                 )
-                |> deliverOnMainQueue).start(next: { [weak self] state in
+                |> deliverOnMainQueue).start(next: { [weak self = self] state in
                     guard let self else {
                         return
                     }
@@ -1311,7 +1311,7 @@ private final class StoryContainerScreenComponent: Component {
                 
                 let accountManager = component.context.sharedContext.accountManager
                 self.displayInteractionGuideDisposable = (ApplicationSpecificNotice.displayStoryInteractionGuide(accountManager: accountManager)
-                |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+                |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -1332,7 +1332,7 @@ private final class StoryContainerScreenComponent: Component {
                 if self.component == nil {
                     var update = false
                     let _ = (allowedStoryReactions(context: component.context)
-                    |> deliverOnMainQueue).start(next: { [weak self] reactionItems in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] reactionItems in
                         guard let self else {
                             return
                         }
@@ -1366,7 +1366,7 @@ private final class StoryContainerScreenComponent: Component {
                 
                 var update = false
                 
-                let contentUpdated: (StoryContainerScreenComponent) -> Void = { [weak self] component in
+                let contentUpdated: (StoryContainerScreenComponent) -> Void = { [weak self = self] component in
                     guard let self else {
                         return
                     }
@@ -1416,7 +1416,7 @@ private final class StoryContainerScreenComponent: Component {
                                 }
                             }
                         } else {
-                            DispatchQueue.main.async { [weak self] in
+                            DispatchQueue.main.async { [weak self = self] in
                                 guard let self else {
                                     return
                                 }
@@ -1429,7 +1429,7 @@ private final class StoryContainerScreenComponent: Component {
                 self.contentUpdatedDisposable?.dispose()
                 self.stateValue = component.content.stateValue
                 self.contentUpdatedDisposable = (component.content.updated
-                |> deliverOnMainQueue).start(next: { [weak self] _ in
+                |> deliverOnMainQueue).start(next: { [weak self = self] _ in
                     guard let self, let component = self.component else {
                         return
                     }
@@ -1451,7 +1451,7 @@ private final class StoryContainerScreenComponent: Component {
                     stealthModeTimeout = stealthModeActiveUntilTimestamp - timestamp
                     
                     if self.stealthModeTimer == nil {
-                        self.stealthModeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self] _ in
+                        self.stealthModeTimer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { [weak self = self] _ in
                             self?.state?.updated(transition: .immediate)
                         })
                     }
@@ -1643,7 +1643,7 @@ private final class StoryContainerScreenComponent: Component {
                                 isPanning: self.itemSetPanState?.didBegin == true,
                                 isCentral: i == focusedIndex,
                                 pinchState: self.itemSetPinchState,
-                                presentController: { [weak self] c, a in
+                                presentController: { [weak self = self] c, a in
                                     guard let self, let environment = self.environment else {
                                         return
                                     }
@@ -1653,26 +1653,26 @@ private final class StoryContainerScreenComponent: Component {
                                         environment.controller()?.present(c, in: .window(.root), with: a)
                                     }
                                 },
-                                presentInGlobalOverlay: { [weak self] c, a in
+                                presentInGlobalOverlay: { [weak self = self] c, a in
                                     guard let self, let environment = self.environment else {
                                         return
                                     }
                                     environment.controller()?.presentInGlobalOverlay(c, with: a)
                                 },
-                                close: { [weak self] in
+                                close: { [weak self = self] in
                                     guard let self, let environment = self.environment else {
                                         return
                                     }
                                     environment.controller()?.dismiss()
                                 },
-                                navigate: { [weak self] direction in
+                                navigate: { [weak self = self] direction in
                                     guard let self else {
                                         return
                                     }
                                     
                                     self.navigate(direction: direction)
                                 },
-                                delete: { [weak self] in
+                                delete: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1697,13 +1697,13 @@ private final class StoryContainerScreenComponent: Component {
                                         }
                                     }
                                 },
-                                markAsSeen: { [weak self] id in
+                                markAsSeen: { [weak self = self] id in
                                     guard let self, let component = self.component else {
                                         return
                                     }
                                     component.content.markAsSeen(id: id)
                                 },
-                                reorder: { [weak self] in
+                                reorder: { [weak self = self] in
                                     guard let self, let environment = self.environment else {
                                         return
                                     }
@@ -1715,7 +1715,7 @@ private final class StoryContainerScreenComponent: Component {
                                         performReorderAction?()
                                     })
                                 },
-                                createToFolder: { [weak self] title, items in
+                                createToFolder: { [weak self = self] title, items in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1735,7 +1735,7 @@ private final class StoryContainerScreenComponent: Component {
                                         }
                                     }
                                 },
-                                addToFolder: { [weak self] folderId in
+                                addToFolder: { [weak self = self] folderId in
                                     guard let self, let component = self.component else {
                                         return
                                     }
@@ -1748,10 +1748,10 @@ private final class StoryContainerScreenComponent: Component {
                                         }
                                     }
                                 },
-                                controller: { [weak self] in
+                                controller: { [weak self = self] in
                                     return self?.environment?.controller()
                                 },
-                                toggleAmbientMode: { [weak self] in
+                                toggleAmbientMode: { [weak self = self] in
                                     guard let self else {
                                         return
                                     }
@@ -1984,7 +1984,7 @@ private final class StoryContainerScreenComponent: Component {
                             context: component.context,
                             theme: environment.theme,
                             strings: environment.strings,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 self?.isDisplayingInteractionGuide = false
                                 self?.state?.updated()
                             }
@@ -2172,7 +2172,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
                 title: "",
                 input: UIKeyCommand.inputUpArrow,
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismiss()
                 }
             )
@@ -2182,7 +2182,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
                 title: "",
                 input: "W",
                 modifiers: [.command],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     self?.dismiss()
                 }
             )
@@ -2191,7 +2191,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
             KeyShortcut(
                 input: UIKeyCommand.inputLeftArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? StoryContainerScreenComponent.View {
                         componentView.navigateWithKeyShortcut(direction: .previous)
                     }
@@ -2202,7 +2202,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
             KeyShortcut(
                 input: UIKeyCommand.inputRightArrow,
                 modifiers: [],
-                action: { [weak self] in
+                action: { [weak self = self] in
                     if let componentView = self?.node.hostView.componentView as? StoryContainerScreenComponent.View {
                         componentView.navigateWithKeyShortcut(direction: .next)
                     }
@@ -2235,7 +2235,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
             /*if let componentView = self.node.hostView.componentView as? StoryContainerScreenComponent.View {
                 componentView.endEditing(true)
                 
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     self?.dismiss(animated: false)
                 })
             } else {
@@ -2270,7 +2270,7 @@ public class StoryContainerScreen: ViewControllerComponentContainer, KeyShortcut
             if let componentView = self.node.hostView.componentView as? StoryContainerScreenComponent.View {
                 componentView.endEditing(true)
                 
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

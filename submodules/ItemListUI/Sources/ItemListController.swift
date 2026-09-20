@@ -292,13 +292,13 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
         
         self.statusBar.statusBarStyle = presentationData.theme.rootController.statusBarStyle.style
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             self?.willScrollToTop?()
             (self?.displayNode as! ItemListControllerNode).scrollToTop()
         }
         
         if let tabBarItem = tabBarItem {
-            self.tabBarItemDisposable = (tabBarItem |> deliverOnMainQueue).start(next: { [weak self] tabBarItemInfo in
+            self.tabBarItemDisposable = (tabBarItem |> deliverOnMainQueue).start(next: { [weak self = self] tabBarItemInfo in
                 if let strongSelf = self {
                     if strongSelf.tabBarItemInfo != tabBarItemInfo {
                         strongSelf.tabBarItemInfo = tabBarItemInfo
@@ -325,7 +325,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
         let previousControllerState = Atomic<ItemListControllerState?>(value: nil)
         let nodeState = self.state
         |> deliverOnMainQueue
-        |> afterNext { [weak self] controllerState, state in
+        |> afterNext { [weak self = self] controllerState, state in
             Queue.mainQueue().async {
                 if let strongSelf = self {
                     let previousState = previousControllerState.swap(controllerState)
@@ -367,7 +367,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
                                     let segmentedTitleView = ItemListControllerSegmentedTitleView(theme: controllerState.presentationData.theme, segments: sections, selectedIndex: index)
                                     strongSelf.segmentedTitleView = segmentedTitleView
                                     strongSelf.navigationItem.titleView = strongSelf.segmentedTitleView
-                                    segmentedTitleView.indexUpdated = { [weak self] index in
+                                    segmentedTitleView.indexUpdated = { [weak self = self] index in
                                         if let strongSelf = self {
                                             strongSelf.titleControlValueChanged?(index)
                                         }
@@ -387,7 +387,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
                                     let tabsNavigationContentNode = ItemListControllerTabsContentNode(theme: controllerState.presentationData.theme, segments: sections, selectedIndex: index)
                                     strongSelf.tabsNavigationContentNode = tabsNavigationContentNode
                                     strongSelf.navigationBar?.setContentNode(tabsNavigationContentNode, animated: false)
-                                    tabsNavigationContentNode.indexUpdated = { [weak self] index in
+                                    tabsNavigationContentNode.indexUpdated = { [weak self = self] index in
                                         if let strongSelf = self {
                                             strongSelf.titleControlValueChanged?(index)
                                         }
@@ -398,7 +398,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
                                     strongSelf.navigationBar?.updateBackgroundAlpha(1.0, transition: .immediate)
                                 }
                                 if strongSelf.isNodeLoaded {
-                                    strongSelf.controllerNode.panTransitionFractionChanged = { [weak self] transitionFraction in
+                                    strongSelf.controllerNode.panTransitionFractionChanged = { [weak self = self] transitionFraction in
                                         if let strongSelf = self {
                                             strongSelf.tabsNavigationContentNode?.transitionFraction = transitionFraction
                                         }
@@ -451,7 +451,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
                                     }
                                 case let .node(node):
                                     item = UIBarButtonItem(customDisplayNode: node)
-                                    item.setCustomAction({ [weak self] in
+                                    item.setCustomAction({ [weak self = self] in
                                         self?.navigationButtonActions.0?()
                                     })
                             }
@@ -524,7 +524,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
                                         }
                                     case let .node(node):
                                         item = UIBarButtonItem(customDisplayNode: node)
-                                        item.setCustomAction({ [weak self] in
+                                        item.setCustomAction({ [weak self = self] in
                                             self?.navigationButtonActions.1?()
                                         })
                                 }
@@ -580,7 +580,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
         |> map { ($0.presentationData, $1) }
         
         let displayNode = ItemListControllerNode(controller: self, navigationBar: self.navigationBar!, state: nodeState)
-        displayNode.dismiss = { [weak self] in
+        displayNode.dismiss = { [weak self = self] in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         displayNode.enableInteractiveDismiss = self.enableInteractiveDismiss
@@ -596,7 +596,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
         displayNode.afterTransactionCompleted = self.afterTransactionCompleted
         displayNode.listNode.experimentalSnapScrollToItem = self.experimentalSnapScrollToItem
         displayNode.listNode.didScrollWithOffset = self.didScrollWithOffset
-        displayNode.requestLayout = { [weak self] transition in
+        displayNode.requestLayout = { [weak self = self] transition in
             self?.requestLayout(transition: transition)
         }
         self.displayNode = displayNode
@@ -712,7 +712,7 @@ open class ItemListController: ViewController, KeyShortcutResponder, Presentable
     }
     
     public var keyShortcuts: [KeyShortcut] {
-        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self] in
+        return [KeyShortcut(input: UIKeyCommand.inputEscape, action: { [weak self = self] in
             if !(self?.navigationController?.topViewController is TabBarController) {
                 _ = self?.navigationBar?.executeBack()
             }

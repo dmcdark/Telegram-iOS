@@ -470,7 +470,7 @@ final class StarsTransactionsPanelContainerComponent: Component {
             self.topPanelClippingView.addSubview(self.topPanelMergedBackgroundView)
             self.layer.addSublayer(self.topPanelSeparatorLayer)
             
-            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self] point in
+            let panRecognizer = InteractiveTransitionGestureRecognizer(target: self, action: #selector(self.panGesture(_:)), allowedDirections: { [weak self = self] point in
                 guard let self, let component = self.component, let currentId = self.currentId else {
                     return []
                 }
@@ -683,7 +683,7 @@ final class StarsTransactionsPanelContainerComponent: Component {
                     },
                     activeIndex: currentIndex ?? 0,
                     transitionFraction: self.transitionFraction,
-                    switchToPanel: { [weak self] id in
+                    switchToPanel: { [weak self = self] id in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -800,7 +800,7 @@ final class StarsTransactionsPanelContainerComponent: Component {
                             self.clippingView.addSubview(panelView)
                         }
                         
-                        panelTransition.setFrame(view: panelView, frame: itemFrame, completion: { [weak self] _ in
+                        panelTransition.setFrame(view: panelView, frame: itemFrame, completion: { [weak self = self] _ in
                             guard let self else {
                                 return
                             }

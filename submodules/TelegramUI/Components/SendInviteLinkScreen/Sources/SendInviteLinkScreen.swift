@@ -767,7 +767,7 @@ private final class SendInviteLinkActionButtonComponent: Component {
                     content: content,
                     isEnabled: true,
                     displaysProgress: component.displaysProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }
@@ -926,7 +926,7 @@ final class SendInviteLinkScreenComponent: Component {
             self.presentPaidMessageAlertIfNeeded(
                 peers: selectedPeers.map { EngineRenderedPeer(peer: $0.peer) },
                 requiresStars: component.sendPaidMessageStars,
-                completion: { [weak self] in
+                completion: { [weak self = self] in
                     guard let self, let component = self.component, let controller = self.environment?.controller() else {
                         return
                     }
@@ -972,7 +972,7 @@ final class SendInviteLinkScreenComponent: Component {
                     self.state?.updated(transition: .immediate)
                     
                     self.createCallDisposable = (component.context.engine.calls.createConferenceCall()
-                    |> deliverOnMainQueue).startStrict(next: { [weak self] call in
+                    |> deliverOnMainQueue).startStrict(next: { [weak self = self] call in
                         guard let self, let component = self.component, let controller = self.environment?.controller() else {
                             return
                         }
@@ -982,7 +982,7 @@ final class SendInviteLinkScreenComponent: Component {
                         } else {
                             let link = call.link
                             let selectedPeers = component.peers.filter { self.selectedItems.contains($0.peer.id) }
-                            self.sendInviteLink(link: link, selectedPeers: selectedPeers, completion: { [weak self] in
+                            self.sendInviteLink(link: link, selectedPeers: selectedPeers, completion: { [weak self = self] in
                                 guard let self, let component = self.component, let controller = self.environment?.controller() else {
                                     return
                                 }
@@ -1010,7 +1010,7 @@ final class SendInviteLinkScreenComponent: Component {
                 controller.dismiss()
             } else if let link {
                 let selectedPeers = component.peers.filter { self.selectedItems.contains($0.peer.id) }
-                self.sendInviteLink(link: link, selectedPeers: selectedPeers, completion: { [weak self] in
+                self.sendInviteLink(link: link, selectedPeers: selectedPeers, completion: { [weak self = self] in
                     self?.environment?.controller()?.dismiss()
                 })
             } else {
@@ -1042,7 +1042,7 @@ final class SendInviteLinkScreenComponent: Component {
             let theme = environmentValue.theme.withModalBlocksBackground()
             let hasInviteSection = sendInviteLinkHasInviteSection(subject: component.subject, peers: component.peers)
             
-            let dismiss: (Bool) -> Void = { [weak self] animated in
+            let dismiss: (Bool) -> Void = { [weak self = self] animated in
                 self?.dismiss(controller: controller, animated: animated)
             }
             
@@ -1068,7 +1068,7 @@ final class SendInviteLinkScreenComponent: Component {
                     title: actionTitle,
                     badge: actionBadge,
                     displaysProgress: self.isInProgress,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         self?.performMainAction()
                     }
                 ))
@@ -1086,7 +1086,7 @@ final class SendInviteLinkScreenComponent: Component {
                         peerPresences: component.peerPresences,
                         selectedItems: self.selectedItems,
                         theme: theme,
-                        toggleSelection: { [weak self] peerId in
+                        toggleSelection: { [weak self = self] peerId in
                             guard let self else {
                                 return
                             }
@@ -1097,7 +1097,7 @@ final class SendInviteLinkScreenComponent: Component {
                             }
                             self.state?.updated(transition: ComponentTransition(animation: .curve(duration: 0.3, curve: .easeInOut)))
                         },
-                        openPremium: { [weak self] in
+                        openPremium: { [weak self = self] in
                             guard let self, let component = self.component, let controller = self.environment?.controller() else {
                                 return
                             }
@@ -1206,7 +1206,7 @@ public class SendInviteLinkScreen: ViewControllerComponentContainer {
                 peers.map(\.peer.id).map(TelegramEngine.EngineData.Item.Peer.SendPaidMessageStars.init(id:))
             )
         )
-        |> deliverOnMainQueue).start(next: { [weak self] presences, sendPaidMessageStars in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presences, sendPaidMessageStars in
             guard let self else {
                 return
             }

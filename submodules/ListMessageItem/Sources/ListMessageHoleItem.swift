@@ -91,7 +91,7 @@ final class ListMessageHoleItemNode: ListViewItemNode {
     }
     
     func asyncLayout() -> (_ item: ListMessageHoleItem, _ params: ListViewItemLayoutParams, _ mergedTop: Bool, _ mergedBottom: Bool, _ dateAtBottom: Bool) -> (ListViewItemNodeLayout, (ListViewItemUpdateAnimation) -> Void) {
-        return { [weak self] _, params, _, _, _ in
+        return { [weak self = self] _, params, _, _, _ in
             return (ListViewItemNodeLayout(contentSize: CGSize(width: params.width, height: 50.0), insets: UIEdgeInsets()), { _ in
                 if let strongSelf = self, let activityIndicator = strongSelf.activityIndicator {
                     let boundsSize = CGSize(width: params.width, height: 50.0)

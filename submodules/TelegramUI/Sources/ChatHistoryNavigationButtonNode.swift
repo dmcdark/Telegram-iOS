@@ -192,7 +192,7 @@ class ChatHistoryNavigationButtonNode: ContextControllerSourceNode {
             if self.badgeBackgroundView.alpha < 1.0 {
                 self.badgeBackgroundView.alpha = 1.0
                 
-                self.badgeBackgroundView.layer.animateScale(from: 0.01, to: 1.2, duration: 0.2, removeOnCompletion: false, completion: { [weak self] _ in
+                self.badgeBackgroundView.layer.animateScale(from: 0.01, to: 1.2, duration: 0.2, removeOnCompletion: false, completion: { [weak self = self] _ in
                     if let strongSelf = self {
                         strongSelf.badgeBackgroundView.layer.animateScale(from: 1.15, to: 1.0, duration: 0.12, removeOnCompletion: false, completion: { _ in
                             strongSelf.badgeBackgroundView.layer.removeAllAnimations()
@@ -201,7 +201,7 @@ class ChatHistoryNavigationButtonNode: ContextControllerSourceNode {
                 })
                 self.badgeBackgroundView.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2)
             } else if previousValue < self.currentValue {
-                self.badgeBackgroundView.layer.animateScale(from: 1.0, to: 1.2, duration: 0.12, removeOnCompletion: false, completion: { [weak self] finished in
+                self.badgeBackgroundView.layer.animateScale(from: 1.0, to: 1.2, duration: 0.12, removeOnCompletion: false, completion: { [weak self = self] finished in
                     if let strongSelf = self {
                         strongSelf.badgeBackgroundView.layer.animateScale(from: 1.2, to: 1.0, duration: 0.12, removeOnCompletion: false, completion: { _ in
                             strongSelf.badgeBackgroundView.layer.removeAllAnimations()

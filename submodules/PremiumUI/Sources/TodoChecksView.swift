@@ -172,7 +172,7 @@ final class TodoChecksView: UIView, PhoneDemoDecorationView {
         
         self.particleSet = ParticleSet(size: frame.size, preAdvance: false)
         
-        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self] delta in
+        self.displayLink = SharedDisplayLinkDriver.shared.add(framesPerSecond: .max, { [weak self = self] delta in
             self?.update(deltaTime: CGFloat(delta))
         })
         self.displayLink?.isPaused = true
@@ -257,7 +257,7 @@ final class TodoChecksView: UIView, PhoneDemoDecorationView {
         self.displayLink?.isPaused = !visible
     
         let transition = ContainedViewLayoutTransition.animated(duration: 0.3, curve: .linear)
-        transition.updateAlpha(layer: self.containerView.layer, alpha: visible ? 1.0 : 0.0, completion: { [weak self] finished in
+        transition.updateAlpha(layer: self.containerView.layer, alpha: visible ? 1.0 : 0.0, completion: { [weak self = self] finished in
             if let strongSelf = self, finished && !visible && !strongSelf.visible {
                 for particleLayer in strongSelf.particleLayers {
                     particleLayer.removeFromSuperlayer()

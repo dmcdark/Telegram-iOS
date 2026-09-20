@@ -196,7 +196,7 @@ public final class StoryFooterPanelComponent: Component {
             self.addSubview(self.externalContainerView)
             self.addSubview(self.viewStatsButton)
             
-            self.viewStatsButton.highligthedChanged = { [weak self] highlighted in
+            self.viewStatsButton.highligthedChanged = { [weak self = self] highlighted in
                 guard let self else {
                     return
                 }
@@ -276,7 +276,7 @@ public final class StoryFooterPanelComponent: Component {
                 if component.storyItem.isPending {
                     var applyState = false
                     self.uploadProgressDisposable = (component.context.engine.messages.storyUploadProgress(stableId: component.storyItem.id)
-                    |> deliverOnMainQueue).start(next: { [weak self] progress in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] progress in
                         guard let self else {
                             return
                         }
@@ -759,7 +759,7 @@ public final class StoryFooterPanelComponent: Component {
                     component: AnyComponent(MessageInputActionButtonComponent(
                         mode: .like(reaction: component.myReaction?.reaction, file: component.myReaction?.file, animationFileId: component.myReaction?.animationFileId),
                         storyId: component.storyItem.id,
-                        action: { [weak self] _, action, _ in
+                        action: { [weak self = self] _, action, _ in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -871,7 +871,7 @@ public final class StoryFooterPanelComponent: Component {
                         component: AnyComponent(MessageInputActionButtonComponent(
                             mode: .repost,
                             storyId: component.storyItem.id,
-                            action: { [weak self] _, action, _ in
+                            action: { [weak self = self] _, action, _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -928,7 +928,7 @@ public final class StoryFooterPanelComponent: Component {
                         component: AnyComponent(MessageInputActionButtonComponent(
                             mode: .forward,
                             storyId: component.storyItem.id,
-                            action: { [weak self] _, action, _ in
+                            action: { [weak self = self] _, action, _ in
                                 guard let self, let component = self.component else {
                                     return
                                 }
@@ -1012,7 +1012,7 @@ public final class StoryFooterPanelComponent: Component {
                         name: "Chat/Input/Accessory Panels/MessageSelectionTrash",
                         tintColor: .white
                     )),
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component else {
                             return
                         }

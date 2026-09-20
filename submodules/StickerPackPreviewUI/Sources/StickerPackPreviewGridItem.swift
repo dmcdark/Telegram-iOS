@@ -138,7 +138,7 @@ final class StickerPackPreviewGridItemNode: GridItemNode {
         self.containerNode.addSubnode(self.placeholderNode)
         
         var firstTime = true
-        self.imageNode.imageUpdated = { [weak self] image in
+        self.imageNode.imageUpdated = { [weak self = self] image in
             guard let strongSelf = self, let image else {
                 return
             }
@@ -179,7 +179,7 @@ final class StickerPackPreviewGridItemNode: GridItemNode {
         } else {
             self.placeholderNode.alpha = 0.0
             self.placeholderNode.allowsGroupOpacity = true
-            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self] _ in
+            self.placeholderNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.2, completion: { [weak self = self] _ in
                 self?.placeholderNode.removeFromSupernode()
                 self?.placeholderNode.allowsGroupOpacity = false
             })
@@ -322,7 +322,7 @@ final class StickerPackPreviewGridItemNode: GridItemNode {
                         let animationNode = DefaultAnimatedStickerNodeImpl()
                         self.animationNode = animationNode
                         self.containerNode.insertSubnode(animationNode, aboveSubnode: self.imageNode)
-                        animationNode.started = { [weak self] in
+                        animationNode.started = { [weak self = self] in
                             guard let strongSelf = self else {
                                 return
                             }

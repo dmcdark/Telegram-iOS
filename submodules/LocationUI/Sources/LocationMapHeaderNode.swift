@@ -171,7 +171,7 @@ public final class LocationMapHeaderNode: ASDisplayNode {
 
         super.init()
 
-        self.mapNode.visibleRegionDidChange = { [weak self] in
+        self.mapNode.visibleRegionDidChange = { [weak self = self] in
             guard let self, self.glass, self.mapNode.mapMode == .satellite else {
                 return
             }
@@ -487,27 +487,27 @@ public final class LocationMapHeaderNode: ASDisplayNode {
                         trackingMode: self.mapNode.trackingMode,
                         showMapModes: self.infoButtonNode.isSelected,
                         proximityNotification: self.proximityNotification,
-                        updateMapMode: { [weak self] mode in
+                        updateMapMode: { [weak self = self] mode in
                             guard let self else {
                                 return
                             }
                             self.updateMapMode(mode)
                             self.requestLayout(transition: .immediate)
                         },
-                        goToUserLocation: { [weak self] in
+                        goToUserLocation: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.goToUserLocation()
                             self.requestLayout(transition: .immediate)
                         },
-                        requestedMapModes: { [weak self] in
+                        requestedMapModes: { [weak self = self] in
                             guard let self else {
                                 return
                             }
                             self.toggleMapModeSelection()
                         },
-                        setupProximityNotification: { [weak self] reset in
+                        setupProximityNotification: { [weak self = self] reset in
                             guard let self else {
                                 return
                             }
@@ -734,7 +734,7 @@ final class LocationOptionsComponent: Component {
                         content: AnyComponent(
                             MultilineTextComponent(text: .plain(NSAttributedString(string: component.strings.Map_Map, font: Font.regular(17.0), textColor: component.theme.rootController.navigationBar.primaryTextColor)))
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -754,7 +754,7 @@ final class LocationOptionsComponent: Component {
                         content: AnyComponent(
                             MultilineTextComponent(text: .plain(NSAttributedString(string: component.strings.Map_Satellite, font: Font.regular(17.0), textColor: component.theme.rootController.navigationBar.primaryTextColor)))
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -774,7 +774,7 @@ final class LocationOptionsComponent: Component {
                         content: AnyComponent(
                             MultilineTextComponent(text: .plain(NSAttributedString(string: component.strings.Map_Hybrid, font: Font.regular(17.0), textColor: component.theme.rootController.navigationBar.primaryTextColor)))
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -864,7 +864,7 @@ final class LocationOptionsComponent: Component {
                             BundleIconComponent(name: mapModeIconName, tintColor: component.theme.chat.inputPanel.panelControlColor)
                         ),
                         minSize: CGSize(width: 40.0, height: 40.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -902,7 +902,7 @@ final class LocationOptionsComponent: Component {
                             BundleIconComponent(name: trackingModeIconName, tintColor: component.theme.chat.inputPanel.panelControlColor)
                         ),
                         minSize: CGSize(width: 40.0, height: 40.0),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -933,7 +933,7 @@ final class LocationOptionsComponent: Component {
                                 BundleIconComponent(name: notificationIconName, tintColor: component.theme.chat.inputPanel.panelControlColor)
                             ),
                             minSize: CGSize(width: 40.0, height: 40.0),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component, let proximityNotification = component.proximityNotification else {
                                     return
                                 }

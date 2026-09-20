@@ -257,7 +257,7 @@ private final class GiftAuctionActiveBidsScreenComponent: Component {
             
             if self.component == nil, let giftAuctionsManager = component.context.giftAuctionsManager {
                 self.auctionStatesDisposable = (giftAuctionsManager.state
-                |> deliverOnMainQueue).start(next: { [weak self] auctionStates in
+                |> deliverOnMainQueue).start(next: { [weak self = self] auctionStates in
                     guard let self else {
                         return
                     }
@@ -275,7 +275,7 @@ private final class GiftAuctionActiveBidsScreenComponent: Component {
                     }
                 })
                 
-                self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+                self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                     self?.state?.updated()
                 }, queue: Queue.mainQueue())
                 self.giftAuctionTimer?.start()
@@ -321,13 +321,13 @@ private final class GiftAuctionActiveBidsScreenComponent: Component {
                             dateTimeFormat: environment.dateTimeFormat,
                             state: auctionState,
                             currentTime: currentTime,
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self, let component = self.component else {
                                     return
                                 }
                                 if let giftAuctionsManager = component.context.giftAuctionsManager {
                                     let _ = (giftAuctionsManager.auctionContext(for: .giftId(id))
-                                    |> deliverOnMainQueue).start(next: { [weak self] auction in
+                                    |> deliverOnMainQueue).start(next: { [weak self = self] auction in
                                         guard let self, let component = self.component, let auction, let controller = environment.controller(), let navigationController = controller.navigationController as? NavigationController else {
                                             return
                                         }
@@ -392,7 +392,7 @@ private final class GiftAuctionActiveBidsScreenComponent: Component {
                             tintColor: theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -553,7 +553,7 @@ public class GiftAuctionActiveBidsScreen: ViewControllerComponentContainer {
             self.isDismissed = true
             
             if let componentView = self.node.hostView.componentView as? GiftAuctionActiveBidsScreenComponent.View {
-                componentView.animateOut(completion: { [weak self] in
+                componentView.animateOut(completion: { [weak self = self] in
                     completion?()
                     self?.dismiss(animated: false)
                 })

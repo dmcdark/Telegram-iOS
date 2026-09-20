@@ -332,7 +332,7 @@ private final class BotCheckoutPaymentMethodScreenComponent: Component {
             let controller = environment.controller
             let theme = environment.theme.withModalBlocksBackground()
             
-            let dismiss: (Bool, (() -> Void)?) -> Void = { [weak self] animated, completion in
+            let dismiss: (Bool, (() -> Void)?) -> Void = { [weak self = self] animated, completion in
                 guard let self, !self.isDismissing else {
                     return
                 }
@@ -361,14 +361,14 @@ private final class BotCheckoutPaymentMethodScreenComponent: Component {
                     content: AnyComponent<ViewControllerComponentContainer.Environment>(BotCheckoutPaymentMethodContentComponent(
                         methods: component.methods,
                         selectedMethod: self.selectedMethod,
-                        selectMethod: { [weak self] method in
+                        selectMethod: { [weak self = self] method in
                             guard let self else {
                                 return
                             }
                             self.selectedMethod = method
                             self.state?.updated(transition: .spring(duration: 0.35))
                         },
-                        addCard: { [weak self] in
+                        addCard: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -421,7 +421,7 @@ private final class BotCheckoutPaymentMethodScreenComponent: Component {
                         ),
                         isEnabled: self.selectedMethod != nil,
                         displaysProgress: false,
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component, let selectedMethod = self.selectedMethod else {
                                 return
                             }

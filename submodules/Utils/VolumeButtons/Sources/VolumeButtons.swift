@@ -179,7 +179,7 @@ public class VolumeButtonsListener {
             if isGeneralActive {
                 if self.handler == nil {
                     if let sharedAccountContext = self.sharedAccountContext {
-                        let performAction: (VolumeButtonsListener.Action) -> Void = { [weak self] action in
+                        let performAction: (VolumeButtonsListener.Action) -> Void = { [weak self = self] action in
                             self?.performAction(action, isCameraSpecific: false)
                         }
                         self.handler = LegacyHandlerImpl(
@@ -195,7 +195,7 @@ public class VolumeButtonsListener {
             if isCameraSpecificActive {
                 if self.cameraSpecificHandler == nil {
                     if let sharedAccountContext = self.sharedAccountContext {
-                        let performAction: (VolumeButtonsListener.Action) -> Void = { [weak self] action in
+                        let performAction: (VolumeButtonsListener.Action) -> Void = { [weak self = self] action in
                             self?.performAction(action, isCameraSpecific: true)
                         }
                         if #available(iOS 17.2, *) {
@@ -251,7 +251,7 @@ public class VolumeButtonsListener {
                 
         self.disposable = (shouldBeActive
         |> distinctUntilChanged
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             guard let self, let index = self.index else {
                 return
             }

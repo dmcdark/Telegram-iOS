@@ -336,7 +336,7 @@ public class ChatMessageMapBubbleContentNode: ChatMessageBubbleContentNode {
                     
                     let imageApply = makeImageLayout(arguments)
                     
-                    return (layoutSize, { [weak self] animation, _, _ in
+                    return (layoutSize, { [weak self = self] animation, _, _ in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.media = selectedMedia

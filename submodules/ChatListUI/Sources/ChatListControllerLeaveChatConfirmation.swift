@@ -77,7 +77,7 @@ extension ChatListControllerImpl {
                 configuration: .init(actionAlignment: .vertical),
                 content: content,
                 actions: [
-                    .init(title: self.presentationData.strings.LeaveGroup_AppointAnotherOwner, action: { [weak self] in
+                    .init(title: self.presentationData.strings.LeaveGroup_AppointAnotherOwner, action: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -100,12 +100,12 @@ extension ChatListControllerImpl {
     }
     
     func presentOwnershipTransfer(chatPeer: EnginePeer, leaveGroup: @escaping () -> Void) {
-        let presentController: (ViewController) -> Void = { [weak self] c in
+        let presentController: (ViewController) -> Void = { [weak self = self] c in
             if let topController = self?.navigationController?.topViewController as? ViewController {
                 topController.present(c, in: .window(.root))
             }
         }
-        let pushController: (ViewController) -> Void = { [weak self] c in
+        let pushController: (ViewController) -> Void = { [weak self = self] c in
             if let topController = self?.navigationController?.topViewController as? ViewController {
                 topController.push(c)
             }
@@ -118,7 +118,7 @@ extension ChatListControllerImpl {
                 peerId: chatPeer.id,
                 mode: .ownershipTransfer,
                 filters: [.exclude([self.context.account.peerId])],
-                openPeer: { [weak self] peer, participant in
+                openPeer: { [weak self = self] peer, participant in
                     guard let self else {
                         return
                     }
@@ -134,7 +134,7 @@ extension ChatListControllerImpl {
                                 let _ = self.context.engine.peers.updateChannelAdminRights(peerId: chatPeer.id, adminId: peer.id, rights: TelegramChatAdminRights(rights: .all), rank: nil).start()
                             }
                             
-                            let _ = (self.context.engine.peers.checkOwnershipTranfserAvailability(memberId: peer.id) |> deliverOnMainQueue).start(error: { [weak self] error in
+                            let _ = (self.context.engine.peers.checkOwnershipTranfserAvailability(memberId: peer.id) |> deliverOnMainQueue).start(error: { [weak self = self] error in
                                 guard let self, case let .user(user) = peer else {
                                     return
                                 }

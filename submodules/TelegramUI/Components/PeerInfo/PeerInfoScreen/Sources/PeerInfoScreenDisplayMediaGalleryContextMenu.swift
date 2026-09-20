@@ -42,7 +42,7 @@ extension PeerInfoScreenNode {
                 if pane.canAddMoreBotPreviews() {
                     items.append(.action(ContextMenuActionItem(text: strings.BotPreviews_MenuAddPreview, icon: { theme in
                         return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Add"), color: theme.contextMenu.primaryColor)
-                    }, action: { [weak self] _, a in
+                    }, action: { [weak self = self] _, a in
                         if ignoreNextActions {
                             return
                         }
@@ -73,7 +73,7 @@ extension PeerInfoScreenNode {
                 
                 items.append(.action(ContextMenuActionItem(text: self.presentationData.strings.Conversation_ContextMenuSelect, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Select"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     if ignoreNextActions {
                         return
                     }
@@ -102,7 +102,7 @@ extension PeerInfoScreenNode {
                 }
                 
                 let contextController = makeContextController(presentationData: self.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: source)), items: .single(ContextController.Items(content: .list(items))), gesture: gesture)
-                contextController.passthroughTouchEvent = { [weak self] sourceView, point in
+                contextController.passthroughTouchEvent = { [weak self = self] sourceView, point in
                     guard let strongSelf = self else {
                         return .ignore
                     }
@@ -153,7 +153,7 @@ extension PeerInfoScreenNode {
                 
                 items.append(.action(ContextMenuActionItem(text: strings.PeerInfo_MenuAddStories, icon: { theme in
                     return generateTintedImage(image: UIImage(bundleImageName: "Chat List/AddStoryIcon"), color: theme.contextMenu.primaryColor)
-                }, action: { [weak self] _, a in
+                }, action: { [weak self = self] _, a in
                     if ignoreNextActions {
                         return
                     }
@@ -232,7 +232,7 @@ extension PeerInfoScreenNode {
                 }
                 
                 let contextController = makeContextController(presentationData: self.presentationData, source: .reference(PeerInfoContextReferenceContentSource(controller: controller, sourceNode: source)), items: .single(ContextController.Items(content: .list(items))), gesture: gesture)
-                contextController.passthroughTouchEvent = { [weak self] sourceView, point in
+                contextController.passthroughTouchEvent = { [weak self = self] sourceView, point in
                     guard let strongSelf = self else {
                         return .ignore
                     }
@@ -275,7 +275,7 @@ extension PeerInfoScreenNode {
                 TelegramEngine.EngineData.Item.Messages.MessageCount(peerId: peerId, threadId: self.chatLocation.threadId, tag: .photo),
                 TelegramEngine.EngineData.Item.Messages.MessageCount(peerId: peerId, threadId: self.chatLocation.threadId, tag: .video)
             ]))
-            |> deliverOnMainQueue).startStandalone(next: { [weak self] messageCounts in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] messageCounts in
                 guard let strongSelf = self else {
                     return
                 }

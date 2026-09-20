@@ -208,7 +208,7 @@ private final class ChannelBoostersContextImpl {
                 return nil
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] cachedPeersCountAndCanLoadMore in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] cachedPeersCountAndCanLoadMore in
             guard let strongSelf = self else {
                 return
             }
@@ -317,7 +317,7 @@ private final class ChannelBoostersContextImpl {
                 return .single(([], 0, nil))
             }
         }
-        |> deliverOn(self.queue)).start(next: { [weak self] boosters, updatedCount, nextOffset in
+        |> deliverOn(self.queue)).start(next: { [weak self = self] boosters, updatedCount, nextOffset in
             guard let strongSelf = self else {
                 return
             }

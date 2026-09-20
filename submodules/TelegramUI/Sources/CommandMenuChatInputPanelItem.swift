@@ -190,7 +190,7 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
         let makeTextLayout = TextNode.asyncLayout(self.textNode)
         let makeCommandLayout = TextNode.asyncLayout(self.commandNode)
         
-        return { [weak self] item, params, mergedTop, mergedBottom in
+        return { [weak self = self] item, params, mergedTop, mergedBottom in
             let textFont = Font.regular(floor(item.fontSize.baseDisplaySize))
             let commandFont = Font.regular(floor(item.fontSize.baseDisplaySize * 14.0 / 17.0))
             
@@ -264,7 +264,7 @@ final class CommandMenuChatInputPanelItemNode: ListViewItemNode {
         } else {
             if self.highlightedBackgroundNode.supernode != nil {
                 if animated {
-                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self] completed in
+                    self.highlightedBackgroundNode.layer.animateAlpha(from: self.highlightedBackgroundNode.alpha, to: 0.0, duration: 0.4, completion: { [weak self = self] completed in
                         if let strongSelf = self {
                             if completed {
                                 strongSelf.highlightedBackgroundNode.removeFromSupernode()

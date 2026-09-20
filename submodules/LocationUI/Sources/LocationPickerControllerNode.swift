@@ -610,7 +610,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
         let previousEntries = Atomic<[LocationPickerEntry]?>(value: nil)
         
         self.disposable = (combineLatest(self.presentationDataPromise.get(), self.statePromise.get(), userLocation, venues, foundVenues, self.locationContext.locationAccess())
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData, state, userLocation, venues, foundVenuesAndLocation, access in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData, state, userLocation, venues, foundVenuesAndLocation, access in
             if let strongSelf = self {
                 let (foundVenues, _, foundVenuesLocation) = foundVenuesAndLocation ?? (nil, nil, nil)
                                       
@@ -930,7 +930,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                 }
                 
                 if case let .location(coordinate, address, global) = state.selectedLocation, address == nil {
-                    setupGeocoding(coordinate, false, { [weak self] geoAddress, _, address, cityName, streetName, countryCode, isStreet in
+                    setupGeocoding(coordinate, false, { [weak self = self] geoAddress, _, address, cityName, streetName, countryCode, isStreet in
                         self?.updateState { state in
                             var state = state
                             
@@ -951,7 +951,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                 } else {
                     let coordinate = controller.initialLocation ?? userLocation?.coordinate
                     if case .none = state.selectedLocation, let coordinate, state.city == nil {
-                        setupGeocoding(coordinate, true, { [weak self] geoAddress, appxCoordinate, address, cityName, streetName, countryCode, isStreet in
+                        setupGeocoding(coordinate, true, { [weak self = self] geoAddress, appxCoordinate, address, cityName, streetName, countryCode, isStreet in
                             self?.updateState { state in
                                 var state = state
                                 state.geoAddress = geoAddress
@@ -981,7 +981,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             self.headerNode.mapNode.hasPickerAnnotation = true
         }
         
-        self.listNode.updateFloatingHeaderOffset = { [weak self] offset, listTransition in
+        self.listNode.updateFloatingHeaderOffset = { [weak self = self] offset, listTransition in
             guard let self, let (layout, navigationBarHeight) = self.validLayout, self.listNode.scrollEnabled else {
                 return
             }
@@ -993,7 +993,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             self.layoutEmptyResultsPlaceholder(transition: listTransition)
         }
         
-        self.listNode.beganInteractiveDragging = { [weak self] _ in
+        self.listNode.beganInteractiveDragging = { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -1004,7 +1004,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             }
         }
                 
-        self.headerNode.mapNode.onTouch = { [weak self] in
+        self.headerNode.mapNode.onTouch = { [weak self = self] in
             guard let self else {
                 return
             }
@@ -1017,7 +1017,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             }
         }
         
-        self.headerNode.mapNode.beganInteractiveDragging = { [weak self] in
+        self.headerNode.mapNode.beganInteractiveDragging = { [weak self = self] in
             guard let self, let controller = self.controller else {
                 return
             }
@@ -1033,7 +1033,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             controller.updateTabBarVisibility(false, .animated(duration: 0.4, curve: .spring))
         }
         
-        self.headerNode.mapNode.endedInteractiveDragging = { [weak self] coordinate in
+        self.headerNode.mapNode.endedInteractiveDragging = { [weak self = self] coordinate in
             guard let strongSelf = self else {
                 return
             }
@@ -1047,7 +1047,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             }
         }
         
-        self.headerNode.mapNode.annotationSelected = { [weak self] annotation in
+        self.headerNode.mapNode.annotationSelected = { [weak self = self] annotation in
             guard let strongSelf = self else {
                 return
             }
@@ -1064,7 +1064,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             }
         }
         
-        self.headerNode.mapNode.userLocationAnnotationSelected = { [weak self] in
+        self.headerNode.mapNode.userLocationAnnotationSelected = { [weak self = self] in
             if let strongSelf = self {
                 strongSelf.goToUserLocation()
             }
@@ -1123,7 +1123,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
             options.insert(.AnimateCrossfade)
         }
         
-        self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self] _ in
+        self.listNode.transaction(deleteIndices: transition.deletions, insertIndicesAndItems: transition.insertions, updateIndicesAndItems: transition.updates, options: options, updateSizeAndInsets: nil, updateOpaqueState: nil, completion: { [weak self = self] _ in
             if let strongSelf = self {
                 strongSelf.emptyResultsTextNode.isHidden = transition.isLoading || !transition.isEmpty
                 
@@ -1322,7 +1322,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                 self.placeholderBackgroundNode = backgroundNode
                 
                 placeholderNode = LocationPlaceholderNode(content: .intro)
-                placeholderNode.settingsPressed = { [weak self] in
+                placeholderNode.settingsPressed = { [weak self = self] in
                     self?.context.sharedContext.applicationBindings.openSettings()
                 }
                 self.insertSubnode(placeholderNode, aboveSubnode: backgroundNode)
@@ -1448,7 +1448,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                             tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         guard let self else {
                             return
                         }
@@ -1483,7 +1483,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                             tintColor: self.presentationData.theme.chat.inputPanel.panelControlColor
                         )
                     )),
-                    action: { [weak self] _ in
+                    action: { [weak self = self] _ in
                         self?.controller?.searchPressed()
                     }
                 )),
@@ -1525,13 +1525,13 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                             metrics: layout.metrics,
                             safeInsets: layout.safeInsets,
                             placeholder: self.presentationData.strings.Map_Search,
-                            updated: { [weak self] query in
+                            updated: { [weak self = self] query in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
                                 controller.updateSearchQuery(query)
                             },
-                            cancel: { [weak self] in
+                            cancel: { [weak self = self] in
                                 guard let self, let controller = self.controller else {
                                     return
                                 }
@@ -1615,7 +1615,7 @@ final class LocationPickerControllerNode: ViewControllerTracingNode, CLLocationM
                                     VStack(buttonContents, spacing: 1.0)
                                 )
                             ),
-                            action: { [weak self] in
+                            action: { [weak self = self] in
                                 guard let self else {
                                     return
                                 }

@@ -25,7 +25,7 @@ public final class ChatMessageGameBubbleContentNode: ChatMessageBubbleContentNod
         super.init()
         
         self.addSubnode(self.contentNode)
-        self.contentNode.openMedia = { [weak self] _ in
+        self.contentNode.openMedia = { [weak self = self] _ in
             if let strongSelf = self, let item = strongSelf.item {
                 item.controllerInteraction.requestMessageActionCallback(item.message, nil, true, false, nil)
             }
@@ -89,7 +89,7 @@ public final class ChatMessageGameBubbleContentNode: ChatMessageBubbleContentNod
                 return (refinedWidth, { boundingWidth in
                     let (size, apply) = finalizeLayout(boundingWidth)
                     
-                    return (size, { [weak self] animation, synchronousLoads, applyInfo in
+                    return (size, { [weak self = self] animation, synchronousLoads, applyInfo in
                         if let strongSelf = self {
                             strongSelf.item = item
                             strongSelf.game = game

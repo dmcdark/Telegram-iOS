@@ -46,7 +46,7 @@ public class SetupTwoStepVerificationController: ViewController {
         self.navigationItem.setLeftBarButton(UIBarButtonItem(title: self.presentationData.strings.Common_Cancel, style: .plain, target: self, action: #selector(self.cancelPressed)), animated: false)
         
         self.presentationDataDisposable = (self.context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -95,7 +95,7 @@ public class SetupTwoStepVerificationController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = SetupTwoStepVerificationControllerNode(context: self.context, updateBackAction: { [weak self] action in
+        self.displayNode = SetupTwoStepVerificationControllerNode(context: self.context, updateBackAction: { [weak self = self] action in
             guard let strongSelf = self else {
                 return
             }
@@ -110,7 +110,7 @@ public class SetupTwoStepVerificationController: ViewController {
                 item = UIBarButtonItem(title: strongSelf.presentationData.strings.Common_Cancel, style: .plain, target: strongSelf, action: #selector(strongSelf.cancelPressed))
             }
             strongSelf.navigationItem.setLeftBarButton(item, animated: false)
-        }, updateNextAction: { [weak self] action in
+        }, updateNextAction: { [weak self = self] action in
             guard let strongSelf = self else {
                 return
             }
@@ -134,13 +134,13 @@ public class SetupTwoStepVerificationController: ViewController {
             if case let .button(_, isEnabled) = action {
                 strongSelf.navigationItem.rightBarButtonItem?.isEnabled = isEnabled
             }
-        }, stateUpdated: { [weak self] state, shouldDismiss in
+        }, stateUpdated: { [weak self = self] state, shouldDismiss in
             if let strongSelf = self {
                 strongSelf.stateUpdated(state, shouldDismiss, strongSelf)
             }
-        }, present: { [weak self] c, a in
+        }, present: { [weak self = self] c, a in
             self?.present(c, in: .window(.root), with: a)
-        }, dismiss: { [weak self] in
+        }, dismiss: { [weak self = self] in
             self?.dismiss()
         }, initialState: self.initialState)
         self._ready.set(.single(true))

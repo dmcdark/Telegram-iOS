@@ -109,7 +109,7 @@ private final class GiftAuctionViewSheetContent: CombinedComponent {
             super.init()
             
             self.disposable = (auctionContext.state
-            |> deliverOnMainQueue).start(next: { [weak self] auctionState in
+            |> deliverOnMainQueue).start(next: { [weak self = self] auctionState in
                 guard let self else {
                     return
                 }
@@ -122,14 +122,14 @@ private final class GiftAuctionViewSheetContent: CombinedComponent {
                 }
             })
                                     
-            self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self] in
+            self.giftAuctionTimer = SwiftSignalKit.Timer(timeout: 0.5, repeat: true, completion: { [weak self = self] in
                 self?.updated()
             }, queue: Queue.mainQueue())
             self.giftAuctionTimer?.start()
             
             if case let .generic(gift) = auctionContext.gift, let upgradeVariantsCount = gift.upgradeVariantsCount, upgradeVariantsCount > 0 {
                 let _ = (context.engine.payments.getStarGiftUpgradeAttributes(giftId: gift.id)
-                |> deliverOnMainQueue).start(next: { [weak self] attributes in
+                |> deliverOnMainQueue).start(next: { [weak self = self] attributes in
                     guard let self, let attributes else {
                         return
                     }
@@ -177,7 +177,7 @@ private final class GiftAuctionViewSheetContent: CombinedComponent {
                     self.updated()
                 })
                 
-                self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self] in
+                self.previewTimer = SwiftSignalKit.Timer(timeout: 3.0, repeat: true, completion: { [weak self = self] in
                     guard let self else {
                         return
                     }
@@ -218,7 +218,7 @@ private final class GiftAuctionViewSheetContent: CombinedComponent {
         
         func loadAcquiredGifts() {
             self.giftAuctionAcquiredGiftsDisposable.set((self.context.engine.payments.getGiftAuctionAcquiredGifts(giftId: self.auctionContext.gift.giftId)
-            |> deliverOnMainQueue).startStrict(next: { [weak self] acquiredGifts in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] acquiredGifts in
                 guard let self else {
                     return
                 }
@@ -453,7 +453,7 @@ private final class GiftAuctionViewSheetContent: CombinedComponent {
                 controller?.present(UndoOverlayController(presentationData: presentationData, content: .linkCopied(title: nil, text: presentationData.strings.Conversation_LinkCopied), elevatedLayout: false, animateInAsReplacement: false, action: { _ in return false }), in: .current)
             })))
             
-            items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Auction_Context_Share, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self] c, f in
+            items.append(.action(ContextMenuActionItem(text: presentationData.strings.Gift_Auction_Context_Share, icon: { theme in return generateTintedImage(image: UIImage(bundleImageName: "Chat/Context Menu/Forward"), color: theme.contextMenu.primaryColor) }, action: { [weak self = self] c, f in
                 f(.default)
                 
                 self?.share()

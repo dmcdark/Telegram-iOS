@@ -137,7 +137,7 @@ final class InstantPageImageNode: ASDisplayNode, InstantPageNode, InstantPageExt
                     self.fetchedDisposable.set(chatMessagePhotoInteractiveFetched(context: context, userLocation: sourceLocation.userLocation, photoReference: imageReference, displayAtSize: nil, storeToDownloadsPeerId: nil).start())
                 }
                 
-                self.fetchControls = FetchControls(fetch: { [weak self] manual in
+                self.fetchControls = FetchControls(fetch: { [weak self = self] manual in
                     if let strongSelf = self {
                         strongSelf.fetchedDisposable.set(chatMessagePhotoInteractiveFetched(context: context, userLocation: sourceLocation.userLocation, photoReference: imageReference, displayAtSize: nil, storeToDownloadsPeerId: nil).start())
                     }
@@ -146,7 +146,7 @@ final class InstantPageImageNode: ASDisplayNode, InstantPageNode, InstantPageExt
                 })
                 
                 if interactive {
-                    self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(largest.resource)) |> deliverOnMainQueue).start(next: { [weak self] status in
+                    self.statusDisposable.set((context.engine.resources.status(resource: EngineMediaResource(largest.resource)) |> deliverOnMainQueue).start(next: { [weak self = self] status in
                         displayLinkDispatcher.dispatch {
                             if let strongSelf = self {
                                 strongSelf.fetchStatus = status
@@ -203,7 +203,7 @@ final class InstantPageImageNode: ASDisplayNode, InstantPageNode, InstantPageExt
             self.pinchContainerNode.activate = { sourceNode in
                 activatePinchPreview(sourceNode)
             }
-            self.pinchContainerNode.animatedOut = { [weak self] in
+            self.pinchContainerNode.animatedOut = { [weak self = self] in
                 guard let strongSelf = self else {
                     return
                 }
@@ -301,7 +301,7 @@ final class InstantPageImageNode: ASDisplayNode, InstantPageNode, InstantPageExt
         
         let stateAwarePhotoData = photoData
         |> deliverOnMainQueue
-        |> afterNext { [weak self] value in
+        |> afterNext { [weak self = self] value in
             guard let strongSelf = self else {
                 return
             }
@@ -324,7 +324,7 @@ final class InstantPageImageNode: ASDisplayNode, InstantPageNode, InstantPageExt
             return generate
         })
         
-        self.fetchControls = FetchControls(fetch: { [weak self] _ in
+        self.fetchControls = FetchControls(fetch: { [weak self = self] _ in
             self?.loadExternalImage(resourceUrl: resourceUrl)
         }, cancel: {})
     }

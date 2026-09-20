@@ -130,7 +130,7 @@ final class FaceScanScreenComponent: Component {
         
         private func setupModel(availability: Signal<AgeVerificationAvailability, NoError>) {
             self.availabilityDisposable = (availability
-            |> deliverOnMainQueue).start(next: { [weak self] availability in
+            |> deliverOnMainQueue).start(next: { [weak self = self] availability in
                 guard let self else {
                     return
                 }
@@ -210,7 +210,7 @@ final class FaceScanScreenComponent: Component {
         }
         
         private func setupVision() {
-            self.faceDetectionRequest = VNDetectFaceRectanglesRequest { [weak self] request, error in
+            self.faceDetectionRequest = VNDetectFaceRectanglesRequest { [weak self = self] request, error in
                 guard error == nil else { return }
                 Queue.mainQueue().async {
                     self?.handleFaceDetection(request)
@@ -242,7 +242,7 @@ final class FaceScanScreenComponent: Component {
                 switch processState {
                 case .waitingForFace:
                     self.processState = .positioning
-                    self.faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: self.positioningTime, repeats: false) { [weak self] _ in
+                    self.faceDetectionTimer = Timer.scheduledTimer(withTimeInterval: self.positioningTime, repeats: false) { [weak self = self] _ in
                         self?.processState = .readyToStart
                         
                         self?.state?.updated(transition: .spring(duration: 0.3))
@@ -383,7 +383,7 @@ final class FaceScanScreenComponent: Component {
                 return
             }
             
-            let request = VNCoreMLRequest(model: model) { [weak self] request, error in
+            let request = VNCoreMLRequest(model: model) { [weak self = self] request, error in
                 if let results =  request.results as? [VNCoreMLFeatureValueObservation], let ageObservation = results.last {
                     let age = ageObservation.featureValue.multiArrayValue?[0].doubleValue ?? 0
                     
@@ -458,7 +458,7 @@ final class FaceScanScreenComponent: Component {
             var instructionString = environment.strings.FaceScan_Instruction_Position
             switch self.processState {
             case .waitingForFace, .positioning:
-                self.frameView.update(state: .viewFinder, intermediateCompletion: { [weak self] in
+                self.frameView.update(state: .viewFinder, intermediateCompletion: { [weak self = self] in
                     if let self {
                         self.transitioningToViewFinder = false
                         self.state?.updated(transition: .spring(duration: 0.3))
@@ -506,7 +506,7 @@ final class FaceScanScreenComponent: Component {
                                 text: .plain(NSAttributedString(string: strings.Common_Cancel, font: Font.regular(17.0), textColor: theme.list.itemAccentColor))
                             )
                         ),
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let environment = self.environment, let controller = environment.controller() as? FaceScanScreen else {
                                 return
                             }
@@ -667,7 +667,7 @@ extension FaceScanScreenComponent.View {
         
         animateLinefadeOut(lineLayer)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + guideLineFadeDuration + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + guideLineFadeDuration + 0.1) { [weak self = self] in
             if let index = self?.horizontalGuideLines.firstIndex(of: lineLayer) {
                 self?.horizontalGuideLines.remove(at: index)
             }
@@ -696,7 +696,7 @@ extension FaceScanScreenComponent.View {
         
         animateLinefadeOut(lineLayer)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + guideLineFadeDuration + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + guideLineFadeDuration + 0.1) { [weak self = self] in
             if let index = self?.verticalGuideLines.firstIndex(of: lineLayer) {
                 self?.verticalGuideLines.remove(at: index)
             }

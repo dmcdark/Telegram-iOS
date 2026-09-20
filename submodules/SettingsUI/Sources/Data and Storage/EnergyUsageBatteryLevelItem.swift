@@ -139,7 +139,7 @@ class EnergyUsageBatteryLevelItemNode: ListViewItemNode {
             let layout = ListViewItemNodeLayout(contentSize: contentSize, insets: insets)
             let layoutSize = layout.size
             
-            return (layout, { [weak self] in
+            return (layout, { [weak self = self] in
                 if let strongSelf = self {
                     strongSelf.item = item
                     strongSelf.layoutParams = params
@@ -286,7 +286,7 @@ class EnergyUsageBatteryLevelItemNode: ListViewItemNode {
                                 content: .continuous(.init(
                                     value: rescaleBatteryValueToSlider(CGFloat(item.value) / 100.0),
                                     minValue: nil,
-                                    valueUpdated: { [weak self] value in
+                                    valueUpdated: { [weak self = self] value in
                                         self?.item?.updated(Int32(rescaleSliderToBatteryValue(value) * 100.0))
                                     }
                                 )),

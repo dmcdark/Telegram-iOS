@@ -211,7 +211,7 @@ private final class LocationDistancePickerScreenComponent: Component {
             }
             self.isDismissed = true
             
-            self.sheetAnimateOut.invoke(Action { [weak self] _ in
+            self.sheetAnimateOut.invoke(Action { [weak self = self] _ in
                 guard let self else {
                     completion?()
                     return
@@ -237,7 +237,7 @@ private final class LocationDistancePickerScreenComponent: Component {
                 isCentered: environment.metrics.widthClass == .regular,
                 hasInputHeight: !environment.inputHeight.isZero,
                 regularMetricsSize: CGSize(width: 430.0, height: 900.0),
-                dismiss: { [weak self] _ in
+                dismiss: { [weak self = self] _ in
                     self?.requestDismiss()
                 }
             )
@@ -260,15 +260,15 @@ private final class LocationDistancePickerScreenComponent: Component {
                                 compactDisplayTitle: component.compactDisplayTitle,
                                 distances: component.distances,
                                 updated: component.updated,
-                                completion: { [weak self] distance in
+                                completion: { [weak self = self] distance in
                                     guard let self, let component = self.component else {
                                         return
                                     }
-                                    component.completion(distance, { [weak self] in
+                                    component.completion(distance, { [weak self = self] in
                                         self?.requestDismiss()
                                     })
                                 },
-                                dismiss: { [weak self] in
+                                dismiss: { [weak self = self] in
                                     self?.requestDismiss()
                                 }
                             )
@@ -277,7 +277,7 @@ private final class LocationDistancePickerScreenComponent: Component {
                         backgroundColor: backgroundColor,
                         hasDimView: false,
                         animateOut: self.sheetAnimateOut,
-                        willDismiss: { [weak self] in
+                        willDismiss: { [weak self = self] in
                             self?.performWillDismissOnce()
                         }
                     )
@@ -394,7 +394,7 @@ private final class LocationDistancePickerContentComponent: Component {
                 return
             }
             self.distancesDisposable = (component.distances
-            |> deliverOnMainQueue).start(next: { [weak self] distances in
+            |> deliverOnMainQueue).start(next: { [weak self = self] distances in
                 guard let self else {
                     return
                 }
@@ -423,7 +423,7 @@ private final class LocationDistancePickerContentComponent: Component {
             self.addSubview(pickerView)
             self.pickerView = pickerView
             
-            let pickerTimer = SwiftSignalKit.Timer(timeout: 0.4, repeat: true, completion: { [weak self] in
+            let pickerTimer = SwiftSignalKit.Timer(timeout: 0.4, repeat: true, completion: { [weak self = self] in
                 guard let self else {
                     return
                 }
@@ -547,7 +547,7 @@ private final class LocationDistancePickerContentComponent: Component {
                                 tintColor: environment.theme.chat.inputPanel.panelControlColor
                             )
                         )),
-                        action: { [weak self] _ in
+                        action: { [weak self = self] _ in
                             self?.component?.dismiss()
                         }
                     )
@@ -654,7 +654,7 @@ private final class LocationDistancePickerContentComponent: Component {
                     isEnabled: !isTooFar && !self.isCompleting,
                     tintWhenDisabled: false,
                     displaysProgress: false,
-                    action: { [weak self] in
+                    action: { [weak self = self] in
                         guard let self, let component = self.component, let selectedDistance = self.selectedDistance() else {
                             return
                         }

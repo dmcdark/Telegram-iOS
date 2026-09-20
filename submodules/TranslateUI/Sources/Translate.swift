@@ -406,7 +406,7 @@ public final class ExperimentalInternalTranslationServiceImpl: ExperimentalInter
             }
             self.taskTrigger.shouldInvalidate += 1
             
-            return ActionDisposable { [weak self] in
+            return ActionDisposable { [weak self = self] in
                 Queue.mainQueue().async {
                     guard let self else {
                         return

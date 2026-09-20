@@ -450,7 +450,7 @@ public final class TabBarComponent: Component {
             self.tabSelectionRecognizer = tabSelectionRecognizer
             self.contextGestureContainerView.addGestureRecognizer(tabSelectionRecognizer)
             
-            self.contextGestureContainerView.shouldBegin = { [weak self] point in
+            self.contextGestureContainerView.shouldBegin = { [weak self = self] point in
                 guard let self, let component = self.component else {
                     return false
                 }
@@ -466,7 +466,7 @@ public final class TabBarComponent: Component {
                         self.itemWithActiveContextGesture = itemId
                         
                         let startPoint = point
-                        self.contextGestureContainerView.contextGesture?.externalUpdated = { [weak self] _, point in
+                        self.contextGestureContainerView.contextGesture?.externalUpdated = { [weak self = self] _, point in
                             guard let self else {
                                 return
                             }
@@ -484,7 +484,7 @@ public final class TabBarComponent: Component {
             }
             self.contextGestureContainerView.customActivationProgress = { _, _ in
             }
-            self.contextGestureContainerView.activated = { [weak self] gesture, _ in
+            self.contextGestureContainerView.activated = { [weak self = self] gesture, _ in
                 guard let self, let component = self.component else {
                     return
                 }
@@ -572,7 +572,7 @@ public final class TabBarComponent: Component {
                         
                         if !handledDoubleTap {
                             if item.doubleTapAction != nil {
-                                let timer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.18, repeats: false, block: { [weak self] timer in
+                                let timer = Foundation.Timer.scheduledTimer(withTimeInterval: 0.18, repeats: false, block: { [weak self = self] timer in
                                     guard let self else {
                                         return
                                     }
@@ -908,13 +908,13 @@ public final class TabBarComponent: Component {
                 } else {
                     searchViewTransition = searchViewTransition.withAnimation(.none)
                     searchView = NavigationSearchView(
-                        action: { [weak self] in
+                        action: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
                             component.search?.activate()
                         },
-                        closeAction: { [weak self] in
+                        closeAction: { [weak self = self] in
                             guard let self, let component = self.component else {
                                 return
                             }
@@ -1076,19 +1076,19 @@ private final class ItemComponent: Component {
                     self.setBadgeListener = nil
                 }
                 if let currentTabBarItem {
-                    self.setImageListener = currentTabBarItem.addSetImageListener { [weak self] _ in
+                    self.setImageListener = currentTabBarItem.addSetImageListener { [weak self = self] _ in
                         guard let self else {
                             return
                         }
                         self.state?.updated(transition: .immediate, isLocal: true)
                     }
-                    self.setSelectedImageListener = currentTabBarItem.addSetSelectedImageListener { [weak self] _ in
+                    self.setSelectedImageListener = currentTabBarItem.addSetSelectedImageListener { [weak self = self] _ in
                         guard let self else {
                             return
                         }
                         self.state?.updated(transition: .immediate, isLocal: true)
                     }
-                    self.setBadgeListener = UITabBarItem_addSetBadgeListener(currentTabBarItem) { [weak self] _ in
+                    self.setBadgeListener = UITabBarItem_addSetBadgeListener(currentTabBarItem) { [weak self = self] _ in
                         guard let self else {
                             return
                         }

@@ -289,7 +289,7 @@ final class SharePeersContainerNode: ASDisplayNode, ShareContentContainerNode {
         
         self.addSubnode(self.contentSeparatorNode)
         
-        self.shareContainerNode.activated = { [weak self] gesture, _ in
+        self.shareContainerNode.activated = { [weak self = self] gesture, _ in
             guard let strongSelf = self else {
                 return
             }
@@ -298,7 +298,7 @@ final class SharePeersContainerNode: ASDisplayNode, ShareContentContainerNode {
         
         let previousItems = Atomic<[SharePeerEntry]?>(value: [])
         self.disposable.set((items
-        |> deliverOnMainQueue).start(next: { [weak self] entries in
+        |> deliverOnMainQueue).start(next: { [weak self = self] entries in
             if let strongSelf = self {
                 let previousEntries = previousItems.swap(entries)
                 strongSelf.entries = entries
@@ -309,11 +309,11 @@ final class SharePeersContainerNode: ASDisplayNode, ShareContentContainerNode {
             }
         }))
         
-        self.contentGridNode.scrollingInitiated = { [weak self] in
+        self.contentGridNode.scrollingInitiated = { [weak self = self] in
             self?.contentDidBeginDragging?()
         }
 
-        self.contentGridNode.presentationLayoutUpdated = { [weak self] presentationLayout, transition in
+        self.contentGridNode.presentationLayoutUpdated = { [weak self = self] presentationLayout, transition in
             self?.gridPresentationLayoutUpdated(presentationLayout, transition: transition)
         }
         
@@ -321,7 +321,7 @@ final class SharePeersContainerNode: ASDisplayNode, ShareContentContainerNode {
         self.shareButtonNode.addTarget(self, action: #selector(self.sharePressed), forControlEvents: .touchUpInside)
         self.contentTitleAccountNode.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.accountTapGesture(_:))))
         
-        self.segmentedNode.selectedIndexChanged = { [weak self] index in
+        self.segmentedNode.selectedIndexChanged = { [weak self = self] index in
             self?.segmentedSelectedIndexUpdated?(index)
         }
 

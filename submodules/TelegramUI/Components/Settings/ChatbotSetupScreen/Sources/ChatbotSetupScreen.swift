@@ -331,7 +331,7 @@ final class ChatbotSetupScreenComponent: Component {
                     
                     self.botResolutionDisposable = (component.context.engine.peers.resolvePeerByName(name: cleanQuery, referrer: nil)
                     |> delay(0.4, queue: .mainQueue())
-                    |> deliverOnMainQueue).start(next: { [weak self] result in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] result in
                         guard let self else {
                             return
                         }
@@ -415,7 +415,7 @@ final class ChatbotSetupScreenComponent: Component {
                     context: component.context,
                     mode: mode,
                     initialPeerList: mappedPeerList,
-                    completion: { [weak self] peerList in
+                    completion: { [weak self = self] peerList in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -424,7 +424,7 @@ final class ChatbotSetupScreenComponent: Component {
                             context: component.context,
                             peerList: peerList,
                             mode: mode,
-                            update: { [weak self] updatedPeerList in
+                            update: { [weak self = self] updatedPeerList in
                                 guard let self else {
                                     return
                                 }
@@ -475,7 +475,7 @@ final class ChatbotSetupScreenComponent: Component {
                     context: component.context,
                     peerList: mappedPeerList,
                     mode: mode,
-                    update: { [weak self] updatedPeerList in
+                    update: { [weak self = self] updatedPeerList in
                         guard let self else {
                             return
                         }
@@ -758,7 +758,7 @@ final class ChatbotSetupScreenComponent: Component {
                             return nil
                         }
                     },
-                    tapAction: { [weak self] _, _ in
+                    tapAction: { [weak self = self] _, _ in
                         guard let self, let component = self.component, let environment = self.environment else {
                             return
                         }
@@ -790,7 +790,7 @@ final class ChatbotSetupScreenComponent: Component {
                 placeholder: environment.strings.ChatbotSetup_BotSearchPlaceholder,
                 autocapitalizationType: .none,
                 autocorrectionType: .no,
-                updated: { [weak self] value in
+                updated: { [weak self = self] value in
                     guard let self else {
                         return
                     }
@@ -813,7 +813,7 @@ final class ChatbotSetupScreenComponent: Component {
                     theme: environment.theme,
                     strings: environment.strings,
                     content: mappedContent,
-                    installAction: { [weak self] in
+                    installAction: { [weak self = self] in
                         guard let self, let component = self.component, let environment = self.environment, let controller = self.environment?.controller() else {
                             return
                         }
@@ -842,7 +842,7 @@ final class ChatbotSetupScreenComponent: Component {
                             }
                         }
                     },
-                    removeAction: { [weak self] in
+                    removeAction: { [weak self = self] in
                         guard let self else {
                             return
                         }
@@ -925,7 +925,7 @@ final class ChatbotSetupScreenComponent: Component {
                                 contentMode: .center
                             ))), false),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -956,7 +956,7 @@ final class ChatbotSetupScreenComponent: Component {
                                 contentMode: .center
                             ))), false),
                             accessory: nil,
-                            action: { [weak self] _ in
+                            action: { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1023,7 +1023,7 @@ final class ChatbotSetupScreenComponent: Component {
                     maximumNumberOfLines: 1
                 )))),
                 accessory: .arrow,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -1091,7 +1091,7 @@ final class ChatbotSetupScreenComponent: Component {
                     maximumNumberOfLines: 1
                 )))),
                 accessory: .arrow,
-                action: { [weak self] _ in
+                action: { [weak self = self] _ in
                     guard let self else {
                         return
                     }
@@ -1200,7 +1200,7 @@ final class ChatbotSetupScreenComponent: Component {
                             theme: environment.theme,
                             style: .glass,
                             title: AnyComponent(HStack(titleItems, spacing: 6.0)),
-                            accessory: .toggle(ListActionItemComponent.Toggle(style: .icons, isOn: value, action: { [weak self] value in
+                            accessory: .toggle(ListActionItemComponent.Toggle(style: .icons, isOn: value, action: { [weak self = self] value in
                                 guard let self else {
                                     return
                                 }
@@ -1214,7 +1214,7 @@ final class ChatbotSetupScreenComponent: Component {
                                         }
                                         self.temporaryEnabledPermissions.insert(permission.id)
                                        
-                                        let presentedWarning = self.presentStarGiftsWarningIfNeeded(combinedKey, completion: { [weak self] value in
+                                        let presentedWarning = self.presentStarGiftsWarningIfNeeded(combinedKey, completion: { [weak self = self] value in
                                             guard let self else {
                                                 return
                                             }
@@ -1247,7 +1247,7 @@ final class ChatbotSetupScreenComponent: Component {
                                 }
                                 self.state?.updated(transition: .spring(duration: 0.4))
                             })),
-                            action: permission.subpermissions != nil ? { [weak self] _ in
+                            action: permission.subpermissions != nil ? { [weak self = self] _ in
                                 guard let self else {
                                     return
                                 }
@@ -1291,13 +1291,13 @@ final class ChatbotSetupScreenComponent: Component {
                                     ], alignment: .left, spacing: 2.0)),
                                     leftIcon: .check(ListActionItemComponent.LeftIcon.Check(isSelected: value, isEnabled: subpermission.enabled, toggle: nil)),
                                     accessory: nil,
-                                    action: subpermission.enabled ? { [weak self] _ in
+                                    action: subpermission.enabled ? { [weak self = self] _ in
                                         guard let self else {
                                             return
                                         }
                                         if let key = subpermission.key {
                                             if !value {
-                                                let _ = self.presentStarGiftsWarningIfNeeded(key, completion: { [weak self] value in
+                                                let _ = self.presentStarGiftsWarningIfNeeded(key, completion: { [weak self = self] value in
                                                     guard let self else {
                                                         return
                                                     }
@@ -1440,14 +1440,14 @@ public final class ChatbotSetupScreen: ViewControllerComponentContainer {
         self.title = ""
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             guard let self, let componentView = self.node.hostView.componentView as? ChatbotSetupScreenComponent.View else {
                 return
             }
             componentView.scrollToTop()
         }
         
-        self.attemptNavigation = { [weak self] complete in
+        self.attemptNavigation = { [weak self = self] complete in
             guard let self, let componentView = self.node.hostView.componentView as? ChatbotSetupScreenComponent.View else {
                 return true
             }

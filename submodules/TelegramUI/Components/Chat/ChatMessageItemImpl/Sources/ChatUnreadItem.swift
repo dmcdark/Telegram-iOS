@@ -133,7 +133,7 @@ public class ChatUnreadItemNode: ListViewItemNode {
         let layoutConstants = self.layoutConstants
         let currentTheme = self.theme
         
-        return { [weak self] item, params, dateAtBottom in
+        return { [weak self = self] item, params, dateAtBottom in
             var updatedBackgroundImage: UIImage?
             if currentTheme != item.presentationData.theme {
                 updatedBackgroundImage = PresentationResourcesChat.chatUnreadBarBackgroundImage(item.presentationData.theme.theme)

@@ -58,7 +58,7 @@ final class UnauthorizedApplicationContext {
         })
         (self.rootController as NavigationController).statusBarHost = sharedContext.mainWindow?.statusBarHost
         
-        authorizationCompleted = { [weak self] in
+        authorizationCompleted = { [weak self = self] in
             self?.authorizationCompleted = true
         }
         
@@ -72,7 +72,7 @@ final class UnauthorizedApplicationContext {
             }
         })
         
-        DeviceAccess.authorizeAccess(to: .cellularData, presentationData: sharedContext.currentPresentationData.with { $0 }, present: { [weak self] c, a in
+        DeviceAccess.authorizeAccess(to: .cellularData, presentationData: sharedContext.currentPresentationData.with { $0 }, present: { [weak self = self] c, a in
             if let strongSelf = self {
                 (strongSelf.rootController.viewControllers.last as? ViewController)?.present(c, in: .window(.root))
             }
@@ -83,7 +83,7 @@ final class UnauthorizedApplicationContext {
         })
 
         self.serviceNotificationEventsDisposable = (account.serviceNotificationEvents
-        |> deliverOnMainQueue).start(next: { [weak self] text in
+        |> deliverOnMainQueue).start(next: { [weak self = self] text in
             if let strongSelf = self {
                 let presentationData = strongSelf.sharedContext.currentPresentationData.with { $0 }
                 let alertController = textAlertController(sharedContext: strongSelf.sharedContext, title: nil, text: text, actions: [TextAlertAction(type: .defaultAction, title: presentationData.strings.Common_OK, action: {})])
@@ -172,14 +172,14 @@ final class AuthorizedApplicationContext {
         
         self.rootController = TelegramRootController(context: context)
         self.rootController.minimizedContainer = self.sharedApplicationContext.minimizedContainer[context.account.id]
-        self.rootController.minimizedContainerUpdated = { [weak self] minimizedContainer in
+        self.rootController.minimizedContainerUpdated = { [weak self = self] minimizedContainer in
             guard let self else {
                 return
             }
             self.sharedApplicationContext.minimizedContainer[self.context.account.id] = minimizedContainer
         }
         
-        self.rootController.globalOverlayControllersUpdated = { [weak self] in
+        self.rootController.globalOverlayControllersUpdated = { [weak self = self] in
             guard let strongSelf = self else {
                 return
             }
@@ -195,7 +195,7 @@ final class AuthorizedApplicationContext {
         }
         
         if KeyShortcutsController.isAvailable {
-            let keyShortcutsController = KeyShortcutsController { [weak self] f in
+            let keyShortcutsController = KeyShortcutsController { [weak self = self] f in
                 if let strongSelf = self, let appLockContext = strongSelf.context.sharedContext.appLockContext as? AppLockContextImpl {
                     let _ = (appLockContext.isCurrentlyLocked
                     |> take(1)
@@ -264,7 +264,7 @@ final class AuthorizedApplicationContext {
         
         let accountId = context.account.id
         self.loggedOutDisposable.set((context.account.loggedOut
-        |> deliverOnMainQueue).start(next: { [weak self] value in
+        |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if value {
                 Logger.shared.log("ApplicationContext", "account logged out")
                 let _ = logoutFromAccount(id: accountId, accountManager: accountManager, alreadyLoggedOutRemotely: false).start()
@@ -278,7 +278,7 @@ final class AuthorizedApplicationContext {
             }
         }))
         
-        self.inAppNotificationSettingsDisposable.set(((context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.inAppNotificationSettings])) |> deliverOnMainQueue).start(next: { [weak self] sharedData in
+        self.inAppNotificationSettingsDisposable.set(((context.sharedContext.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.inAppNotificationSettings])) |> deliverOnMainQueue).start(next: { [weak self = self] sharedData in
             if let strongSelf = self {
                 if let settings = sharedData.entries[ApplicationSpecificSharedDataKeys.inAppNotificationSettings]?.get(InAppNotificationSettings.self) {
                     let previousSettings = strongSelf.inAppNotificationSettings
@@ -315,7 +315,7 @@ final class AuthorizedApplicationContext {
                 }
             }
         }
-        |> deliverOn(Queue.mainQueue())).start(next: { [weak self] messageList in
+        |> deliverOn(Queue.mainQueue())).start(next: { [weak self = self] messageList in
             if messageList.isEmpty {
                 return
             }
@@ -514,7 +514,7 @@ final class AuthorizedApplicationContext {
         }))
         
         self.termsOfServiceUpdatesDisposable.set((context.account.stateManager.termsOfServiceUpdate
-        |> deliverOnMainQueue).start(next: { [weak self] termsOfServiceUpdate in
+        |> deliverOnMainQueue).start(next: { [weak self = self] termsOfServiceUpdate in
             guard let strongSelf = self, strongSelf.currentTermsOfServiceUpdate != termsOfServiceUpdate else {
                 return
             }
@@ -584,7 +584,7 @@ final class AuthorizedApplicationContext {
         }))
         
         self.appUpdateInfoDisposable.set((context.account.stateManager.appUpdateInfo
-        |> deliverOnMainQueue).start(next: { [weak self] appUpdateInfo in
+        |> deliverOnMainQueue).start(next: { [weak self = self] appUpdateInfo in
             guard let strongSelf = self, strongSelf.currentAppUpdateInfo != appUpdateInfo else {
                 return
             }
@@ -599,7 +599,7 @@ final class AuthorizedApplicationContext {
         if #available(iOS 10.0, *) {
             let permissionsPosition = ValuePromise(0, ignoreRepeated: true)
             self.permissionsDisposable.set((combineLatest(queue: .mainQueue(), requiredPermissions(context: context), permissionUISplitTest(postbox: context.account.postbox), permissionsPosition.get(), context.sharedContext.accountManager.noticeEntry(key: ApplicationSpecificNotice.permissionWarningKey(permission: .contacts)!), context.sharedContext.accountManager.noticeEntry(key: ApplicationSpecificNotice.permissionWarningKey(permission: .notifications)!), context.sharedContext.accountManager.noticeEntry(key: ApplicationSpecificNotice.permissionWarningKey(permission: .cellularData)!))
-            |> deliverOnMainQueue).start(next: { [weak self] required, splitTest, position, contactsPermissionWarningNotice, notificationsPermissionWarningNotice, cellularDataPermissionWarningNotice in
+            |> deliverOnMainQueue).start(next: { [weak self = self] required, splitTest, position, contactsPermissionWarningNotice, notificationsPermissionWarningNotice, cellularDataPermissionWarningNotice in
                 guard let strongSelf = self else {
                     return
                 }
@@ -718,7 +718,7 @@ final class AuthorizedApplicationContext {
                                         ApplicationSpecificNotice.setPermissionWarning(accountManager: context.sharedContext.accountManager, permission: .notifications, value: 0)
                                     })
                                 case .cellularData:
-                                    DeviceAccess.authorizeAccess(to: .cellularData, presentationData: context.sharedContext.currentPresentationData.with { $0 }, present: { [weak self] c, a in
+                                    DeviceAccess.authorizeAccess(to: .cellularData, presentationData: context.sharedContext.currentPresentationData.with { $0 }, present: { [weak self = self] c, a in
                                         if let strongSelf = self {
                                             (strongSelf.rootController.viewControllers.last as? ViewController)?.present(c, in: .window(.root))
                                         }
@@ -748,7 +748,7 @@ final class AuthorizedApplicationContext {
         }
         
         self.displayAlertsDisposable = (context.account.stateManager.displayAlerts
-        |> deliverOnMainQueue).start(next: { [weak self] alerts in
+        |> deliverOnMainQueue).start(next: { [weak self = self] alerts in
             if let strongSelf = self {
                 for (text, isDropAuth) in alerts {
                     let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
@@ -769,7 +769,7 @@ final class AuthorizedApplicationContext {
         })
         
         self.removeNotificationsDisposable = (context.account.stateManager.appliedIncomingReadMessages
-        |> deliverOnMainQueue).start(next: { [weak self] ids in
+        |> deliverOnMainQueue).start(next: { [weak self = self] ids in
             if let strongSelf = self {
                 strongSelf.context.sharedContext.applicationBindings.clearMessageNotifications(ids)
             }
@@ -793,7 +793,7 @@ final class AuthorizedApplicationContext {
         
         let previousTheme = Atomic<PresentationTheme?>(value: nil)
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 if previousTheme.swap(presentationData.theme) !== presentationData.theme {
                     strongSelf.lockedCoveringView.updateTheme(presentationData.theme)
@@ -810,7 +810,7 @@ final class AuthorizedApplicationContext {
             }
             return value
         }
-        self.showCallsTabDisposable = (showCallsTabSignal |> deliverOnMainQueue).start(next: { [weak self] value in
+        self.showCallsTabDisposable = (showCallsTabSignal |> deliverOnMainQueue).start(next: { [weak self = self] value in
             if let strongSelf = self {
                 if strongSelf.showCallsTab != value {
                     strongSelf.showCallsTab = value
@@ -861,7 +861,7 @@ final class AuthorizedApplicationContext {
             !$0
         }
         |> take(1)
-        |> deliverOnMainQueue).start(next: { [weak self] _ in
+        |> deliverOnMainQueue).start(next: { [weak self = self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -947,7 +947,7 @@ final class AuthorizedApplicationContext {
     func openUrl(_ url: URL, external: Bool = false) {
         if self.rootController.rootTabController != nil {
             let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-            self.context.sharedContext.openExternalUrl(context: self.context, urlContext: external ? .external : .generic, url: url.absoluteString, forceExternal: false, presentationData: presentationData, navigationController: self.rootController, dismissInput: { [weak self] in
+            self.context.sharedContext.openExternalUrl(context: self.context, urlContext: external ? .external : .generic, url: url.absoluteString, forceExternal: false, presentationData: presentationData, navigationController: self.rootController, dismissInput: { [weak self = self] in
                 self?.rootController.view.endEditing(true)
             })
         } else {
@@ -984,7 +984,7 @@ final class AuthorizedApplicationContext {
                 return nil
             }
         }
-        |> deliverOnMainQueue).start(next: { [weak self] context in
+        |> deliverOnMainQueue).start(next: { [weak self = self] context in
             guard let strongSelf = self, let context = context else {
                 return
             }

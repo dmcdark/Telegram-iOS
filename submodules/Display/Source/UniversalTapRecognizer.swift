@@ -31,7 +31,7 @@ class UniversalTapRecognizer: UITapGestureRecognizer {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
         
-        let timer = Timer(timeInterval: self.tapMaxDelay, target: TimerTargetWrapper({ [weak self] in
+        let timer = Timer(timeInterval: self.tapMaxDelay, target: TimerTargetWrapper({ [weak self = self] in
             if let strongSelf = self {
                 if strongSelf.state != .ended {
                     strongSelf.state = .failed

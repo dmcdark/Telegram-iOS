@@ -53,7 +53,7 @@ final class GalleryRateToastAnimationComponent: Component {
         private func setupAnimations() {
             if self.link == nil {
                 var previousTimestamp = CACurrentMediaTime()
-                self.link = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+                self.link = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                     guard let self else {
                         return
                     }

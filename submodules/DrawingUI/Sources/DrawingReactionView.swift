@@ -139,7 +139,7 @@ public class DrawingReactionEntityView: DrawingStickerEntityView {
             reactionsLocked: false,
             alwaysAllowPremiumReactions: false,
             allPresetReactionsAreAvailable: false,
-            getEmojiContent: { [weak self] animationCache, animationRenderer in
+            getEmojiContent: { [weak self = self] animationCache, animationRenderer in
                 guard let self else {
                     preconditionFailure()
                 }
@@ -178,12 +178,12 @@ public class DrawingReactionEntityView: DrawingStickerEntityView {
         reactionContextNode.forceDark = true
         self.reactionContextNode = reactionContextNode
                 
-        reactionContextNode.reactionSelected = { [weak self] updateReaction, _ in
+        reactionContextNode.reactionSelected = { [weak self = self] updateReaction, _ in
             guard let self else {
                 return
             }
             
-            let continueWithAnimationFile: (TelegramMediaFile) -> Void = { [weak self] animation in
+            let continueWithAnimationFile: (TelegramMediaFile) -> Void = { [weak self = self] animation in
                 guard let self else {
                     return
                 }
@@ -285,7 +285,7 @@ public class DrawingReactionEntityView: DrawingStickerEntityView {
             }
         }
         
-        reactionContextNode.premiumReactionsSelected = { [weak self] file in
+        reactionContextNode.premiumReactionsSelected = { [weak self = self] file in
             guard let self else {
                 return
             }
@@ -294,7 +294,7 @@ public class DrawingReactionEntityView: DrawingStickerEntityView {
                 let context = self.context
                 let presentationData = context.sharedContext.currentPresentationData.with { $0 }
                 
-                let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: presentationData.strings.Story_Editor_TooltipPremiumReaction, undoText: nil, customAction: nil), elevatedLayout: true, animateInAsReplacement: false, appearance: UndoOverlayController.Appearance(isBlurred: true), action: { [weak self] action in
+                let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: presentationData.strings.Story_Editor_TooltipPremiumReaction, undoText: nil, customAction: nil), elevatedLayout: true, animateInAsReplacement: false, appearance: UndoOverlayController.Appearance(isBlurred: true), action: { [weak self = self] action in
                     if case .info = action, let self {
                         let controller = context.sharedContext.makePremiumIntroController(context: context, source: .storiesExpirationDurations, forceDark: true, dismissed: nil)
                         self.containerView?.push(controller)

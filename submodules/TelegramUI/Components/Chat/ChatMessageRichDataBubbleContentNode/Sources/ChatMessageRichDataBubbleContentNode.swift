@@ -228,16 +228,16 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
             fileReference: { file in
                 return FileMediaReference.message(message: messageReference, media: file)
             },
-            present: { [weak self] controller, args in
+            present: { [weak self = self] controller, args in
                 self?.item?.controllerInteraction.presentController(controller, args)
             },
-            push: { [weak self] controller in
+            push: { [weak self = self] controller in
                 self?.item?.controllerInteraction.navigationController()?.pushViewController(controller)
             },
-            openUrl: { [weak self] urlItem in
+            openUrl: { [weak self = self] urlItem in
                 self?.openInstantPageUrl(urlItem)
             },
-            baseNavigationController: { [weak self] in
+            baseNavigationController: { [weak self = self] in
                 self?.item?.controllerInteraction.navigationController()
             },
             shouldAutoDownloadImage: { image in
@@ -257,7 +257,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
         self.pageView = view
         self.pageViewMessageKey = key
         self.containerNode.view.addSubview(view)
-        view.detailsTapped = { [weak self] index in
+        view.detailsTapped = { [weak self = self] index in
             guard let self else { return }
             let current = self.currentExpandedDetails[index] ?? self.defaultExpanded(forDetailsIndex: index)
             self.currentExpandedDetails[index] = !current
@@ -339,7 +339,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
         // than being final-sized from the first chunk.
         let currentMaxGlyphCount: Int? = self.textRevealController?.currentGlyphCount
 
-        return { [weak self] item, layoutConstants, _, _, _, _ in
+        return { [weak self = self] item, layoutConstants, _, _, _, _ in
             // Structural detector (model-only): does the effective rich page end with full-width
             // visual media? This is emitted BEFORE the page is laid out, so it inspects the block
             // model rather than laid-out items. Its only job is to push non-inline reactions outside
@@ -906,13 +906,13 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
 
                                 self.addSubnode(statusNode)
 
-                                statusNode.reactionSelected = { [weak self] _, value, sourceView in
+                                statusNode.reactionSelected = { [weak self = self] _, value, sourceView in
                                     guard let self, let item = self.item else {
                                         return
                                     }
                                     item.controllerInteraction.updateMessageReaction(item.topMessage, .reaction(value), false, sourceView)
                                 }
-                                statusNode.openReactionPreview = { [weak self] gesture, sourceNode, value in
+                                statusNode.openReactionPreview = { [weak self = self] gesture, sourceNode, value in
                                     guard let self, let item = self.item else {
                                         gesture?.cancel()
                                         return
@@ -930,7 +930,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                         }
 
                         if let forwardInfo = item.message.forwardInfo, forwardInfo.flags.contains(.isImported), let statusNode = self.statusNode {
-                            statusNode.pressed = { [weak self] in
+                            statusNode.pressed = { [weak self = self] in
                                 guard let self, let statusNode = self.statusNode, let item = self.item else {
                                     return
                                 }
@@ -953,7 +953,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                             )
                             let pageView = self.ensurePageView(item: item, webpage: pageWebpage, richPageKey: resolvedContent.key, showMoreExpanded: showMoreExpanded)
                             if self.checkboxesInteractive(item: item, resolved: resolvedContent) {
-                                pageView.checkboxTapped = { [weak self] path, newValue in
+                                pageView.checkboxTapped = { [weak self = self] path, newValue in
                                     guard let self, let item = self.item else {
                                         return
                                     }
@@ -986,7 +986,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                             // width, reactions) that lands mid-expand simply advances/no-ops the loop.
                             // Deferred via justDispatch to avoid re-entering layout from this apply.
                             if let pendingAnchor = self.pendingScrollAnchor {
-                                Queue.mainQueue().justDispatch { [weak self] in
+                                Queue.mainQueue().justDispatch { [weak self = self] in
                                     guard let self, self.pendingScrollAnchor == pendingAnchor else {
                                         return
                                     }
@@ -1037,7 +1037,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                             // self-trigger loop). Do not "simplify" this to match the reference.
                             if self.relativeDateTimer?.period != formattedDateUpdatePeriod {
                                 self.relativeDateTimer?.timer.invalidate()
-                                let timer = SwiftSignalKit.Timer(timeout: Double(formattedDateUpdatePeriod), repeat: true, completion: { [weak self] in
+                                let timer = SwiftSignalKit.Timer(timeout: Double(formattedDateUpdatePeriod), repeat: true, completion: { [weak self = self] in
                                     self?.requestFullUpdate?(ControlledTransition(duration: 0.15, curve: .easeInOut, interactive: false))
                                 }, queue: Queue.mainQueue())
                                 self.relativeDateTimer = (timer, formattedDateUpdatePeriod)
@@ -1129,7 +1129,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
         guard toCount > 0 else { return }
 
         if self.textRevealLink == nil {
-            self.textRevealLink = SharedDisplayLinkDriver.shared.add { [weak self] _ in
+            self.textRevealLink = SharedDisplayLinkDriver.shared.add { [weak self = self] _ in
                 guard let self else { return }
                 guard let item = self.item else {
                     self.textRevealController = nil
@@ -1294,13 +1294,13 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
             // Highlight rect in containerNode-local coords (the highlight overlay lives inside
             // containerNode, which sits at self (1, 1); the text node is on self).
             let rects = [showMoreTextNode.frame.offsetBy(dx: -1.0, dy: -1.0)]
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.activateShowMore()
             }), rects: rects)
         }
 
         if case .tap = gesture, !self.displayContentsUnderSpoilers, let entityHit = self.entityForTapLocation(point), entityHit.attributes[NSAttributedString.Key(rawValue: TelegramTextAttributes.Spoiler)] != nil {
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.revealSpoilers(atContentPoint: point)
             }))
         }
@@ -1324,12 +1324,12 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                 return ChatMessageBubbleContentTapAction(content: .none)
             }
             let rects = self.computeHighlightRects(item: urlHit.item, parentOffset: urlHit.parentOffset, localPoint: urlHit.localPoint)
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.scrollToAnchor(anchor)
             }), rects: rects)
         }
         if let webpage = self.currentLoadedWebpage(), webpage.content.url == split.base, let anchor = split.anchor {
-            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self] in
+            return ChatMessageBubbleContentTapAction(content: .custom({ [weak self = self] in
                 self?.scrollToAnchor(anchor)
             }))
         }
@@ -1445,7 +1445,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
                 self.linkProgressRects = nil
                 self.updateLinkProgressState()
             }
-            self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self] value in
+            self.linkProgressDisposable = (promise.get() |> deliverOnMainQueue).startStrict(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -1598,7 +1598,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
             strings: messageItem.presentationData.strings,
             textNodeOrView: .node(adapter),
             updateIsActive: { _ in },
-            present: { [weak self] c, a in
+            present: { [weak self = self] c, a in
                 guard let self, let item = self.item else {
                     return
                 }
@@ -1611,7 +1611,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
             rootView: { [weak rootNode] in
                 return rootNode?.view
             },
-            performAction: { [weak self] text, action in
+            performAction: { [weak self = self] text, action in
                 guard let self, let item = self.item else {
                     return
                 }
@@ -1772,7 +1772,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
         self.requestFullRichTextMessageId = messageId
         self.updateShowMoreLoading(true)
         self.requestFullRichTextDisposable = (item.context.engine.messages.requestFullRichText(id: messageId)
-        |> deliverOnMainQueue).startStrict(next: { [weak self] result in
+        |> deliverOnMainQueue).startStrict(next: { [weak self = self] result in
             guard let self else {
                 return
             }
@@ -1783,7 +1783,7 @@ public class ChatMessageRichDataBubbleContentNode: ChatMessageBubbleContentNode 
             if let item = self.item, item.message.id == messageId {
                 item.controllerInteraction.requestMessageUpdate(messageId, false, nil)
             }
-        }, completed: { [weak self] in
+        }, completed: { [weak self = self] in
             self?.finishShowMore()
         })
     }

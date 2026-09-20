@@ -51,7 +51,7 @@ public final class TranslationLanguagesContextMenuContent: ContextControllerItem
 
             self.isAccessibilityElement = true
 
-            self.highligthedChanged = { [weak self] highlighted in
+            self.highligthedChanged = { [weak self = self] highlighted in
                 guard let strongSelf = self else {
                     return
                 }
@@ -138,7 +138,7 @@ public final class TranslationLanguagesContextMenuContent: ContextControllerItem
                 self.addSubnode(self.highlightBackgroundNode)
                 self.addSubnode(self.titleLabelNode)
 
-                self.highligthedChanged = { [weak self] highlighted in
+                self.highligthedChanged = { [weak self = self] highlighted in
                     guard let strongSelf = self, let language = strongSelf.language, !language.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                         return
                     }
@@ -527,7 +527,7 @@ public final class TranslationLanguagesContextMenuContent: ContextControllerItem
                         context: self.context,
                         languages: self.languages,
                         selectedLanguages: self.selectedLanguages,
-                        requestUpdate: { [weak self] tab, transition in
+                        requestUpdate: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }
@@ -535,7 +535,7 @@ public final class TranslationLanguagesContextMenuContent: ContextControllerItem
                                 strongSelf.requestUpdate(transition)
                             }
                         },
-                        requestUpdateApparentHeight: { [weak self] tab, transition in
+                        requestUpdateApparentHeight: { [weak self = self] tab, transition in
                             guard let strongSelf = self else {
                                 return
                             }

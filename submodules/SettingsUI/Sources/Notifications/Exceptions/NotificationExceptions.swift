@@ -52,7 +52,7 @@ public class NotificationExceptionsController: ViewController {
         
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: self.presentationData.strings.Common_Back, style: .plain, target: nil, action: nil)
         
-        self.scrollToTop = { [weak self] in
+        self.scrollToTop = { [weak self = self] in
             if let strongSelf = self {
                 if let searchContentNode = strongSelf.searchContentNode {
                     searchContentNode.updateExpansionProgress(1.0, animated: true)
@@ -62,7 +62,7 @@ public class NotificationExceptionsController: ViewController {
         }
         
         self.presentationDataDisposable = (context.sharedContext.presentationData
-        |> deliverOnMainQueue).start(next: { [weak self] presentationData in
+        |> deliverOnMainQueue).start(next: { [weak self = self] presentationData in
             if let strongSelf = self {
                 let previousTheme = strongSelf.presentationData.theme
                 let previousStrings = strongSelf.presentationData.strings
@@ -75,7 +75,7 @@ public class NotificationExceptionsController: ViewController {
             }
         })
         
-        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self] in
+        self.searchContentNode = NavigationBarSearchContentNode(theme: self.presentationData.theme, placeholder: self.presentationData.strings.Common_Search, activate: { [weak self = self] in
             self?.activateSearch()
         })
         self.navigationBar?.setContentNode(self.searchContentNode, animated: false)
@@ -112,11 +112,11 @@ public class NotificationExceptionsController: ViewController {
     }
     
     override public func loadDisplayNode() {
-        self.displayNode = NotificationExceptionsControllerNode(context: self.context, presentationData: self.presentationData, navigationBar: self.navigationBar!, mode: self.mode, updatedMode: self.updatedMode, requestActivateSearch: { [weak self] in
+        self.displayNode = NotificationExceptionsControllerNode(context: self.context, presentationData: self.presentationData, navigationBar: self.navigationBar!, mode: self.mode, updatedMode: self.updatedMode, requestActivateSearch: { [weak self = self] in
             self?.activateSearch()
-            }, requestDeactivateSearch: { [weak self] animated in
+            }, requestDeactivateSearch: { [weak self = self] animated in
                 self?.deactivateSearch(animated: animated)
-            }, updateCanStartEditing: { [weak self] value in
+            }, updateCanStartEditing: { [weak self = self] value in
                 guard let strongSelf = self else {
                     return
                 }
@@ -132,19 +132,19 @@ public class NotificationExceptionsController: ViewController {
                 if strongSelf.navigationItem.rightBarButtonItem !== item {
                     strongSelf.navigationItem.setRightBarButton(item, animated: true)
                 }
-            }, present: { [weak self] c, a in
+            }, present: { [weak self = self] c, a in
                 self?.present(c, in: .window(.root), with: a)
-            }, pushController: { [weak self] c in
+            }, pushController: { [weak self = self] c in
                 (self?.navigationController as? NavigationController)?.pushViewController(c)
             })
         
-        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self] offset, _ in
+        self.controllerNode.listNode.visibleContentOffsetChanged = { [weak self = self] offset, _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 searchContentNode.updateListVisibleContentOffset(offset)
             }
         }
         
-        self.controllerNode.listNode.didEndScrolling = { [weak self] _ in
+        self.controllerNode.listNode.didEndScrolling = { [weak self = self] _ in
             if let strongSelf = self, let searchContentNode = strongSelf.searchContentNode {
                 let _ = fixNavigationSearchableListNodeScrolling(strongSelf.controllerNode.listNode, searchNode: searchContentNode)
             }

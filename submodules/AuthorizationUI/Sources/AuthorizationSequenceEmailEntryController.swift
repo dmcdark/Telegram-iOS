@@ -70,7 +70,7 @@ public final class AuthorizationSequenceEmailEntryController: ViewController {
         
         if let context {
             self.inBackgroundDisposable = (context.sharedContext.applicationBindings.applicationInForeground
-            |> deliverOnMainQueue).start(next: { [weak self] value in
+            |> deliverOnMainQueue).start(next: { [weak self = self] value in
                 guard let self else {
                     return
                 }
@@ -79,7 +79,7 @@ public final class AuthorizationSequenceEmailEntryController: ViewController {
                 
                 if !value && previousValue {
                     let _ = (context.engine.notices.getServerProvidedSuggestions(reload: true)
-                    |> deliverOnMainQueue).start(next: { [weak self] currentValues in
+                    |> deliverOnMainQueue).start(next: { [weak self = self] currentValues in
                         guard let self else {
                             return
                         }
@@ -106,11 +106,11 @@ public final class AuthorizationSequenceEmailEntryController: ViewController {
         
         self.controllerNode.view.disableAutomaticKeyboardHandling = [.forward, .backward]
         
-        self.controllerNode.proceedWithEmail = { [weak self] _ in
+        self.controllerNode.proceedWithEmail = { [weak self = self] _ in
             self?.nextPressed()
         }
         
-        self.controllerNode.signInWithApple = { [weak self] in
+        self.controllerNode.signInWithApple = { [weak self = self] in
             self?.signInWithApple?()
         }
         
