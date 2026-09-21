@@ -5,6 +5,8 @@
 #   APP_STORE_CONNECT_KEY_ID=...
 #   APP_STORE_CONNECT_ISSUER_ID=...
 #   APP_STORE_CONNECT_KEY_FILE=/absolute/path/AuthKey_XXXX.p8
+#   TELEGRAM_API_ID=12345678
+#   TELEGRAM_API_HASH=your_api_hash_from_my.telegram.org
 #   APP_IDENTIFIER=com.qinsbro.telegram
 #   WHAT_TO_TEST=Fixed release notes for internal testers
 #   TESTFLIGHT_INTERNAL_GROUP=internal
@@ -37,7 +39,8 @@ project_env_dir="/Users/qinsbro/Downloads/Project-env"
 profile_source="$project_env_dir/dmctelegram.mobileprovision"
 share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
 signing_root="$project_root/build/testflight-signing"
-configuration_file="$project_root/build-system/appstore-configuration.json"
+configuration_template="$project_root/build-system/appstore-configuration.json"
+configuration_file="$signing_root/appstore-configuration.json"
 artifacts_dir="$project_root/build/testflight"
 if (( $# > 1 )); then
   print "Usage: $0 [build-number]"
@@ -63,12 +66,16 @@ if [[ ! "$build_number" =~ '^[1-9][0-9]*$' ]]; then
   exit 2
 fi
 
-for variable_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_FILE; do
+for variable_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_FILE TELEGRAM_API_ID TELEGRAM_API_HASH; do
   if [[ -z "${(P)variable_name:-}" ]]; then
     print "Missing $variable_name. Add it to $env_file."
     exit 2
   fi
 done
+if [[ ! "$TELEGRAM_API_ID" =~ '^[1-9][0-9]*$' ]]; then
+  print "TELEGRAM_API_ID must be a positive integer."
+  exit 2
+fi
 if [[ ! -f "$APP_STORE_CONNECT_KEY_FILE" ]]; then
   print "APP_STORE_CONNECT_KEY_FILE does not point to a readable .p8 key."
   exit 2
@@ -88,8 +95,8 @@ if [[ -e "$download_ipa" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$configuration_file" ]]; then
-  print "Missing local build configuration: $configuration_file"
+if [[ ! -f "$configuration_template" ]]; then
+  print "Missing build configuration template: $configuration_template"
   exit 1
 fi
 
@@ -111,8 +118,8 @@ if ! strings "$profile_source" | grep -q '<string>production</string>'; then
   print "Replace it with an App Store Connect distribution profile for $app_identifier."
   exit 1
 fi
-if python3 -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1])).get("enable_icloud") else 1)' "$configuration_file" && ! strings "$profile_source" | grep -q 'com.apple.developer.icloud-services'; then
-  print "The build configuration enables iCloud, but the provisioning profile does not include iCloud entitlements."
+if python3 -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1])).get("enable_icloud") else 1)' "$configuration_template" && ! strings "$profile_source" | grep -q 'com.apple.developer.icloud-services'; then
+  print "The build configuration template enables iCloud, but the provisioning profile does not include iCloud entitlements."
   print "Either disable enable_icloud in $configuration_file or regenerate $profile_source with iCloud enabled."
   exit 1
 fi
@@ -139,6 +146,22 @@ cp "$profile_source" "$signing_root/profiles/dmctelegram.mobileprovision"
 if [[ "${TESTFLIGHT_DISABLE_EXTENSIONS:-true}" != "true" ]]; then
   cp "$share_profile_source" "$signing_root/profiles/dmctelegramshare.mobileprovision"
 fi
+
+# Keep the Telegram application credentials out of the repository. The build
+# configuration passed to Make.py exists only under the ignored build/ folder.
+python3 - "$configuration_template" "$configuration_file" "$TELEGRAM_API_ID" "$TELEGRAM_API_HASH" <<'PY'
+import json
+import sys
+
+template_path, output_path, api_id, api_hash = sys.argv[1:]
+with open(template_path, encoding="utf-8") as source:
+    configuration = json.load(source)
+configuration["api_id"] = api_id
+configuration["api_hash"] = api_hash
+with open(output_path, "w", encoding="utf-8") as destination:
+    json.dump(configuration, destination, indent=2)
+    destination.write("\n")
+PY
 
 bazel_arguments=(
   "--//Telegram:disableExtensions=True"

@@ -20,11 +20,6 @@ enum LocalPeerColor: Codable {
         case collectible
     }
 
-    private enum Kind: String, Codable {
-        case preset
-        case collectible
-    }
-
     init(_ color: PeerColor) {
         switch color {
         case let .preset(color):
@@ -45,11 +40,13 @@ enum LocalPeerColor: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        switch try container.decode(Kind.self, forKey: .kind) {
-        case .preset:
+        switch try container.decode(Int32.self, forKey: .kind) {
+        case 0:
             self = .preset(try container.decode(Int32.self, forKey: .value))
-        case .collectible:
+        case 1:
             self = .collectible(try container.decode(PeerCollectibleColor.self, forKey: .collectible))
+        default:
+            throw DecodingError.dataCorruptedError(forKey: .kind, in: container, debugDescription: "Unknown local peer color kind")
         }
     }
 
@@ -57,10 +54,10 @@ enum LocalPeerColor: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
         case let .preset(value):
-            try container.encode(Kind.preset, forKey: .kind)
+            try container.encode(Int32(0), forKey: .kind)
             try container.encode(value, forKey: .value)
         case let .collectible(color):
-            try container.encode(Kind.collectible, forKey: .kind)
+            try container.encode(Int32(1), forKey: .kind)
             try container.encode(color, forKey: .collectible)
         }
     }
