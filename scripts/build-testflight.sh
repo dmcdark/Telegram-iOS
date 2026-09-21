@@ -9,10 +9,9 @@
 #   WHAT_TO_TEST=Fixed release notes for internal testers
 #   TESTFLIGHT_INTERNAL_GROUP=internal
 #
-# The marketing version is read from versions.json. A unique build number is
-# generated automatically for every run, so invoking this script needs no
-# version arguments. BUILD_NUMBER remains an optional environment override for
-# a deliberate rebuild of a specific number.
+# The marketing version is read from versions.json. Pass an optional build
+# number as the sole argument (for example: ./scripts/build-testflight.sh 11).
+# Without an argument, a unique build number is generated automatically.
 #
 # Signing uses the Xcode-managed distribution certificate in the login
 # keychain. Before the first run:
@@ -40,7 +39,12 @@ share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
 signing_root="$project_root/build/testflight-signing"
 configuration_file="$project_root/build-system/appstore-configuration.json"
 artifacts_dir="$project_root/build/testflight"
-build_number="${BUILD_NUMBER:-$(date +%s)}"
+if (( $# > 1 )); then
+  print "Usage: $0 [build-number]"
+  exit 2
+fi
+
+build_number="${1:-${BUILD_NUMBER:-$(date +%s)}}"
 download_ipa="$HOME/Downloads/Telegram-TestFlight-${build_number}.ipa"
 api_key_json="$artifacts_dir/AppStoreConnectKey.json"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
@@ -54,13 +58,8 @@ bazel_path="$project_root/build-input/bazel-8.4.2-darwin-arm64"
 bazel_cache_dir="${TELEGRAM_BAZEL_CACHE_DIR:-$HOME/telegram-bazel-cache}"
 bazel_output_user_root="${TELEGRAM_BAZEL_OUTPUT_USER_ROOT:-/private/var/tmp/_bazel_qinsbro}"
 
-if (( $# > 0 )); then
-  print "This script does not accept version arguments. Run: $0"
-  exit 2
-fi
-
 if [[ ! "$build_number" =~ '^[1-9][0-9]*$' ]]; then
-  print "BUILD_NUMBER must be a positive integer when set."
+  print "Build number must be a positive integer."
   exit 2
 fi
 
