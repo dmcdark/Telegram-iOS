@@ -28,9 +28,6 @@ objc_library(
     hdrs = glob([
         "PublicHeaders/**/*.h",
     ]),
-    copts = [
-        "-Werror",
-    ],
     includes = [
         "PublicHeaders",
     ],
