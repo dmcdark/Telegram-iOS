@@ -729,6 +729,14 @@ static NSMutableDictionary<NSString *, TrustedWebRecord *> *trustedWebRecords() 
 }*/
 
 - (UIWindow * _Nullable)internalGetKeyboard {
+    // On iOS 27, even querying the private keyboard window with create:false
+    // triggers a UIKit runtime breakpoint before the application has launched.
+    // The callers gracefully handle a nil window and continue to use keyboard
+    // notifications for layout updates.
+    if (@available(iOS 27.0, *)) {
+        return nil;
+    }
+
     Class windowClass = NSClassFromString(@"UIRemoteKeyboardWindow");
     if (!windowClass) {
         return nil;
