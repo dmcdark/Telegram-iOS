@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Build, upload, and distribute a signed IPA through TestFlight.
 #
-# Credentials are read from scripts/.env.testflight (or TESTFLIGHT_ENV_FILE):
+# Credentials are read from /Users/qinsbro/Downloads/Project-env/dmctelegram.env (or TESTFLIGHT_ENV_FILE):
 #   APP_STORE_CONNECT_KEY_ID=...
 #   APP_STORE_CONNECT_ISSUER_ID=...
 #   APP_STORE_CONNECT_KEY_FILE=/absolute/path/AuthKey_XXXX.p8
@@ -16,23 +16,24 @@
 #      (Apple Distribution or the legacy iOS/iPhone Distribution type). Its
 #      private key must appear in the login keychain.
 #   3. Enable Push Notifications and App Groups for com.qinsbro.telegram.
-#   4. Download its App Store Connect profile to the project root as:
-#      dmctelegram.mobileprovision
+#   4. Put the App Store Connect profiles in /Users/qinsbro/Downloads/Project-env:
+#      dmctelegram.mobileprovision and dmctelegramshare.mobileprovision
 
 set -euo pipefail
 
 project_root="$(cd "$(dirname "$0")/.." && pwd)"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
-env_file="${TESTFLIGHT_ENV_FILE:-$script_dir/.env.testflight}"
+env_file="${TESTFLIGHT_ENV_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram.env}"
 if [[ -f "$env_file" ]]; then
   set -a
   source "$env_file"
   set +a
 fi
-profile_source="$project_root/dmctelegram.mobileprovision"
+project_env_dir="/Users/qinsbro/Downloads/Project-env"
+profile_source="$project_env_dir/dmctelegram.mobileprovision"
+share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
 signing_root="$project_root/build/testflight-signing"
-profile_file="$signing_root/profiles/a.mobileprovision"
-configuration_file="$project_root/build-system/development-configuration.json"
+configuration_file="$project_root/build-system/appstore-configuration.json"
 artifacts_dir="$project_root/build/testflight"
 build_number="${1:-}"
 download_ipa="$HOME/Downloads/Telegram-TestFlight-${build_number}.ipa"
@@ -88,6 +89,25 @@ if [[ ! -f "$profile_source" ]]; then
   print "Missing App Store Connect provisioning profile: $profile_source"
   exit 1
 fi
+if [[ ! -f "$share_profile_source" && "${TESTFLIGHT_DISABLE_EXTENSIONS:-true}" != "true" ]]; then
+  print "Missing App Store Connect Share provisioning profile: $share_profile_source"
+  exit 1
+fi
+if strings "$profile_source" | grep -q '<key>ProvisionedDevices</key>'; then
+  print "The main provisioning profile is a development/ad hoc profile, not an App Store profile: $profile_source"
+  print "Replace it with an App Store Connect distribution profile for $app_identifier."
+  exit 1
+fi
+if ! strings "$profile_source" | grep -q '<string>production</string>'; then
+  print "The main provisioning profile does not appear to use production entitlements: $profile_source"
+  print "Replace it with an App Store Connect distribution profile for $app_identifier."
+  exit 1
+fi
+if python3 -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1])).get("enable_icloud") else 1)' "$configuration_file" && ! strings "$profile_source" | grep -q 'com.apple.developer.icloud-services'; then
+  print "The build configuration enables iCloud, but the provisioning profile does not include iCloud entitlements."
+  print "Either disable enable_icloud in $configuration_file or regenerate $profile_source with iCloud enabled."
+  exit 1
+fi
 
 if ! security find-identity -v -p codesigning 2>/dev/null | grep -Eq '(Apple|iOS|iPhone) Distribution'; then
   print "No distribution signing identity is available in the login keychain."
@@ -102,10 +122,15 @@ fi
 
 cd "$project_root"
 
-# Make copies only in an ignored build directory: Make.py expects profiles/
-# beneath --codesigningInformationPath and maps the main app profile by bundle ID.
+# Make copies only in an ignored build directory. Make.py scans every
+# .mobileprovision under profiles/, so keep this directory limited to the two
+# profiles used by this TestFlight build.
 mkdir -p "$signing_root/profiles"
-cp "$profile_source" "$profile_file"
+rm -f "$signing_root/profiles"/*.mobileprovision(N)
+cp "$profile_source" "$signing_root/profiles/dmctelegram.mobileprovision"
+if [[ "${TESTFLIGHT_DISABLE_EXTENSIONS:-true}" != "true" ]]; then
+  cp "$share_profile_source" "$signing_root/profiles/dmctelegramshare.mobileprovision"
+fi
 
 bazel_arguments=(
   "--//Telegram:disableExtensions=True"

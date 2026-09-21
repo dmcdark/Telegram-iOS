@@ -54,6 +54,35 @@ import AppCenterCrashes
 
 private let handleVoipNotifications = false
 
+@objc(SceneDelegate) private final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene,
+              let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let window = appDelegate.window else {
+            return
+        }
+
+        window.windowScene = windowScene
+        window.makeKeyAndVisible()
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.applicationDidBecomeActive(UIApplication.shared)
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.applicationWillResignActive(UIApplication.shared)
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.applicationWillEnterForeground(UIApplication.shared)
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        (UIApplication.shared.delegate as? AppDelegate)?.applicationDidEnterBackground(UIApplication.shared)
+    }
+}
+
 private var testIsLaunched = false
 
 private func isKeyboardWindow(window: NSObject) -> Bool {

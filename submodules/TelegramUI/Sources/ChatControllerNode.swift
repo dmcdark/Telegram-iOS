@@ -39,7 +39,7 @@ import ChatMessageBubbleItemNode
 import ChatMessageSelectionNode
 import ManagedDiceAnimationNode
 import ChatMessageTransitionNode
-import TextFieldComponent
+import class TextFieldComponent.TextFieldComponent
 import ChatLoadingNode
 import ChatRecentActionsController
 import UIKitRuntimeUtils
