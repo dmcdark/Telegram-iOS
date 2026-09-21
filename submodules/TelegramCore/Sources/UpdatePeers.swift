@@ -304,6 +304,21 @@ public func updatePeersCustom(transaction: Transaction, peers: [Peer], update: (
         if let previous = previous as? TelegramUser, let updatedUser = updated as? TelegramUser {
             updated = TelegramUser.merge(lhs: previous, rhs: updatedUser)
         }
+
+        // The local profile-color editor does not send an account.updateColor
+        // request. Keep its persisted values when unrelated account updates
+        // refresh the self peer, rather than letting the server's default
+        // profile appearance overwrite the local preview.
+        if shouldUseLocalProfileAppearance(),
+           let updatedUser = updated as? TelegramUser,
+           let localAppearance = transaction.getPreferencesEntry(key: localProfileAppearancePreferencesKey())?.get(LocalProfileAppearance.self),
+           updatedUser.id.toInt64() == localAppearance.peerId {
+            updated = updatedUser
+                .withUpdatedNameColor(localAppearance.nameColor.peerColor)
+                .withUpdatedBackgroundEmojiId(localAppearance.backgroundEmojiId)
+                .withUpdatedProfileColor(localAppearance.profileColor.map(PeerNameColor.init(rawValue:)))
+                .withUpdatedProfileBackgroundEmojiId(localAppearance.profileBackgroundEmojiId)
+        }
         
         if let updatedChannel = updated as? TelegramChannel {
             var wasMember = false

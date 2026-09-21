@@ -8,6 +8,80 @@ import MtProtoKit
 // the local account cache but are never submitted to Telegram's servers.
 private let locallyPreviewProfileColors = true
 
+// This is deliberately account-local: the development preview must survive
+// ordinary peer updates, but must never be uploaded or used for other peers.
+enum LocalPeerColor: Codable {
+    case preset(Int32)
+    case collectible(PeerCollectibleColor)
+
+    private enum CodingKeys: String, CodingKey {
+        case kind
+        case value
+        case collectible
+    }
+
+    private enum Kind: String, Codable {
+        case preset
+        case collectible
+    }
+
+    init(_ color: PeerColor) {
+        switch color {
+        case let .preset(color):
+            self = .preset(color.rawValue)
+        case let .collectible(color):
+            self = .collectible(color)
+        }
+    }
+
+    var peerColor: PeerColor {
+        switch self {
+        case let .preset(value):
+            return .preset(PeerNameColor(rawValue: value))
+        case let .collectible(color):
+            return .collectible(color)
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        switch try container.decode(Kind.self, forKey: .kind) {
+        case .preset:
+            self = .preset(try container.decode(Int32.self, forKey: .value))
+        case .collectible:
+            self = .collectible(try container.decode(PeerCollectibleColor.self, forKey: .collectible))
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case let .preset(value):
+            try container.encode(Kind.preset, forKey: .kind)
+            try container.encode(value, forKey: .value)
+        case let .collectible(color):
+            try container.encode(Kind.collectible, forKey: .kind)
+            try container.encode(color, forKey: .collectible)
+        }
+    }
+}
+
+struct LocalProfileAppearance: Codable {
+    let peerId: Int64
+    let nameColor: LocalPeerColor
+    let backgroundEmojiId: Int64?
+    let profileColor: Int32?
+    let profileBackgroundEmojiId: Int64?
+}
+
+func localProfileAppearancePreferencesKey() -> ValueBoxKey {
+    return applicationSpecificPreferencesKey(510)
+}
+
+func shouldUseLocalProfileAppearance() -> Bool {
+    return locallyPreviewProfileColors
+}
+
 
 func _internal_updateAccountPeerName(account: Account, firstName: String, lastName: String) -> Signal<Void, NoError> {
     let accountPeerId = account.peerId
@@ -76,6 +150,18 @@ func _internal_updateNameColorAndEmoji(account: Account, nameColor: UpdateNameCo
             backgroundEmojiIdValue = collectibleColor.backgroundEmojiId
         }
         
+        if shouldUseLocalProfileAppearance() {
+            transaction.setPreferencesEntry(
+                key: localProfileAppearancePreferencesKey(),
+                value: PreferencesEntry(LocalProfileAppearance(
+                    peerId: account.peerId.toInt64(),
+                    nameColor: LocalPeerColor(nameColorValue),
+                    backgroundEmojiId: backgroundEmojiIdValue,
+                    profileColor: profileColor?.rawValue,
+                    profileBackgroundEmojiId: profileBackgroundEmojiId
+                ))
+            )
+        }
         updatePeersCustom(transaction: transaction, peers: [peer.withUpdatedNameColor(nameColorValue).withUpdatedBackgroundEmojiId(backgroundEmojiIdValue).withUpdatedProfileColor(profileColor).withUpdatedProfileBackgroundEmojiId(profileBackgroundEmojiId)], update: { _, updated in
             return updated
         })
@@ -84,7 +170,7 @@ func _internal_updateNameColorAndEmoji(account: Account, nameColor: UpdateNameCo
     |> switchToLatest
     |> castError(UpdateNameColorAndEmojiError.self)
     |> mapToSignal { _ -> Signal<Void, UpdateNameColorAndEmojiError> in
-        if locallyPreviewProfileColors {
+        if shouldUseLocalProfileAppearance() {
             return .complete()
         }
 
