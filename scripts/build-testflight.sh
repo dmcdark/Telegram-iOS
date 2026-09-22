@@ -1,5 +1,17 @@
 #!/bin/zsh
-# Build, upload, and distribute a signed IPA through TestFlight.
+# Build and run on a physical iPhone, or build, upload, and distribute a
+# signed IPA through TestFlight.
+#
+# Usage:
+#   ./scripts/build-testflight.sh 13
+#
+# The interactive menu offers:
+#   1. Build, install, and launch the Development app on the configured iPhone.
+#   2. Build and upload an App Store-signed IPA to TestFlight.
+#
+# The build number is the required first argument. For non-interactive use, set
+# TELEGRAM_ACTION=device/testflight. WHAT_TO_TEST continues to come from
+# dmctelegram.env.
 #
 # Credentials are read from /Users/qinsbro/Downloads/Project-env/dmctelegram.env (or TESTFLIGHT_ENV_FILE):
 #   APP_STORE_CONNECT_KEY_ID=...
@@ -11,9 +23,8 @@
 #   WHAT_TO_TEST=Fixed release notes for internal testers
 #   TESTFLIGHT_INTERNAL_GROUP=internal
 #
-# The marketing version is read from versions.json. Pass an optional build
-# number as the sole argument (for example: ./scripts/build-testflight.sh 11).
-# Without an argument, a unique build number is generated automatically.
+# The marketing version is read from versions.json. The build number is entered
+# on the command line before choosing the device or TestFlight action.
 #
 # Signing uses the Xcode-managed distribution certificate in the login
 # keychain. Before the first run:
@@ -30,11 +41,53 @@ set -euo pipefail
 project_root="$(cd "$(dirname "$0")/.." && pwd)"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 env_file="${TESTFLIGHT_ENV_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram.env}"
+if (( $# != 1 )); then
+  print "Usage: $0 <build-number>"
+  exit 2
+fi
+build_number="$1"
+if [[ ! "$build_number" =~ '^[1-9][0-9]*$' ]]; then
+  print "Build number must be a positive integer."
+  exit 2
+fi
 if [[ -f "$env_file" ]]; then
   set -a
   source "$env_file"
   set +a
 fi
+
+selected_action="${TELEGRAM_ACTION:-}"
+if [[ -z "$selected_action" ]]; then
+  print "请选择操作："
+  print "  1）Build to iPhone 15 Pro Max"
+  print "  2）Release to TestFlight"
+  print -n "请选择 1 或 2: "
+  if [[ -t 0 ]]; then
+    if ! read -r -k 1 selected_action; then
+      print "\n没有读取到选项。"
+      exit 2
+    fi
+    print
+  elif ! IFS= read -r selected_action; then
+    print "没有读取到选项。"
+    exit 2
+  fi
+fi
+
+case "$selected_action" in
+  1|device)
+    export DEVICE_ENV_FILE="$env_file"
+    export BUILD_NUMBER="$build_number"
+    exec "$script_dir/run-device.sh"
+    ;;
+  2|testflight)
+    ;;
+  *)
+    print "无效选项：$selected_action（请选择 1 或 2）。"
+    exit 2
+    ;;
+esac
+
 project_env_dir="/Users/qinsbro/Downloads/Project-env"
 profile_source="$project_env_dir/dmctelegram.mobileprovision"
 share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
@@ -42,12 +95,7 @@ signing_root="$project_root/build/testflight-signing"
 configuration_template="$project_root/build-system/appstore-configuration.json"
 configuration_file="$signing_root/appstore-configuration.json"
 artifacts_dir="$project_root/build/testflight"
-if (( $# > 1 )); then
-  print "Usage: $0 [build-number]"
-  exit 2
-fi
 
-build_number="${1:-${BUILD_NUMBER:-$(date +%s)}}"
 download_ipa="$HOME/Downloads/Telegram-TestFlight-${build_number}.ipa"
 api_key_json="$artifacts_dir/AppStoreConnectKey.json"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
@@ -60,11 +108,6 @@ bazel_path="$project_root/build-input/bazel-8.4.2-darwin-arm64"
 # The script reports its size after each build; clean it manually when needed.
 bazel_cache_dir="${TELEGRAM_BAZEL_CACHE_DIR:-$HOME/telegram-bazel-cache}"
 bazel_output_user_root="${TELEGRAM_BAZEL_OUTPUT_USER_ROOT:-/private/var/tmp/_bazel_qinsbro}"
-
-if [[ ! "$build_number" =~ '^[1-9][0-9]*$' ]]; then
-  print "Build number must be a positive integer."
-  exit 2
-fi
 
 for variable_name in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_FILE TELEGRAM_API_ID TELEGRAM_API_HASH; do
   if [[ -z "${(P)variable_name:-}" ]]; then
