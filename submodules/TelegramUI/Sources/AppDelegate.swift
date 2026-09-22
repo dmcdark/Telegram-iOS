@@ -149,6 +149,11 @@ private class ApplicationStatusBarHost: StatusBarHost {
     
     var keyboardWindow: UIWindow? {
         if #available(iOS 16.0, *) {
+            if #available(iOS 27.0, *), self.scene?.activationState != .foregroundActive {
+                // Querying UIRemoteKeyboardWindow before the scene becomes active
+                // triggers a UIKit runtime breakpoint on iOS 27.
+                return nil
+            }
             return UIApplication.shared.internalGetKeyboard()
         }
         
