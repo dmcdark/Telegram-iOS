@@ -36,6 +36,19 @@ func chatMessageDisplaySendMessageOptions(selfController: ChatControllerImpl, no
     guard let peerId = selfController.chatLocation.peerId, let textInputView = selfController.chatDisplayNode.textInputView(), let layout = selfController.validLayout else {
         return
     }
+    selfController.view.window?.endEditing(true)
+    selfController.chatDisplayNode.dismissInput()
+
+    let presentController: (ViewController) -> Void = { [weak selfController] controller in
+        guard let selfController else {
+            return
+        }
+        if layout.isNonExclusive {
+            selfController.present(controller, in: .window(.root))
+        } else {
+            selfController.presentInGlobalOverlay(controller, with: nil)
+        }
+    }
     let previousSupportedOrientations = selfController.supportedOrientations
     if layout.size.width > layout.size.height {
         selfController.supportedOrientations = ViewControllerSupportedOrientations(regularSize: .all, compactSize: .landscape)
@@ -189,11 +202,7 @@ func chatMessageDisplaySendMessageOptions(selfController: ChatControllerImpl, no
                 richTextPreview: makeRichTextSendPreview(context: selfController.context, content: editMessage.inputState.content, mediaPreview: mediaPreview)
             )
             selfController.sendMessageActionsController = controller
-            if layout.isNonExclusive {
-                selfController.present(controller, in: .window(.root))
-            } else {
-                selfController.presentInGlobalOverlay(controller, with: nil)
-            }
+            presentController(controller)
         } else {
             var sendWhenOnlineAvailable = false
             if let presence = peerView.peerPresences[peer.id] as? TelegramUserPresence, case let .present(until) = presence.status {
@@ -309,11 +318,7 @@ func chatMessageDisplaySendMessageOptions(selfController: ChatControllerImpl, no
                 }()
             )
             selfController.sendMessageActionsController = controller
-            if layout.isNonExclusive {
-                selfController.present(controller, in: .window(.root))
-            } else {
-                selfController.presentInGlobalOverlay(controller, with: nil)
-            }
+            presentController(controller)
         }
     })
 }
