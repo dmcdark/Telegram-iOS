@@ -1314,7 +1314,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
                 availableMessageEffects,
                 hasPremium
             )
-            |> deliverOnMainQueue).startStandalone(next: { [weak self = self] peerView, effectItems, availableMessageEffects, hasPremium in
+            |> deliverOnMainQueue).startStandalone(next: { [weak self = self, textInputPanelNode] peerView, effectItems, availableMessageEffects, hasPremium in
                 guard let strongSelf = self, let peer = peerViewMainPeer(peerView) else {
                     return
                 }
@@ -2378,7 +2378,7 @@ final class AttachmentPanel: ASDisplayNode, ASScrollViewDelegate, ASGestureRecog
         self.animatingTransition = true
         self.dismissed = dismissed
 
-        let action = {
+        let action = { [self, inputNodeSnapshotView] in
             guard let menuIconSnapshotView = inputTransition.menuIconNode.view.snapshotView(afterScreenUpdates: false), let menuTextSnapshotView = inputTransition.menuTextNode.view.snapshotView(afterScreenUpdates: false) else {
                 return
             }

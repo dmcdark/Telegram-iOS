@@ -1499,7 +1499,7 @@ public class VideoMessageCameraScreen: ViewController {
             if layout.metrics.isTablet {
                 let statusBarOrientation: UIInterfaceOrientation
                 if #available(iOS 13.0, *) {
-                    statusBarOrientation = UIApplication.shared.windows.first?.windowScene?.interfaceOrientation ?? .portrait
+                    statusBarOrientation = self.view.window?.windowScene?.interfaceOrientation ?? UIApplication.shared.connectedScenes.compactMap { ($0 as? UIWindowScene)?.interfaceOrientation }.first ?? .portrait
                 } else {
                     statusBarOrientation = UIApplication.shared.statusBarOrientation
                 }

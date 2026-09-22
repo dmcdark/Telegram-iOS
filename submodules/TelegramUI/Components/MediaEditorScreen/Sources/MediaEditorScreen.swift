@@ -1361,7 +1361,7 @@ final class MediaEditorScreenComponent: Component {
                 }
                 transition.setFrame(view: inputMediaNode.view, frame: targetFrame, completion: { [weak inputMediaNode] _ in
                     if let inputMediaNode {
-                        Queue.mainQueue().after(0.2) {
+                        Queue.mainQueue().after(0.2) { [inputMediaNode] in
                             inputMediaNode.layer.animateAlpha(from: 1.0, to: 0.0, duration: 0.3, removeOnCompletion: false, completion: { [weak inputMediaNode] _ in
                                 inputMediaNode?.view.removeFromSuperview()
                             })
@@ -5556,7 +5556,7 @@ public final class MediaEditorScreenImpl: ViewController, MediaEditorScreen, UID
         
         func addInitialLink(_ link: (url: String, name: String?)) {
             guard self.context.isPremium else {
-                Queue.mainQueue().after(0.3) {
+                Queue.mainQueue().after(0.3) { [self] in
                     let context = self.context
                     var replaceImpl: ((ViewController) -> Void)?
                     let demoController = context.sharedContext.makePremiumDemoController(context: context, subject: .stories, forceDark: true, action: {

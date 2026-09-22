@@ -469,7 +469,7 @@ final class PeerSelectionControllerNode: ASDisplayNode {
 
             let accountPeerId = strongSelf.context.account.peerId
             let items = combineLatest(forwardOptions, strongSelf.context.account.postbox.messagesAtIds(messageIds), messagesCount)
-            |> map { forwardOptions, messages, messagesCount -> [ContextMenuItem] in
+            |> map { [chatController] forwardOptions, messages, messagesCount -> [ContextMenuItem] in
                 var items: [ContextMenuItem] = []
 
                 var hasCaptions = false
@@ -775,7 +775,8 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                     hasEntityKeyboard = true
                 }
 
-                let controller = makeChatSendMessageActionSheetController(
+                weak var controller: ViewController?
+                let actionSheetController = makeChatSendMessageActionSheetController(
                     initialData: initialData,
                     context: strongSelf.context,
                     peerId: strongSelf.presentationInterfaceState.chatLocation.peerId,
@@ -814,14 +815,12 @@ final class PeerSelectionControllerNode: ASDisplayNode {
                         textInputPanelNode?.sendMessage(.schedule, messageEffect)
                     },
                     editPrice: { _ in },
-                    openPremiumPaywall: { [weak controller] c in
-                        guard let controller else {
-                            return
-                        }
-                        controller.push(c)
+                    openPremiumPaywall: { c in
+                        controller?.push(c)
                     }
                 )
-                strongSelf.presentInGlobalOverlay(controller, nil)
+                controller = actionSheetController
+                strongSelf.presentInGlobalOverlay(actionSheetController, nil)
             })
         }, openScheduledMessages: {
         }, displaySearchResultsTooltip: { _, _ in

@@ -3027,7 +3027,7 @@ final class UniversalVideoGalleryItemNode: ZoomableContentGalleryItemNode {
 
             let playbackRate = self.playbackRate
 
-            expandImpl = { [weak overlayNode] in
+            expandImpl = { [context, weak overlayNode] in
                 guard let contentInfo = item.contentInfo, let overlayNode = overlayNode else {
                     return
                 }
