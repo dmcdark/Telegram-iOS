@@ -567,7 +567,7 @@ public class BrowserScreen: ViewController, MinimizableController {
             self.presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
             
             self.presentationState = BrowserPresentationState(
-                fontState: BrowserPresentationState.FontState(size: 100, isSerif: false),
+                fontState: BrowserPresentationState.FontState(size: 150, isSerif: false),
                 isSearching: false, 
                 searchResultIndex: 0,
                 searchResultCount: 0,
@@ -1011,6 +1011,7 @@ public class BrowserScreen: ViewController, MinimizableController {
         }
         
         func pushBrowserContent(_ browserContent: BrowserContent, additionalContent: BrowserContent? = nil, transition: ComponentTransition) {
+            browserContent.updateFontState(self.presentationState.fontState)
             if let additionalContent, let index = self.content.firstIndex(where: { $0 === additionalContent }) {
                 self.content[index] = browserContent
             } else {
