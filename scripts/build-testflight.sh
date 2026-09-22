@@ -22,6 +22,7 @@
 #   APP_IDENTIFIER=com.qinsbro.telegram
 #   WHAT_TO_TEST=Fixed release notes for internal testers
 #   TESTFLIGHT_INTERNAL_GROUP=internal
+#   WAIT_SECONDS=15
 #
 # The marketing version is read from versions.json. The build number is entered
 # on the command line before choosing the device or TestFlight action.
@@ -101,6 +102,7 @@ api_key_json="$artifacts_dir/AppStoreConnectKey.json"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
 what_to_test="${WHAT_TO_TEST:-Local TestFlight build $build_number}"
 internal_group="${TESTFLIGHT_INTERNAL_GROUP:-internal}"
+wait_seconds="${WAIT_SECONDS:-15}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
 bazel_path="$project_root/build-input/bazel-8.4.2-darwin-arm64"
 
@@ -136,6 +138,10 @@ if [[ -e "$download_ipa" ]]; then
   print "Refusing to overwrite existing IPA: $download_ipa"
   print "Use a new build number or move the existing file first."
   exit 1
+fi
+if [[ ! "$wait_seconds" =~ '^[1-9][0-9]*$' ]]; then
+  print "WAIT_SECONDS must be a positive integer."
+  exit 2
 fi
 
 if [[ ! -f "$configuration_template" ]]; then
@@ -273,6 +279,8 @@ fastlane pilot upload \
   --api_key_path "$api_key_json" \
   --skip_submission true \
   --skip_waiting_for_build_processing true
+rm -f "$download_ipa"
+print "Uploaded IPA removed from: $download_ipa"
 
 print "Waiting for build $marketing_version ($build_number) to finish processing..."
 for attempt in {1..60}; do
@@ -301,7 +309,8 @@ for attempt in {1..60}; do
     exit 1
   fi
   rm -f "$distribution_log"
-  sleep 10
+  print "Build is still processing; checking again in ${wait_seconds}s..."
+  sleep "$wait_seconds"
 done
 
 print "Timed out waiting for App Store Connect to process build $marketing_version ($build_number)." >&2
