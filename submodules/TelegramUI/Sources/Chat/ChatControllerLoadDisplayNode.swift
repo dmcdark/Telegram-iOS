@@ -2227,42 +2227,13 @@ extension ChatControllerImpl {
                 }
                 
                 var inlineStickers: [MediaId: TelegramMediaFile] = [:]
-                var firstLockedPremiumEmoji: TelegramMediaFile?
                 text.enumerateAttribute(ChatTextInputAttributes.customEmoji, in: NSRange(location: 0, length: text.length), using: { value, _, _ in
                     if let value = value as? ChatTextInputTextCustomEmojiAttribute {
                         if let file = value.file {
                             inlineStickers[file.fileId] = file
-                            if file.isPremiumEmoji && !strongSelf.presentationInterfaceState.isPremium && strongSelf.chatLocation.peerId != strongSelf.context.account.peerId {
-                                if firstLockedPremiumEmoji == nil {
-                                    firstLockedPremiumEmoji = file
-                                }
-                            }
                         }
                     }
                 })
-                
-                if let firstLockedPremiumEmoji = firstLockedPremiumEmoji {
-                    let presentationData = strongSelf.context.sharedContext.currentPresentationData.with { $0 }
-                    strongSelf.controllerInteraction?.displayUndo(.sticker(context: strongSelf.context, file: firstLockedPremiumEmoji, loop: true, title: nil, text: presentationData.strings.EmojiInput_PremiumEmojiToast_Text, undoText: presentationData.strings.EmojiInput_PremiumEmojiToast_Action, customAction: {
-                        guard let strongSelf = self else {
-                            return
-                        }
-                        strongSelf.chatDisplayNode.dismissTextInput()
-                        
-                        let context = strongSelf.context
-                        var replaceImpl: ((ViewController) -> Void)?
-                        let controller = context.sharedContext.makePremiumDemoController(context: context, subject: .animatedEmoji, forceDark: false, action: {
-                            let controller = context.sharedContext.makePremiumIntroController(context: context, source: .animatedEmoji, forceDark: false, dismissed: nil)
-                            replaceImpl?(controller)
-                        }, dismissed: nil)
-                        replaceImpl = { [weak controller] c in
-                            controller?.replace(with: c)
-                        }
-                        strongSelf.push(controller)
-                    }))
-                    
-                    return
-                }
                 
                 if text.length == 0 && content.isEmpty {
                     if strongSelf.presentationInterfaceState.editMessageState?.mediaReference != nil {

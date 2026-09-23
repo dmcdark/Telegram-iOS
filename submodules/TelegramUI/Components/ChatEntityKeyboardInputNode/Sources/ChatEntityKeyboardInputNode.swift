@@ -647,7 +647,6 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
             )
         }
 
-        var premiumToastCounter = 0
         self.emojiInputInteraction = EmojiPagerContentComponent.InputInteraction(
             performItemAction: { [weak self, weak interaction] groupId, item, _, _, _, _ in
                 let _ = (
@@ -724,73 +723,6 @@ public final class ChatEntityKeyboardInputNode: ChatInputNode {
                             default:
                                 break
                             }
-                        }
-
-                        if file.isPremiumEmoji && !hasPremium && groupId != AnyHashable("peerSpecific") && !forceHasPremium {
-                            var animateInAsReplacement = false
-                            if let currentUndoOverlayController = strongSelf.currentUndoOverlayController {
-                                currentUndoOverlayController.dismissWithCommitActionAndReplacementAnimation()
-                                strongSelf.currentUndoOverlayController = nil
-                                animateInAsReplacement = true
-                            }
-
-                            let presentationData = context.sharedContext.currentPresentationData.with { $0 }
-
-                            premiumToastCounter += 1
-                            var suggestSavedMessages = premiumToastCounter % 2 == 0
-                            if chatPeerId == nil {
-                                suggestSavedMessages = false
-                            }
-                            let text: String
-                            let actionTitle: String
-                            if suggestSavedMessages {
-                                text = presentationData.strings.EmojiInput_PremiumEmojiToast_TryText
-                                actionTitle = presentationData.strings.EmojiInput_PremiumEmojiToast_TryAction
-                            } else {
-                                text = presentationData.strings.EmojiInput_PremiumEmojiToast_Text
-                                actionTitle = presentationData.strings.EmojiInput_PremiumEmojiToast_Action
-                            }
-
-                            let controller = UndoOverlayController(presentationData: presentationData, content: .sticker(context: context, file: file, loop: true, title: nil, text: text, undoText: actionTitle, customAction: { [weak interaction] in
-                                guard let interaction else {
-                                    return
-                                }
-
-                                if suggestSavedMessages {
-                                    let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
-                                    |> deliverOnMainQueue).start(next: { peer in
-                                        guard let peer = peer, let navigationController = interaction.getNavigationController() else {
-                                            return
-                                        }
-
-                                        context.sharedContext.navigateToChatController(NavigateToChatControllerParams(
-                                            navigationController: navigationController,
-                                            chatController: nil,
-                                            context: context,
-                                            chatLocation: .peer(peer),
-                                            subject: nil,
-                                            updateTextInputState: nil,
-                                            activateInput: .entityInput,
-                                            keepStack: .always,
-                                            completion: { _ in
-                                            })
-                                        )
-                                    })
-                                } else {
-                                    var replaceImpl: ((ViewController) -> Void)?
-                                    let controller = PremiumDemoScreen(context: context, subject: .animatedEmoji, action: {
-                                        let controller = PremiumIntroScreen(context: context, source: .animatedEmoji)
-                                        replaceImpl?(controller)
-                                    })
-                                    replaceImpl = { [weak controller] c in
-                                        controller?.replace(with: c)
-                                    }
-                                    interaction.getNavigationController()?.pushViewController(controller)
-                                }
-                            }), elevatedLayout: false, animateInAsReplacement: animateInAsReplacement, action: { _ in return false })
-                            strongSelf.currentUndoOverlayController = controller
-                            interaction.presentController(controller, nil)
-                            return
                         }
 
                         if let emojiAttribute = emojiAttribute {

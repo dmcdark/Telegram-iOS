@@ -4003,9 +4003,14 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
     }
     
     private func makeMediaInputNode() -> ChatInputNode? {
-        guard let inputMediaNodeData = self.inputMediaNodeData else {
-            return nil
-        }
+        // Present the panel immediately; its content streams in through updatedInputData.
+        // Waiting for sticker data here made the first tap feel delayed on a fresh chat.
+        let inputMediaNodeData = self.inputMediaNodeData ?? ChatEntityKeyboardInputNode.InputData(
+            emoji: nil,
+            stickers: nil,
+            gifs: nil,
+            availableGifSearchEmojies: []
+        )
         
         var peerId: PeerId?
         if case let .peer(id) = self.chatPresentationInterfaceState.chatLocation {
@@ -4024,6 +4029,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             interaction: ChatEntityKeyboardInputNode.Interaction(chatControllerInteraction: self.controllerInteraction, panelInteraction: interfaceInteraction),
             chatPeerId: peerId,
             stateContext: self.inputMediaNodeStateContext,
+            forceHasPremium: true,
             displayBottomPanel: self.chatPresentationInterfaceState.focusedPollAddOptionMessageId == nil
         )
         self.openStickersBeginWithEmoji = false
@@ -4043,6 +4049,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     hasEdit: true,
                     hideBackground: true,
                     maskEdge: .clip,
+                    forceHasPremium: true,
                     sendGif: { [weak self = self] fileReference, sourceView, sourceRect, silentPosting, schedule in
                         if let self {
                             return self.controllerInteraction.sendGif(fileReference, sourceView, sourceRect, silentPosting, schedule)
@@ -4569,18 +4576,29 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
     
     func openStickers(beginWithEmoji: Bool) {
         self.openStickersBeginWithEmoji = beginWithEmoji
+
+        // The media input mode can remain selected after its input view is dismissed. In that
+        // state the one-shot data subscription below is still active, so tapping the sticker
+        // button again must restore first-responder status directly.
+        if case .media = self.chatPresentationInterfaceState.inputMode {
+            self.ensureInputViewFocused()
+        }
+
+        self.interfaceInteraction?.updateInputModeAndDismissedButtonKeyboardMessageId({ state in
+            return (.media(mode: .other, expanded: nil, focused: false), state.interfaceState.messageActionsState.closedButtonKeyboardMessageId)
+        })
         
         if self.openStickersDisposable == nil {
             self.openStickersDisposable = (self.inputMediaNodeDataPromise.get()
             |> take(1)
-            |> deliverOnMainQueue).startStrict(next: { [weak self = self] _ in
+            |> deliverOnMainQueue).startStrict(next: { [weak self = self] inputMediaNodeData in
                 guard let strongSelf = self else {
                     return
                 }
-                
-                strongSelf.interfaceInteraction?.updateInputModeAndDismissedButtonKeyboardMessageId({ state in
-                    return (.media(mode: .other, expanded: nil, focused: false), state.interfaceState.messageActionsState.closedButtonKeyboardMessageId)
-                })
+
+                // Ensure the media input node can be created during the same state transition.
+                // On a newly opened chat, the separate data subscription may not have delivered yet.
+                strongSelf.inputMediaNodeData = inputMediaNodeData
                 
                 if let emojiPackTooltipController = strongSelf.controller?.emojiPackTooltipController {
                     strongSelf.controller?.emojiPackTooltipController = nil
@@ -4938,7 +4956,6 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 && !composeContent.isEmpty
             
             var inlineStickers: [MediaId: Media] = [:]
-            var firstLockedPremiumEmoji: TelegramMediaFile?
             var bubbleUpEmojiOrStickersetsById: [Int64: ItemCollectionId] = [:]
             effectiveInputText.enumerateAttribute(ChatTextInputAttributes.customEmoji, in: NSRange(location: 0, length: effectiveInputText.length), using: { value, _, _ in
                 if let value = value as? ChatTextInputTextCustomEmojiAttribute {
@@ -4948,43 +4965,9 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             bubbleUpEmojiOrStickersetsById[file.fileId.id] = packId
                         }
                         
-                        var isPeerSpecific = false
-                        for attribute in file.attributes {
-                            if case let .CustomEmoji(_, _, _, packReference) = attribute, case let .id(id, _) = packReference {
-                                isPeerSpecific = id == peerSpecificEmojiPack?.id.id
-                            }
-                        }
-                        
-                        if file.isPremiumEmoji && !self.chatPresentationInterfaceState.isPremium && self.chatPresentationInterfaceState.chatLocation.peerId != self.context.account.peerId && !isPeerSpecific {
-                            if firstLockedPremiumEmoji == nil {
-                                firstLockedPremiumEmoji = file
-                            }
-                        }
                     }
                 }
             })
-            
-            if let firstLockedPremiumEmoji = firstLockedPremiumEmoji {
-                let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-                self.controllerInteraction.displayUndo(.sticker(context: context, file: firstLockedPremiumEmoji, loop: true, title: nil, text: presentationData.strings.EmojiInput_PremiumEmojiToast_Text, undoText: presentationData.strings.EmojiInput_PremiumEmojiToast_Action, customAction: { [weak self = self] in
-                    guard let strongSelf = self else {
-                        return
-                    }
-                    strongSelf.dismissTextInput()
-                    
-                    var replaceImpl: ((ViewController) -> Void)?
-                    let controller = PremiumDemoScreen(context: strongSelf.context, subject: .animatedEmoji, action: {
-                        let controller = PremiumIntroScreen(context: strongSelf.context, source: .animatedEmoji)
-                        replaceImpl?(controller)
-                    })
-                    replaceImpl = { [weak controller] c in
-                        controller?.replace(with: c)
-                    }
-                    strongSelf.controller?.present(controller, in: .window(.root), with: nil)
-                }))
-                
-                return
-            }
             
             if let replyMessageSubject = self.chatPresentationInterfaceState.interfaceState.replyMessageSubject, let quote = replyMessageSubject.quote {
                 if let replyMessage = self.chatPresentationInterfaceState.replyMessage {
