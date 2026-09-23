@@ -1,6 +1,9 @@
 #!/bin/zsh
 # Build a Development-signed app, install it on a physical iPhone, and launch it.
 # This script never uploads to TestFlight.
+# Set NOTIFICATION_SERVICE_PROFILE_FILE to the matching Development profile if
+# it is not at the default Project-env path. Set DISABLE_EXTENSIONS=true only
+# when intentionally building without extensions.
 
 set -euo pipefail
 
@@ -20,8 +23,9 @@ if [[ -f "$env_file" ]]; then
 fi
 
 profile_source="${DEVELOPMENT_PROFILE_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram-development.mobileprovision}"
-notification_service_profile_source="${NOTIFICATION_SERVICE_PROFILE_FILE:-}"
+notification_service_profile_source="${NOTIFICATION_SERVICE_PROFILE_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram-notification-service-development.mobileprovision}"
 share_profile_source="${SHARE_EXTENSION_PROFILE_FILE:-}"
+disable_extensions="${DISABLE_EXTENSIONS:-false}"
 device_udid="${1:-${IOS_DEVICE_UDID:-00008130-000644E20C43001C}}"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
 build_number="${BUILD_NUMBER:-$(date +%s)}"
@@ -44,9 +48,10 @@ if [[ "$profile_get_task_allow" != "true" || "$profile_app_identifier" != *".$ap
   print "The selected profile is not a Development profile for $app_identifier: $profile_source"
   exit 1
 fi
-if [[ -n "$notification_service_profile_source" ]]; then
+if [[ "$disable_extensions" != "true" ]]; then
   if [[ ! -f "$notification_service_profile_source" ]]; then
     print "Missing NotificationService Development provisioning profile: $notification_service_profile_source"
+    print "Set NOTIFICATION_SERVICE_PROFILE_FILE or set DISABLE_EXTENSIONS=true to build without extensions."
     exit 1
   fi
   notification_service_get_task_allow="$(security cms -D -i "$notification_service_profile_source" | plutil -extract Entitlements.get-task-allow raw -o - -)"
@@ -56,7 +61,7 @@ if [[ -n "$notification_service_profile_source" ]]; then
     exit 1
   fi
 fi
-if [[ -n "$share_profile_source" ]]; then
+if [[ -n "$share_profile_source" && "$disable_extensions" != "true" ]]; then
   if [[ ! -f "$share_profile_source" ]]; then
     print "Missing Share Development provisioning profile: $share_profile_source"
     exit 1
@@ -81,10 +86,10 @@ cd "$project_root"
 mkdir -p "$signing_root/profiles" "$artifacts_dir"
 rm -f "$signing_root/profiles"/*.mobileprovision(N)
 cp "$profile_source" "$signing_root/profiles/dmctelegram-development.mobileprovision"
-if [[ -n "$notification_service_profile_source" ]]; then
+if [[ "$disable_extensions" != "true" ]]; then
   cp "$notification_service_profile_source" "$signing_root/profiles/dmctelegram-notification-service-development.mobileprovision"
 fi
-if [[ -n "$share_profile_source" ]]; then
+if [[ -n "$share_profile_source" && "$disable_extensions" != "true" ]]; then
   cp "$share_profile_source" "$signing_root/profiles/dmctelegram-share-development.mobileprovision"
 fi
 
@@ -103,15 +108,13 @@ with open(output_path, "w", encoding="utf-8") as destination:
 PY
 
 bazel_arguments=()
-if [[ -n "$notification_service_profile_source" && -n "$share_profile_source" ]]; then
-  bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
-  bazel_arguments+=("--//Telegram:shareExtensionOnly=True")
-elif [[ -n "$notification_service_profile_source" ]]; then
-  bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
+if [[ "$disable_extensions" == "true" ]]; then
+  bazel_arguments+=("--//Telegram:disableExtensions=True")
 elif [[ -n "$share_profile_source" ]]; then
+  bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
   bazel_arguments+=("--//Telegram:shareExtensionOnly=True")
 else
-  bazel_arguments+=("--//Telegram:disableExtensions=True")
+  bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
 fi
 bazel_arguments+=(
   "--copt=-Wno-deprecated-declarations"
@@ -143,15 +146,13 @@ xcrun devicectl device process launch --device "$device_udid" "$app_identifier"
 rm -f "$artifacts_dir/Telegram.ipa"
 
 print "Development build $build_number is running on $device_udid."
-if [[ -n "$notification_service_profile_source" ]]; then
+if [[ "$disable_extensions" != "true" ]]; then
   if [[ -n "$share_profile_source" ]]; then
     print "NotificationService and Share extensions are included; other extensions are disabled."
   else
     print "NotificationService extension is included; other extensions are disabled."
   fi
-elif [[ -n "$share_profile_source" ]]; then
-  print "Share extension is included; other extensions are disabled."
 else
-  print "All extensions are disabled. Set NOTIFICATION_SERVICE_PROFILE_FILE and/or SHARE_EXTENSION_PROFILE_FILE to include selected extensions."
+  print "All extensions are disabled by DISABLE_EXTENSIONS=true."
 fi
 print "No TestFlight upload was performed."

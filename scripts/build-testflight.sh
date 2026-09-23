@@ -35,7 +35,8 @@
 #      private key must appear in the login keychain.
 #   3. Enable Push Notifications and App Groups for com.qinsbro.telegram.
 #   4. Put the App Store Connect profiles in /Users/qinsbro/Downloads/Project-env:
-#      dmctelegram.mobileprovision and dmctelegramshare.mobileprovision
+#      dmctelegram.mobileprovision, dmctelegramnotificationservice.mobileprovision,
+#      and dmctelegramshare.mobileprovision
 
 set -euo pipefail
 
@@ -91,7 +92,9 @@ esac
 
 project_env_dir="/Users/qinsbro/Downloads/Project-env"
 profile_source="$project_env_dir/dmctelegram.mobileprovision"
+notification_service_profile_source="${NOTIFICATION_SERVICE_PROFILE_FILE:-$project_env_dir/dmctelegramnotificationservice.mobileprovision}"
 share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
+disable_extensions="${TESTFLIGHT_DISABLE_EXTENSIONS:-false}"
 signing_root="$project_root/build/testflight-signing"
 configuration_template="$project_root/build-system/appstore-configuration.json"
 configuration_file="$signing_root/appstore-configuration.json"
@@ -153,9 +156,16 @@ if [[ ! -f "$profile_source" ]]; then
   print "Missing App Store Connect provisioning profile: $profile_source"
   exit 1
 fi
-if [[ ! -f "$share_profile_source" && "${TESTFLIGHT_DISABLE_EXTENSIONS:-true}" != "true" ]]; then
-  print "Missing App Store Connect Share provisioning profile: $share_profile_source"
-  exit 1
+if [[ "$disable_extensions" != "true" ]]; then
+  if [[ ! -f "$notification_service_profile_source" ]]; then
+    print "Missing App Store Connect Notification Service provisioning profile: $notification_service_profile_source"
+    print "Set NOTIFICATION_SERVICE_PROFILE_FILE or set TESTFLIGHT_DISABLE_EXTENSIONS=true to build without extensions."
+    exit 1
+  fi
+  if [[ ! -f "$share_profile_source" ]]; then
+    print "Missing App Store Connect Share provisioning profile: $share_profile_source"
+    exit 1
+  fi
 fi
 if strings "$profile_source" | grep -q '<key>ProvisionedDevices</key>'; then
   print "The main provisioning profile is a development/ad hoc profile, not an App Store profile: $profile_source"
@@ -166,6 +176,28 @@ if ! strings "$profile_source" | grep -q '<string>production</string>'; then
   print "The main provisioning profile does not appear to use production entitlements: $profile_source"
   print "Replace it with an App Store Connect distribution profile for $app_identifier."
   exit 1
+fi
+if [[ "$disable_extensions" != "true" ]]; then
+  for extension_profile in "$notification_service_profile_source" "$share_profile_source"; do
+    if strings "$extension_profile" | grep -q '<key>ProvisionedDevices</key>'; then
+      print "An extension provisioning profile is development/ad hoc, not an App Store profile: $extension_profile"
+      exit 1
+    fi
+    if ! strings "$extension_profile" | grep -q '<string>production</string>'; then
+      print "An extension provisioning profile does not appear to use production entitlements: $extension_profile"
+      exit 1
+    fi
+  done
+  notification_service_app_identifier="$(security cms -D -i "$notification_service_profile_source" | plutil -extract Entitlements.application-identifier raw -o - -)"
+  share_app_identifier="$(security cms -D -i "$share_profile_source" | plutil -extract Entitlements.application-identifier raw -o - -)"
+  if [[ "$notification_service_app_identifier" != *".$app_identifier.NotificationService" ]]; then
+    print "The Notification Service profile does not match $app_identifier.NotificationService: $notification_service_profile_source"
+    exit 1
+  fi
+  if [[ "$share_app_identifier" != *".$app_identifier.Share" ]]; then
+    print "The Share profile does not match $app_identifier.Share: $share_profile_source"
+    exit 1
+  fi
 fi
 if python3 -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1])).get("enable_icloud") else 1)' "$configuration_template" && ! strings "$profile_source" | grep -q 'com.apple.developer.icloud-services'; then
   print "The build configuration template enables iCloud, but the provisioning profile does not include iCloud entitlements."
@@ -192,7 +224,8 @@ cd "$project_root"
 mkdir -p "$signing_root/profiles"
 rm -f "$signing_root/profiles"/*.mobileprovision(N)
 cp "$profile_source" "$signing_root/profiles/dmctelegram.mobileprovision"
-if [[ "${TESTFLIGHT_DISABLE_EXTENSIONS:-true}" != "true" ]]; then
+if [[ "$disable_extensions" != "true" ]]; then
+  cp "$notification_service_profile_source" "$signing_root/profiles/dmctelegramnotificationservice.mobileprovision"
   cp "$share_profile_source" "$signing_root/profiles/dmctelegramshare.mobileprovision"
 fi
 
@@ -212,8 +245,14 @@ with open(output_path, "w", encoding="utf-8") as destination:
     destination.write("\n")
 PY
 
-bazel_arguments=(
-  "--//Telegram:disableExtensions=True"
+bazel_arguments=()
+if [[ "$disable_extensions" == "true" ]]; then
+  bazel_arguments+=("--//Telegram:disableExtensions=True")
+else
+  bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
+  bazel_arguments+=("--//Telegram:shareExtensionOnly=True")
+fi
+bazel_arguments+=(
   "--copt=-Wno-deprecated-declarations"
   "--@build_bazel_rules_swift//swift:copt=-no-warnings-as-errors"
 )
