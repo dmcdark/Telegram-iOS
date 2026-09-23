@@ -65,6 +65,7 @@ private enum DebugControllerEntry: ItemListNodeEntry {
     case sendNotificationLogs(PresentationTheme)
     case sendCriticalLogs(PresentationTheme)
     case sendAllLogs
+    case clearLogs
     case accounts(PresentationTheme)
     case logToFile(PresentationTheme, Bool)
     case logToConsole(PresentationTheme, Bool)
@@ -127,7 +128,7 @@ private enum DebugControllerEntry: ItemListNodeEntry {
         switch self {
         case .testStickerImport:
             return DebugControllerSection.sticker.rawValue
-        case .sendLogs, .sendOneLog, .sendShareLogs, .sendGroupCallLogs, .sendStorageStats, .sendNotificationLogs, .sendCriticalLogs, .sendAllLogs:
+        case .sendLogs, .sendOneLog, .sendShareLogs, .sendGroupCallLogs, .sendStorageStats, .sendNotificationLogs, .sendCriticalLogs, .sendAllLogs, .clearLogs:
             return DebugControllerSection.logs.rawValue
         case .accounts:
             return DebugControllerSection.logs.rawValue
@@ -172,6 +173,8 @@ private enum DebugControllerEntry: ItemListNodeEntry {
             return 8
         case .accounts:
             return 9
+        case .clearLogs:
+            return 10
         case .logToFile:
             return 10
         case .logToConsole:
@@ -877,6 +880,51 @@ private enum DebugControllerEntry: ItemListNodeEntry {
                     arguments.presentController(actionSheet, nil)
                 })
             })
+        case .clearLogs:
+            return ItemListActionItem(presentationData: presentationData, systemStyle: .glass, title: "Clear All Logs", kind: .destructive, alignment: .natural, sectionId: self.section, style: .blocks, action: {
+                let presentationData = arguments.sharedContext.currentPresentationData.with { $0 }
+                let actionSheet = ActionSheetController(presentationData: presentationData)
+                actionSheet.setItemGroups([ActionSheetItemGroup(items: [
+                    ActionSheetTextItem(title: "This removes local diagnostic log files only. Chats, account data, and cache are not affected."),
+                    ActionSheetButtonItem(title: "Clear All Logs", color: .destructive, action: { [weak actionSheet] in
+                        actionSheet?.dismissAnimated()
+
+                        let rootPath = arguments.sharedContext.basePath
+                        let logDirectories = [
+                            "app-logs",
+                            "broadcast-logs",
+                            "siri-logs",
+                            "widget-logs",
+                            "notificationcontent-logs",
+                            "notification-logs"
+                        ]
+                        var logPaths = logDirectories.map { rootPath + "/logs/\($0)" }
+                        logPaths.append(contentsOf: [
+                            "broadcast-logs",
+                            "siri-logs",
+                            "widget-logs",
+                            "notificationcontent-logs",
+                            "notification-logs"
+                        ].map { rootPath + "/\($0)" })
+                        if let context = arguments.context {
+                            logPaths.append(context.account.basePath + "/group-calls")
+                        }
+
+                        Logger.shared.clearLogs(additionalBasePaths: logPaths, completion: {
+                            DispatchQueue.main.async {
+                                let alertController = UIAlertController(title: nil, message: "Logs cleared", preferredStyle: .alert)
+                                alertController.addAction(UIAlertAction(title: "OK", style: .default))
+                                arguments.getRootController()?.present(alertController, animated: true)
+                            }
+                        })
+                    })
+                ]), ActionSheetItemGroup(items: [
+                    ActionSheetButtonItem(title: presentationData.strings.Common_Cancel, color: .accent, font: .bold, action: { [weak actionSheet] in
+                        actionSheet?.dismissAnimated()
+                    })
+                ])])
+                arguments.presentController(actionSheet, nil)
+            })
         case .sendStorageStats:
             return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: "Send Storage Stats", label: "", sectionId: self.section, style: .blocks, action: {
                 guard let context = arguments.context, context.sharedContext.applicationBindings.isMainApp else {
@@ -1550,6 +1598,7 @@ private func debugControllerEntries(context: AccountContext?, sharedContext: Sha
     entries.append(.sendNotificationLogs(presentationData.theme))
     entries.append(.sendCriticalLogs(presentationData.theme))
     entries.append(.sendAllLogs)
+    entries.append(.clearLogs)
     entries.append(.sendStorageStats)
     if isMainApp {
         entries.append(.accounts(presentationData.theme))
