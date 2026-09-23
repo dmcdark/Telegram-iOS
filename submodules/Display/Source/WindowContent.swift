@@ -536,12 +536,14 @@ public class Window1 {
                 }
                 
                 var minKeyboardY: CGFloat?
+                var maxKeyboardY: CGFloat?
                 if #available(iOSApplicationExtension 16.1, iOS 16.1, *), let screen = notification.object as? UIScreen, let keyboardFrameEnd = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
                     let fromCoordinateSpace = screen.coordinateSpace
                     let toCoordinateSpace: UICoordinateSpace = strongSelf.hostView.eventView
 
                     let convertedKeyboardFrameEnd = fromCoordinateSpace.convert(keyboardFrameEnd, to: toCoordinateSpace)
                     minKeyboardY = convertedKeyboardFrameEnd.minY
+                    maxKeyboardY = convertedKeyboardFrameEnd.maxY
                 }
 
                 var windowedHeightDifference: CGFloat = 0.0
@@ -568,8 +570,8 @@ public class Window1 {
                     }
                     
                     if #available(iOSApplicationExtension 13.0, iOS 13.0, *) {
-                        if isWindowed, let _ = minKeyboardY {
-                            screenHeight = strongSelf.windowLayout.size.height
+                        if let _ = minKeyboardY {
+                            screenHeight = strongSelf.hostView.eventView.bounds.maxY
                         } else {
                             screenHeight = UIScreen.main.bounds.height
                         }
@@ -578,7 +580,7 @@ public class Window1 {
                     }
                 } else {
                     if let _ = minKeyboardY {
-                        screenHeight = strongSelf.windowLayout.size.height
+                        screenHeight = strongSelf.hostView.eventView.bounds.maxY
                     } else {
                         if keyboardFrame.minX > 0.0 {
                             screenHeight = UIScreen.main.bounds.height
@@ -589,8 +591,9 @@ public class Window1 {
                 }
                 
                 var keyboardHeight: CGFloat
-                if keyboardFrame.isEmpty || keyboardFrame.maxY < screenHeight {
-                    if isWindowed || (isTablet && screenHeight - keyboardFrame.maxY < 5.0) {
+                let keyboardMaxY = maxKeyboardY ?? keyboardFrame.maxY
+                if keyboardFrame.isEmpty || keyboardMaxY < screenHeight {
+                    if isWindowed || (isTablet && screenHeight - keyboardMaxY < 5.0) {
                         if let minKeyboardY {
                             keyboardFrame.origin.y = minKeyboardY
                         }

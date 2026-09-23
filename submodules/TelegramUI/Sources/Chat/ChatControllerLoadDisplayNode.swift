@@ -5629,6 +5629,15 @@ extension ChatControllerImpl {
                 }
             }
         }
+
+        historyNode.beganInteractiveUserDragging = { [weak self = self] in
+            guard let self else {
+                return
+            }
+            if self.presentationInterfaceState.search == nil || self.presentationInterfaceState.historyFilter == nil {
+                self.chatDisplayNode.dismissInput()
+            }
+        }
     
         historyNode.didScrollWithOffset = { [weak self = self] offset, transition, itemNode, isTracking in
             guard let strongSelf = self else {

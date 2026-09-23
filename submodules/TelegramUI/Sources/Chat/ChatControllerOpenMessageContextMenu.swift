@@ -633,6 +633,7 @@ extension ChatControllerImpl {
                     }
                     return true
                 })
+                self.chatDisplayNode.dismissInput()
                 self.window?.presentInGlobalOverlay(controller)
             })
         }

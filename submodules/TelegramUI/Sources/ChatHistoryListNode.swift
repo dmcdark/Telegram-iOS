@@ -610,6 +610,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
     var scrolledToIndex: ((MessageHistoryScrollToSubject, Bool) -> Void)?
     var scrolledToSomeIndex: (() -> Void)?
     var beganDragging: (() -> Void)?
+    var beganInteractiveUserDragging: (() -> Void)?
     
     private let hasVisiblePlayableItemNodesPromise = ValuePromise<Bool>(false, ignoreRepeated: true)
     var hasVisiblePlayableItemNodes: Signal<Bool, NoError> {
@@ -1217,6 +1218,7 @@ public final class ChatHistoryListNodeImpl: ASDisplayNode, ChatHistoryNode, Chat
             self.isInteractivelyScrollingPromise.set(true)
             //self.pinToTopStableId = nil
             self.beganDragging?()
+            self.beganInteractiveUserDragging?()
         }
 
         self.endedInteractiveDragging = { [weak self = self] _ in
