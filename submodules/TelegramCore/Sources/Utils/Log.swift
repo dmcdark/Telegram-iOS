@@ -138,28 +138,6 @@ public final class Logger {
         }
     }
 
-    public func clearLogs(additionalBasePaths: [String] = [], completion: (() -> Void)? = nil) {
-        self.queue.async {
-            self.file = nil
-            self.shortFile = nil
-
-            var basePaths = Set(additionalBasePaths)
-            basePaths.insert(self.basePath)
-            for basePath in basePaths {
-                guard let urls = try? FileManager.default.contentsOfDirectory(at: URL(fileURLWithPath: basePath), includingPropertiesForKeys: nil, options: []) else {
-                    continue
-                }
-                for url in urls {
-                    let name = url.lastPathComponent
-                    if name.hasPrefix("log-") || name.hasPrefix("critlog-") {
-                        let _ = try? FileManager.default.removeItem(at: url)
-                    }
-                }
-            }
-
-            completion?()
-        }
-    }
     
     public func collectLogs(prefix: String? = nil) -> Signal<[(String, String)], NoError> {
         return Signal { subscriber in
