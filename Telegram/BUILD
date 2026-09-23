@@ -76,6 +76,18 @@ bool_flag(
 )
 
 bool_flag(
+    name = "notificationServiceExtensionOnly",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "shareExtensionOnly",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
     name = "disableProvisioningProfiles",
     build_setting_default = False,
     visibility = ["//visibility:public"],
@@ -91,6 +103,33 @@ config_setting(
     name = "disableExtensionsSetting",
     flag_values = {
         ":disableExtensions": "True",
+    },
+)
+
+config_setting(
+    name = "notificationServiceExtensionOnlySetting",
+    flag_values = {
+        ":disableExtensions": "False",
+        ":notificationServiceExtensionOnly": "True",
+        ":shareExtensionOnly": "False",
+    },
+)
+
+config_setting(
+    name = "shareExtensionOnlySetting",
+    flag_values = {
+        ":disableExtensions": "False",
+        ":notificationServiceExtensionOnly": "False",
+        ":shareExtensionOnly": "True",
+    },
+)
+
+config_setting(
+    name = "notificationServiceAndShareExtensionsSetting",
+    flag_values = {
+        ":disableExtensions": "False",
+        ":notificationServiceExtensionOnly": "True",
+        ":shareExtensionOnly": "True",
     },
 )
 
@@ -1813,6 +1852,16 @@ ios_application(
     ],
     extensions = select({
         ":disableExtensionsSetting": [],
+        ":notificationServiceAndShareExtensionsSetting": [
+            ":ShareExtension",
+            ":NotificationServiceExtension" + notificationServiceExtensionVersion,
+        ],
+        ":notificationServiceExtensionOnlySetting": [
+            ":NotificationServiceExtension" + notificationServiceExtensionVersion,
+        ],
+        ":shareExtensionOnlySetting": [
+            ":ShareExtension",
+        ],
         "//conditions:default": [
             ":ShareExtension",
             ":NotificationContentExtension",

@@ -333,7 +333,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
                 return nil
             }
             let sandbox: Bool
-            #if DEBUG
+            #if TELEGRAM_APS_ENVIRONMENT_DEVELOPMENT
             sandbox = true
             #else
             sandbox = false
@@ -1624,7 +1624,7 @@ public final class SharedAccountContextImpl: SharedAccountContext {
     
     public func updateNotificationTokensRegistration() {
         let sandbox: Bool
-        #if DEBUG
+        #if TELEGRAM_APS_ENVIRONMENT_DEVELOPMENT
         sandbox = true
         #else
         sandbox = false
