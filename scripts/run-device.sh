@@ -97,5 +97,8 @@ codesign --verify --deep --strict "$app_path"
 xcrun devicectl device install app --device "$device_udid" "$app_path"
 xcrun devicectl device process launch --device "$device_udid" "$app_identifier"
 
+# The app is installed on the phone; keep the IPA only if install/launch failed.
+rm -f "$artifacts_dir/Telegram.ipa"
+
 print "Development build $build_number is running on $device_udid."
 print "No TestFlight upload was performed."
