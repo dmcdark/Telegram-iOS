@@ -1,9 +1,11 @@
 #!/bin/zsh
 # Build a Development-signed app, install it on a physical iPhone, and launch it.
 # This script never uploads to TestFlight.
-# Set NOTIFICATION_SERVICE_PROFILE_FILE to the matching Development profile if
-# it is not at the default Project-env path. Set DISABLE_EXTENSIONS=true only
-# when intentionally building without extensions.
+# Set DEVICE_NOTIFICATION_SERVICE_PROFILE_FILE to the matching Development
+# profile if it is not at the default Project-env path. Set
+# DISABLE_EXTENSIONS=true only when intentionally building without extensions.
+# Other Development profile variables: DEVELOPMENT_PROFILE_FILE and
+# DEVICE_SHARE_EXTENSION_PROFILE_FILE.
 
 set -euo pipefail
 
@@ -23,8 +25,8 @@ if [[ -f "$env_file" ]]; then
 fi
 
 profile_source="${DEVELOPMENT_PROFILE_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram-development.mobileprovision}"
-notification_service_profile_source="${NOTIFICATION_SERVICE_PROFILE_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram-notification-service-development.mobileprovision}"
-share_profile_source="${SHARE_EXTENSION_PROFILE_FILE:-}"
+notification_service_profile_source="${DEVICE_NOTIFICATION_SERVICE_PROFILE_FILE:-${NOTIFICATION_SERVICE_PROFILE_FILE:-/Users/qinsbro/Downloads/Project-env/dmctelegram-notification-service-development.mobileprovision}}"
+share_profile_source="${DEVICE_SHARE_EXTENSION_PROFILE_FILE:-${SHARE_EXTENSION_PROFILE_FILE:-}}"
 disable_extensions="${DISABLE_EXTENSIONS:-false}"
 device_udid="${1:-${IOS_DEVICE_UDID:-00008130-000644E20C43001C}}"
 app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
@@ -51,7 +53,7 @@ fi
 if [[ "$disable_extensions" != "true" ]]; then
   if [[ ! -f "$notification_service_profile_source" ]]; then
     print "Missing NotificationService Development provisioning profile: $notification_service_profile_source"
-    print "Set NOTIFICATION_SERVICE_PROFILE_FILE or set DISABLE_EXTENSIONS=true to build without extensions."
+    print "Set DEVICE_NOTIFICATION_SERVICE_PROFILE_FILE or set DISABLE_EXTENSIONS=true to build without extensions."
     exit 1
   fi
   notification_service_get_task_allow="$(security cms -D -i "$notification_service_profile_source" | plutil -extract Entitlements.get-task-allow raw -o - -)"

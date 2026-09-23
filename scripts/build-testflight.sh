@@ -20,6 +20,13 @@
 #   TELEGRAM_API_ID=12345678
 #   TELEGRAM_API_HASH=your_api_hash_from_my.telegram.org
 #   APP_IDENTIFIER=com.qinsbro.telegram
+#   APP_STORE_PROFILE_FILE=/absolute/path/to/main-app-app-store.mobileprovision
+#   TESTFLIGHT_NOTIFICATION_SERVICE_PROFILE_FILE=/absolute/path/to/notification-service-app-store.mobileprovision
+#   TESTFLIGHT_SHARE_PROFILE_FILE=/absolute/path/to/share-app-store.mobileprovision
+# Device action (Development profiles; separate from the TestFlight profiles):
+#   DEVELOPMENT_PROFILE_FILE=/absolute/path/to/main-app-development.mobileprovision
+#   DEVICE_NOTIFICATION_SERVICE_PROFILE_FILE=/absolute/path/to/notification-service-development.mobileprovision
+#   DEVICE_SHARE_EXTENSION_PROFILE_FILE=/absolute/path/to/share-development.mobileprovision
 #   WHAT_TO_TEST=Fixed release notes for internal testers
 #   TESTFLIGHT_INTERNAL_GROUP=internal
 #   WAIT_SECONDS=15
@@ -91,9 +98,9 @@ case "$selected_action" in
 esac
 
 project_env_dir="/Users/qinsbro/Downloads/Project-env"
-profile_source="$project_env_dir/dmctelegram.mobileprovision"
-notification_service_profile_source="${NOTIFICATION_SERVICE_PROFILE_FILE:-$project_env_dir/dmctelegramnotificationservice.mobileprovision}"
-share_profile_source="$project_env_dir/dmctelegramshare.mobileprovision"
+profile_source="${APP_STORE_PROFILE_FILE:-$project_env_dir/dmctelegram.mobileprovision}"
+notification_service_profile_source="${TESTFLIGHT_NOTIFICATION_SERVICE_PROFILE_FILE:-$project_env_dir/dmctelegramnotificationservice.mobileprovision}"
+share_profile_source="${TESTFLIGHT_SHARE_PROFILE_FILE:-$project_env_dir/dmctelegramshare.mobileprovision}"
 disable_extensions="${TESTFLIGHT_DISABLE_EXTENSIONS:-false}"
 signing_root="$project_root/build/testflight-signing"
 configuration_template="$project_root/build-system/appstore-configuration.json"
@@ -159,7 +166,7 @@ fi
 if [[ "$disable_extensions" != "true" ]]; then
   if [[ ! -f "$notification_service_profile_source" ]]; then
     print "Missing App Store Connect Notification Service provisioning profile: $notification_service_profile_source"
-    print "Set NOTIFICATION_SERVICE_PROFILE_FILE or set TESTFLIGHT_DISABLE_EXTENSIONS=true to build without extensions."
+    print "Set TESTFLIGHT_NOTIFICATION_SERVICE_PROFILE_FILE or set TESTFLIGHT_DISABLE_EXTENSIONS=true to build without extensions."
     exit 1
   fi
   if [[ ! -f "$share_profile_source" ]]; then
@@ -183,8 +190,10 @@ if [[ "$disable_extensions" != "true" ]]; then
       print "An extension provisioning profile is development/ad hoc, not an App Store profile: $extension_profile"
       exit 1
     fi
-    if ! strings "$extension_profile" | grep -q '<string>production</string>'; then
-      print "An extension provisioning profile does not appear to use production entitlements: $extension_profile"
+    extension_get_task_allow="$(security cms -D -i "$extension_profile" | plutil -extract Entitlements.get-task-allow raw -o - -)"
+    extension_provisions_all_devices="$(security cms -D -i "$extension_profile" | plutil -extract ProvisionsAllDevices raw -o - - 2>/dev/null || true)"
+    if [[ "$extension_get_task_allow" != "false" || "$extension_provisions_all_devices" == "true" ]]; then
+      print "An extension provisioning profile is not an App Store Connect distribution profile: $extension_profile"
       exit 1
     fi
   done
