@@ -601,8 +601,8 @@ final class AuthorizationSequencePhoneEntryControllerNode: ASDisplayNode {
     func containerLayoutUpdated(_ layout: ContainerViewLayout, navigationBarHeight: CGFloat, transition: ContainedViewLayoutTransition) {
         var insets = layout.insets(options: [])
         insets.top = layout.statusBarHeight ?? 20.0
-        if let inputHeight = layout.inputHeight, !inputHeight.isZero {
-            insets.bottom = max(inputHeight, insets.bottom)
+        if let inputHeight = layout.inputHeight {
+            insets.bottom = max(inputHeight, layout.standardInputHeight)
         }
         
         let titleInset: CGFloat = layout.size.width > 320.0 ? 18.0 : 0.0
