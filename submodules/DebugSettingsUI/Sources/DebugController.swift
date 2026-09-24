@@ -785,6 +785,7 @@ private enum DebugControllerEntry: ItemListNodeEntry {
             return ItemListDisclosureItem(presentationData: presentationData, systemStyle: .glass, title: "Send All Logs", label: "", sectionId: self.section, style: .blocks, action: {
                 let logTypes: [String] = [
                     "app-logs",
+                    "share-logs",
                     "broadcast-logs",
                     "siri-logs",
                     "widget-logs",

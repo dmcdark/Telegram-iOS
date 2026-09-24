@@ -423,9 +423,10 @@ public class ShareRootControllerImpl {
                 isICloudEnabled: false
             )
             
-            let accountData: Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), NoError> = accountManager.accountRecords()
+            let accountData: Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), ShareAuthorizationError> = accountManager.accountRecords()
+            |> castError(ShareAuthorizationError.self)
             |> take(1)
-            |> mapToSignal { view -> Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), NoError> in
+            |> mapToSignal { view -> Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), ShareAuthorizationError> in
                 var signals: [Signal<(AccountRecordId, AccountStateManager, EnginePeer)?, NoError>] = []
                 for record in view.records {
                     if record.attributes.contains(where: { attribute in
@@ -464,8 +465,11 @@ public class ShareRootControllerImpl {
                         }
                     })
                 }
-                return combineLatest(signals)
-                |> mapToSignal { stateManagers -> Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), NoError> in
+                if signals.isEmpty {
+                    return .fail(.unauthorized)
+                }
+                return (combineLatest(signals) |> castError(ShareAuthorizationError.self))
+                |> mapToSignal { stateManagers -> Signal<(ShareControllerEnvironment, ShareControllerAccountContext, [ShareControllerSwitchableAccount]), ShareAuthorizationError> in
                     var allAccounts: [ShareControllerSwitchableAccount] = []
                     for data in stateManagers {
                         guard let (id, stateManager, peer) = data else {
@@ -483,8 +487,13 @@ public class ShareRootControllerImpl {
                         ))
                     }
                     
-                    guard let currentAccount = allAccounts.first(where: { $0.account.accountId == view.currentRecord?.id }) else {
-                        return .never()
+                    // The share extension can observe account records before the account
+                    // manager has restored its current record. Falling through to `.never()`
+                    // here leaves the extension's host view permanently blank. Prefer the
+                    // current account when available, and otherwise use the first usable
+                    // account so sharing can still proceed.
+                    guard let currentAccount = allAccounts.first(where: { $0.account.accountId == view.currentRecord?.id }) ?? allAccounts.first else {
+                        return .fail(.unauthorized)
                     }
                     
                     return .single((environment, currentAccount.account, allAccounts))
@@ -492,7 +501,6 @@ public class ShareRootControllerImpl {
             }
             
             let applicationInterface: Signal<(ShareControllerEnvironment, ShareControllerAccountContext, PostboxAccessChallengeData, [ShareControllerSwitchableAccount]), ShareAuthorizationError> = accountData
-            |> castError(ShareAuthorizationError.self)
             |> mapToSignal { data -> Signal<(ShareControllerEnvironment, ShareControllerAccountContext, PostboxAccessChallengeData, [ShareControllerSwitchableAccount]), ShareAuthorizationError> in
                 let (environment, context, otherAccounts) = data
                 
