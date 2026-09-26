@@ -62,23 +62,19 @@ public enum SavedGifResult {
 public func toggleGifSaved(account: Account, fileReference: FileMediaReference, saved: Bool) -> Signal<SavedGifResult, NoError> {
     if saved {
         return account.postbox.transaction { transaction -> Signal<SavedGifResult, NoError> in
-            let isPremium = transaction.getPeer(account.peerId)?.isPremium ?? false
             let items = transaction.getOrderedListItems(collectionId: Namespaces.OrderedItemList.CloudRecentGifs)
             
             let appConfiguration = transaction.getPreferencesEntry(key: PreferencesKeys.appConfiguration)?.get(AppConfiguration.self) ?? .defaultValue
-            let limitsConfiguration = UserLimitsConfiguration(appConfiguration: appConfiguration, isPremium: false)
             let premiumLimitsConfiguration = UserLimitsConfiguration(appConfiguration: appConfiguration, isPremium: true)
             
             let result: SavedGifResult
-            if isPremium && items.count >= premiumLimitsConfiguration.maxSavedGifCount {
+            if items.count >= premiumLimitsConfiguration.maxSavedGifCount {
                 result = .limitExceeded(premiumLimitsConfiguration.maxSavedGifCount, premiumLimitsConfiguration.maxSavedGifCount)
-            } else if !isPremium && items.count >= limitsConfiguration.maxSavedGifCount {
-                result = .limitExceeded(limitsConfiguration.maxSavedGifCount, premiumLimitsConfiguration.maxSavedGifCount)
             } else {
                 result = .generic
             }
             
-            return addSavedGif(postbox: account.postbox, fileReference: fileReference, limit: Int(isPremium ? premiumLimitsConfiguration.maxSavedGifCount : limitsConfiguration.maxSavedGifCount))
+            return addSavedGif(postbox: account.postbox, fileReference: fileReference, limit: Int(premiumLimitsConfiguration.maxSavedGifCount))
             |> map { _ -> SavedGifResult in
                 return .generic
             }
