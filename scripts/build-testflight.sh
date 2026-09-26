@@ -113,6 +113,7 @@ app_identifier="${APP_IDENTIFIER:-com.qinsbro.telegram}"
 what_to_test="${WHAT_TO_TEST:-Local TestFlight build $build_number}"
 internal_group="${TESTFLIGHT_INTERNAL_GROUP:-internal}"
 wait_seconds="${WAIT_SECONDS:-15}"
+auth_retry_count="${TESTFLIGHT_AUTH_RETRIES:-3}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
 bazel_path="$project_root/build-input/bazel-8.4.2-darwin-arm64"
 
@@ -151,6 +152,10 @@ if [[ -e "$download_ipa" ]]; then
 fi
 if [[ ! "$wait_seconds" =~ '^[1-9][0-9]*$' ]]; then
   print "WAIT_SECONDS must be a positive integer."
+  exit 2
+fi
+if [[ ! "$auth_retry_count" =~ '^[1-9][0-9]*$' ]]; then
+  print "TESTFLIGHT_AUTH_RETRIES must be a positive integer."
   exit 2
 fi
 
@@ -322,15 +327,40 @@ PY
 trap 'rm -f "$api_key_json"' EXIT
 
 print "\nUploading IPA to TestFlight..."
-fastlane pilot upload \
-  --ipa "$download_ipa" \
-  --api_key_path "$api_key_json" \
-  --skip_submission true \
-  --skip_waiting_for_build_processing true
+fastlane_auth_retries=0
+while true; do
+  fastlane_log="$(mktemp -t telegram-testflight-upload)"
+  if fastlane pilot upload \
+    --ipa "$download_ipa" \
+    --api_key_path "$api_key_json" \
+    --skip_submission true \
+    --skip_waiting_for_build_processing true >"$fastlane_log" 2>&1; then
+    cat "$fastlane_log"
+    rm -f "$fastlane_log"
+    break
+  else
+    fastlane_status=$?
+  fi
+
+  if grep -Fq 'Creating authorization token' "$fastlane_log" \
+    && grep -Fq 'SSL_read: unexpected eof while reading' "$fastlane_log" \
+    && (( fastlane_auth_retries < auth_retry_count )); then
+    (( fastlane_auth_retries += 1 ))
+    print "Fastlane lost its SSL connection while creating the App Store Connect token; retrying in $((fastlane_auth_retries * 5))s ($fastlane_auth_retries/$auth_retry_count)..." >&2
+    rm -f "$fastlane_log"
+    sleep $((fastlane_auth_retries * 5))
+    continue
+  fi
+
+  cat "$fastlane_log" >&2
+  rm -f "$fastlane_log"
+  exit "$fastlane_status"
+done
 rm -f "$download_ipa"
 print "Uploaded IPA removed from: $download_ipa"
 
 print "Waiting for build $marketing_version ($build_number) to finish processing..."
+fastlane_auth_retries=0
 for attempt in {1..60}; do
   distribution_log="$(mktemp -t telegram-testflight-distribute)"
   if fastlane pilot distribute \
@@ -352,6 +382,15 @@ for attempt in {1..60}; do
   # `grep` is available on a standard macOS installation; don't require ripgrep
   # just to recognize the expected App Store Connect processing responses.
   if ! grep -Eiq 'No build to distribute|Could not find build|processing' "$distribution_log"; then
+    if grep -Fq 'Creating authorization token' "$distribution_log" \
+      && grep -Fq 'SSL_read: unexpected eof while reading' "$distribution_log" \
+      && (( fastlane_auth_retries < auth_retry_count )); then
+      (( fastlane_auth_retries += 1 ))
+      print "Fastlane lost its SSL connection while creating the App Store Connect token; retrying in $((fastlane_auth_retries * 5))s ($fastlane_auth_retries/$auth_retry_count)..." >&2
+      rm -f "$distribution_log"
+      sleep $((fastlane_auth_retries * 5))
+      continue
+    fi
     cat "$distribution_log" >&2
     rm -f "$distribution_log"
     exit 1
