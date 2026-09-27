@@ -513,6 +513,8 @@ func initializedNetwork(accountId: AccountRecordId, arguments: NetworkInitializa
                     useNetworkFramework = customValue
                 } else if arguments.useBetaFeatures {
                     useNetworkFramework = true
+                } else if #available(iOS 27.0, *) {
+                    useNetworkFramework = true
                 } else {
                     useNetworkFramework = false
                 }
