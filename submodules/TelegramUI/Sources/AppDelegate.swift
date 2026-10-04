@@ -597,7 +597,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
             },
             appData: self.regularDeviceToken.get() |> map { token in
                 let tokenEnvironment: String
-                #if DEBUG
+                #if TELEGRAM_APS_ENVIRONMENT_DEVELOPMENT
                 tokenEnvironment = "sandbox"
                 #else
                 tokenEnvironment = "production"

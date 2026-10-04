@@ -44,6 +44,9 @@
 #   4. Put the App Store Connect profiles in /Users/qinsbro/Downloads/Project-env:
 #      dmctelegram.mobileprovision, dmctelegramnotificationservice.mobileprovision,
 #      and dmctelegramshare.mobileprovision
+#   5. Configure the matching APNs certificate in your Telegram API application
+#      settings at my.telegram.org. App Store Connect upload credentials and
+#      distribution signing certificates do not configure Telegram push delivery.
 
 set -euo pipefail
 
@@ -184,9 +187,17 @@ if strings "$profile_source" | grep -q '<key>ProvisionedDevices</key>'; then
   print "Replace it with an App Store Connect distribution profile for $app_identifier."
   exit 1
 fi
-if ! strings "$profile_source" | grep -q '<string>production</string>'; then
-  print "The main provisioning profile does not appear to use production entitlements: $profile_source"
-  print "Replace it with an App Store Connect distribution profile for $app_identifier."
+profile_aps_environment="$(security cms -D -i "$profile_source" | plutil -extract Entitlements.aps-environment raw -o - -)"
+if [[ "$profile_aps_environment" != "production" ]]; then
+  print "The main provisioning profile must have aps-environment=production: $profile_source"
+  print "Enable Push Notifications for $app_identifier and regenerate its App Store Connect profile."
+  exit 1
+fi
+profile_app_identifier="$(security cms -D -i "$profile_source" | plutil -extract Entitlements.application-identifier raw -o - -)"
+configured_app_identifier="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["bundle_id"])' "$configuration_template")"
+if [[ "$configured_app_identifier" != "$app_identifier" || "$profile_app_identifier" != *".$app_identifier" ]]; then
+  print "APP_IDENTIFIER, the build configuration bundle ID, and the main provisioning profile must match."
+  print "Check $configuration_template and $profile_source."
   exit 1
 fi
 if [[ "$disable_extensions" != "true" ]]; then
