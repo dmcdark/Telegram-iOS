@@ -3,20 +3,6 @@
 
 #import "LegacyComponentsInternal.h"
 
-static NSString *TGCameraEncodeText(NSString *string, int key)
-{
-    NSMutableString *result = [[NSMutableString alloc] init];
-    
-    for (int i = 0; i < (int)[string length]; i++)
-    {
-        unichar c = [string characterAtIndex:i];
-        c += key;
-        [result appendString:[NSString stringWithCharacters:&c length:1]];
-    }
-    
-    return result;
-}
-
 @implementation TGCameraInterfaceAssets
 
 + (UIColor *)normalColor
@@ -56,12 +42,12 @@ static NSString *TGCameraEncodeText(NSString *string, int key)
 
 + (UIFont *)regularFontOfSize:(CGFloat)size
 {
-    return [UIFont fontWithName:TGCameraEncodeText(@"TGDbnfsb.Sfhvmbs", -1) size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
 }
 
 + (UIFont *)boldFontOfSize:(CGFloat)size
 {
-    return [UIFont fontWithName:TGCameraEncodeText(@"TGDbnfsb.Tfnjcpme", -1) size:size];
+    return [UIFont systemFontOfSize:size weight:UIFontWeightSemibold];
 }
 
 @end
