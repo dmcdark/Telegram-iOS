@@ -1207,7 +1207,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
                 }
             }
             
-            let wakeupManager = SharedWakeupManager(beginBackgroundTask: { name, expiration in
+            let wakeupManager = SharedWakeupManager(accountManager: accountManager, beginBackgroundTask: { name, expiration in
                 let id = application.beginBackgroundTask(withName: name, expirationHandler: expiration)
                 Logger.shared.log("App \(self.episodeId)", "Begin background task \(name): \(id)")
                 print("App \(self.episodeId)", "Begin background task \(name): \(id)")

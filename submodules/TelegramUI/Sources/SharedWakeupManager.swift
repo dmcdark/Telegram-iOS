@@ -62,6 +62,7 @@ private struct PendingStoryUploadKey: Hashable {
 }
 
 public final class SharedWakeupManager {
+    private let accountManager: AccountManager<TelegramAccountManagerTypes>
     private let beginBackgroundTask: (String, @escaping () -> Void) -> UIBackgroundTaskIdentifier?
     private let endBackgroundTask: (UIBackgroundTaskIdentifier) -> Void
     private let backgroundTimeRemaining: () -> Double
@@ -111,9 +112,10 @@ public final class SharedWakeupManager {
     private var backgroundStoryProcessingTaskCancellationRequestedByApp: Bool = false
     private var pendingBackgroundStoryProcessingTaskTimer: SwiftSignalKit.Timer?
 
-    public init(beginBackgroundTask: @escaping (String, @escaping () -> Void) -> UIBackgroundTaskIdentifier?, endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void, backgroundTimeRemaining: @escaping () -> Double, acquireIdleExtension: @escaping () -> Disposable?, activeAccounts: Signal<(primary: Account?, accounts: [(AccountRecordId, Account)]), NoError>, liveLocationPolling: Signal<AccountRecordId?, NoError>, watchTasks: Signal<AccountRecordId?, NoError>, inForeground: Signal<Bool, NoError>, hasActiveAudioSession: Signal<Bool, NoError>, notificationManager: SharedNotificationManager?, mediaManager: MediaManager, callManager: PresentationCallManager?, accountUserInterfaceInUse: @escaping (AccountRecordId) -> Signal<Bool, NoError>, presentationData: @escaping () -> PresentationData?) {
+    public init(accountManager: AccountManager<TelegramAccountManagerTypes>, beginBackgroundTask: @escaping (String, @escaping () -> Void) -> UIBackgroundTaskIdentifier?, endBackgroundTask: @escaping (UIBackgroundTaskIdentifier) -> Void, backgroundTimeRemaining: @escaping () -> Double, acquireIdleExtension: @escaping () -> Disposable?, activeAccounts: Signal<(primary: Account?, accounts: [(AccountRecordId, Account)]), NoError>, liveLocationPolling: Signal<AccountRecordId?, NoError>, watchTasks: Signal<AccountRecordId?, NoError>, inForeground: Signal<Bool, NoError>, hasActiveAudioSession: Signal<Bool, NoError>, notificationManager: SharedNotificationManager?, mediaManager: MediaManager, callManager: PresentationCallManager?, accountUserInterfaceInUse: @escaping (AccountRecordId) -> Signal<Bool, NoError>, presentationData: @escaping () -> PresentationData?) {
         assert(Queue.mainQueue().isCurrent())
         
+        self.accountManager = accountManager
         self.beginBackgroundTask = beginBackgroundTask
         self.endBackgroundTask = endBackgroundTask
         self.backgroundTimeRemaining = backgroundTimeRemaining
@@ -1137,6 +1139,7 @@ public final class SharedWakeupManager {
         
         if self.inForeground || self.hasActiveAudioSession || self.isInBackgroundExtension || self.backgroundProcessingTaskId != nil || self.backgroundStoryProcessingTaskId != nil || hasBackgroundLocationTask || (hasTasks && self.currentExternalCompletion != nil) || self.activeExplicitExtensionTimer != nil || self.silenceAudioRenderer != nil {
             Logger.shared.log("Wakeup", "enableBeginTransactions: true (active)")
+            self.accountManager.setCanBeginTransactions(true)
             
             for (account, primary, tasks) in self.accountsAndTasks {
                 account.postbox.setCanBeginTransactions(true)
@@ -1163,6 +1166,7 @@ public final class SharedWakeupManager {
             
             final class CompletionObservationState {
                 var isCompleted: Bool = false
+                var accountManagerCompleted: Bool = false
                 var remainingAccounts: [AccountRecordId]
                 
                 init(remainingAccounts: [AccountRecordId]) {
@@ -1176,8 +1180,10 @@ public final class SharedWakeupManager {
                     completionState.with { state in
                         if let id {
                             state.remainingAccounts.removeAll(where: { $0 == id })
+                        } else {
+                            state.accountManagerCompleted = true
                         }
-                        if state.remainingAccounts.isEmpty && !state.isCompleted {
+                        if state.accountManagerCompleted && state.remainingAccounts.isEmpty && !state.isCompleted {
                             state.isCompleted = true
                             shouldComplete = true
                         }
@@ -1198,7 +1204,9 @@ public final class SharedWakeupManager {
                 account.shouldKeepBackgroundDownloadConnections.set(.single(false))
             }
             
-            checkCompletionState(nil)
+            self.accountManager.setCanBeginTransactions(enableBeginTransactions, afterTransactionIfRunning: {
+                checkCompletionState(nil)
+            })
         }
     }
 }

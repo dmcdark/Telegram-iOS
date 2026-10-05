@@ -62,6 +62,8 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
     private var sharedDataViews = Bag<(MutableAccountSharedDataView<Types>, ValuePipe<AccountSharedDataView<Types>>)>()
     private var noticeEntryViews = Bag<(MutableNoticeEntryView<Types>, ValuePipe<NoticeEntryView<Types>>)>()
     private var accessChallengeDataViews = Bag<(MutableAccessChallengeDataView, ValuePipe<AccessChallengeDataView>)>()
+    private var canBeginTransactions = true
+    private var queuedTransactions: [() -> Void] = []
     
     static func getCurrentRecords(basePath: String) -> (records: [AccountRecord<Types.Attribute>], currentId: AccountRecordId?) {
         let atomicStatePath = "\(basePath)/atomic-state"
@@ -259,13 +261,38 @@ final class AccountManagerImpl<Types: AccountManagerTypes> {
         return result
     }
     
+    fileprivate func setCanBeginTransactions(_ value: Bool, afterTransactionIfRunning: @escaping () -> Void) {
+        assert(self.queue.isCurrent())
+        self.canBeginTransactions = value
+        if value {
+            let transactions = self.queuedTransactions
+            self.queuedTransactions.removeAll()
+            for transaction in transactions {
+                transaction()
+            }
+        }
+        // This queue also executes and commits transactions, so reaching here
+        // with transactions disabled means any running transaction has finished.
+        afterTransactionIfRunning()
+    }
+
     fileprivate func transaction<T>(ignoreDisabled: Bool, _ f: @escaping (AccountManagerModifier<Types>) -> T) -> Signal<T, NoError> {
         return Signal { subscriber in
             self.queue.justDispatch {
-                let result = self.transactionSync(ignoreDisabled: ignoreDisabled, f)
-                
-                subscriber.putNext(result)
-                subscriber.putCompletion()
+                let transaction = { [weak self] in
+                    guard let self else {
+                        subscriber.putCompletion()
+                        return
+                    }
+                    let result = self.transactionSync(ignoreDisabled: ignoreDisabled, f)
+                    subscriber.putNext(result)
+                    subscriber.putCompletion()
+                }
+                if ignoreDisabled || self.canBeginTransactions {
+                    transaction()
+                } else {
+                    self.queuedTransactions.append(transaction)
+                }
             }
             return EmptyDisposable
         }
@@ -572,6 +599,12 @@ public final class AccountManager<Types: AccountManagerTypes> {
                 }))
             }
             return disposable
+        }
+    }
+
+    public func setCanBeginTransactions(_ value: Bool, afterTransactionIfRunning: @escaping () -> Void = {}) {
+        self.impl.with { impl in
+            impl.setCanBeginTransactions(value, afterTransactionIfRunning: afterTransactionIfRunning)
         }
     }
     
