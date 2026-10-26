@@ -4112,6 +4112,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
             interaction: ChatEntityKeyboardInputNode.Interaction(chatControllerInteraction: self.controllerInteraction, panelInteraction: interfaceInteraction),
             chatPeerId: peerId,
             stateContext: self.inputMediaNodeStateContext,
+            forceHasPremium: true,
             displayBottomPanel: self.chatPresentationInterfaceState.focusedPollAddOptionMessageId == nil
         )
         self.openStickersBeginWithEmoji = false
@@ -4131,6 +4132,7 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                     hasEdit: true,
                     hideBackground: true,
                     maskEdge: .clip,
+                    forceHasPremium: true,
                     sendGif: { [weak self] fileReference, sourceView, sourceRect, silentPosting, schedule in
                         if let self {
                             return self.controllerInteraction.sendGif(fileReference, sourceView, sourceRect, silentPosting, schedule)
@@ -5150,7 +5152,6 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                 sendWithoutFormatting: sendWithoutFormatting) == .rich
             
             var inlineStickers: [MediaId: Media] = [:]
-            var firstLockedPremiumEmoji: TelegramMediaFile?
             var bubbleUpEmojiOrStickersetsById: [Int64: ItemCollectionId] = [:]
             effectiveInputText.enumerateAttribute(ChatTextInputAttributes.customEmoji, in: NSRange(location: 0, length: effectiveInputText.length), using: { value, _, _ in
                 if let value = value as? ChatTextInputTextCustomEmojiAttribute {
@@ -5160,43 +5161,9 @@ class ChatControllerNode: ASDisplayNode, ASScrollViewDelegate {
                             bubbleUpEmojiOrStickersetsById[file.fileId.id] = packId
                         }
                         
-                        var isPeerSpecific = false
-                        for attribute in file.attributes {
-                            if case let .CustomEmoji(_, _, _, packReference) = attribute, case let .id(id, _) = packReference {
-                                isPeerSpecific = id == peerSpecificEmojiPack?.id.id
-                            }
-                        }
-                        
-                        if file.isPremiumEmoji && !self.chatPresentationInterfaceState.isPremium && self.chatPresentationInterfaceState.chatLocation.peerId != self.context.account.peerId && !isPeerSpecific {
-                            if firstLockedPremiumEmoji == nil {
-                                firstLockedPremiumEmoji = file
-                            }
-                        }
                     }
                 }
             })
-            
-            if let firstLockedPremiumEmoji = firstLockedPremiumEmoji {
-                let presentationData = self.context.sharedContext.currentPresentationData.with { $0 }
-                self.controllerInteraction.displayUndo(.sticker(context: context, file: firstLockedPremiumEmoji, loop: true, title: nil, text: presentationData.strings.EmojiInput_PremiumEmojiToast_Text, undoText: presentationData.strings.EmojiInput_PremiumEmojiToast_Action, customAction: { [weak self] in
-                    guard let strongSelf = self else {
-                        return
-                    }
-                    strongSelf.dismissTextInput()
-                    
-                    var replaceImpl: ((ViewController) -> Void)?
-                    let controller = PremiumDemoScreen(context: strongSelf.context, subject: .animatedEmoji, action: {
-                        let controller = PremiumIntroScreen(context: strongSelf.context, source: .animatedEmoji)
-                        replaceImpl?(controller)
-                    })
-                    replaceImpl = { [weak controller] c in
-                        controller?.replace(with: c)
-                    }
-                    strongSelf.controller?.present(controller, in: .window(.root), with: nil)
-                }))
-                
-                return
-            }
             
             if let replyMessageSubject = self.chatPresentationInterfaceState.interfaceState.replyMessageSubject, let quote = replyMessageSubject.quote {
                 if let replyMessage = self.chatPresentationInterfaceState.replyMessage {

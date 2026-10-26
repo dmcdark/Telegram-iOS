@@ -555,6 +555,7 @@ private enum DebugLogAction {
         case .sendAllLogs:
             let logTypes: [String] = [
                 "app-logs",
+                "share-logs",
                 "broadcast-logs",
                 "siri-logs",
                 "widget-logs",

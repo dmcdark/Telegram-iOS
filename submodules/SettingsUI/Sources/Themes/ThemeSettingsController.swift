@@ -24,6 +24,10 @@ import WallpaperGridScreen
 import PeerNameColorItem
 import DeviceModel
 
+// Local development override for validating premium App Icon UI without changing
+// the account's server-side Premium status. Keep this false in distributable builds.
+private let locallyUnlockPremiumAppIcons = true
+
 private final class ThemeSettingsControllerArguments {
     let context: AccountContext
     let selectTheme: (PresentationThemeReference) -> Void
@@ -531,7 +535,7 @@ public func themeSettingsController(context: AccountContext, focusOnItemTag: The
     }
     
     let premiumConfiguration = PremiumConfiguration.with(appConfiguration: context.currentAppConfiguration.with { $0 })
-    if premiumConfiguration.isPremiumDisabled || context.account.testingEnvironment {
+    if !locallyUnlockPremiumAppIcons && (premiumConfiguration.isPremiumDisabled || context.account.testingEnvironment) {
         appIcons = appIcons.filter { !$0.isPremium } 
     }
     
@@ -622,7 +626,7 @@ public func themeSettingsController(context: AccountContext, focusOnItemTag: The
     }, selectAppIcon: { icon in
         let _ = (context.engine.data.get(TelegramEngine.EngineData.Item.Peer.Peer(id: context.account.peerId))
         |> deliverOnMainQueue).start(next: { peer in
-            let isPremium = peer?.isPremium ?? false
+            let isPremium = (peer?.isPremium ?? false) || locallyUnlockPremiumAppIcons
             if icon.isPremium && !isPremium {
                 var replaceImpl: ((ViewController) -> Void)?
                 let controller = PremiumDemoScreen(context: context, subject: .appIcons, source: .other, action: {
@@ -1113,7 +1117,7 @@ public func themeSettingsController(context: AccountContext, focusOnItemTag: The
         let chatSettings = sharedData.entries[ApplicationSpecificSharedDataKeys.chatSettings]?.get(ChatSettings.self) ?? ChatSettings.defaultSettings
         let mediaSettings = sharedData.entries[ApplicationSpecificSharedDataKeys.mediaDisplaySettings]?.get(MediaDisplaySettings.self) ?? MediaDisplaySettings.defaultSettings
         
-        let isPremium = peerView.peers[peerView.peerId]?.isPremium ?? false
+        let isPremium = (peerView.peers[peerView.peerId]?.isPremium ?? false) || locallyUnlockPremiumAppIcons
         
         let themeReference: PresentationThemeReference
         if presentationData.autoNightModeTriggered {

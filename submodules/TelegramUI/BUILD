@@ -3,6 +3,7 @@ load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
 load(
     "@build_configuration//:variables.bzl",
     "telegram_bundle_id",
+    "telegram_aps_environment",
 )
 
 
@@ -62,7 +63,7 @@ swift_library(
     ]),
     copts = [
         "-warnings-as-errors",
-    ],
+    ] + (["-DTELEGRAM_APS_ENVIRONMENT_DEVELOPMENT"] if telegram_aps_environment == "development" else []),
     deps = [
         "//submodules/CrashReporting:CrashReporting",
         "//third-party/recaptcha:RecaptchaEnterprise",

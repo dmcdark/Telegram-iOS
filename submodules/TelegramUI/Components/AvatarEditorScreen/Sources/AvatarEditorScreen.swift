@@ -31,6 +31,10 @@ import PremiumAlertController
 import GlassBarButtonComponent
 import BundleIconComponent
 
+// Development-only: allow the local avatar-preview pipeline to exercise
+// animated emoji and sticker selections without a Premium account.
+private let locallyUnlockDynamicAvatarEditor = true
+
 public struct AvatarKeyboardInputData: Equatable {
     var emoji: EmojiPagerContentComponent
     var stickers: EmojiPagerContentComponent?
@@ -1339,7 +1343,7 @@ final class AvatarEditorScreenComponent: Component {
             }
             
             var isLocked = false
-            if component.peerType != .suggest, !component.context.isPremium {
+            if component.peerType != .suggest, !component.context.isPremium && !locallyUnlockDynamicAvatarEditor {
                 if state.selectedBackground.isPremium {
                     isLocked = true
                 }
@@ -1444,7 +1448,7 @@ final class AvatarEditorScreenComponent: Component {
             guard let component = self.component, let state = self.state else {
                 return false
             }
-            if component.peerType != .suggest, !component.context.isPremium {
+            if component.peerType != .suggest, !component.context.isPremium && !locallyUnlockDynamicAvatarEditor {
                 if state.selectedBackground.isPremium {
                     return true
                 }
