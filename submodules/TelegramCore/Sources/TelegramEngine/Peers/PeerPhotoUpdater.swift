@@ -23,9 +23,10 @@ public enum UploadPeerPhotoMarkup {
 }
 
 func _internal_updateAccountPhoto(account: Account, resource: MediaResource?, videoResource: MediaResource?, videoStartTimestamp: Double?, markup: UploadPeerPhotoMarkup?, fallback: Bool, mapResourceToAvatarSizes: @escaping (MediaResource, [TelegramMediaImageRepresentation]) -> Signal<[Int: Data], NoError>) -> Signal<UpdatePeerPhotoStatus, UploadPeerPhotoError> {
-    if locallyPreviewDynamicAvatars && !fallback && (videoResource != nil || markup != nil) {
-        let photo = resource.map { Signal<UploadedPeerPhotoData, NoError>.single(UploadedPeerPhotoData.withResource($0)) }
-        let video = videoResource.map { Signal<UploadedPeerPhotoData?, NoError>.single(UploadedPeerPhotoData.withResource($0)) }
+    let localVideoResource = videoResource.flatMap { $0 as? TelegramMediaResource }
+    if locallyPreviewDynamicAvatars && !fallback && (videoResource != nil || markup != nil), let localPhotoResource = resource as? TelegramMediaResource, videoResource == nil || localVideoResource != nil {
+        let photo = Signal<UploadedPeerPhotoData, NoError>.single(UploadedPeerPhotoData.withResource(localPhotoResource))
+        let video = localVideoResource.map { Signal<UploadedPeerPhotoData?, NoError>.single(UploadedPeerPhotoData.withResource($0)) }
         return _internal_updatePeerPhoto(postbox: account.postbox, network: account.network, stateManager: account.stateManager, accountPeerId: account.peerId, peerId: account.peerId, photo: photo, video: video, videoStartTimestamp: videoStartTimestamp, markup: markup, fallback: fallback, mapResourceToAvatarSizes: mapResourceToAvatarSizes)
     }
 
@@ -188,12 +189,14 @@ func _internal_updatePeerPhotoInternal(postbox: Postbox, network: Network, state
                                     photoFile = file
                                 }
 
-                                if locallyPreviewDynamicAvatars, peer.id == accountPeerId, !fallback, customPeerPhotoMode == nil, videoResult != nil || markup != nil {
+                                let localPhotoResource = photoResult.resource as? TelegramMediaResource
+                                let localVideoResource = videoResult?.resource as? TelegramMediaResource
+                                if locallyPreviewDynamicAvatars, peer.id == accountPeerId, !fallback, customPeerPhotoMode == nil, videoResult != nil || markup != nil, let localPhotoResource, videoResult == nil || localVideoResource != nil {
                                     let dimensions = PixelDimensions(width: 640, height: 640)
-                                    let representations = [TelegramMediaImageRepresentation(dimensions: dimensions, resource: photoResult.resource as! TelegramMediaResource, progressiveSizes: [], immediateThumbnailData: nil, hasVideo: videoResult != nil || markup != nil, isPersonal: false)]
+                                    let representations = [TelegramMediaImageRepresentation(dimensions: dimensions, resource: localPhotoResource, progressiveSizes: [], immediateThumbnailData: nil, hasVideo: videoResult != nil || markup != nil, isPersonal: false)]
                                     let videoRepresentations: [TelegramMediaImage.VideoRepresentation]
-                                    if let videoResult {
-                                        videoRepresentations = [TelegramMediaImage.VideoRepresentation(dimensions: dimensions, resource: videoResult.resource as! TelegramMediaResource, startTimestamp: videoStartTimestamp)]
+                                    if let localVideoResource {
+                                        videoRepresentations = [TelegramMediaImage.VideoRepresentation(dimensions: dimensions, resource: localVideoResource, startTimestamp: videoStartTimestamp)]
                                     } else {
                                         videoRepresentations = []
                                     }

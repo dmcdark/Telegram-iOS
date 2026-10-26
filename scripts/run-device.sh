@@ -16,8 +16,6 @@ signing_root="$project_root/build/device-signing"
 configuration_template="$project_root/build-system/appstore-configuration.json"
 configuration_file="$signing_root/appstore-configuration.json"
 artifacts_dir="$project_root/build/device"
-bazel_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["bazel"].split(":", 1)[0])' "$project_root/versions.json")"
-bazel_path="$project_root/build-input/bazel-$bazel_version-darwin-arm64"
 
 if [[ -f "$env_file" ]]; then
   set -a
@@ -76,10 +74,6 @@ if [[ -n "$share_profile_source" && "$disable_extensions" != "true" ]]; then
     exit 1
   fi
 fi
-if [[ ! -x "$bazel_path" ]]; then
-  print "Missing executable Bazel binary: $bazel_path"
-  exit 1
-fi
 if ! xcrun devicectl list devices | grep -Fq "$device_udid"; then
   print "The requested iPhone is not connected or paired: $device_udid"
   exit 1
@@ -120,7 +114,6 @@ else
   bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
 fi
 python3 build-system/Make/Make.py \
-  --bazel="$bazel_path" \
   --overrideXcodeVersion \
   --cacheDir="$bazel_cache_dir" \
   --bazelArguments="${(j: :)bazel_arguments}" \

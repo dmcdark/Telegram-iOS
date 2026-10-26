@@ -118,8 +118,6 @@ internal_group="${TESTFLIGHT_INTERNAL_GROUP:-internal}"
 wait_seconds="${WAIT_SECONDS:-15}"
 auth_retry_count="${TESTFLIGHT_AUTH_RETRIES:-3}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
-bazel_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["bazel"].split(":", 1)[0])' "$project_root/versions.json")"
-bazel_path="$project_root/build-input/bazel-$bazel_version-darwin-arm64"
 
 # Keep the persistent Bazel disk cache so release rebuilds can reuse artifacts.
 # The script reports its size after each build; clean it manually when needed.
@@ -237,11 +235,6 @@ if ! security find-identity -v -p codesigning 2>/dev/null | grep -Eq '(Apple|iOS
   exit 1
 fi
 
-if [[ ! -x "$bazel_path" ]]; then
-  print "Missing executable Bazel binary: $bazel_path"
-  exit 1
-fi
-
 cd "$project_root"
 
 # Make copies only in an ignored build directory. Make.py scans every
@@ -279,7 +272,6 @@ else
   bazel_arguments+=("--//Telegram:shareExtensionOnly=True")
 fi
 make_arguments=(
-  --bazel="$bazel_path"
   --overrideXcodeVersion
   --bazelArguments="${(j: :)bazel_arguments}"
   build
