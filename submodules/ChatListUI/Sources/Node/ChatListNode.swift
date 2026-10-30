@@ -1935,6 +1935,12 @@ public final class ChatListNode: ListViewImpl {
         let viewProcessingQueue = self.viewProcessingQueue
         
         let shouldLoadCanMessagePeer: Bool
+        let prioritizeUnread: Bool
+        if case .chatList = mode {
+            prioritizeUnread = true
+        } else {
+            prioritizeUnread = false
+        }
         if case .peers = mode {
             shouldLoadCanMessagePeer = true
         } else {
@@ -1944,7 +1950,7 @@ public final class ChatListNode: ListViewImpl {
         let chatListViewUpdate = self.chatListLocation.get()
         |> distinctUntilChanged
         |> mapToSignal { listLocation -> Signal<(ChatListNodeViewUpdate, ChatListFilter?), NoError> in
-            return chatListViewForLocation(chatListLocation: location, location: listLocation, account: context.account, shouldLoadCanMessagePeer: shouldLoadCanMessagePeer)
+            return chatListViewForLocation(chatListLocation: location, location: listLocation, account: context.account, shouldLoadCanMessagePeer: shouldLoadCanMessagePeer, prioritizeUnread: prioritizeUnread)
             |> map { update in
                 return (update, listLocation.filter)
             }
@@ -3911,7 +3917,13 @@ public final class ChatListNode: ListViewImpl {
                         shouldLoadCanMessagePeer = false
                     }
                     
-                    let _ = (chatListViewForLocation(chatListLocation: .chatList(groupId: groupId), location: .initial(count: 10, filter: filter), account: self.context.account, shouldLoadCanMessagePeer: shouldLoadCanMessagePeer)
+                    let prioritizeUnread: Bool
+                    if case .chatList = self.mode {
+                        prioritizeUnread = true
+                    } else {
+                        prioritizeUnread = false
+                    }
+                    let _ = (chatListViewForLocation(chatListLocation: .chatList(groupId: groupId), location: .initial(count: 10, filter: filter), account: self.context.account, shouldLoadCanMessagePeer: shouldLoadCanMessagePeer, prioritizeUnread: prioritizeUnread)
                     |> take(1)
                     |> deliverOnMainQueue).startStandalone(next: { update in
                         let items = update.list.items

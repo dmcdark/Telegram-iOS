@@ -444,6 +444,7 @@ private enum ChatListEntryType {
 }
 
 public struct ChatListFilterPredicate {
+    public var prioritizeUnread: Bool = false
     public var includePeerIds: Set<PeerId>
     public var excludePeerIds: Set<PeerId>
     public var pinnedPeerIds: [PeerId]
@@ -607,7 +608,6 @@ final class MutableChatListView {
     init(postbox: PostboxImpl, currentTransaction: Transaction, groupId: PeerGroupId, filterPredicate: ChatListFilterPredicate?, aroundIndex: ChatListIndex, count: Int, summaryComponents: ChatListEntrySummaryComponents, extractCachedData: ((CachedPeerData) -> AnyHashable?)?, accountPeerId: PeerId?) {
         self.groupId = groupId
         self.filterPredicate = filterPredicate
-        self.aroundIndex = aroundIndex
         self.summaryComponents = summaryComponents
         self.extractCachedData = extractCachedData
         self.accountPeerId = accountPeerId
@@ -619,7 +619,24 @@ final class MutableChatListView {
         var spaces: [ChatListViewSpace] = [
             .group(groupId: self.groupId, pinned: .notPinned, predicate: filterPredicate)
         ]
-        if let filterPredicate = self.filterPredicate {
+        if self.filterPredicate?.prioritizeUnread == true {
+            // Separate spaces let pagination visit every unread chat before read chats,
+            // without changing persisted timestamps or pinning indices.
+            spaces = [.group(groupId: self.groupId, pinned: .includePinned, predicate: nil)]
+            for pinned in [ChatListViewSpacePinned.unread, .mutedUnread, .read] {
+                let predicate = ChatListFilterPredicate(includePeerIds: [], excludePeerIds: [], pinnedPeerIds: [], messageTagSummary: nil, includeAdditionalPeerGroupIds: [], include: { _, isMuted, isUnread, _, _ in
+                    switch pinned {
+                    case .unread:
+                        return isUnread && !isMuted
+                    case .mutedUnread:
+                        return isUnread && isMuted
+                    default:
+                        return !isUnread
+                    }
+                })
+                spaces.append(.group(groupId: self.groupId, pinned: pinned, predicate: predicate))
+            }
+        } else if let filterPredicate = self.filterPredicate {
             spaces.append(.group(groupId: self.groupId, pinned: .includePinnedAsUnpinned, predicate: filterPredicate))
             for additionalGroupId in filterPredicate.includeAdditionalPeerGroupIds {
                 spaces.append(.group(groupId: additionalGroupId, pinned: .notPinned, predicate: filterPredicate))
@@ -632,12 +649,27 @@ final class MutableChatListView {
             spaces.append(.group(groupId: self.groupId, pinned: .includePinned, predicate: filterPredicate))
         }
         self.spaces = spaces
-        self.state = ChatListViewState(postbox: postbox, currentTransaction: currentTransaction, spaces: self.spaces, anchorIndex: aroundIndex, summaryComponents: self.summaryComponents, extractCachedData: self.extractCachedData, halfLimit: count)
+        var resolvedAroundIndex = aroundIndex
+        if self.filterPredicate?.prioritizeUnread == true, aroundIndex.pinningIndex == nil {
+            // Jump targets can come from the chronological database index rather
+            // than a displayed row (for example, the next-unread shortcut).
+            for space in spaces {
+                if case let .group(groupId, pinned, predicate?) = space, let priority = pinned.unreadPriority {
+                    let matches = mappedChatListFilterPredicate(postbox: postbox, currentTransaction: currentTransaction, groupId: groupId, predicate: predicate)
+                    if matches(.message(aroundIndex, nil)) {
+                        resolvedAroundIndex = aroundIndex.withUnreadPriority(priority)
+                        break
+                    }
+                }
+            }
+        }
+        self.aroundIndex = resolvedAroundIndex
+        self.state = ChatListViewState(postbox: postbox, currentTransaction: currentTransaction, spaces: self.spaces, anchorIndex: resolvedAroundIndex, summaryComponents: self.summaryComponents, extractCachedData: self.extractCachedData, halfLimit: count)
         self.sampledState = self.state.sample(postbox: postbox, currentTransaction: currentTransaction)
         
         self.count = count
         
-        if case .root = groupId, self.filterPredicate == nil {
+        if case .root = groupId, self.filterPredicate == nil || self.filterPredicate?.prioritizeUnread == true {
             let items = postbox.additionalChatListItemsTable.get()
             self.additionalItems = items
             self.additionalItemIds = Set(items.map { $0.peerId })
@@ -662,7 +694,7 @@ final class MutableChatListView {
     
     private func reloadGroups(postbox: PostboxImpl) {
         self.groupEntries.removeAll()
-        if case .root = self.groupId, self.filterPredicate == nil {
+        if case .root = self.groupId, self.filterPredicate == nil || self.filterPredicate?.prioritizeUnread == true {
             for groupId in postbox.chatListTable.existingGroups() {
                 var foundIndices: [(ChatListIndex, MessageIndex)] = []
                 var unpinnedCount = 0
@@ -814,7 +846,7 @@ final class MutableChatListView {
             }
         }
         
-        if case .root = self.groupId, self.filterPredicate == nil {
+        if case .root = self.groupId, self.filterPredicate == nil || self.filterPredicate?.prioritizeUnread == true {
             var invalidatedGroups = false
             for (groupId, groupOperations) in operations {
                 if case .group = groupId, !groupOperations.isEmpty {
@@ -867,7 +899,7 @@ final class MutableChatListView {
         }
         
         var updateAdditionalItems = false
-        if case .root = self.groupId, self.filterPredicate == nil, let items = transaction.replacedAdditionalChatListItems {
+        if case .root = self.groupId, self.filterPredicate == nil || self.filterPredicate?.prioritizeUnread == true, let items = transaction.replacedAdditionalChatListItems {
             self.additionalItems = items
             self.additionalItemIds = Set(items.map { $0.peerId })
             updateAdditionalItems = true

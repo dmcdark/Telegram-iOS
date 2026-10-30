@@ -3,10 +3,26 @@ enum ChatListViewSpacePinned {
     case notPinned
     case includePinned
     case includePinnedAsUnpinned
+    case unread
+    case mutedUnread
+    case read
+
+    var unreadPriority: Int8? {
+        switch self {
+        case .unread:
+            return 2
+        case .mutedUnread:
+            return 1
+        case .read:
+            return 0
+        default:
+            return nil
+        }
+    }
     
     var include: Bool {
         switch self {
-        case .notPinned:
+        case .notPinned, .unread, .mutedUnread, .read:
             return false
         case .includePinned, .includePinnedAsUnpinned:
             return true
@@ -22,6 +38,8 @@ enum ChatListViewSpacePinned {
             return ChatListIndex(pinningIndex: nil, messageIndex: index.messageIndex)
         case .notPinned, .includePinned:
             return index
+        case .unread, .mutedUnread, .read:
+            return index.withUnreadPriority(self.unreadPriority!)
         }
     }
 }
@@ -65,7 +83,7 @@ enum ChatListViewSpace: Hashable {
     }
 }
 
-private func mappedChatListFilterPredicate(postbox: PostboxImpl, currentTransaction: Transaction, groupId: PeerGroupId, predicate: ChatListFilterPredicate) -> (ChatListIntermediateEntry) -> Bool {
+func mappedChatListFilterPredicate(postbox: PostboxImpl, currentTransaction: Transaction, groupId: PeerGroupId, predicate: ChatListFilterPredicate) -> (ChatListIntermediateEntry) -> Bool {
     let globalNotificationSettings = postbox.getGlobalNotificationSettings(transaction: currentTransaction)
     return { entry in
         switch entry {
@@ -179,7 +197,10 @@ private final class ChatListViewSpaceState {
         case let .group(groupId, pinned, filterPredicate):
             let lowerBound: MutableChatListEntryIndex
             let upperBound: MutableChatListEntryIndex
-            if pinned.include {
+            if let priority = pinned.unreadPriority {
+                lowerBound = MutableChatListEntryIndex(index: ChatListIndex.absoluteLowerBound.withUnreadPriority(priority), isMessage: true)
+                upperBound = MutableChatListEntryIndex(index: ChatListIndex(pinningIndex: nil, messageIndex: MessageIndex.absoluteUpperBound()).withUnreadPriority(priority), isMessage: true)
+            } else if pinned.include {
                 upperBound = .absoluteUpperBound
                 lowerBound = MutableChatListEntryIndex(index: ChatListIndex.pinnedLowerBound, isMessage: true)
             } else {
@@ -202,7 +223,15 @@ private final class ChatListViewSpaceState {
             
             let predicate: ((ChatListIntermediateEntry) -> Bool)?
             if let filterPredicate = filterPredicate {
-                predicate = mappedChatListFilterPredicate(postbox: postbox, currentTransaction: currentTransaction, groupId: groupId, predicate: filterPredicate)
+                let matches = mappedChatListFilterPredicate(postbox: postbox, currentTransaction: currentTransaction, groupId: groupId, predicate: filterPredicate)
+                predicate = { entry in
+                    // Keep holes in the chronological read space, so they retain their
+                    // real index for history loading and never appear in multiple spaces.
+                    if case .hole = entry, let priority = pinned.unreadPriority, priority != 0 {
+                        return false
+                    }
+                    return matches(entry)
+                }
             } else if postbox.hasHiddenChatIds {
                 predicate = { entry in
                     if postbox.isChatHidden(peerId: entry.index.messageIndex.id.peerId) {
@@ -262,7 +291,7 @@ private final class ChatListViewSpaceState {
                     } else {
                         nextLowerIndex = resolvedAnchorIndex.successor
                     }
-                    let loadedLowerMessages = postbox.chatListTable.entries(groupId: groupId, from: (nextLowerIndex.index, nextLowerIndex.isMessage), to: (lowerBound.index, lowerBound.isMessage), peerChatInterfaceStateTable: postbox.peerChatInterfaceStateTable, count: self.halfLimit - lowerOrAtAnchorMessages.count, predicate: predicate).map(mapEntry)
+                    let loadedLowerMessages = postbox.chatListTable.entries(groupId: groupId, from: (nextLowerIndex.index.withUnreadPriority(0), nextLowerIndex.isMessage), to: (lowerBound.index.withUnreadPriority(0), lowerBound.isMessage), peerChatInterfaceStateTable: postbox.peerChatInterfaceStateTable, count: self.halfLimit - lowerOrAtAnchorMessages.count, predicate: predicate).map(mapEntry)
                     lowerOrAtAnchorMessages.append(contentsOf: loadedLowerMessages)
                 }
                 if higherThanAnchorMessages.count < self.halfLimit {
@@ -272,7 +301,7 @@ private final class ChatListViewSpaceState {
                     } else {
                         nextHigherIndex = resolvedAnchorIndex
                     }
-                    let loadedHigherMessages = postbox.chatListTable.entries(groupId: groupId, from: (nextHigherIndex.index, nextHigherIndex.isMessage), to: (upperBound.index, upperBound.isMessage), peerChatInterfaceStateTable: postbox.peerChatInterfaceStateTable, count: self.halfLimit - higherThanAnchorMessages.count, predicate: predicate).map(mapEntry)
+                    let loadedHigherMessages = postbox.chatListTable.entries(groupId: groupId, from: (nextHigherIndex.index.withUnreadPriority(0), nextHigherIndex.isMessage), to: (upperBound.index.withUnreadPriority(0), upperBound.isMessage), peerChatInterfaceStateTable: postbox.peerChatInterfaceStateTable, count: self.halfLimit - higherThanAnchorMessages.count, predicate: predicate).map(mapEntry)
                     higherThanAnchorMessages.append(contentsOf: loadedHigherMessages)
                 }
             }
@@ -414,6 +443,19 @@ private final class ChatListViewSpaceState {
     }
     
     func replay(postbox: PostboxImpl, currentTransaction: Transaction, transaction: PostboxTransaction) -> Bool {
+        if case let .group(groupId, pinned, _) = self.space, pinned.unreadPriority != nil,
+           transaction.chatListOperations[groupId]?.isEmpty == false
+            || !transaction.alteredInitialPeerCombinedReadStates.isEmpty
+            || !transaction.currentUpdatedPeerNotificationSettings.isEmpty
+            || !transaction.currentUpdatedCachedPeerData.isEmpty
+            || !transaction.currentUpdatedPeers.isEmpty
+            || !transaction.updatedPeerThreadsSummaries.isEmpty {
+            // A read/mute change can move a chat between spaces even when its last
+            // message is outside the current page. Refill from the table in that case.
+            self.orderedEntries = OrderedChatListViewEntries(anchorIndex: self.anchorIndex.index, lowerOrAtAnchor: [], higherThanAnchor: [])
+            self.fillSpace(postbox: postbox, currentTransaction: currentTransaction)
+            return true
+        }
         var hasUpdates = false
         var hadRemovals = false
         var globalNotificationSettings: PostboxGlobalNotificationSettings?
@@ -1739,7 +1781,7 @@ struct ChatListViewState {
                         tagSummaryInfo: tagSummaryInfo,
                         forumTopicData: forumTopicData,
                         topForumTopics: topForumTopics,
-                        hasFailedMessages: false,
+                        hasFailedMessages: postbox.messageHistoryFailedTable.contains(peerId: index.messageIndex.id.peerId),
                         isContact: postbox.contactsTable.isContact(peerId: index.messageIndex.id.peerId),
                         autoremoveTimeout: autoremoveTimeout,
                         storyStats: storyStats,

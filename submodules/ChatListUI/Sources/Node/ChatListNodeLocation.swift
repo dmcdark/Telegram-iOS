@@ -195,7 +195,7 @@ public func chatListFilterPredicate(filter: ChatListFilterData, accountPeerId: E
     })
 }
 
-public func chatListViewForLocation(chatListLocation: ChatListControllerLocation, location: ChatListNodeLocation, account: Account, shouldLoadCanMessagePeer: Bool) -> Signal<ChatListNodeViewUpdate, NoError> {
+public func chatListViewForLocation(chatListLocation: ChatListControllerLocation, location: ChatListNodeLocation, account: Account, shouldLoadCanMessagePeer: Bool, prioritizeUnread: Bool = false) -> Signal<ChatListNodeViewUpdate, NoError> {
     let accountPeerId = account.peerId
     
     switch chatListLocation {
@@ -203,6 +203,10 @@ public func chatListViewForLocation(chatListLocation: ChatListControllerLocation
         let filterPredicate: ChatListFilterPredicate?
         if let filter = location.filter, case let .filter(_, _, _, data) = filter {
             filterPredicate = chatListFilterPredicate(filter: data, accountPeerId: account.peerId)
+        } else if prioritizeUnread, groupId == .root {
+            var predicate = ChatListFilterPredicate(includePeerIds: [], excludePeerIds: [], pinnedPeerIds: [], messageTagSummary: nil, includeAdditionalPeerGroupIds: [], include: { _, _, _, _, _ in true })
+            predicate.prioritizeUnread = true
+            filterPredicate = predicate
         } else {
             filterPredicate = nil
         }
@@ -242,11 +246,18 @@ public func chatListViewForLocation(chatListLocation: ChatListControllerLocation
                 return .never()
             }
             
-            let directionHint: ListViewScrollToItemDirectionHint = sourceIndex > .chatList(index) ? .Down : .Up
-            let chatScrollPosition: ChatListNodeViewScrollPosition = .index(index: index, position: scrollPosition, directionHint: directionHint, animated: animated)
             var first = true
             return account.viewTracker.aroundChatListView(groupId: groupId._asGroup(), filterPredicate: filterPredicate, index: index, count: 80, shouldLoadCanMessagePeer: shouldLoadCanMessagePeer)
             |> map { view, updateType -> ChatListNodeViewUpdate in
+                let list = EngineChatList(view, accountPeerId: accountPeerId)
+                var scrollIndex = index
+                if filterPredicate?.prioritizeUnread == true,
+                   let item = list.items.first(where: { $0.id == .chatList(index.messageIndex.id.peerId) }),
+                   case let .chatList(itemIndex) = item.index {
+                    scrollIndex = itemIndex
+                }
+                let directionHint: ListViewScrollToItemDirectionHint = sourceIndex > .chatList(scrollIndex) ? .Down : .Up
+                let chatScrollPosition: ChatListNodeViewScrollPosition = .index(index: scrollIndex, position: scrollPosition, directionHint: directionHint, animated: animated)
                 let genericType: ViewUpdateType
                 let scrollPosition: ChatListNodeViewScrollPosition? = first ? chatScrollPosition : nil
                 if first {
@@ -255,7 +266,7 @@ public func chatListViewForLocation(chatListLocation: ChatListControllerLocation
                 } else {
                     genericType = updateType
                 }
-                return ChatListNodeViewUpdate(list: EngineChatList(view, accountPeerId: accountPeerId), type: genericType, scrollPosition: scrollPosition)
+                return ChatListNodeViewUpdate(list: list, type: genericType, scrollPosition: scrollPosition)
             }
             |> mapToSignal { update -> Signal<ChatListNodeViewUpdate, NoError> in
                 return chatListNodeViewUpdateWithCommunitySummaries(account: account, update: update)

@@ -253,6 +253,8 @@ public struct MessageIndex: Codable, Comparable, Hashable {
 public struct ChatListIndex: Comparable, Hashable {
     public let pinningIndex: UInt16?
     public let messageIndex: MessageIndex
+    // View-local ordering only. Database keys continue to use the original index.
+    public private(set) var unreadPriority: Int8 = 0
     
     public init(pinningIndex: UInt16?, messageIndex: MessageIndex) {
         self.pinningIndex = pinningIndex
@@ -271,7 +273,16 @@ public struct ChatListIndex: Comparable, Hashable {
         } else if rhs.pinningIndex != nil {
             return true
         }
+        if lhs.unreadPriority != rhs.unreadPriority {
+            return lhs.unreadPriority < rhs.unreadPriority
+        }
         return lhs.messageIndex < rhs.messageIndex
+    }
+
+    func withUnreadPriority(_ priority: Int8) -> ChatListIndex {
+        var result = self
+        result.unreadPriority = priority
+        return result
     }
     
     public static var absoluteUpperBound: ChatListIndex {
@@ -287,11 +298,11 @@ public struct ChatListIndex: Comparable, Hashable {
     }
     
     public var predecessor: ChatListIndex {
-        return ChatListIndex(pinningIndex: self.pinningIndex, messageIndex: self.messageIndex.globalPredecessor())
+        return ChatListIndex(pinningIndex: self.pinningIndex, messageIndex: self.messageIndex.globalPredecessor()).withUnreadPriority(self.unreadPriority)
     }
     
     public var successor: ChatListIndex {
-        return ChatListIndex(pinningIndex: self.pinningIndex, messageIndex: self.messageIndex.globalSuccessor())
+        return ChatListIndex(pinningIndex: self.pinningIndex, messageIndex: self.messageIndex.globalSuccessor()).withUnreadPriority(self.unreadPriority)
     }
 }
 
