@@ -1,14 +1,13 @@
 {
     "bundle_id": "com.qinsbro.telegram",
-	"api_id": "0",
-	"api_hash": "",
+    "api_id": "0",
+    "api_hash": "",
     "team_id": "XYVMMAE3CD",
-	"app_center_id": "0",
-	"is_internal_build": "false",
-	"is_appstore_build": "true",
-	"appstore_id": "686449807",
-	"app_specific_url_scheme": "tg",
-	"premium_iap_product_id": "org.telegram.telegramPremium.monthly",
-	"enable_siri": false,
-	"enable_icloud": false
+    "is_internal_build": "false",
+    "is_appstore_build": "true",
+    "appstore_id": "686449807",
+    "app_specific_url_scheme": "tg",
+    "premium_iap_product_id": "org.telegram.telegramPremium.monthly",
+    "enable_siri": false,
+    "enable_icloud": false
 }
