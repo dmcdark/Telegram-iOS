@@ -155,12 +155,24 @@ final class CameraOutput: NSObject {
         }
     }
     
+    private func connectedPhotoFormat(device: CameraDevice) -> AVCaptureDevice.Format? {
+        // Adding an output succeeds even when creating its camera input failed (for example, without permission).
+        // Photo dimensions must be configured against the output's connected video source, not just a discovered device.
+        guard let videoDevice = device.videoDevice, let connection = self.photoOutput.connection(with: .video),
+              connection.inputPorts.contains(where: { port in
+                  return port.mediaType == .video && (port.input as? AVCaptureDeviceInput)?.device === videoDevice
+              }) else {
+            return nil
+        }
+        return videoDevice.activeFormat
+    }
+
     private func resetHighResolutionPhoto(device: CameraDevice) {
         self.hasHighResolutionPhoto = false
+        guard let format = self.connectedPhotoFormat(device: device) else {
+            return
+        }
         if #available(iOS 16.0, *) {
-            guard let format = device.videoDevice?.activeFormat else {
-                return
-            }
             let videoDimensions = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
             let supported = format.supportedMaxPhotoDimensions
             if let matching = supported.first(where: { $0.width == videoDimensions.width && $0.height == videoDimensions.height }) {
@@ -176,11 +188,11 @@ final class CameraOutput: NSObject {
     }
     
     private func configureHighResolutionPhoto(session: CameraSession, device: CameraDevice) {
-        guard session.session.outputs.contains(where: { $0 === self.photoOutput }) else {
+        guard session.session.outputs.contains(where: { $0 === self.photoOutput }), let format = self.connectedPhotoFormat(device: device) else {
             return
         }
         if #available(iOS 16.0, *) {
-            guard let photoDimensions = device.photoDimensions, let format = device.videoDevice?.activeFormat else {
+            guard let photoDimensions = device.photoDimensions else {
                 return
             }
             if format.supportedMaxPhotoDimensions.contains(where: { $0.width == photoDimensions.width && $0.height == photoDimensions.height }) {
