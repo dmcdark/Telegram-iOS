@@ -515,6 +515,7 @@ final class ContextControllerExtractedPresentationNode: ASDisplayNode, ContextCo
 
         self.scroller.delegate = self.wrappedScrollViewDelegate
         
+        self.dismissTapNode.layer.contents = transparentHitTestImage.cgImage
         self.dismissTapNode.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissTapGesture(_:))))
         
         self.dismissAccessibilityArea.activate = { [weak self] in

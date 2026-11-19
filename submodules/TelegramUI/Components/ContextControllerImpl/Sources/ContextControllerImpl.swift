@@ -366,6 +366,7 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
     override func didLoad() {
         super.didLoad()
         
+        self.dismissNode.layer.contents = transparentHitTestImage.cgImage
         self.dismissNode.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dimNodeTapped)))
         
         if #available(iOS 13.0, *) {
@@ -574,18 +575,13 @@ final class ContextControllerNode: ViewControllerTracingNode, ASScrollViewDelega
                 let springDamping: CGFloat = 104.0
                 
                 self.actionsContainerNode.layer.animateAlpha(from: 0.0, to: 1.0, duration: 0.2 * animationDurationFactor)
-                self.actionsContainerNode.layer.animateSpring(from: 0.1 as NSNumber, to: 1.0 as NSNumber, keyPath: "transform.scale", duration: springDuration, initialVelocity: 0.0, damping: springDamping)
+                self.actionsContainerNode.layer.animateSpring(from: 0.1 as NSNumber, to: 1.0 as NSNumber, keyPath: "transform.scale", duration: springDuration, initialVelocity: 0.0, damping: springDamping, completion: { [weak self] _ in
+                    self?.animatedIn = true
+                })
                 
                 if let originalProjectedContentViewFrame = self.originalProjectedContentViewFrame {
                     let localSourceFrame = self.view.convert(originalProjectedContentViewFrame.1, to: self.scrollNode.view)
-                    
-                    let localContentSourceFrame = self.view.convert(originalProjectedContentViewFrame.1, to: self.contentContainerNode.view.superview)
-                    
                     self.actionsContainerNode.layer.animateSpring(from: NSValue(cgPoint: CGPoint(x: localSourceFrame.center.x - self.actionsContainerNode.position.x, y: localSourceFrame.center.y - self.actionsContainerNode.position.y)), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true)
-                    let contentContainerOffset = CGPoint(x: localContentSourceFrame.center.x - self.contentContainerNode.frame.center.x, y: localContentSourceFrame.center.y - self.contentContainerNode.frame.center.y)
-                    self.contentContainerNode.layer.animateSpring(from: NSValue(cgPoint: contentContainerOffset), to: NSValue(cgPoint: CGPoint()), keyPath: "position", duration: springDuration, initialVelocity: 0.0, damping: springDamping, additive: true, completion: { [weak self] _ in
-                        self?.animatedIn = true
-                    })
                 }
             case .extractedContainer:
                 break

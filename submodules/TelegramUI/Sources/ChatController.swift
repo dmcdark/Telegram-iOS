@@ -532,6 +532,7 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
     }
     
     weak var sendMessageActionsController: ChatSendMessageActionSheetController?
+    weak var sendAsContextController: ContextController?
     var searchResultsController: ChatSearchResultsController?
 
     weak var themeScreen: ChatThemeScreen?
@@ -8438,6 +8439,7 @@ public final class ChatControllerImpl: TelegramBaseController, ChatController, G
         super.viewWillDisappear(animated)
         self.forwardSideListAppearance(.willDisappear, animated: animated)
 
+        self.sendAsContextController?.dismissNow()
         self.walletTransferAnimationsVisible = false
         
         if #available(iOS 18.0, *) {

@@ -16,7 +16,7 @@ import ContextUI
 
 // A 1x1 fully transparent image, used as layer contents purely so that the layer renders and therefore
 // takes part in touch delivery. Stretched by the layer's default `contentsGravity`, and invisible.
-private let transparentHitTestImage: UIImage = {
+let transparentHitTestImage: UIImage = {
     let size = CGSize(width: 1.0, height: 1.0)
     UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
     let image = UIGraphicsGetImageFromCurrentImageContext()

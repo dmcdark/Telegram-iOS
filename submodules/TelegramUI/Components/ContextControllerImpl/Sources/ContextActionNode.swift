@@ -226,6 +226,7 @@ public final class ContextActionNode: ASDisplayNode, ContextActionNodeProtocol {
     public override func didLoad() {
         super.didLoad()
         
+        self.buttonNode.layer.contents = transparentHitTestImage.cgImage
         self.pointerInteraction = PointerInteraction(node: self.buttonNode, style: .hover, willEnter: { [weak self] in
             if let strongSelf = self {
                 strongSelf.highlightedBackgroundNode.alpha = 0.75
