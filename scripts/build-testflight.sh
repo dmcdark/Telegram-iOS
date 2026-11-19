@@ -119,8 +119,7 @@ wait_seconds="${WAIT_SECONDS:-15}"
 auth_retry_count="${TESTFLIGHT_AUTH_RETRIES:-3}"
 marketing_version="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["app"])' "$project_root/versions.json" 2>/dev/null || true)"
 
-# Keep the persistent Bazel disk cache so release rebuilds can reuse artifacts.
-# The script reports its size after each build; clean it manually when needed.
+# Reuse the previous TestFlight build's disk cache and prune stale entries after a successful build.
 bazel_cache_dir="${TELEGRAM_BAZEL_CACHE_DIR:-$HOME/telegram-bazel-cache}"
 bazel_output_user_root="${TELEGRAM_BAZEL_OUTPUT_USER_ROOT:-/private/var/tmp/_bazel_qinsbro}"
 
@@ -271,6 +270,7 @@ else
   bazel_arguments+=("--//Telegram:notificationServiceExtensionOnly=True")
   bazel_arguments+=("--//Telegram:shareExtensionOnly=True")
 fi
+
 make_arguments=(
   --overrideXcodeVersion
   --bazelArguments="${(j: :)bazel_arguments}"
@@ -287,9 +287,24 @@ if [[ -n "$bazel_cache_dir" ]]; then
     --cacheDir="$bazel_cache_dir"
     "${make_arguments[@]}"
   )
+  # BSD find compares whole seconds, so keep entries touched in the start second.
+  bazel_cache_cutoff="$(date -u -v-1S '+%Y-%m-%d %H:%M:%S UTC')"
 fi
 
 python3 build-system/Make/Make.py "${make_arguments[@]}"
+
+if [[ -n "$bazel_cache_dir" ]]; then
+  # Bazel updates the modification time when it reads or writes a disk cache entry.
+  print "Pruning Bazel disk cache entries older than this build..."
+  for cache_store in "$bazel_cache_dir"/{ac,cas}; do
+    if [[ -d "$cache_store" && ! -L "$cache_store" ]]; then
+      if ! find -E "${cache_store:a}" -mindepth 2 -maxdepth 2 -type f \
+        -regex '.*/[0-9a-f]{2}/[0-9a-f]{64}' ! -newermt "$bazel_cache_cutoff" -delete; then
+        print -u2 "Could not fully prune Bazel disk cache at $cache_store."
+      fi
+    fi
+  done
+fi
 
 report_bazel_storage_size() {
   print "\nBazel storage size:"
