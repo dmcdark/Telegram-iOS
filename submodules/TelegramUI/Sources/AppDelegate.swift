@@ -1252,7 +1252,7 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
                 let id = application.beginBackgroundTask(withName: name, expirationHandler: expiration)
                 Logger.shared.log("App \(self.episodeId)", "Begin background task \(name): \(id)")
                 print("App \(self.episodeId)", "Begin background task \(name): \(id)")
-                return id
+                return id == .invalid ? nil : id
             }, endBackgroundTask: { id in
                 print("App \(self.episodeId)", "End background task \(id)")
                 Logger.shared.log("App \(self.episodeId)", "End background task \(id)")
@@ -2062,6 +2062,20 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
     }
 
     func handleDidEnterBackground() {
+        final class BackgroundTransition {
+            var taskId = UIBackgroundTaskIdentifier.invalid
+            var hasTransactionDrain = false
+        }
+        let backgroundTransition = BackgroundTransition()
+        let endBackgroundTransition: () -> Void = {
+            let id = backgroundTransition.taskId
+            if id != .invalid {
+                backgroundTransition.taskId = .invalid
+                UIApplication.shared.endBackgroundTask(id)
+            }
+        }
+        backgroundTransition.taskId = UIApplication.shared.beginBackgroundTask(withName: "lock", expirationHandler: endBackgroundTransition)
+
         let _ = (self.sharedContextPromise.get()
         |> take(1)
         |> deliverOnMainQueue).start(next: { sharedApplicationContext in
@@ -2083,6 +2097,14 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
                     context.account.postbox.clearCaches()
                 }
             })
+
+            // Read the wakeup manager's foreground state after this scene transition is published.
+            DispatchQueue.main.async {
+                if backgroundTransition.taskId != .invalid {
+                    backgroundTransition.hasTransactionDrain = true
+                    sharedApplicationContext.wakeupManager.finishBackgroundTransition(endBackgroundTransition)
+                }
+            }
         })
         
         self.isInForegroundValue = false
@@ -2090,22 +2112,11 @@ private func extractAccountManagerState(records: AccountRecordsView<TelegramAcco
         self.isActiveValue = false
         self.isActivePromise.set(false)
         
-        final class TaskIdHolder {
-            var taskId: UIBackgroundTaskIdentifier?
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            if !backgroundTransition.hasTransactionDrain {
+                endBackgroundTransition()
+            }
         }
-        
-        let taskIdHolder = TaskIdHolder()
-        
-        taskIdHolder.taskId = UIApplication.shared.beginBackgroundTask(withName: "lock", expirationHandler: {
-            if let taskId = taskIdHolder.taskId {
-                UIApplication.shared.endBackgroundTask(taskId)
-            }
-        })
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5.0, execute: {
-            if let taskId = taskIdHolder.taskId {
-                UIApplication.shared.endBackgroundTask(taskId)
-            }
-        })
     }
 
     func handleWillEnterForeground() {
